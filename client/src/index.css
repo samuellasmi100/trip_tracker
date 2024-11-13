@@ -1,0 +1,29 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Mono&display=swap");
+
+@font-face {
+  font-family: "Inter";
+  src: local("Inter-Regular"),
+    url("./fonts/Inter-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "MakorFont";
+  src: local("makor-font"), url("./fonts/makor-font.ttf") format() "truetype";
+}
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "MakorFont" ,"Segoe UI", "Roboto",
+    "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #171717;
+  direction: rtl;
+  
+}
+
+html {
+  font-size: 12px;
+}

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 42 42">
+  <g id="profile" transform="translate(-20 -1010)">
+    <g id="Ellipse_466" data-name="Ellipse 466" transform="translate(20 1010)" fill="none" stroke="#fff" stroke-width="1">
+      <circle cx="21" cy="21" r="21" stroke="none"/>
+      <circle cx="21" cy="21" r="20.5" fill="none"/>
+    </g>
+    <path id="Icon_material-person" data-name="Icon material-person" d="M16.524,16.524a5.262,5.262,0,1,0-5.262-5.262A5.261,5.261,0,0,0,16.524,16.524Zm0,2.631C13.012,19.155,6,20.918,6,24.417v2.631H27.048V24.417C27.048,20.918,20.037,19.155,16.524,19.155Z" transform="translate(24.476 1012.476)" fill="none" stroke="#fff" stroke-width="1"/>
+  </g>
+</svg>
