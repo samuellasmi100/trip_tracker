@@ -1,25 +1,17 @@
 const mysql = require("mysql2");
-const config = require("../config")
+
 require("dotenv").config();
-const env = config.NODE_ENV;
-const logger = require("../utils/Logger")
+
+
 
 const dbConfiguration = () => {
-  if (env === "bonds_dev") {
+
     return {
-      host: config.DEV_DB_HOST,
-      user: config.DEV_DB_USER,
-      password: config.DEV_DB_PASS,
-      database: config.DEV_DB_NAME,
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASS,
+      database: process.env.DB_NAME,
     };
-  } else if (env === "bonds_local") {
-    return {
-      host: config.DB_HOST,
-      user: config.DB_USER,
-      password: config.DB_PASS,
-      database: config.DB_NAME,
-    };
-  }
 };
 
 const db = mysql.createPool(dbConfiguration());
@@ -29,7 +21,7 @@ db.getConnection((err) => {
     console.log(`Failed to create connection + " + err`)
     return;
   }
-  logger.info("We're connected to MySQL");
+ console.log("We're connected to MySQL");
 });
 
 function execute(sql) {

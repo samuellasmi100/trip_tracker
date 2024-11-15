@@ -1,5 +1,5 @@
 const fs = require("fs");
-const logger = require("../utils/Logger");
+
 
 let errorHandler = (e, request, response, next) => {
   console.log(e, "messageHandler");
