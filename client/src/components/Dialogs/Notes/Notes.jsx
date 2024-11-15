@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import NewEditClientUserDialogView from "./NewEditClientUserDialog.view";
-import ApiClient from "../../../../../apis/clientRequest";
-import ApiRegion from "../../../../../apis/regionRequest";
-import ApiUser from "../../../../../apis/userRequest";
+import ApiClient from "../../../apis/clientRequest";
+import ApiRegion from "../../../apis/regionRequest";
+import ApiUser from "../../../apis/userRequest";
 import { useSelector } from "react-redux";
 
-const NewEditClientUserDialog = (props) => {
+const Notes = (props) => {
   const regions = useSelector((state) => state.regionSlice.regions);
 
   const {
@@ -206,29 +206,29 @@ const NewEditClientUserDialog = (props) => {
     }
   };
 
-  useEffect(() => {
-    if (dialogOpen) {
-      if (clientUserId) {
-        //! here we'll have an axios request
-        apiGetClientUserById(clientUserId);
-        apiGetRegionByClientUserId(clientUserId);
-      } else {
-        setCurrentRegionClientUserData([]);
-        setCurrentClientUserData({});
-        setCurrentClientUserData({
-          firstName: "",
-          lastName: "",
-          clientName: "",
-          email: "",
-          dailyLimit: "",
-          traderName: "",
-          regionSelect: "",
-          privileges: "",
-          phone: { code: "", number: "" },
-        });
-      }
-    }
-  }, [dialogOpen]);
+  // useEffect(() => {
+  //   if (dialogOpen) {
+  //     if (clientUserId) {
+  //       //! here we'll have an axios request
+  //       apiGetClientUserById(clientUserId);
+  //       apiGetRegionByClientUserId(clientUserId);
+  //     } else {
+  //       setCurrentRegionClientUserData([]);
+  //       setCurrentClientUserData({});
+  //       setCurrentClientUserData({
+  //         firstName: "",
+  //         lastName: "",
+  //         clientName: "",
+  //         email: "",
+  //         dailyLimit: "",
+  //         traderName: "",
+  //         regionSelect: "",
+  //         privileges: "",
+  //         phone: { code: "", number: "" },
+  //       });
+  //     }
+  //   }
+  // }, [dialogOpen]);
   return (
     currentClientUserData && (
       <NewEditClientUserDialogView
@@ -255,4 +255,4 @@ const NewEditClientUserDialog = (props) => {
   );
 };
 
-export default NewEditClientUserDialog;
+export default Notes;

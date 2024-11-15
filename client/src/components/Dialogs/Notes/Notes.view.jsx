@@ -1,4 +1,4 @@
-import React from "react";
+import React ,{useState} from "react";
 import {
   Button,
   Checkbox,
@@ -13,14 +13,15 @@ import {
   FormControl,
   IconButton,
 } from "@mui/material";
-import { useStyles } from "./NewEditClientUserDialog.style";
+import { useStyles } from "./Notes.style";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { useSelector } from "react-redux";
 import CloseIcon from "@mui/icons-material/Close";
 
-const NewEditClientUserDialogView = (props) => {
+const NotesView = (props) => {
   const classes = useStyles();
+  const [activeButton, setActiveButton] = useState(null);
   const {
     closeModal,
     dialogOpen,
@@ -43,13 +44,17 @@ const NewEditClientUserDialogView = (props) => {
   const regions = useSelector((state) => state.regionSlice.regions);
   const clients = useSelector((state) => state.userSlice.clients);
   const traders = useSelector((state) => state.userSlice.traders);
+  const handleButtonClick = (buttonName) => {
+    setActiveButton(buttonName);
+  }
       return (
     <Dialog
       open={dialogOpen}
       classes={{ paper: classes.dialog }}
       onClose={closeModal}
     >
-      <Grid container spacing={2}>
+      <Grid container>
+        
         <Grid
           item
           container
@@ -58,30 +63,38 @@ const NewEditClientUserDialogView = (props) => {
           alignContent="center"
           justifyContent="space-between"
         >
-          <Grid item xs={6}>
-            <Typography className={classes.header}>
-              {dialogType === "edit" ? "Edit Client User" : "New Client"}
-            </Typography>
-          </Grid>
+          {/* <Grid item xs={6}></Grid>
           <Grid item xs={6} container justifyContent="flex-end">
             <IconButton
               size="small"
               style={{
                 marginRight: "20px",
                 display: "relative",
-                bottom: "5px",
+                // bottom: "5px",
               }}
               onClick={closeModal}
             >
               <CloseIcon style={{ color: "#ffffff" }} />
             </IconButton>
-          </Grid>
+          </Grid> */}
+        <Grid item xs={12} container justifyContent="center" style={{marginTop:"20px",gap:"10px",marginBottom:"30px"}}>
+        {["יצירת אורח", "חדרים", "טיסות", "תשלום", "הערות"].map((label) => (
+        <Button
+          key={label}
+          className={`${classes.navButton} ${activeButton === label ? "active" : ""}`}
+          onClick={() => handleButtonClick(label)}
+        >
+          {label}
+        </Button>
+      ))}
+
+        </Grid>  
         </Grid>
         <Grid item xs={6}>
           <Grid container spacing={2} justifyContent="center">
             <Grid item>
               <InputLabel className={classes.inputLabelStyle}>
-                First Name
+                שם פרטי
               </InputLabel>
               <TextField
                 value={currentClientUserData.firstName}
@@ -90,6 +103,26 @@ const NewEditClientUserDialogView = (props) => {
               />
             </Grid>
             <Grid item>
+              <InputLabel className={classes.inputLabelStyle}>
+                שם בן/בת הזוג
+              </InputLabel>
+              <TextField
+                value={currentClientUserData.lastName}
+                className={classes.textField}
+                onChange={(e) => changeCurrentClientUserData(e, "lastName")}
+              />
+            </Grid>
+            <Grid item>
+              <InputLabel className={classes.inputLabelStyle}>
+                שם משפחה
+              </InputLabel>
+              <TextField
+                value={currentClientUserData.firstName}
+                className={classes.textField}
+                onChange={(e) => changeCurrentClientUserData(e, "firstName")}
+              />
+            </Grid>
+            {/* <Grid item>
               <InputLabel className={classes.inputLabelStyle}>
                 Client
               </InputLabel>
@@ -118,16 +151,16 @@ const NewEditClientUserDialogView = (props) => {
                   );
                 })}
               </Select>
-            </Grid>
+            </Grid> */}
             <Grid item>
-              <InputLabel className={classes.inputLabelStyle}>Email</InputLabel>
+              <InputLabel className={classes.inputLabelStyle}>אימייל</InputLabel>
               <TextField
                 value={currentClientUserData.email}
                 className={classes.textField}
                 onChange={(e) => changeCurrentClientUserData(e, "email")}
               />
             </Grid>
-            <Grid item>
+            {/* <Grid item>
               <InputLabel className={classes.inputLabelStyle}>
                 Makor Sales
               </InputLabel>
@@ -160,29 +193,24 @@ const NewEditClientUserDialogView = (props) => {
                   );
                 })}
               </Select>
-            </Grid>
+            </Grid> */}
           </Grid>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={5}>
           <Grid container spacing={2} justifyContent="center">
             <Grid item>
               <InputLabel className={classes.inputLabelStyle}>
-                Last Name
-              </InputLabel>
-              <TextField
-                value={currentClientUserData.lastName}
-                className={classes.textField}
-                onChange={(e) => changeCurrentClientUserData(e, "lastName")}
-              />
-            </Grid>
-            <Grid item>
-              <InputLabel className={classes.inputLabelStyle}>
-                Phone Number
+               מספר טלפון
               </InputLabel>
               <Grid container>
                 <Grid>
-                
-                  <PhoneInput
+                <TextField
+                style={{marginLeft:"8px"}}
+                    value={currentClientUserData?.phone?.number}
+                    className={classes.basePhonetextFieldPhone}
+                    onChange={(e) => changeCurrentClientUserData(e, "phone")}
+                  />
+                  {/* <PhoneInput
                     country={""}
                     onChange={(e) => changeCurrentClientUserData(e, "areaCode")}
                     buttonClass={classes.button}
@@ -195,7 +223,7 @@ const NewEditClientUserDialogView = (props) => {
                       height: "32px",
                     }}
                     dropdownStyle={{ width: "150px" }}
-                  />
+                  /> */}
                 </Grid>
                 <Grid style={{ paddingLeft: "10px" }}>
                   <TextField
@@ -208,7 +236,7 @@ const NewEditClientUserDialogView = (props) => {
             </Grid>
             <Grid item>
               <InputLabel className={classes.inputLabelStyle}>
-                Daily Limit
+              מספר זהות
               </InputLabel>
               <TextField
                 value={currentClientUserData?.dailyLimit}
@@ -216,9 +244,9 @@ const NewEditClientUserDialogView = (props) => {
                 onChange={(e) => changeCurrentClientUserData(e, "dailyLimit")}
               />
             </Grid>
-            <Grid item>
+            {/* <Grid item>
               <InputLabel className={classes.inputLabelStyle}>
-                Region Select
+               כולל טיסות
               </InputLabel>
               <Select
                 multiple
@@ -264,17 +292,14 @@ const NewEditClientUserDialogView = (props) => {
                   );
                 })}
               </Select>
-            </Grid>
+            </Grid> */}
           </Grid>
         </Grid>
       </Grid>
+
       <Grid style={{ marginTop: "20px", marginLeft: "30px" }}>
-        <Grid>
-          <Typography style={{ color: "##757882", fontSize: "15px" }}>
-            Privileges
-          </Typography>
-        </Grid>
-        <Grid container display="flex" flexDirection="row">
+        <Grid container display="flex" 
+          >
           <Grid item>
             <FormControlLabel
               control={
@@ -291,13 +316,13 @@ const NewEditClientUserDialogView = (props) => {
                 />
               }
               label={
-                <Typography style={{ color: "##757882", fontSize: "15px" }}>
-                  Trading
+                <Typography  style={{ color: "##757882", fontSize: "15px" }}>
+                  כולל טיסות
                 </Typography>
               }
             />
           </Grid>
-          <Grid item>
+          {/* <Grid item>
             <FormControlLabel
               control={
                 <Checkbox
@@ -317,9 +342,11 @@ const NewEditClientUserDialogView = (props) => {
                 </Typography>
               }
             />
-          </Grid>
+          </Grid> */}
         </Grid>
       </Grid>
+
+      
       <Grid
         item
         xs={12}
@@ -327,11 +354,7 @@ const NewEditClientUserDialogView = (props) => {
         style={{ marginTop: "30px" }}
         justifyContent="space-around"
       >
-        <Grid item>
-          <Button className={classes.cancelButton} onClick={() => closeModal()}>
-            Cancel
-          </Button>
-        </Grid>
+       
         <Grid item>
           <Button
             className={classes.submitButton}
@@ -339,12 +362,18 @@ const NewEditClientUserDialogView = (props) => {
               dialogType === "edit" ? apiEditClientUser : apiSaveNewClientUser
             }
           >
-            {dialogType === "edit" ? "Submit" : "Create"}
+            {dialogType === "edit" ? "Submit" : "צור אורח"}
+          </Button>
+        </Grid>
+        <Grid item>
+          <Button className={classes.cancelButton} onClick={() => closeModal()}>
+            סגור
           </Button>
         </Grid>
       </Grid>
+      
     </Dialog>
   );
 };
 
-export default NewEditClientUserDialogView;
+export default NotesView;

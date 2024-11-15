@@ -8,7 +8,7 @@ const SearchInputView = (props) => {
   return (
     <TextField
       className={classes.textField}
-      placeholder={props.placeholder ? props.placeholder : "Search"}
+      placeholder={props.placeholder ? props.placeholder : "חיפוש"}
       onChange={props.onChange}
       InputProps={{
         startAdornment: (

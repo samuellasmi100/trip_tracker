@@ -13,7 +13,6 @@
   src: local("makor-font"), url("./fonts/makor-font.ttf") format() "truetype";
 }
 body {
-  margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Inter", "MakorFont" ,"Segoe UI", "Roboto",
     "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
@@ -23,7 +22,9 @@ body {
   direction: rtl;
   
 }
-
-html {
-  font-size: 12px;
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
