@@ -1,12 +1,21 @@
 const userDb = require("./userDb")
 
-const addOne = async (userData) => {
-    return userDb.addOne(userData)
+const addParent = async (userData) => {
+    return userDb.addParent(userData)
+}
+const addChild = async (userData) => {
+    return userDb.addChild(userData)
 }
 const getMainUsers = async () => {
     return userDb.getMainUsers()
 }
+const getChildByParentId = async (id) => {
+   return userDb.getChildByParentId(id)
+
+  }
 module.exports = {
-    addOne,
-    getMainUsers
+    addParent,
+    addChild,
+    getMainUsers,
+    getChildByParentId
 }
