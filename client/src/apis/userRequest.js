@@ -7,9 +7,18 @@ export default {
   },
 
 
-  createUser(userData) {
+  createParantUser(userData) {
     return Api.post(
       `/${END_POINT.USER}`,
+      userData,
+      // {
+      //   headers: { Authorization: token },
+      // }
+    );
+  },
+  createChildUser(userData) {
+    return Api.post(
+      `/${END_POINT.USER}/child`,
       userData,
       // {
       //   headers: { Authorization: token },
@@ -20,7 +29,13 @@ export default {
     return Api.get(`/${END_POINT.USER}/all`, {
         // headers: { Authorization: token },
       })
+},
+getChildUser(id) {
+  return Api.get(`/${END_POINT.USER}/child/${id}`, {
+      // headers: { Authorization: token },
+    })
 }}
+
   
 
 

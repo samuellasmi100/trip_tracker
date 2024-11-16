@@ -10,16 +10,18 @@ const MainDialog = (props) => {
   const {
     dialogType,
     dialogOpen,
-    clientUserId,
     setDialogOpen,
     closeModal,
-    updateClientsUsers,
+    userDetails
   } = props;
 
   return (
        <MainDialogView
-        closeModal={closeModal}
-        dialogOpen={dialogOpen}
+       dialogType={dialogType}
+       dialogOpen={dialogOpen}
+       setDialogOpen={setDialogOpen}
+       closeModal={closeModal}
+       userDetails={userDetails}
       />
   );
 };

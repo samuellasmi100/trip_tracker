@@ -44,7 +44,7 @@ export const useStyles = makeStyles((theme) => ({
             position: "relative",
             color: "#FFFFFF",
             fontSize: 16,
-            width: "135px",
+            width: "115px",
             padding: "5px 18px",
             height: "24px",
         },
@@ -128,4 +128,37 @@ export const useStyles = makeStyles((theme) => ({
             },
         },
     },
+    selectOutline: {
+        height: "35px",
+         width:"80px",
+        "&.MuiOutlinedInput-root": {
+          color: "#ffffff !important",
+          "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#494c55",
+          },
+        },
+        "& .MuiSvgIcon-root": {
+          color: "#54a9ff",
+        },
+      },
+      selectedMenuItem: {
+        backgroundColor: "#2D2D2D !important",
+        // padding:"0px !important",
+        
+    
+        
+        "& Mui=Menu-list" :{
+            padding:"0pz !important"
+        },
+        "&.Mui-selected": {
+          backgroundColor: "transparent",
+          "&:hover": {
+            backgroundColor: "#3C3E43",
+          },
+        },
+        "&:hover": {
+          backgroundColor: "#3C3E43",
+        },
+        
+      },
 }));

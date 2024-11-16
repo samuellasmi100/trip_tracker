@@ -26,7 +26,7 @@ const PaymentsView = (props) => {
 
     return (
       <>
-      <Grid container  style={{ minHeight: "350px", padding: "20px" }}>
+      <Grid container >
         <Grid item xs={6}>
           <Grid container spacing={2} justifyContent="center">
             <Grid item>

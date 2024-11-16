@@ -16,12 +16,13 @@ import { ReactComponent as DownloadIcon }  from "../../../assets/icons/download.
 import { ReactComponent as EditIcon } from "../../../assets/icons/edit.svg";
 
 function UserLogsView(props) {
-  const [sortedField, setSortedField] = useState("Date Time (UTC)");
 
   const classes = useStyles();
   const {
     setDialogOpen,
     tableData,
+    handleDialogTypeOpen,
+    handleNameClick
   } = props;
 
   const headers = [
@@ -49,7 +50,7 @@ function UserLogsView(props) {
          </Grid> 
         </Grid>
         <Grid>
-          <Button className={classes.submitButton} onClick={() => setDialogOpen(true)}>צור אורח</Button>
+          <Button className={classes.submitButton} onClick={() => handleDialogTypeOpen("new")}>צור אורח</Button>
         </Grid>
       </Grid>
 
@@ -78,29 +79,28 @@ function UserLogsView(props) {
             {tableData?.map((user, index) => {
                   return (
                     <TableRow key={index}>
+                      <Button onClick={() => handleNameClick(user.parentId)}>
                       <TableCell className={classes.dataTableCell}>
-                        {user.first_name}
+                        {user.name}
+                      </TableCell>
+                      </Button>
+                      <TableCell className={classes.dataTableCell}>
+                      {user.lastName}
                       </TableCell>
                       <TableCell className={classes.dataTableCell}>
-                      {user.last_name}
-                      </TableCell>
-                      <TableCell className={classes.dataTableCell}>
-                      {user.total_amount}
+                      {user.totalAmount}
                       </TableCell>
                       <TableCell className={classes.dataTableCell}>
                       {user.flights}
                       </TableCell>
                       
-                     
                       <TableCell
                         className={classes.dataTableCell}
                         style={{ maxWidth: "1px" }}
                       >
                         <IconButton
                           size={"small"}
-                          // onClick={() =>
-                          //   openNewOrEditDialog(client.clientUserId)
-                          // }
+                          onClick={() => handleDialogTypeOpen("edit",user)}
                         >
                           <EditIcon />
                         </IconButton>
@@ -111,9 +111,7 @@ function UserLogsView(props) {
                       >
                         <IconButton
                           size={"small"}
-                          // onClick={() =>
-                          //   openNewOrEditDialog(client.clientUserId)
-                          // }
+                          onClick={() => handleDialogTypeOpen("child",user)}
                         >
                           <EditIcon />
                         </IconButton>

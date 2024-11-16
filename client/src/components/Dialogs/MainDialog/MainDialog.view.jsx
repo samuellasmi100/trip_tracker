@@ -1,4 +1,4 @@
-import React ,{useState} from "react";
+import React, { useState } from "react";
 import {
   Button,
   Checkbox,
@@ -12,6 +12,7 @@ import {
   MenuItem,
   FormControl,
   IconButton,
+  setRef,
 } from "@mui/material";
 import { useStyles } from "./MainDialog.style";
 import PhoneInput from "react-phone-input-2";
@@ -25,31 +26,67 @@ import { Flight } from "@mui/icons-material";
 import Flights from "../Flights/Flights";
 
 const MainDialogView = (props) => {
-  const classes = useStyles();
-  const [activeButton, setActiveButton] = useState("יצירת אורח");
-
   const {
-    closeModal,
+    dialogType,
     dialogOpen,
+    setDialogOpen,
+    closeModal,
+    userDetails
   } = props;
+  const classes = useStyles();
+  const [activeButton, setActiveButton] = useState("עדכון אורח");
 
   const handleButtonClick = (buttonName) => {
     setActiveButton(buttonName);
   }
-const handleDataView = () => {
-  if(activeButton === "יצירת אורח"){
-    return <Guest closeModal={closeModal}/>
-  }else if(activeButton === "חדרים"){
-   return <Rooms />
-  }else if(activeButton === "טיסות"){
-    return <Flights />
-  }else if(activeButton === "תשלום"){
-    return <Payments />
-  }else if(activeButton === "הערות"){
-    
+  const handleDataView = () => {
+    if (activeButton === "עדכון אורח") {
+      return <Guest closeModal={closeModal} userDetails={userDetails} dialogType={dialogType}/>
+    } else if (activeButton === "חדרים") {
+      return <Rooms />
+    } else if (activeButton === "טיסות") {
+      return <Flights />
+    } else if (activeButton === "תשלום") {
+      return <Payments />
+    } else if (activeButton === "הערות") {
+
+    }
   }
 
+const handleButtonHeader = () => {
+  if(dialogType === "new"){
+    return <></>
+  }else if(dialogType === "edit"){
+      return (userDetails.flights === 1
+        ?  ["עדכון אורח", "חדרים", "טיסות", "תשלום", "הערות"] 
+        :  ["עדכון אורח", "חדרים", "תשלום", "הערות"]
+      ).map((label) => (
+        <Button
+          key={label}
+          className={`${classes.navButton} ${activeButton === label ? "active" : ""}`}
+          onClick={() => handleButtonClick(label)}
+        >
+          {label}
+        </Button>
+      ))
+     
+  }else if(dialogType === "child"){
+    return (
+     
+   ["עדכון אורח", "חדרים", "טיסות", "הערות"] 
+    
+    ).map((label) => (
+      <Button
+        key={label}
+        className={`${classes.navButton} ${activeButton === label ? "active" : ""}`}
+        onClick={() => handleButtonClick(label)}
+      >
+        {label}
+      </Button>
+    ))
+  }
 }
+
   return (
     <Dialog
       open={dialogOpen}
@@ -57,7 +94,6 @@ const handleDataView = () => {
       onClose={closeModal}
     >
       <Grid container>
-        
         <Grid
           item
           container
@@ -66,24 +102,15 @@ const handleDataView = () => {
           alignContent="center"
           justifyContent="space-between"
         >
-        <Grid item xs={12} container justifyContent="center" style={{marginTop:"20px",gap:"10px",marginBottom:"30px"}}>
-        {["יצירת אורח", "חדרים", "טיסות", "תשלום", "הערות"].map((label) => (
-        <Button
-          key={label}
-          className={`${classes.navButton} ${activeButton === label ? "active" : ""}`}
-          onClick={() => handleButtonClick(label)}
-        >
-          {label}
-        </Button>
-      ))}
-
-        </Grid>  
+          <Grid item xs={12} container justifyContent="center" style={{ marginTop: "20px", gap: "10px", marginBottom: "30px" }}>
+         { handleButtonHeader()}
+          </Grid>
         </Grid>
 
       </Grid>
       {handleDataView()}
 
-      
+
     </Dialog>
   );
 };
