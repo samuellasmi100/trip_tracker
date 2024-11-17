@@ -12,14 +12,14 @@ import { useDispatch, useSelector } from "react-redux";
 // import * as actionSnackBar from "./store/slice/snackbarSlice";
 // import ApiLogs from "./apis/logRequest";
 import "moment/locale/en-gb";
-import UserLogs from "./components/main/Users/UserLogs";
+import UserLogs from "./components/main/Users/ParentList/ParentList";
 import Header from "./components/main/header/Header";
 
 function App() {
  
 
   return (
-    <Grid className="App" style={{ height:"100vh",width:"100vw",border:"3px solid red"}}>
+    <Grid className="App" style={{ height:"100vh",width:"100vw"}}>
         <SnackBar />
        <Grid item xs={10} style={{padding:"12px"}}>
          <Header />

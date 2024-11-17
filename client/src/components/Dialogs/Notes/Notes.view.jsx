@@ -359,10 +359,10 @@ const NotesView = (props) => {
           <Button
             className={classes.submitButton}
             onClick={
-              dialogType === "edit" ? apiEditClientUser : apiSaveNewClientUser
+              dialogType === "editParent" ? apiEditClientUser : apiSaveNewClientUser
             }
           >
-            {dialogType === "edit" ? "Submit" : "צור אורח"}
+            {dialogType === "editParent" ? "Submit" : "צור אורח"}
           </Button>
         </Grid>
         <Grid item>

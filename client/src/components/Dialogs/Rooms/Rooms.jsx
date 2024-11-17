@@ -2,10 +2,10 @@ import React, { } from "react";
 import RoomsView from "./Rooms.view"
 
 
-const Rooms = (props) => {
+const Rooms = ({closeModal,roomType,form,setForm,filteredOptions}) => {
  
   return (
-   <RoomsView />
+   <RoomsView closeModal={closeModal} roomType={roomType} form={form} setForm={setForm} filteredOptions={filteredOptions} />
   );
 };
 

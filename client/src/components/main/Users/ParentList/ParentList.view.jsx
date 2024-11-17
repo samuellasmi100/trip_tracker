@@ -7,23 +7,23 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Button
+  Button,
+  Collapse,
+  Box,
+  Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState,useRef } from "react";
 import { useStyles } from "./UserLogs.style";
-import SearchInput from "../../ReusableComps/SearchInput/SearchInput"
-import { ReactComponent as DownloadIcon }  from "../../../assets/icons/download.svg"
-import { ReactComponent as EditIcon } from "../../../assets/icons/edit.svg";
+import SearchInput from "../../../ReusableComps/SearchInput/SearchInput";
+import { ReactComponent as DownloadIcon } from "../../../../assets/icons/download.svg";
+import { ReactComponent as EditIcon } from "../../../../assets/icons/edit.svg";
 
-function UserLogsView(props) {
+
+function ParentListView(props) {
 
   const classes = useStyles();
-  const {
-    setDialogOpen,
-    tableData,
-    handleDialogTypeOpen,
-    handleNameClick
-  } = props;
+  const { setDialogOpen, tableData, handleDialogTypeOpen, handleNameClick } =
+    props;
 
   const headers = [
     "שם פרטי",
@@ -31,34 +31,47 @@ function UserLogsView(props) {
     "נותר לתשלום",
     "טיסות",
     "ערוך",
-    "הוסף"
-  ]
+    "הוסף",
+  ];
+  
   return (
-    <Grid conatiner style={{background: "#2d2d2d"}}>
-     <Grid item xs={12} style={{display:"flex",justifyContent:"space-between",borderRadius:"4px"}}>
-        <Grid
-          style={{display:"flex",justifyContent:"space-between"}}
-          item>
-         <Grid item>
+    <Grid container style={{ background: "#2d2d2d",width:"100vw" }}>
+      <Grid
+        item
+        xs={12}
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          borderRadius: "4px",
+        }}
+      >
+        <Grid style={{ display: "flex", justifyContent: "space-between" }} item>
+          <Grid item>
             <SearchInput />
-         </Grid>
-        <Grid item style={{ paddingRight: "12px" }}>
-            <IconButton
-              className={classes.downloadButton}>
+          </Grid>
+          <Grid item style={{ paddingRight: "12px" }}>
+            <IconButton className={classes.downloadButton}>
               <DownloadIcon style={{ color: "#54A9FF" }} />
             </IconButton>
-         </Grid> 
+          </Grid>
         </Grid>
         <Grid>
-          <Button className={classes.submitButton} onClick={() => handleDialogTypeOpen("new")}>צור אורח</Button>
+          <Button
+            className={classes.submitButton}
+            onClick={() => handleDialogTypeOpen("addParent")}
+          >
+            צור אורח
+          </Button>
         </Grid>
       </Grid>
 
-      <Grid item xs={12} style={{border:"1px solid rgb(61, 63, 71)"}}>
-        <TableContainer style={{
-              border: "1px solid #3D3F47",
-              height: "calc(100vh - 210px)",
-          }}>
+      <Grid item xs={12} style={{ border: "1px solid rgb(61, 63, 71)" }}>
+        <TableContainer
+          style={{
+            border: "1px solid #3D3F47",
+            height: "calc(100vh - 230px)",
+          }}
+        >
           <Table style={{ width: "inherit" }} size="small" stickyHeader>
             <TableHead>
               <TableRow>
@@ -66,7 +79,7 @@ function UserLogsView(props) {
                   return (
                     <TableCell
                       key={index}
-                      className={classes.headerTableRow} 
+                      className={classes.headerTableRow}
                       style={{ textAlign: "center" }}
                     >
                       {header}
@@ -76,34 +89,37 @@ function UserLogsView(props) {
               </TableRow>
             </TableHead>
             <TableBody className={classes.dataTableBody}>
-            {tableData?.map((user, index) => {
-                  return (
+              {tableData?.map((user, index) => {
+                return (             
                     <TableRow key={index}>
                       <Button onClick={() => handleNameClick(user.parentId)}>
-                      <TableCell className={classes.dataTableCell}>
-                        {user.name}
-                      </TableCell>
+                        <TableCell className={classes.dataTableCell}>
+                          {user.name}
+                        </TableCell>
                       </Button>
                       <TableCell className={classes.dataTableCell}>
-                      {user.lastName}
+                        {user.lastName}
                       </TableCell>
                       <TableCell className={classes.dataTableCell}>
-                      {user.totalAmount}
+                        {user.totalAmount}
                       </TableCell>
                       <TableCell className={classes.dataTableCell}>
-                      {user.flights}
+                        {user.flights}
                       </TableCell>
-                      
+
                       <TableCell
                         className={classes.dataTableCell}
                         style={{ maxWidth: "1px" }}
                       >
                         <IconButton
                           size={"small"}
-                          onClick={() => handleDialogTypeOpen("edit",user)}
+                          onClick={() =>
+                            handleDialogTypeOpen("editParent", user)
+                          }
                         >
                           <EditIcon />
                         </IconButton>
+
                       </TableCell>
                       <TableCell
                         className={classes.dataTableCell}
@@ -111,20 +127,20 @@ function UserLogsView(props) {
                       >
                         <IconButton
                           size={"small"}
-                          onClick={() => handleDialogTypeOpen("child",user)}
+                          onClick={() => handleDialogTypeOpen("addChild", user)}
                         >
                           <EditIcon />
                         </IconButton>
                       </TableCell>
                     </TableRow>
-                  );
-                })}
+                );
+              })}
             </TableBody>
           </Table>
         </TableContainer>
       </Grid>
     </Grid>
-  )
+  );
 }
 
-export default UserLogsView;
+export default ParentListView;

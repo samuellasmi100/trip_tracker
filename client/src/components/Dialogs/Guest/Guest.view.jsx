@@ -32,7 +32,7 @@ const GuestView = (props) => {
     submit,
     dialogType,
     areaCodes,
-    handleButtonString
+    handleButtonString,
   } = props;
 
 
@@ -66,9 +66,9 @@ const GuestView = (props) => {
                 מספר זהות
               </InputLabel>
               <TextField
-                value={form.identitId}
+                value={form.identityId}
                 className={classes.textField}
-                onChange={e => setForm(prevForm => ({ ...prevForm, identitId: e.target.value }))}
+                onChange={e => setForm(prevForm => ({ ...prevForm, identityId: e.target.value }))}
               />
             </Grid>
             <Grid item>
@@ -131,7 +131,7 @@ const GuestView = (props) => {
                 </Grid>
               </Grid>
             </Grid>
-            {dialogType !== "child" ?
+            {dialogType !== "addChild" ?
               <>
                 <Grid item>
                   <InputLabel className={classes.inputLabelStyle}>
@@ -171,7 +171,7 @@ const GuestView = (props) => {
           </Grid>
         </Grid>
       </Grid>
-      {dialogType !== "child" ?
+      {dialogType !== "addChild" ?
         <Grid style={{ marginLeft: "30px" }}>
           <Grid container display="flex"
           >

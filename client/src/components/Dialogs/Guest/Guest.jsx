@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import ApiUser from "../../../apis/userRequest";
-import { useSelector } from "react-redux";
 import GuestView from "./Guest.view";
-
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import * as snackBarSlice from "../../../store/slice/snackbarSlice"
 
 const Guest = (props) => {
 
@@ -18,27 +19,27 @@ const Guest = (props) => {
     email:"",
     phoneA:"",
     phoneB:"",
-    identitId:'',
+    identityId:'',
     numberOfGuests:"",
     numberOfRooms:"",
     totalAmount:"",
     includesFlight:false,
     parentId:"0"
   })
-
+  const dispatch = useDispatch();
   const areaCodes = ["052", "053", "054", "058"]
+
   const handleButtonString = () =>{
-  if(dialogType === "new"){
+  if(dialogType === "addParent"){
   return "הוסף אורח"
-  }else if(dialogType === "edit"){
+  }else if(dialogType === "editParent"){
   return "עדכן אורח"
-  }else if(dialogType === "child"){
+  }else if(dialogType === "addChild"){
     return "הוסף בן משפחה"
   }
   }
-
   useEffect(() => {
-    if (userDetails && dialogType !== "child") {
+    if (userDetails && dialogType !== "addChild") {
       setForm(prevForm => ({
         ...prevForm,
         firstName: userDetails.name || prevForm.firstName,
@@ -46,24 +47,42 @@ const Guest = (props) => {
         email: userDetails.email || prevForm.email,
         phoneA: userDetails.phoneA || prevForm.phoneA,
         phoneB: userDetails.phoneB || prevForm.phoneB,
-        identitId: userDetails.identitId || prevForm.identitId,
+        identityId: userDetails.identityId || prevForm.identityId,
         numberOfGuests: userDetails.numberOfGuests || prevForm.numberOfGuests,
         numberOfRooms: userDetails.numberOfRooms || prevForm.numberOfRooms,
         totalAmount: userDetails.totalAmount || prevForm.totalAmount.replace(/,/g, ""),
-        includesFlight: userDetails.flights === 1 ? true : prevForm.includesFlight
+        includesFlight: userDetails.flights === 1 ? true : prevForm.includesFlight,
+        parentId:userDetails.parentId || prevForm.parentId,
       }));
-    }else {
-      setForm(prevForm => ({...prevForm,parentId:userDetails.parent_id})) 
+    }
+    else {
+      setForm(prevForm => ({...prevForm,parentId:userDetails.parentId})) 
     }
   }, []);
 
-  const submit = () => {
-    try {
-      if(dialogType === "child"){
-        const response = ApiUser.createChildUser(form)
+  const submit = async () => {
 
-      }else {
-        const response = ApiUser.createParantUser(form)
+    try {
+      if(dialogType === "addChild"){
+        let response = await axios.post("http://localhost:5000/user/child",form)
+        // const response = ApiUser.createChildUser(form)
+
+      }else if(dialogType === "addParent"){
+        let response = await axios.get("http://localhost:5000/user",form)
+   
+      }else if(dialogType === "editParent"){
+       
+        let response = await axios.put(`http://localhost:5000/user`,form)
+        dispatch(
+          snackBarSlice.setSnackBar({
+            type: "success",
+            message: response.data,
+            timeout: 3000,
+          })
+        );
+      }else if(dialogType === "editChild"){
+        // let response = await axios.get("http://localhost:5000/user",form)
+   
       }
       closeModal()
     } catch (error) {

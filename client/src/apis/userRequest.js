@@ -7,7 +7,7 @@ export default {
   },
 
 
-  createParantUser(userData) {
+  createParentUser(userData) {
     return Api.post(
       `/${END_POINT.USER}`,
       userData,
@@ -26,7 +26,8 @@ export default {
     );
   },
   getMainUsers() {
-    return Api.get(`/${END_POINT.USER}/all`, {
+
+    return Api.get(`${END_POINT.USER}/all`, {
         // headers: { Authorization: token },
       })
 },
