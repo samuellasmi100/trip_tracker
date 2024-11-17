@@ -6,7 +6,8 @@ const errorHandler = require("./serverLogs/errorHandler");
 const checkAuthorizationMiddleware = require("./middleware/authMiddleware/checkAuthorization");
 
 //! services
-const userServices = require("./services/user/userController");
+const userController = require("./services/user/userController");
+const roomsController = require("./services/rooms/roomsController");
 
 
 app.use(cors());
@@ -15,7 +16,8 @@ app.use(express.json());
 // app.use(checkAuthorizationMiddleware.checkAuthorization);
 
 
-app.use("/user", userServices);
+app.use("/user", userController);
+app.use("/rooms", roomsController);
 
 
 app.use(errorHandler);

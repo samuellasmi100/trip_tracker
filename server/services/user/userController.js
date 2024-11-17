@@ -7,7 +7,8 @@ router.post("/", async (req, res, next) => {
     userData.parentId = uuid();
     try {
       const response = userService.addParent(userData)
-     res.send("hello")
+      res.send("ההוספה עברה בהצלחה")
+
     } catch (error) {
       return next(error);
     }
@@ -18,7 +19,8 @@ router.post("/child", async (req, res, next) => {
   userData.childId = uuid();
   try {
     const response = userService.addChild(userData)
-   res.send("hello")
+   res.send("ההוספה עברה בהצלחה")
+
   } catch (error) {
     return next(error);
   }
@@ -27,7 +29,6 @@ router.post("/child", async (req, res, next) => {
 router.get("/all", async (req, res, next) => {
   try {
     const response = await userService.getMainUsers()
-
     res.send(response)
 
   } catch (error) {
@@ -37,8 +38,8 @@ router.get("/all", async (req, res, next) => {
 
 router.get("/child/:id", async (req, res, next) => {
   try {
-    const childId = req.params.id
-    const response = await userService.getChildByParentId(childId)
+    const parentId = req.params.id
+    const response = await userService.getChildByParentId(parentId)
     res.send(response)
 
   } catch (error) {
@@ -46,14 +47,25 @@ router.get("/child/:id", async (req, res, next) => {
   }
 });
 
-router.put("/:id", async (req, res, next) => {
-   const userId = req.params.id
- 
+router.put("/", async (req, res, next) => {
+   const userData = req.body
   try {
-   
+   await userService.updateParentUser(userData)
+   res.send("העדכון עבר בהצלחה")
   } catch (error) {
     return next(error);
   }
+});
+router.put("/child/:id", async (req, res, next) => {
+  const userId = req.params.id
+  const userData = req.body
+ try {
+     await userService.updateChildUser(userId,userData)
+  res.send("העדכון עבר בהצלחה")
+
+ } catch (error) {
+   return next(error);
+ }
 });
 
 
