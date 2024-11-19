@@ -4,10 +4,9 @@ const getAll = async () => {
     return roomsDb.getAll()
 }
 
-const assignMainRoom = async (roomDetails) => {
-    // console.log(roomDetails)
+const assignMainRoom = async (roomDetails,parentId) => {
     for (const room of roomDetails) {
-        await roomsDb.assignMainRoom(room.parentId, room.roomId);
+        await roomsDb.assignMainRoom(parentId, room.roomId);
     }
    
 }

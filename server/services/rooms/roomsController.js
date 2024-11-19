@@ -14,10 +14,12 @@ router.get("/", async (req, res, next) => {
 });
 
 router.post("/", async (req, res, next) => {
-  const roomDetails = req.body
+  const roomDetails = req.body.selectedRooms
+  const parentId = req.body.parentId
+
   try {
-    const response = await roomsService.assignMainRoom(roomDetails)
-    res.send("hello")
+    const response = await roomsService.assignMainRoom(roomDetails,parentId)
+    res.send("שיוך החדרים עבר בהצלחה")
 
   } catch (error) {
     return next(error);

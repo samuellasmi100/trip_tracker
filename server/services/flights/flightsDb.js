@@ -1,11 +1,11 @@
 const connection = require("../../db/connection-wrapper");
-const fligthsQuery = require("../../sql/query/fligthsQuery")
+const flightsQuery = require("../../sql/query/fligthsQuery")
 
 
 
 const addParentFlightsDetails = async (paymentsData) => {
   try {
-    const sql = fligthsQuery.addParentFlightsDetails()
+    const sql = flightsQuery.addParentFlightsDetails()
     const parameters = [
       paymentsData.parentId,
       paymentsData.validityPassport,
@@ -26,7 +26,7 @@ const addParentFlightsDetails = async (paymentsData) => {
 }
 const updateParentFlightsDetails = async (paymentsData) => {
   try {
-    const sql = fligthsQuery.updateParentFlightsDetails()
+    const sql = flightsQuery.updateParentFlightsDetails()
     const parameters = [
       paymentsData.validityPassport,
       paymentsData.passportNumber,
@@ -38,7 +38,7 @@ const updateParentFlightsDetails = async (paymentsData) => {
       paymentsData.parentId,
 
     ]
-
+  console.log(parameters)
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     console.log(error)
@@ -46,7 +46,7 @@ const updateParentFlightsDetails = async (paymentsData) => {
 }
 const addChildFlightsDetails = async (paymentsData) => {
   try {
-    const sql = fligthsQuery.addChildFlightsDetails()
+    const sql = flightsQuery.addChildFlightsDetails()
     const parameters = [
       paymentsData.childId,
       paymentsData.parentId,
@@ -67,7 +67,7 @@ const addChildFlightsDetails = async (paymentsData) => {
 }
 const getParentDetails = async (id) => {
   try {
-    const sql = fligthsQuery.getParentDetails()
+    const sql = flightsQuery.getParentDetails()
     const parameters = [id]
     const response = await connection.executeWithParameters(sql, parameters)
     return response
@@ -77,7 +77,7 @@ const getParentDetails = async (id) => {
 }
 const getChildDetails = async (id) => {
   try {
-    const sql = fligthsQuery.getChildDetails()
+    const sql = flightsQuery.getChildDetails()
     const parameters = [id]
     const response = await connection.executeWithParameters(sql, parameters)
     return response
