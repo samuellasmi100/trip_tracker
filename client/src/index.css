@@ -29,3 +29,28 @@ html, body, #root {
   margin: 0;
   padding: 0;
 }
+/* Global scrollbar styling */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 20px;
+}
+
+::-webkit-scrollbar-track {
+  background: #babec7;
+  width: 2px;
+  height: 2px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #707079;
+  border-radius: 4px;
+  width: 2px;
+  height: 6px;
+}
+
+li:hover {
+  background: #babec7; /* Change this to match your hover style */
+  /* background-color: theme.palette.modal.primary; If using theme palette, you would need to inject the theme into CSS, or use inline styles or styled-components */
+}
+
+

@@ -7,39 +7,40 @@ import ChildDetails from "../ChildDetails/ChildDetails";
 import { Grid } from "@mui/material";
 import ParentListView from "./ParentList.view";
 import * as userSlice from "../../../../store/slice/userSlice"
-
+import * as dialogSlice from "../../../../store/slice/dialogSlice"
 
 const ParentList = (props) => {
-  const [dialogOpen, setDialogOpen] = useState(false);
+  // const [dialogOpen, setDialogOpen] = useState(false);
   const [showClientDetails, setShowClientDetails] = useState(false);
-  const [dialogType, setDialogType] = useState("addParent");
+  // const [dialogType, setDialogType] = useState("addParent");
   const [usersData, setUsersData] = useState([]);
-  const [userDetails, setUserDetails] = useState([]);
   const [childDataDetails, setChildDataDetails] = useState([]);
   const dispatch = useDispatch();
 
+  const dialogOpen = useSelector((state) => state.dialogSlice.open)
+  const dialogType = useSelector((state) => state.dialogSlice.type)
+
+
   const closeModal = () => {
-    setDialogOpen(false);
+    dispatch(dialogSlice.initialActiveButton())
+    dispatch(dialogSlice.initialDialogType())
+    dispatch(dialogSlice.closeModal())
     setShowClientDetails(false)
   };
 
   const handleDialogTypeOpen = (type,userData) => {
-
+    dispatch(dialogSlice.updateDialogType(type))
     if(type === "addParent"){
-      setDialogOpen(true)
-      setDialogType(type);
-      setUserDetails([])
+      dispatch(dialogSlice.openModal())
+      dispatch(userSlice.updateParent([]))
     }else if(type === "editParent"){
       if(userData !== undefined){
-       setUserDetails(userData)
+        dispatch(userSlice.updateParent(userData))
       }
-      setDialogOpen(true)
-      setDialogType(type);
-  
+      dispatch(dialogSlice.openModal())
     }else if(type === "addChild"){
-      setDialogOpen(true)
-      setDialogType(type)
-      setUserDetails(userData)
+      dispatch(dialogSlice.openModal())
+      // setUserDetails(userData)
     }
    
   };
@@ -55,18 +56,17 @@ const ParentList = (props) => {
   }
 
   const handleNameClick = async (user) => {
+    dispatch(userSlice.updateParent(user))
     setShowClientDetails(true)
     try {
      
       let response = await axios.get(`http://localhost:5000/user/child/${user.parentId}`)
       setChildDataDetails(response.data)
-      // let response = await ApiUser.getChildUser(id)
-      console.log(response)
-      // setUsersData(response.data)
     } catch (error) {
       console.log(error)
     }
   }
+
   useEffect(() => {
     getMainUsers()
   }, [dialogOpen])
@@ -74,15 +74,19 @@ const ParentList = (props) => {
   return(
   <Grid style={{display:"flex"}}>
     
-  <ParentListView setDialogOpen={setDialogOpen} tableData={usersData} handleDialogTypeOpen={handleDialogTypeOpen} handleNameClick={handleNameClick}/>;
+  <ParentListView 
+  tableData={usersData} 
+  handleDialogTypeOpen={handleDialogTypeOpen} 
+  handleNameClick={handleNameClick}
+  />
+
   {showClientDetails && childDataDetails.length > 0 ?  <ChildDetails childDataDetails={childDataDetails} /> : <></>}
 
    <MainDialog
-        dialogType={dialogType}
-        dialogOpen={dialogOpen}
-        setDialogOpen={setDialogOpen}
-        closeModal={closeModal}
-        userDetails={userDetails}
+      dialogType={dialogType}
+      dialogOpen={dialogOpen}
+      closeModal={closeModal}
+
       />
   </Grid>
   )

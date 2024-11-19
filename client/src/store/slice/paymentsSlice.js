@@ -3,7 +3,15 @@ import { createSlice } from "@reduxjs/toolkit";
 export const paymentsSlice = createSlice({
   name: "paymentsSlice",
   initialState: {
-    form: {},
+    form: {
+      amount:"",
+      amountReceived:"",
+      formOfPayment:"",
+      parentId:"",
+      paymentCurrency:"",
+      paymentDate:"",
+      remainsToBePaid:""
+    }
   },
   reducers: {
     updateFormField: (state, action) => {

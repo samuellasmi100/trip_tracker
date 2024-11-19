@@ -15,13 +15,15 @@ import {
 } from "@mui/material";
 import { useStyles } from "./Flights.style";
 import { useSelector } from "react-redux";
-import * as flightsSlice from "../../../store/slice/flightsSlice"
+import { useDispatch } from "react-redux";
+import * as dialogSlice from "../../../store/slice/dialogSlice"
+
 import "./Flights.css"
 
 const FlightsView = (props) => {
   const classes = useStyles();
   const form = useSelector((state) => state.flightsSlice.form)
-
+  const dispatch = useDispatch()
   const {
     closeModal,
     handleInputChange,
@@ -130,11 +132,12 @@ const FlightsView = (props) => {
             <Button
             onClick={submit}
               className={classes.submitButton}
-            >צור אורח
+            >עדכן פרטי טיסה
+
             </Button>
           </Grid>
           <Grid item>
-            <Button className={classes.cancelButton} onClick={() => closeModal()}>
+            <Button className={classes.cancelButton} onClick={() => dispatch(dialogSlice.closeModal())}>
               סגור
             </Button>
           </Grid>

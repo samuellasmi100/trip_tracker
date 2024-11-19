@@ -15,16 +15,19 @@ import {
   OutlinedInput
 } from "@mui/material";
 import { useStyles } from "./Payments.style";
-import { useSelector } from "react-redux";
-import * as paymentsSlice from "../../../store/slice/paymentsSlice"
 import "./Payments.css"
+import { useDispatch,useSelector } from "react-redux";
+import * as dialogSlice from "../../../store/slice/dialogSlice"
 
 const PaymentsView = (props) => {
   const formOfPayment = ["מזומן","העברה בנקאית","כרטיס אשראי"]
+  const paymentCurrency = ["שקל","דולר","יורו"]
   const form = useSelector((state) => state.paymentsSlice.form)
   const classes = useStyles();
+  const dispatch = useDispatch()
   const {
-    handleInputChange
+    handleInputChange,
+    submit
   } = props;
 
     return (
@@ -49,7 +52,7 @@ const PaymentsView = (props) => {
               </InputLabel>
               <TextField
                 name="amountReceived"
-                value={form.amountReceived}
+                // value={form.amountReceived}
                 className={classes.textField}
                 onChange={handleInputChange}
 
@@ -61,8 +64,7 @@ const PaymentsView = (props) => {
               </InputLabel>
               <TextField
                  type="date"
-                 name="PaymentDate"
-                 value={form.PaymentDate}
+                 name="paymentDate"
                 className={classes.textField}
                 onChange={handleInputChange}
               />
@@ -76,20 +78,11 @@ const PaymentsView = (props) => {
               <InputLabel className={classes.inputLabelStyle}>
               צורת תשלום
               </InputLabel>
-              {/* <TextField
-                 name="formOfPayment"
-                value={form.formOfPayment}
-                className={classes.textField}
-                onChange={handleInputChange}
-              /> */}
                <Select
                name="formOfPayment"
-               value={form.formOfPayment}
-               onChange={handleInputChange}
-                
+               onChange={handleInputChange}     
                 input={
                   <OutlinedInput
-                  value={form.formOfPayment}
                     className={classes.selectOutline}
                   />
                 }
@@ -98,7 +91,7 @@ const PaymentsView = (props) => {
                     sx: {
                       color: "#ffffff !important",
                       bgcolor: "#222222",
-                      paddinTop: "110px !important",
+                      paddingTop: "110px !important",
                     },
                   },
               }}>
@@ -120,12 +113,31 @@ const PaymentsView = (props) => {
             </Grid>
             <Grid item>
               <InputLabel className={classes.inputLabelStyle}>מטבע תשלום</InputLabel>
-              <TextField
-                name="paymentCurrency"
-                value={form.paymentCurrency}
-                className={classes.textField}
-                onChange={handleInputChange}
-              />
+              <Select
+               name="paymentCurrency"
+               onChange={handleInputChange}
+                
+                input={
+                  <OutlinedInput
+                    className={classes.selectOutline}
+                  />
+                }
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      color: "#ffffff !important",
+                      bgcolor: "#222222",
+                      paddingTop: "110px !important",
+                    },
+                  },
+              }}>
+          {paymentCurrency?.map((type) => (
+            <MenuItem key={type} value={type} className={classes.selectedMenuItem}>
+              {console.log(form.paymentCurrency)}
+              {type}
+            </MenuItem>
+          ))}
+        </Select>
             </Grid>
          </Grid>   
         </Grid>
@@ -140,12 +152,13 @@ const PaymentsView = (props) => {
         justifyContent="space-around">
         <Grid item>
           <Button
+          onClick={submit}
             className={classes.submitButton}
-          >צור אורח
+          >עדכן תשלום
           </Button>
         </Grid>
         <Grid item>
-          <Button className={classes.cancelButton}>
+          <Button className={classes.cancelButton} onClick={() => dispatch(dialogSlice.closeModal())}>
             סגור
           </Button>
         </Grid>

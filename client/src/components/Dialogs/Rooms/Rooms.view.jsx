@@ -1,191 +1,190 @@
-import React, { useState,useEffect } from "react";
+import React, { useState } from "react";
 import {
   Button,
-  Checkbox,
-  Dialog,
-  FormControlLabel,
   Grid,
-  Typography,
-  TextField,
   InputLabel,
   Select,
   MenuItem,
-  FormControl,
-  IconButton,
-  ListItemText,
   OutlinedInput,
+  Typography,
+  TextField,
+  List,
+  ListItem,
+  ListItemText,
+  Checkbox
 } from "@mui/material";
 import { useStyles } from "./Rooms.style";
+import { useSelector, useDispatch } from "react-redux";
+import * as dialogSlice from "../../../store/slice/dialogSlice";
+import * as roomsSlice from "../../../store/slice/roomsSlice";
+import * as userSlice from "../../../store/slice/userSlice";
+import * as snackbarSlice from "../../../store/slice/snackbarSlice";
 
-const RoomsView = (props) => {
+const RoomsView = ({ 
+  submit, 
+  handleInputChange,
+  searchTerm,
+  setSearchTerm,
+  isListOpen,
+  setIsListOpen,
+  roomsChosen,
+  filteredRooms,
+  handleRoomToggle,
+ }) => {
+
   const classes = useStyles();
-       const { closeModal, roomType, form, setForm,filteredOptions,userDetails,submit,rooms} = props;
-console.log(form)
+  const dispatch = useDispatch();
+  const selectedRooms = useSelector((state) => state.roomsSlice.selectedRooms);
+
   return (
     <>
-  <Grid container style={{ minHeight: "234px", padding: "20px" }}>
-  {form.map((room, index) => (
-      <Grid  item xs={12}style={{display:"flex",flexDirection:"row",justifyContent:"space-between"}}>
- {  console.log(room.roomType,"gggggggg")}
-      {/* Room Type */}
-      <Grid item xs={3}>
-        <InputLabel className={classes.inputSelectLabelStyle}>סוג חדר {index + 1}</InputLabel>
-        <Select
-               value={room.roomType || ""}
-                onChange={(e) =>{
-                  const updatedForm = [...form];
-                  updatedForm[index].roomType = e.target.value;
-                  setForm(updatedForm);
-                  // setForm((prevForm) => {
-                  //   const updatedForm = [...prevForm];
-                  //   updatedForm[index] = {
-                  //     ...updatedForm[index],
-                  //     roomType: e.target.value,
-                  //   };
-                  //   return updatedForm;
-                  }}
-                
-                input={
-                  <OutlinedInput
-                  value={room.roomType || ""}
-                    className={classes.selectOutline}
-                  />
-                }
-                MenuProps={{
-                  PaperProps: {
-                    sx: {
-                      color: "#ffffff !important",
-                      bgcolor: "#222222",
-                      paddinTop: "110px !important",
-                    },
-                  },
-              }}>
-                {console.log(roomType)}
-          {roomType?.map((roomTypeOption) => (
-            <MenuItem key={roomTypeOption} value={roomTypeOption} className={classes.selectedMenuItem}>
-              {roomTypeOption}
-            </MenuItem>
-          ))}
-        </Select>
-      </Grid>
-
-      {/* Floor */}
-      <Grid item xs={2}>
-        <InputLabel className={classes.inputLabelStyle}>קומה</InputLabel>
-        <Select
-               value={room.floor || ""}
-                  onChange={(e) => {
-                    const updatedForm = [...form];
-                    updatedForm[index].floor = e.target.value;
-                    setForm(updatedForm);
-                  }}
-                input={
-                  <OutlinedInput
-                    value={room.floor || ""}
-                    className={classes.selectOutline2}
-                  />
-                }
-                MenuProps={{
-                  PaperProps: {
-                    sx: {
-                      color: "#ffffff !important",
-                      bgcolor: "#222222",
-                      paddinTop: "110px !important",
-                    },
-                  },
-                }}
-              >
-          {filteredOptions[index]?.floors?.map((floor) => (
-            <MenuItem key={floor} value={floor}>
-              {floor}
-            </MenuItem>
-          ))}
-        </Select>
-      </Grid>
-
-      {/* Size */}
-      <Grid item xs={2}>
-        <InputLabel className={classes.inputLabelStyle}>גודל</InputLabel>
-        <Select
-            value={room.size || ""}
-            onChange={(e) => {
-              const updatedForm = [...form];
-              updatedForm[index].size = e.target.value;
-              setForm(updatedForm);
-            }}
-                input={
-                  <OutlinedInput
-                  value={room.size || ""}
-                    className={classes.selectOutline2}
-                  />
-                }
-                MenuProps={{
-                  PaperProps: {
-                    sx: {
-                      color: "#ffffff !important",
-                      bgcolor: "#222222",
-                      paddinTop: "110px !important",
-                    },
-                  },
-                }}
-              >
-          {filteredOptions[index]?.sizes?.map((size) => (
-            <MenuItem key={size} value={size} className={classes.selectedMenuItem}>
-              {size}
-            </MenuItem>
-          ))}
-        </Select>
-      </Grid>
-
-      {/* Direction */}
-      <Grid item xs={2}>
-        <InputLabel className={classes.inputLabelStyle}>כיוון</InputLabel>
-        <Select
-            value={room.direction || ""}
-            onChange={(e) => {
-              const updatedForm = [...form];
-              updatedForm[index].direction = e.target.value;
-              setForm(updatedForm);
-            }}
-                input={
-                  <OutlinedInput
-                  value={room.direction || ""}
-                    className={classes.selectOutline2}
-                  />
-                }
-                MenuProps={{
-                  PaperProps: {
-                    sx: {
-                      color: "#ffffff !important",
-                      bgcolor: "#222222",
-                      paddinTop: "110px !important",
-                    },
-                  },
-                }}
-              >
-          {filteredOptions[index]?.directions?.map((direction) => (
-            <MenuItem key={direction} value={direction}  className={classes.selectedMenuItem}>
-              {direction}
-            </MenuItem>
-          ))}
-        </Select>
-      </Grid>
-   
-    </Grid>
-  ))}
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        container
-        tyle={{ minHeight: "100vh" }}
-        justifyContent="space-around"
+      <Grid style={{ padding: "20px"}} 
       >
-        <Grid item style={{ marginTop: "auto", padding: "16px 0"}}>
-          <Button className={classes.submitButton} onClick={submit}>בחר חדרים</Button>
+        <Grid item style={{ marginTop: "-10px" }}>
+          <Typography>
+             בעבור אורח זה אנא בחר עוד: {roomsChosen} חדרים
+          </Typography>
         </Grid>
-        <Grid item style={{ marginTop: "auto", padding: "16px 0"}}>
-          <Button className={classes.cancelButton} onClick={() => closeModal()}>
+        <Grid item xs={12} style={{ }}>
+            <TextField
+              className={classes.textField}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              value={searchTerm}
+              onMouseEnter={() => setIsListOpen(true)}
+              onMouseLeave={() => setIsListOpen(false)}
+            />
+           
+          </Grid>
+          <Grid item xs={12} style={{position:'relative'}}> 
+          <List style={{
+            maxHeight:"260px",
+            overflow:"auto", 
+            width:"151px",
+            borderRadius:"4px",
+             position: "absolute", 
+             boxShadow: "0px 4px 6px rgba(0,0,0,0.1)", 
+             maxHeight: "260px", 
+             overflowY: "auto",
+          }}
+             sx={{
+              '&::-webkit-scrollbar': {
+                width: '4px',
+                height: '20px'
+              },
+              '&::-webkit-scrollbar-track': {
+                background: '#babec7',
+                width: '2px',
+                height: '2px'
+              },
+              '&::-webkit-scrollbar-thumb': {
+                background: '#707079',
+                // background: theme.palette.svg.clearIcon,
+                borderRadius: '4px',
+                width: '2px',
+                height: '6px'
+              },
+              '& li:hover': {
+                background: '#babec7'
+                // backgroundColor: theme.palette.modal.primary
+              }
+            }}
+          >
+
+        {filteredRooms.map((room) => (
+          <ListItem
+          style={{height:"50px",marginTop:"1px"}}
+            key={room.roomId}
+            onClick={() => handleRoomToggle(room)}
+          >
+            <Checkbox
+              style={{color:"white"}}
+              checked={selectedRooms.some((r) => r.roomId === room.roomId)}
+            />
+            <ListItemText
+             style={{}}
+              primary={room.roomId}
+            />
+          </ListItem>
+        ))}
+          </List>
+          </Grid>
+          {selectedRooms?.map((room) => {
+            return(
+            <Grid item container
+              xs={12}
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                filter: isListOpen ? "blur(5px)" : "none", 
+                transition: "filter 0.3s ease" 
+              }}>
+            <Grid item >
+             <InputLabel className={classes.inputSelectLabelStyle}>
+              חדר
+             </InputLabel>
+             <TextField
+                name="roomId"
+                value={room.roomId}
+               className={classes.shortTextField2}
+             />
+           </Grid>
+              <Grid item>
+              <InputLabel className={classes.inputSelectLabelStyle}>
+                סוג חדר
+              </InputLabel>
+              <TextField
+                 name="roomType"
+                 value={room.roomType}
+                className={classes.textField}
+              />
+            </Grid>
+             <Grid item >
+             <InputLabel className={classes.inputSelectLabelStyle}>
+               קומה
+             </InputLabel>
+             <TextField
+                name="roomType"
+                value={room.roomFloor}
+               className={classes.shortTextField}
+             />
+           </Grid>
+           <Grid item >
+             <InputLabel className={classes.inputSelectLabelStyle}>
+               גודל
+             </InputLabel>
+             <TextField
+                name="size"
+                value={room.roomSize}
+               className={classes.shortTextField}
+             />
+           </Grid>
+           <Grid item >
+             <InputLabel className={classes.inputSelectLabelStyle}>
+               כיוון
+             </InputLabel>
+             <TextField
+                name="direction"
+                value={room.roomDirection}
+               className={classes.shortTextField}
+
+             />
+           </Grid>
+           </Grid>
+            )
+          })}
+      </Grid>
+      <Grid item  xs={12} container justifyContent="space-around">
+        <Grid item style={{ marginTop: "auto", padding: "16px 0" }}>
+          <Button className={classes.submitButton} onClick={submit}>
+            בחר חדרים
+          </Button>
+        </Grid>
+        <Grid item style={{ marginTop: "auto", padding: "16px 0" }}>
+          <Button
+            className={classes.cancelButton}
+            onClick={() => dispatch(dialogSlice.closeModal())}
+          >
             סגור
           </Button>
         </Grid>

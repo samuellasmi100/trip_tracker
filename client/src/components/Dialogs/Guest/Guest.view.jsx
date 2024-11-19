@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   Button,
   Checkbox,
-  Dialog,
   FormControlLabel,
   Grid,
   Typography,
@@ -10,27 +9,22 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  FormControl,
-  IconButton,
   ListItemText,
   OutlinedInput
 } from "@mui/material";
 import { useStyles } from "./Guest.style";
-import PhoneInput from "react-phone-input-2";
-import "react-phone-input-2/lib/style.css";
-import { useSelector } from "react-redux";
-import CloseIcon from "@mui/icons-material/Close";
-import { Email } from "@mui/icons-material";
+import {useDispatch, useSelector } from "react-redux";
 import "./Guest.css"
+import * as dialogSlice from "../../../store/slice/dialogSlice"
 
 const GuestView = (props) => {
+  const dispatch = useDispatch()
+  const dialogType = useSelector(((state) => state.dialogSlice.type))
   const classes = useStyles();
   const {
-    closeModal,
     setForm,
     form,
     submit,
-    dialogType,
     areaCodes,
     handleButtonString,
   } = props;
@@ -39,6 +33,7 @@ const GuestView = (props) => {
   return (
     <>
       <Grid container style={{ minHeight: "340px" }}>
+        {dialogType === "addChild" ? <Grid item xs={12} style={{marginTop:"-40px",marginRight:"35px"}}><Typography>הוסף בן משפחה</Typography></Grid> : <></>}
         <Grid item xs={6}>
           <Grid container spacing={2} justifyContent="center">
             <Grid item>
@@ -214,7 +209,7 @@ const GuestView = (props) => {
           </Button>
         </Grid>
         <Grid item>
-          <Button className={classes.cancelButton} onClick={() => closeModal()}>
+          <Button className={classes.cancelButton} onClick={() =>  dispatch(dialogSlice.closeModal())}>
             סגור
           </Button>
         </Grid>

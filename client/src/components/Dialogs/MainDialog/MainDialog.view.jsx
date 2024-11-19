@@ -18,12 +18,8 @@ import { useStyles } from "./MainDialog.style";
 
 const MainDialogView = (props) => {
   const {
-    dialogType,
     dialogOpen,
-    setDialogOpen,
     closeModal,
-    userDetails,
-    handleButtonClick,
     handleDataView,
     handleButtonHeader,
   } = props;
@@ -36,17 +32,21 @@ const MainDialogView = (props) => {
       open={dialogOpen}
       classes={{ paper: classes.dialog }}
       onClose={closeModal}
+      
     >
-      <Grid container>
+      <Grid 
+        >
         <Grid
           item
           container
           xs={12}
-          style={{ marginTop: "30px", marginLeft: "30px" }}
+          style={{ marginTop: "30px", marginLeft: "30px"}}
+          
           alignContent="center"
           justifyContent="space-between"
+          
         >
-          <Grid item xs={12} container justifyContent="center" style={{ marginTop: "20px", gap: "10px", marginBottom: "30px" }}>
+          <Grid item xs={12} container justifyContent="center" style={{ marginTop: "20px", gap: "10px", marginBottom: "30px" }} >
          { handleButtonHeader()}
           </Grid>
         </Grid>

@@ -19,7 +19,6 @@ export const userSlice = createSlice({
       state.parents = action.payload;
     },
     updateParent: (state, action) => {
-      console.log(action.payload)
       state.parent = action.payload;
     },
   },

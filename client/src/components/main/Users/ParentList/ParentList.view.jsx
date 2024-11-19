@@ -22,7 +22,7 @@ import { ReactComponent as EditIcon } from "../../../../assets/icons/edit.svg";
 function ParentListView(props) {
 
   const classes = useStyles();
-  const { setDialogOpen, tableData, handleDialogTypeOpen, handleNameClick } =
+  const { tableData, handleDialogTypeOpen, handleNameClick } =
     props;
   const headers = [
     "שם פרטי",
@@ -33,7 +33,7 @@ function ParentListView(props) {
     "הוסף",
     "פרטים"
   ];
-  
+
   return (
     <Grid container style={{ background: "#2d2d2d",width:"100vw" }}>
       <Grid
@@ -101,7 +101,7 @@ function ParentListView(props) {
                         {user.lastName}
                       </TableCell>
                       <TableCell className={classes.dataTableCell}>
-                        {user.totalAmount}
+                        {user.totalAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                       </TableCell>
                       <TableCell className={classes.dataTableCell}>
                         {user.flights}
