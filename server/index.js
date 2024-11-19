@@ -8,6 +8,7 @@ const checkAuthorizationMiddleware = require("./middleware/authMiddleware/checkA
 //! services
 const userController = require("./services/user/userController");
 const roomsController = require("./services/rooms/roomsController");
+const flightsController = require("./services/flights/flightsController");
 
 
 app.use(cors());
@@ -18,6 +19,7 @@ app.use(express.json());
 
 app.use("/user", userController);
 app.use("/rooms", roomsController);
+app.use("/payments",flightsController)
 
 
 app.use(errorHandler);

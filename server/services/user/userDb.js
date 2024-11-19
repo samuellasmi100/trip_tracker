@@ -17,7 +17,7 @@ const addParent = async (userData) => {
         userData.identityId,
         userData.parentId
     ]
-    
+    console.log(parameters)
     await connection.executeWithParameters(sql,parameters)
   } catch (error) { 
     console.log(error)

@@ -1,4 +1,4 @@
-const roomsDb = require("./roomsDb")
+const roomsDb = require("./flightsDb")
 
 const getAll = async () => {
     return roomsDb.getAll()
