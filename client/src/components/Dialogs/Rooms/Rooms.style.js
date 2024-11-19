@@ -2,51 +2,54 @@ import React from "react";
 import { makeStyles } from "@mui/styles";
 
 export const useStyles = makeStyles((theme) => ({
+
     inputLabelStyle: {
         color: "#757882 !important",
         fontSize: "15px",
 
         
     },
+
     inputSelectLabelStyle: {
         color: "#757882 !important",
         fontSize: "15px",
         // marginRight:"-64px",
         
     },
-    textField: {
-        borderRadius: 4,
-        "& .MuiInputBase-input": {
-            position: "relative",
-            color: "#FFFFFF",
-            fontSize: 16,
-            width: "auto",
-            padding: "5px 18px",
-            height: "24px",
-        },
-        "& .MuiFormLabel-root": {
-            color: "#757882", // or black
-            fontSize: "14px",
-        },
-        "& label.Mui-focused": {
-            color: "#54A9FF",
-            top: "0px",
-        },
-        "& .MuiInput-underline:after": {
-            borderBottomColor: "#54A9FF",
-        },
-        "& .MuiOutlinedInput-root": {
-            "& fieldset": {
-                borderColor: "#494C55",
-            },
-            "&:hover fieldset": {
-                borderColor: "#494C55",
-            },
-            "&.Mui-focused fieldset": {
-                borderColor: "#54A9FF",
-            },
-        },
-    },
+    
+    // textField: {
+    //     borderRadius: 4,
+    //     "& .MuiInputBase-input": {
+    //         position: "relative",
+    //         color: "#FFFFFF",
+    //         fontSize: 16,
+    //         width: "auto",
+    //         padding: "5px 18px",
+    //         height: "24px",
+    //     },
+    //     "& .MuiFormLabel-root": {
+    //         color: "#757882", // or black
+    //         fontSize: "14px",
+    //     },
+    //     "& label.Mui-focused": {
+    //         color: "#54A9FF",
+    //         top: "0px",
+    //     },
+    //     "& .MuiInput-underline:after": {
+    //         borderBottomColor: "#54A9FF",
+    //     },
+    //     "& .MuiOutlinedInput-root": {
+    //         "& fieldset": {
+    //             borderColor: "#494C55",
+    //         },
+    //         "&:hover fieldset": {
+    //             borderColor: "#494C55",
+    //         },
+    //         "&.Mui-focused fieldset": {
+    //             borderColor: "#54A9FF",
+    //         },
+    //     },
+    // },
    
     submitButton: {
         color: "#000000 !important",
@@ -61,6 +64,7 @@ export const useStyles = makeStyles((theme) => ({
             backgroundColor: "#2692ff !important",
         },
     },
+
     cancelButton: {
         color: "#ffffff !important",
         fontSize: "1.125rem",
@@ -74,10 +78,12 @@ export const useStyles = makeStyles((theme) => ({
 
     selectOutline: {
             color: "#FFFFFF",
-            fontSize: "14px",
-            width: "180px",
+            fontSize: "12px",
+            width: "140px",
             padding: "5px 18px",
             height: "34px",
+            paddingRight:"0px !important",
+            
             // marginRight:"-64px",
         "&.MuiOutlinedInput-root": {
           color: "#ffffff !important",
@@ -89,7 +95,25 @@ export const useStyles = makeStyles((theme) => ({
           color: "#54a9ff",
         },
       },
-
+    selectOutline2: {
+        color: "#FFFFFF",
+        fontSize: "12px",
+        width: "100px",
+        padding: "5px 18px",
+        height: "34px",
+        paddingRight:"0px !important",
+        
+        // marginRight:"-64px",
+    "&.MuiOutlinedInput-root": {
+      color: "#ffffff !important",
+      "& .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#494c55",
+      },
+    },
+    "& .MuiSvgIcon-root": {
+      color: "#54a9ff",
+    },
+  },
       selectedMenuItem: {
         backgroundColor: "#2D2D2D !important",
         // padding:"0px !important",

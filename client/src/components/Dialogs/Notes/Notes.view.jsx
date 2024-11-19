@@ -41,9 +41,8 @@ const NotesView = (props) => {
     currentRegionClientUserData,
   } = props;
 
-  const regions = useSelector((state) => state.regionSlice.regions);
-  const clients = useSelector((state) => state.userSlice.clients);
-  const traders = useSelector((state) => state.userSlice.traders);
+  
+
   const handleButtonClick = (buttonName) => {
     setActiveButton(buttonName);
   }

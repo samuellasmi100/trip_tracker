@@ -12,21 +12,24 @@ import {
   MenuItem,
   FormControl,
   IconButton,
+  OutlinedInput
 } from "@mui/material";
 import { useStyles } from "./Payments.style";
-
+import { useSelector } from "react-redux";
+import * as paymentsSlice from "../../../store/slice/paymentsSlice"
+import "./Payments.css"
 
 const PaymentsView = (props) => {
+  const formOfPayment = ["מזומן","העברה בנקאית","כרטיס אשראי"]
+  const form = useSelector((state) => state.paymentsSlice.form)
   const classes = useStyles();
   const {
-    closeModal,
-    dialogOpen,
-
+    handleInputChange
   } = props;
 
     return (
       <>
-      <Grid container >
+      <Grid container style={{ minHeight: "350px", padding: "20px" }} >
         <Grid item xs={6}>
           <Grid container spacing={2} justifyContent="center">
             <Grid item>
@@ -34,9 +37,10 @@ const PaymentsView = (props) => {
                 סכום עסקה
               </InputLabel>
               <TextField
-                value={100}
+              name="amount"
+              value={form.amount}
                 className={classes.textField}
-              // onChange={(e) => changeCurrentClientUserData(e, "firstName")}
+              onChange={handleInputChange}
               />
             </Grid>
             <Grid item>
@@ -44,9 +48,11 @@ const PaymentsView = (props) => {
                 סכום תקבול
               </InputLabel>
               <TextField
-                // value={currentClientUserData.lastName}
+                name="amountReceived"
+                value={form.amountReceived}
                 className={classes.textField}
-              // onChange={(e) => changeCurrentClientUserData(e, "lastName")}
+                onChange={handleInputChange}
+
               />
             </Grid>
             <Grid item>
@@ -54,42 +60,74 @@ const PaymentsView = (props) => {
                תאריך תשלום
               </InputLabel>
               <TextField
-                // value={currentClientUserData.firstName}
+                 type="date"
+                 name="PaymentDate"
+                 value={form.PaymentDate}
                 className={classes.textField}
-              // onChange={(e) => changeCurrentClientUserData(e, "firstName")}
+                onChange={handleInputChange}
               />
             </Grid>
            
           </Grid>
         </Grid>
         <Grid item xs={5}>
+        <Grid container spacing={2} justifyContent="center">
         <Grid item>
               <InputLabel className={classes.inputLabelStyle}>
               צורת תשלום
               </InputLabel>
-              <TextField
-                // value={currentClientUserData.firstName}
+              {/* <TextField
+                 name="formOfPayment"
+                value={form.formOfPayment}
                 className={classes.textField}
-              // onChange={(e) => changeCurrentClientUserData(e, "firstName")}
-              />
+                onChange={handleInputChange}
+              /> */}
+               <Select
+               name="formOfPayment"
+               value={form.formOfPayment}
+               onChange={handleInputChange}
+                
+                input={
+                  <OutlinedInput
+                  value={form.formOfPayment}
+                    className={classes.selectOutline}
+                  />
+                }
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      color: "#ffffff !important",
+                      bgcolor: "#222222",
+                      paddinTop: "110px !important",
+                    },
+                  },
+              }}>
+          {formOfPayment?.map((type) => (
+            <MenuItem key={type} value={type} className={classes.selectedMenuItem}>
+              {type}
+            </MenuItem>
+          ))}
+        </Select>
             </Grid>
         <Grid item>
               <InputLabel className={classes.inputLabelStyle}>נותר לתשלום</InputLabel>
               <TextField
-                // value={currentClientUserData.email}
+              name="remainsToBePaid"
+                value={form.remainsToBePaid}
                 className={classes.textField}
-              // onChange={(e) => changeCurrentClientUserData(e, "email")}
+                onChange={handleInputChange}
               />
             </Grid>
             <Grid item>
               <InputLabel className={classes.inputLabelStyle}>מטבע תשלום</InputLabel>
               <TextField
-                // value={currentClientUserData.email}
+                name="paymentCurrency"
+                value={form.paymentCurrency}
                 className={classes.textField}
-              // onChange={(e) => changeCurrentClientUserData(e, "email")}
+                onChange={handleInputChange}
               />
             </Grid>
-            
+         </Grid>   
         </Grid>
       
       </Grid>
@@ -107,7 +145,7 @@ const PaymentsView = (props) => {
           </Button>
         </Grid>
         <Grid item>
-          <Button className={classes.cancelButton} onClick={() => closeModal()}>
+          <Button className={classes.cancelButton}>
             סגור
           </Button>
         </Grid>

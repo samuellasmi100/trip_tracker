@@ -19,29 +19,35 @@ import { useStyles } from "./Rooms.style";
 
 const RoomsView = (props) => {
   const classes = useStyles();
-  const { closeModal, roomType, form, setForm,filteredOptions } = props;
-
-
+       const { closeModal, roomType, form, setForm,filteredOptions,userDetails,submit,rooms} = props;
+console.log(form)
   return (
     <>
-      <Grid container style={{ minHeight: "350px", padding: "20px" }}>
-        <Grid item xs={6}>
-          <Grid container style={{display:"flex",flexDirection:"column"}} spacing={2} justifyContent="center">
-            <Grid item xs={12}>
-              <InputLabel className={classes.inputSelectLabelStyle}>
-                סוג חדר
-              </InputLabel>
-              <Select
-                value={form.roomType}
-                onChange={(e) =>
-                  setForm((prevForm) => ({
-                    ...prevForm,
-                    roomType: e.target.value,
-                  }))
-                }
+  <Grid container style={{ minHeight: "234px", padding: "20px" }}>
+  {form.map((room, index) => (
+      <Grid  item xs={12}style={{display:"flex",flexDirection:"row",justifyContent:"space-between"}}>
+ {  console.log(room.roomType,"gggggggg")}
+      {/* Room Type */}
+      <Grid item xs={3}>
+        <InputLabel className={classes.inputSelectLabelStyle}>סוג חדר {index + 1}</InputLabel>
+        <Select
+               value={room.roomType || ""}
+                onChange={(e) =>{
+                  const updatedForm = [...form];
+                  updatedForm[index].roomType = e.target.value;
+                  setForm(updatedForm);
+                  // setForm((prevForm) => {
+                  //   const updatedForm = [...prevForm];
+                  //   updatedForm[index] = {
+                  //     ...updatedForm[index],
+                  //     roomType: e.target.value,
+                  //   };
+                  //   return updatedForm;
+                  }}
+                
                 input={
                   <OutlinedInput
-                    value={form.roomType}
+                  value={room.roomType || ""}
                     className={classes.selectOutline}
                   />
                 }
@@ -53,164 +59,132 @@ const RoomsView = (props) => {
                       paddinTop: "110px !important",
                     },
                   },
-                }}
-              >
-                {roomType.map((room) => (
-                  <MenuItem
-                    key={room}
-                    value={room}
-                    className={classes.selectedMenuItem}
-                  >
-                    <ListItemText
-                      primaryTypographyProps={{ fontSize: "14px" }}
-                      primary={room}
-                    />
-                  </MenuItem>
-                ))}
-              </Select>
-            </Grid>
-            <Grid item  xs={6}>
-              <InputLabel className={classes.inputLabelStyle}>קומה</InputLabel>
-              <Select
-                value={form.floor}
-                onChange={(e) =>
-                  setForm((prevForm) => ({
-                    ...prevForm,
-                    floor: e.target.value,
-                  }))
-                }
-                input={
-                  <OutlinedInput
-                    value={form.roomType}
-                    className={classes.selectOutline}
-                  />
-                }
-                MenuProps={{
-                  PaperProps: {
-                    sx: {
-                      color: "#ffffff !important",
-                      bgcolor: "#222222",
-                      paddinTop: "110px !important",
-                    },
-                  },
-                }}
-              >
-                {filteredOptions?.floors?.map((room) => (
-                  <MenuItem
-                    key={room}
-                    value={room}
-                    className={classes.selectedMenuItem}
-                  >
-                    <ListItemText
-                      primaryTypographyProps={{ fontSize: "14px" }}
-                      primary={room}
-                    />
-                  </MenuItem>
-                ))}
-              </Select>
-            </Grid>
-
-
-
-
-            <Grid item  xs={6}>
-              <InputLabel className={classes.inputLabelStyle}>גודל</InputLabel>
-              <Select
-                value={form.size}
-                onChange={(e) =>
-                  setForm((prevForm) => ({
-                    ...prevForm,
-                    size: e.target.value,
-                  }))
-                }
-                input={
-                  <OutlinedInput
-                    value={form.roomType}
-                    className={classes.selectOutline}
-                  />
-                }
-                MenuProps={{
-                  PaperProps: {
-                    sx: {
-                      color: "#ffffff !important",
-                      bgcolor: "#222222",
-                      paddinTop: "110px !important",
-                    },
-                  },
-                }}
-              >
-                {filteredOptions?.sizes?.map((room) => (
-                  <MenuItem
-                    key={room}
-                    value={room}
-                    className={classes.selectedMenuItem}
-                  >
-                    <ListItemText
-                      primaryTypographyProps={{ fontSize: "14px" }}
-                      primary={room}
-                    />
-                  </MenuItem>
-                ))}
-              </Select>
-            </Grid>
-
-            <Grid item xs={6}>
-              <InputLabel className={classes.inputLabelStyle}>קומה</InputLabel>
-              <Select
-                value={form.direction}
-                onChange={(e) =>
-                  setForm((prevForm) => ({
-                    ...prevForm,
-                    direction: e.target.value,
-                  }))
-                }
-                input={
-                  <OutlinedInput
-                    value={form.roomType}
-                    className={classes.selectOutline}
-                  />
-                }
-                MenuProps={{
-                  PaperProps: {
-                    sx: {
-                      color: "#ffffff !important",
-                      bgcolor: "#222222",
-                      paddinTop: "110px !important",
-                    },
-                  },
-                }}
-              >
-                {filteredOptions?.directions?.map((room) => (
-                  <MenuItem
-                    key={room}
-                    value={room}
-                    className={classes.selectedMenuItem}
-                  >
-                    <ListItemText
-                      primaryTypographyProps={{ fontSize: "14px" }}
-                      primary={room}
-                    />
-                  </MenuItem>
-                ))}
-              </Select>
-            </Grid>
-          </Grid>
-        </Grid>
-        
-        <Grid item xs={5}></Grid>
+              }}>
+                {console.log(roomType)}
+          {roomType?.map((roomTypeOption) => (
+            <MenuItem key={roomTypeOption} value={roomTypeOption} className={classes.selectedMenuItem}>
+              {roomTypeOption}
+            </MenuItem>
+          ))}
+        </Select>
       </Grid>
 
+      {/* Floor */}
+      <Grid item xs={2}>
+        <InputLabel className={classes.inputLabelStyle}>קומה</InputLabel>
+        <Select
+               value={room.floor || ""}
+                  onChange={(e) => {
+                    const updatedForm = [...form];
+                    updatedForm[index].floor = e.target.value;
+                    setForm(updatedForm);
+                  }}
+                input={
+                  <OutlinedInput
+                    value={room.floor || ""}
+                    className={classes.selectOutline2}
+                  />
+                }
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      color: "#ffffff !important",
+                      bgcolor: "#222222",
+                      paddinTop: "110px !important",
+                    },
+                  },
+                }}
+              >
+          {filteredOptions[index]?.floors?.map((floor) => (
+            <MenuItem key={floor} value={floor}>
+              {floor}
+            </MenuItem>
+          ))}
+        </Select>
+      </Grid>
+
+      {/* Size */}
+      <Grid item xs={2}>
+        <InputLabel className={classes.inputLabelStyle}>גודל</InputLabel>
+        <Select
+            value={room.size || ""}
+            onChange={(e) => {
+              const updatedForm = [...form];
+              updatedForm[index].size = e.target.value;
+              setForm(updatedForm);
+            }}
+                input={
+                  <OutlinedInput
+                  value={room.size || ""}
+                    className={classes.selectOutline2}
+                  />
+                }
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      color: "#ffffff !important",
+                      bgcolor: "#222222",
+                      paddinTop: "110px !important",
+                    },
+                  },
+                }}
+              >
+          {filteredOptions[index]?.sizes?.map((size) => (
+            <MenuItem key={size} value={size} className={classes.selectedMenuItem}>
+              {size}
+            </MenuItem>
+          ))}
+        </Select>
+      </Grid>
+
+      {/* Direction */}
+      <Grid item xs={2}>
+        <InputLabel className={classes.inputLabelStyle}>כיוון</InputLabel>
+        <Select
+            value={room.direction || ""}
+            onChange={(e) => {
+              const updatedForm = [...form];
+              updatedForm[index].direction = e.target.value;
+              setForm(updatedForm);
+            }}
+                input={
+                  <OutlinedInput
+                  value={room.direction || ""}
+                    className={classes.selectOutline2}
+                  />
+                }
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      color: "#ffffff !important",
+                      bgcolor: "#222222",
+                      paddinTop: "110px !important",
+                    },
+                  },
+                }}
+              >
+          {filteredOptions[index]?.directions?.map((direction) => (
+            <MenuItem key={direction} value={direction}  className={classes.selectedMenuItem}>
+              {direction}
+            </MenuItem>
+          ))}
+        </Select>
+      </Grid>
+   
+    </Grid>
+  ))}
+      </Grid>
       <Grid
         item
         xs={12}
         container
-        style={{ marginTop: "30px" }}
+        tyle={{ minHeight: "100vh" }}
         justifyContent="space-around"
       >
-        <Grid item>
-          <Button className={classes.submitButton}>צור אורח</Button>
+        <Grid item style={{ marginTop: "auto", padding: "16px 0"}}>
+          <Button className={classes.submitButton} onClick={submit}>בחר חדרים</Button>
         </Grid>
-        <Grid item>
+        <Grid item style={{ marginTop: "auto", padding: "16px 0"}}>
           <Button className={classes.cancelButton} onClick={() => closeModal()}>
             סגור
           </Button>

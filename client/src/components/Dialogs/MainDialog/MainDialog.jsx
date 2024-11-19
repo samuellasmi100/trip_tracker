@@ -26,42 +26,73 @@ const MainDialog = (props) => {
   const [activeButton, setActiveButton] = useState("עדכון אורח");
    const [roomType, setRoomType] = useState([])
    const [rooms, setRooms] = useState([])
-   const [form, setForm] = useState({
-    roomType:"",
-    floor:"",
-    size:"",
-    direction:""
-   })
+   const [roomsFromDB, setRoomsFromDb] = useState([])
+   const [form, setForm] = useState([])
 
-   const [filteredOptions, setFilteredOptions] = useState({
-    floors: [],
-    sizes: [],
-    directions: [],
-  });
+   const [filteredOptions, setFilteredOptions] = useState(
+    Array(userDetails.numberOfRooms).fill({ floors: [], sizes: [], directions: [] })
+  );
 
   useEffect(() => {
-    console.log(form)
-    if (form.roomType) {
-      const filtered = rooms?.filter(
-        (room) => room.roomType === form.roomType
+    if (roomsFromDB?.length > 0) {
+      const preloadedForm = roomsFromDB.map((room) => ({
+        roomId: room.roomId,
+        roomType: room.roomType,
+        floor: room.roomFloor,
+        size: room.roomSize,
+        direction: room.roomDirection,
+      }));
+        setForm(preloadedForm);
+        const options = preloadedForm.map((currentRoom) => {
+          const filtered = roomsFromDB.filter(
+            (room) => room.roomType === currentRoom.roomType
+          );
+          return {
+            roomId: currentRoom.roomId,
+            floors: [...new Set(filtered.map((room) => room.roomFloor))],
+            sizes: [...new Set(filtered.map((room) => room.roomSize))],
+            directions: [...new Set(filtered.map((room) => room.roomDirection))],
+          };
+        });
+        setFilteredOptions(options);
+    } else if (userDetails?.numberOfRooms) {
+      // Initialize empty form if no preloaded data exists
+      const emptyForm = Array.from({ length: userDetails.numberOfRooms }, () => ({
+        roomId: "",
+        roomType: "",
+        floor: "",
+        size: "",
+        direction: "",
+      }));
+      setForm(emptyForm);
+      setFilteredOptions(
+        Array.from({ length: userDetails.numberOfRooms }, () => ({
+          roomId: "",
+          floors: [],
+          sizes: [],
+          directions: [],
+        }))
       );
-      setFilteredOptions({
-        floors: [...new Set(filtered.map((room) => room.roomFloor))],
-        sizes: [...new Set(filtered.map((room) => room.roomSize))],
-        directions: [...new Set(filtered.map((room) => room.roomDirection))],
-      });
-    } else {
-      setFilteredOptions({ floors: [], sizes: [], directions: [] });
     }
-  }, [form.roomType])
+   
+  }, [roomsFromDB, userDetails?.numberOfRooms]);
 
 
   const handleButtonClick = async (buttonName) => {
     if(buttonName === "חדרים"){
-      const response =  await axios.get("http://localhost:5000/rooms")
+      const checkIfAlreadyChoosenRooms = await axios.get(`http://localhost:5000/rooms/${userDetails.parentId}`)
+      if(checkIfAlreadyChoosenRooms.data.length > 0){
+        setRoomsFromDb(checkIfAlreadyChoosenRooms.data)
+        const uniqueRoomTypes = [...new Set(checkIfAlreadyChoosenRooms.data.map(room => room.roomType))];
+        setRoomType(uniqueRoomTypes)
+      }else {
+       const response =  await axios.get("http://localhost:5000/rooms")
       setRooms(response.data)
       const uniqueRoomTypes = [...new Set(response.data.map(room => room.roomType))];
       setRoomType(uniqueRoomTypes)
+      }
+      console.log(checkIfAlreadyChoosenRooms)
+     
     }
     setActiveButton(buttonName);
   }
@@ -70,11 +101,12 @@ const MainDialog = (props) => {
     if (activeButton === "עדכון אורח") {
       return <Guest closeModal={closeModal} userDetails={userDetails} dialogType={dialogType}/>
     } else if (activeButton === "חדרים") {
-      return <Rooms closeModal={closeModal} roomType={roomType} form={form} setForm={setForm} filteredOptions={filteredOptions}/>
+      return <Rooms closeModal={closeModal} roomType={roomType} form={form} 
+      setForm={setForm} filteredOptions={filteredOptions} userDetails={userDetails} submit={submit}/>
     } else if (activeButton === "טיסות") {
-      return <Flights />
+      return <Flights closeModal={closeModal} userDetails={userDetails}/>
     } else if (activeButton === "תשלום") {
-      return <Payments />
+      return <Payments userDetails={userDetails}/>
     } else if (activeButton === "הערות") {
 
     }
@@ -112,6 +144,30 @@ const MainDialog = (props) => {
       </Button>
     ))
   }
+  }
+
+  const submit = async () => {
+    const updatedRooms = form.map(room => {
+      const matchedRoom = rooms.find(
+          largeRoom =>
+              largeRoom.roomType === room.roomType &&
+              largeRoom.roomFloor.toString() === room.floor &&
+              largeRoom.roomSize === room.size &&
+              largeRoom.roomDirection === room.direction
+      );
+      if (matchedRoom) {
+          return { ...room, roomId: matchedRoom.roomId,parentId:userDetails.parentId };
+      } else {
+          return room;
+      }
+  });
+
+  try {
+    const response =  await axios.post("http://localhost:5000/rooms",updatedRooms)
+  } catch (error) {
+    console.log(error)
+  }
+  console.log(updatedRooms)
   }
   return (
        <MainDialogView

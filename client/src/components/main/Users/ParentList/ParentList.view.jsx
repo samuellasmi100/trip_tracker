@@ -13,7 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useState,useRef } from "react";
-import { useStyles } from "./UserLogs.style";
+import { useStyles } from "./ParentList.style";
 import SearchInput from "../../../ReusableComps/SearchInput/SearchInput";
 import { ReactComponent as DownloadIcon } from "../../../../assets/icons/download.svg";
 import { ReactComponent as EditIcon } from "../../../../assets/icons/edit.svg";
@@ -24,7 +24,6 @@ function ParentListView(props) {
   const classes = useStyles();
   const { setDialogOpen, tableData, handleDialogTypeOpen, handleNameClick } =
     props;
-
   const headers = [
     "שם פרטי",
     "שם משפחה",
@@ -32,6 +31,7 @@ function ParentListView(props) {
     "טיסות",
     "ערוך",
     "הוסף",
+    "פרטים"
   ];
   
   return (
@@ -92,7 +92,7 @@ function ParentListView(props) {
               {tableData?.map((user, index) => {
                 return (             
                     <TableRow key={index}>
-                      <Button onClick={() => handleNameClick(user.parentId)}>
+                      <Button onClick={() => handleNameClick(user)}>
                         <TableCell className={classes.dataTableCell}>
                           {user.name}
                         </TableCell>
@@ -120,6 +120,17 @@ function ParentListView(props) {
                           <EditIcon />
                         </IconButton>
 
+                      </TableCell>
+                      <TableCell
+                        className={classes.dataTableCell}
+                        style={{ maxWidth: "1px" }}
+                      >
+                        <IconButton
+                          size={"small"}
+                          onClick={() => handleDialogTypeOpen("addChild", user)}
+                        >
+                          <EditIcon />
+                        </IconButton>
                       </TableCell>
                       <TableCell
                         className={classes.dataTableCell}

@@ -14,15 +14,18 @@ import {
   IconButton,
 } from "@mui/material";
 import { useStyles } from "./Flights.style";
-
+import { useSelector } from "react-redux";
+import * as flightsSlice from "../../../store/slice/flightsSlice"
+import "./Flights.css"
 
 const FlightsView = (props) => {
   const classes = useStyles();
+  const form = useSelector((state) => state.flightsSlice.form)
 
   const {
     closeModal,
-    dialogOpen,
-    
+    handleInputChange,
+    submit
   } = props;
 
  
@@ -36,19 +39,22 @@ const FlightsView = (props) => {
                   מספר דרכון
                 </InputLabel>
                 <TextField
-                  // value={currentClientUserData.firstName}
+                  name="passportNumber"
+                  value={form.passportNumber}
                   className={classes.textField}
-                // onChange={(e) => changeCurrentClientUserData(e, "firstName")}
-                />
+                  onChange={handleInputChange}                
+                  />
               </Grid>
               <Grid item>
                 <InputLabel className={classes.inputLabelStyle}>
                   תוקף
                 </InputLabel>
                 <TextField
-                  // value={currentClientUserData.lastName}
+                  type="date"
+                  name="validityPassport"
+                  value={form.validityPassport}
                   className={classes.textField}
-                // onChange={(e) => changeCurrentClientUserData(e, "lastName")}
+                  onChange={handleInputChange}    
                 />
               </Grid>
               <Grid item>
@@ -56,17 +62,19 @@ const FlightsView = (props) => {
                  תאריך לידה
                 </InputLabel>
                 <TextField
-                  // value={currentClientUserData.firstName}
+                  type="date"
+                  name="birthDate"
+                  value={form.birthDate}
                   className={classes.textField}
-                // onChange={(e) => changeCurrentClientUserData(e, "firstName")}
+                  onChange={handleInputChange}    
                 />
               </Grid>
               <Grid item>
                 <InputLabel className={classes.inputLabelStyle}>גיל</InputLabel>
                 <TextField
-                  // value={currentClientUserData.email}
-                  className={classes.textField}
-                // onChange={(e) => changeCurrentClientUserData(e, "email")}
+                 name="age"
+                  value={form.age}
+                  className={classes.textField} 
                 />
               </Grid>
             </Grid>
@@ -78,9 +86,11 @@ const FlightsView = (props) => {
                  תאריך טיסה הלוך
                 </InputLabel>
                 <TextField
-                  // value={currentClientUserData?.dailyLimit}
+                  type="date"
+                  name="outboundFlightDate"
+                  value={form?.outboundFlightDate}
                   className={classes.textField}
-                // onChange={(e) => changeCurrentClientUserData(e, "dailyLimit")}
+                  onChange={handleInputChange}    
                 />
               </Grid>
               <Grid item>
@@ -88,9 +98,11 @@ const FlightsView = (props) => {
                  תאריך טיסה חזור
                 </InputLabel>
                 <TextField
-                  // value={currentClientUserData?.dailyLimit}
+                  type="date"
+                  name="returnFlightDate"
+                  value={form?.returnFlightDate}
                   className={classes.textField}
-                // onChange={(e) => changeCurrentClientUserData(e, "dailyLimit")}
+                  onChange={handleInputChange}
                 />
               </Grid>
               <Grid item>
@@ -98,9 +110,10 @@ const FlightsView = (props) => {
                  מספר טיסה
                 </InputLabel>
                 <TextField
-                  // value={currentClientUserData?.dailyLimit}
+                  name="flightNumber"
+                  value={form?.flightNumber}
                   className={classes.textField}
-                // onChange={(e) => changeCurrentClientUserData(e, "dailyLimit")}
+                  onChange={handleInputChange}    
                 />
               </Grid>
             </Grid>
@@ -115,6 +128,7 @@ const FlightsView = (props) => {
           justifyContent="space-around">
           <Grid item>
             <Button
+            onClick={submit}
               className={classes.submitButton}
             >צור אורח
             </Button>

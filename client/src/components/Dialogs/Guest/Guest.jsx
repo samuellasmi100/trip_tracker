@@ -4,6 +4,7 @@ import GuestView from "./Guest.view";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import * as snackBarSlice from "../../../store/slice/snackbarSlice"
+import * as userSlice from "../../../store/slice/userSlice"
 
 const Guest = (props) => {
 
@@ -38,6 +39,7 @@ const Guest = (props) => {
     return "הוסף בן משפחה"
   }
   }
+  
   useEffect(() => {
     if (userDetails && dialogType !== "addChild") {
       setForm(prevForm => ({
@@ -68,7 +70,7 @@ const Guest = (props) => {
         // const response = ApiUser.createChildUser(form)
 
       }else if(dialogType === "addParent"){
-        let response = await axios.get("http://localhost:5000/user",form)
+        let response = await axios.post("http://localhost:5000/user",form)
    
       }else if(dialogType === "editParent"){
        

@@ -1,14 +1,13 @@
 import React, { useState,useEffect } from "react";
-import UserLogsView from "./ParentList.view";
 import MainDialog from "../../../Dialogs/MainDialog/MainDialog";
-import ApiUser from "../../../../apis/userRequest";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import * as snackBarSlice from "../../../../store/slice/snackbarSlice"
-import 'ag-grid-community/styles/ag-grid.css'
-import 'ag-grid-community/styles/ag-theme-quartz.css'
 import ChildDetails from "../ChildDetails/ChildDetails";
 import { Grid } from "@mui/material";
+import ParentListView from "./ParentList.view";
+import * as userSlice from "../../../../store/slice/userSlice"
+
 
 const ParentList = (props) => {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -25,6 +24,7 @@ const ParentList = (props) => {
   };
 
   const handleDialogTypeOpen = (type,userData) => {
+
     if(type === "addParent"){
       setDialogOpen(true)
       setDialogType(type);
@@ -47,17 +47,18 @@ const ParentList = (props) => {
   const getMainUsers = async () => {
     try {
       let response = await axios.get("http://localhost:5000/user/all")
+      dispatch(userSlice.updateParents(response.data))
       setUsersData(response.data)
     } catch (error) {
       console.log(error)
     }
   }
 
-  const handleNameClick = async (id) => {
+  const handleNameClick = async (user) => {
     setShowClientDetails(true)
     try {
-      
-      let response = await axios.get(`http://localhost:5000/user/child/${id}`)
+     
+      let response = await axios.get(`http://localhost:5000/user/child/${user.parentId}`)
       setChildDataDetails(response.data)
       // let response = await ApiUser.getChildUser(id)
       console.log(response)
@@ -73,7 +74,7 @@ const ParentList = (props) => {
   return(
   <Grid style={{display:"flex"}}>
     
-  <UserLogsView setDialogOpen={setDialogOpen} tableData={usersData} handleDialogTypeOpen={handleDialogTypeOpen} handleNameClick={handleNameClick}/>;
+  <ParentListView setDialogOpen={setDialogOpen} tableData={usersData} handleDialogTypeOpen={handleDialogTypeOpen} handleNameClick={handleNameClick}/>;
   {showClientDetails && childDataDetails.length > 0 ?  <ChildDetails childDataDetails={childDataDetails} /> : <></>}
 
    <MainDialog

@@ -6,7 +6,7 @@ import ApiUser from "../../../apis/userRequest";
 import { useSelector } from "react-redux";
 
 const Notes = (props) => {
-  const regions = useSelector((state) => state.regionSlice.regions);
+
 
   const {
     dialogType,
