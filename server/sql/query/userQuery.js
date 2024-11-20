@@ -22,6 +22,7 @@ const getMainUsers = () => {
     pg.number_of_rooms,
     pg.total_amount,
     pg.parent_id,
+    pg.flights_direction,
     pa.remains_to_be_paid
 FROM 
     parent_guest pg
@@ -44,6 +45,7 @@ ON
 // pg.identity_id,pg.email,pg.number_of_guests,pg.number_of_rooms,pg.total_amount,parent_id
 // FROM parent_guest pg`
 }
+
 const getChildByParentId = () =>{
   return `SELECT cg.first_name,cg.last_name,cg.phone_a,cg.phone_b,
 cg.identity_id,cg.email,

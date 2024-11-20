@@ -15,10 +15,14 @@ const getParentDetails = async (id) => {
 const getChildDetails = async (id) => {
     return flightsDb.getChildDetails(id)
 }
+const updateChildrenFlightsDetails = async (paymentsData) => {
+    return flightsDb.updateChildrenFlightsDetails(paymentsData)
+}
 module.exports = {
     addParentFlightsDetails,
     addChildFlightsDetails,
     updateParentFlightsDetails,
     getParentDetails,
-    getChildDetails
+    getChildDetails,
+    updateChildrenFlightsDetails
 }

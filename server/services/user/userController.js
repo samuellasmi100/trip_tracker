@@ -52,6 +52,7 @@ router.put("/", async (req, res, next) => {
   try {
    await userService.updateParentUser(userData)
    res.send("העדכון עבר בהצלחה")
+  //  res.send({massage:"העדכון עבר בהצלחה",data:"response"})
   } catch (error) {
     return next(error);
   }

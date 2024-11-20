@@ -16,7 +16,6 @@ const addParentFlightsDetails = async (paymentsData) => {
       paymentsData.flightNumber,
       paymentsData.age,
     ]
-
     await connection.executeWithParameters(sql, parameters)
 
 
@@ -24,7 +23,9 @@ const addParentFlightsDetails = async (paymentsData) => {
     console.log(error)
   }
 }
+
 const updateParentFlightsDetails = async (paymentsData) => {
+
   try {
     const sql = flightsQuery.updateParentFlightsDetails()
     const parameters = [
@@ -48,8 +49,8 @@ const addChildFlightsDetails = async (paymentsData) => {
   try {
     const sql = flightsQuery.addChildFlightsDetails()
     const parameters = [
-      paymentsData.childId,
-      paymentsData.parentId,
+      paymentsData.child_id,
+      paymentsData.parent_id,
       paymentsData.validityPassport,
       paymentsData.passportNumber,
       paymentsData.birthDate,
@@ -58,6 +59,7 @@ const addChildFlightsDetails = async (paymentsData) => {
       paymentsData.flightNumber,
       paymentsData.age,
     ]
+
     await connection.executeWithParameters(sql, parameters)
 
 
@@ -65,6 +67,29 @@ const addChildFlightsDetails = async (paymentsData) => {
     console.log(error)
   }
 }
+
+const updateChildrenFlightsDetails = async (paymentsData) => {
+  console.log(paymentsData,'paymentsData')
+  try {
+    const sql = flightsQuery.updateChildrenFlightsDetails()
+    const parameters = [
+      paymentsData.parentId,
+      paymentsData.validityPassport,
+      paymentsData.passportNumber,
+      paymentsData.birthDate,
+      paymentsData.outboundFlightDate,
+      paymentsData.returnFlightDate,
+      paymentsData.flightNumber,
+      paymentsData.age,
+      paymentsData.childId
+    ]
+    console.log(parameters,'parameters')
+    await connection.executeWithParameters(sql, parameters)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 const getParentDetails = async (id) => {
   try {
     const sql = flightsQuery.getParentDetails()
@@ -75,6 +100,7 @@ const getParentDetails = async (id) => {
     console.log(error)
   }
 }
+
 const getChildDetails = async (id) => {
   try {
     const sql = flightsQuery.getChildDetails()
@@ -92,5 +118,6 @@ module.exports = {
   addChildFlightsDetails,
   updateParentFlightsDetails,
   getParentDetails,
-  getChildDetails
+  getChildDetails,
+  updateChildrenFlightsDetails
 }

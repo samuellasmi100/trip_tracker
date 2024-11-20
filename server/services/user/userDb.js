@@ -12,12 +12,9 @@ const addParent = async (userData) => {
 }
 
 const addChild = async (userData) => {
-
     try {
       const sql = userQuery.addChild(userData)
-      console.log(sql,"1")
       const parameters = Object.values(userData)
-      console.log(parameters,"2")
       await connection.executeWithParameters(sql,parameters)
     } catch (error) { 
       console.log(error)
@@ -29,7 +26,6 @@ const getMainUsers = async () => {
       const sql = userQuery.getMainUsers()
       const response = await connection.execute(sql)
       return response
-     
     } catch (error) { 
       console.log(error)
     }
