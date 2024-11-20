@@ -10,6 +10,7 @@ const userController = require("./services/user/userController");
 const roomsController = require("./services/rooms/roomsController");
 const flightsController = require("./services/flights/flightsController");
 const paymentsController = require("./services/payments/paymentsController");
+const notesController = require("./services/notes/notesController");
 
 
 app.use(cors());
@@ -22,6 +23,7 @@ app.use("/user", userController);
 app.use("/rooms", roomsController);
 app.use("/flights",flightsController)
 app.use("/payments",paymentsController)
+app.use("/notes",notesController)
 
 
 app.use(errorHandler);

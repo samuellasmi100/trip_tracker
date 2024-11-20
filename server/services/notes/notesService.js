@@ -1,22 +1,30 @@
-const roomsDb = require("./notesDb")
+const notesDb = require("./notesDb")
 
 const getAll = async () => {
-    return roomsDb.getAll()
+    return notesDb.getAll()
 }
 
-const assignMainRoom = async (roomDetails) => {
-    // console.log(roomDetails)
-    for (const room of roomDetails) {
-        await roomsDb.assignMainRoom(room.parentId, room.roomId);
-    }
-   
+const addParentNotes = async (notesDetails) => {
+  await notesDb.addParentNotes(notesDetails);
 }
-const getParentRoom = async (id) => {
-  
-    return roomsDb.getParentRoom(id)
+
+const addChildNotes = async (notesDetails) => {
+    await notesDb.addChildNotes(notesDetails);
 }
+ 
+const getParentNote = async (id) => {
+    return notesDb.getParentNote(id)
+}
+
+const getChildNote = async (id) => {
+    return notesDb.getChildNote(id)
+}
+
+
 module.exports = {
     getAll,
-    assignMainRoom,
-    getParentRoom
+    addParentNotes,
+    getParentNote,
+    getChildNote,
+    addChildNotes
 }

@@ -7,7 +7,7 @@ const addParentFlightsDetails = async (paymentsData) => {
   try {
     const sql = flightsQuery.addParentFlightsDetails()
     const parameters = [
-      paymentsData.parentId,
+      paymentsData.parent_id,
       paymentsData.validityPassport,
       paymentsData.passportNumber,
       paymentsData.birthDate,
@@ -35,15 +35,15 @@ const updateParentFlightsDetails = async (paymentsData) => {
       paymentsData.returnFlightDate,
       paymentsData.flightNumber,
       paymentsData.age,
-      paymentsData.parentId,
+      paymentsData.parent_id,
 
     ]
-  console.log(parameters)
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     console.log(error)
   }
 }
+
 const addChildFlightsDetails = async (paymentsData) => {
   try {
     const sql = flightsQuery.addChildFlightsDetails()

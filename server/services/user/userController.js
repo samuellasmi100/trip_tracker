@@ -4,7 +4,7 @@ const uuid = require("uuid").v4;
 
 router.post("/", async (req, res, next) => {
     const userData = req.body
-    userData.parentId = uuid();
+    userData.parent_id = uuid();
     try {
       const response = userService.addParent(userData)
       res.send("ההוספה עברה בהצלחה")
@@ -16,7 +16,7 @@ router.post("/", async (req, res, next) => {
 
 router.post("/child", async (req, res, next) => {
   const userData = req.body
-  userData.childId = uuid();
+  userData.child_id = uuid();
   try {
     const response = userService.addChild(userData)
    res.send("ההוספה עברה בהצלחה")
@@ -56,11 +56,11 @@ router.put("/", async (req, res, next) => {
     return next(error);
   }
 });
-router.put("/child/:id", async (req, res, next) => {
-  const userId = req.params.id
+
+router.put("/child", async (req, res, next) => {
   const userData = req.body
  try {
-     await userService.updateChildUser(userId,userData)
+     await userService.updateChildUser(userData)
   res.send("העדכון עבר בהצלחה")
 
  } catch (error) {

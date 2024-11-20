@@ -3,40 +3,21 @@ const userQuery = require("../../sql/query/userQuery")
 
 const addParent = async (userData) => {
   try {
-    const sql = userQuery.addParent()
-    const parameters = [ 
-        userData.firstName,
-        userData.lastName,
-        userData.email,
-        userData.phoneA,
-        userData.phoneB,
-        userData.numberOfGuests,
-        userData.numberOfRooms,
-        userData.totalAmount,
-        userData.includesFlight,
-        userData.identityId,
-        userData.parentId
-    ]
-    console.log(parameters)
+    const sql = userQuery.addParent(userData)
+    const parameters = Object.values(userData)
     await connection.executeWithParameters(sql,parameters)
   } catch (error) { 
     console.log(error)
   }
 }
 
-const addChild = async (useData) => {
+const addChild = async (userData) => {
+
     try {
-      const sql = userQuery.addChild()
-      const parameters = [ 
-          useData.firstName,
-          useData.lastName,
-          useData.email,
-          useData.phoneA,
-          useData.phoneB,
-          useData.identityId,
-          useData.childId,
-          useData.parentId
-      ]
+      const sql = userQuery.addChild(userData)
+      console.log(sql,"1")
+      const parameters = Object.values(userData)
+      console.log(parameters,"2")
       await connection.executeWithParameters(sql,parameters)
     } catch (error) { 
       console.log(error)
@@ -68,20 +49,11 @@ const getChildByParentId = async (id) => {
 
 const updateParentUser = async (userData) => {
     try {
-      const sql = userQuery.updateParentUser()
-      const parameters = [ 
-        userData.firstName,
-        userData.lastName,
-        userData.email,
-        userData.phoneA,
-        userData.phoneB,
-        userData.numberOfGuests,
-        userData.numberOfRooms,
-        userData.totalAmount,
-        userData.includesFlight,
-        userData.identityId,
-        userData.parentId
-    ]
+      const parentId = userData.parent_id
+      delete userData.parent_id
+      delete userData.remains_to_be_paid
+      const sql = userQuery.updateParentUser(userData,parentId)
+      const parameters = Object.values(userData)
       const response = await connection.executeWithParameters(sql,parameters)
       return response
      
@@ -90,10 +62,13 @@ const updateParentUser = async (userData) => {
     }
 }
 
-const updateChildUser = async (id,userData) => {
+const updateChildUser = async (userData) => {
     try {
-      const sql = userQuery.updateChildUser()
-      const parameters = []
+      const childId = userData.child_id
+      delete userData.child_id
+      delete userData.flights
+      const sql = userQuery.updateChildUser(userData,childId)
+      const parameters = Object.values(userData)
       const response = await connection.executeWithParameters(sql,parameters)
       return response
      

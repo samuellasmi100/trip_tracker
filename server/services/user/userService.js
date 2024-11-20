@@ -15,8 +15,8 @@ const getChildByParentId = async (id) => {
   const updateParentUser = async (userData) => {
     return userDb.updateParentUser(userData)
    }
-   const updateChildUser = async (id,userData) => {
-    return userDb.updateChildUser(id,userData)
+   const updateChildUser = async (userData) => {
+    return userDb.updateChildUser(userData)
    }
 module.exports = {
     addParent,

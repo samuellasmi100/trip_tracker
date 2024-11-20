@@ -5,16 +5,15 @@ const getAll = async () => {
 }
 
 const assignMainRoom = async (roomDetails, parentId) => {
-    const checkIfUserAlrwadyAssign = await getParentRoom(parentId)
+    const checkIfUserAlreadyAssign = await getParentRoom(parentId)
 
     if (roomDetails.length === 0) {
-        const ids = checkIfUserAlrwadyAssign.map((key) => { return key.roomId })
+        const ids = checkIfUserAlreadyAssign.map((key) => { return key.roomId })
             await roomsDb.removeMainRoom(parentId);
             await Promise.all(ids.map((room) => roomsDb.unLockRoom(room)));
     } else {
-        if (checkIfUserAlrwadyAssign.length > 0) {
-            console.log(roomDetails,'roomDetails')
-            const ids = checkIfUserAlrwadyAssign.map((key) => { return key.roomId })
+        if (checkIfUserAlreadyAssign.length > 0) {
+            const ids = checkIfUserAlreadyAssign.map((key) => { return key.roomId })
             await Promise.all(ids.map((room) => roomsDb.unLockRoom(room)));
            await roomsDb.removeMainRoom(parentId)
            await Promise.all(roomDetails.map((room) => roomsDb.assignMainRoom(parentId, room.roomId)));

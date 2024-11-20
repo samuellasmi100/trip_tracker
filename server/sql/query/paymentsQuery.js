@@ -8,7 +8,7 @@ const updatePayments = () => {
 }
 const getPayments = () => {
     return `SELECT parent_id as parentId,payment_date as paymentDate ,amount,form_of_payment as formOfPayment,
-    remains_to_be_paid as remainsToBePaid,payment_currency as paymentCurrency,amount_received as amountReceived from payments WHERE parent_id = ? ORDER BY id DESC`
+    remains_to_be_paid as remainsToBePaid,payment_currency as paymentCurrency,amount_received as amountReceived from payments WHERE parent_id = ? ORDER BY id DESC  limit 1`
 }
 
 module.exports ={
