@@ -21,12 +21,12 @@ const GuestView = (props) => {
   const dispatch = useDispatch()
   const dialogType = useSelector(((state) => state.dialogSlice.type))
   const classes = useStyles();
+  const form = useSelector((state) => state.userSlice.form)
   const {
-    setForm,
-    form,
     submit,
     areaCodes,
     handleButtonString,
+    handleInputChange
   } = props;
 
 
@@ -41,9 +41,10 @@ const GuestView = (props) => {
                 שם פרטי
               </InputLabel>
               <TextField
-                value={form.firstName}
+                 name="first_name"
+                value={form.first_name}
                 className={classes.textField}
-                onChange={e => setForm(prevForm => ({ ...prevForm, firstName: e.target.value }))}
+                onChange={handleInputChange}
               />
             </Grid>
             <Grid item>
@@ -51,9 +52,10 @@ const GuestView = (props) => {
                 שם משפחה
               </InputLabel>
               <TextField
-                value={form.lastName}
+               name="last_name"
+                value={form.last_name}
                 className={classes.textField}
-                onChange={e => setForm(prevForm => ({ ...prevForm, lastName: e.target.value }))}
+                onChange={handleInputChange}
               />
             </Grid>
             <Grid item>
@@ -61,17 +63,19 @@ const GuestView = (props) => {
                 מספר זהות
               </InputLabel>
               <TextField
-                value={form.identityId}
+               name="identity_id"
+                value={form.identity_id}
                 className={classes.textField}
-                onChange={e => setForm(prevForm => ({ ...prevForm, identityId: e.target.value }))}
+                onChange={handleInputChange}
               />
             </Grid>
             <Grid item>
               <InputLabel className={classes.inputLabelStyle}>אימייל</InputLabel>
               <TextField
+                name="email"
                 value={form.email}
                 className={classes.textField}
-                onChange={e => setForm(prevForm => ({ ...prevForm, email: e.target.value }))}
+                onChange={handleInputChange}
               />
             </Grid>
           </Grid>
@@ -85,18 +89,21 @@ const GuestView = (props) => {
               <Grid container>
                 <Grid style={{ paddingLeft: "10px" }}>
                   <TextField
-                    value={form.phoneB}
+                    name="phone_b"
+                    value={form.phone_b}
                     className={classes.textFieldPhone}
-                    onChange={e => setForm(prevForm => ({ ...prevForm, phoneB: e.target.value }))}
+                    onChange={handleInputChange}
 
                   />
                 </Grid>
                 <Grid>
                   <Select
-                    value={form.phoneA}
-                    onChange={e => setForm(prevForm => ({ ...prevForm, phoneA: e.target.value }))}
+                    name="phone_a"
+                    value={form.phone_a}
+                    onChange={handleInputChange}
                     input={
                       <OutlinedInput
+                       name="phoneA"
                         value={form.phoneA}
                         className={classes.selectOutline}
                       />
@@ -126,16 +133,17 @@ const GuestView = (props) => {
                 </Grid>
               </Grid>
             </Grid>
-            {dialogType !== "addChild" ?
+            {dialogType !== "addChild" && dialogType !== "editChild" ?
               <>
                 <Grid item>
                   <InputLabel className={classes.inputLabelStyle}>
                     כמות נופשים
                   </InputLabel>
                   <TextField
-                    value={form.numberOfGuests}
+                    name="number_of_guests"
+                    value={form.number_of_guests}
                     className={classes.textField}
-                    onChange={e => setForm(prevForm => ({ ...prevForm, numberOfGuests: e.target.value }))}
+                    onChange={handleInputChange}
                   />
                 </Grid>
 
@@ -144,9 +152,10 @@ const GuestView = (props) => {
                     כמות חדרים
                   </InputLabel>
                   <TextField
-                    value={form.numberOfRooms}
+                    name="number_of_rooms"
+                    value={form.number_of_rooms}
                     className={classes.textField}
-                    onChange={e => setForm(prevForm => ({ ...prevForm, numberOfRooms: e.target.value }))}
+                    onChange={handleInputChange}
                   />
 
                 </Grid>
@@ -156,9 +165,10 @@ const GuestView = (props) => {
                     סכום עסקה
                   </InputLabel>
                   <TextField
-                    value={form.totalAmount}
+                    name="total_amount"
+                    value={form.total_amount}
                     className={classes.textField}
-                    onChange={e => setForm(prevForm => ({ ...prevForm, totalAmount: e.target.value }))}
+                    onChange={handleInputChange}
                   />
                 </Grid> </>
               : <></>}
@@ -166,7 +176,7 @@ const GuestView = (props) => {
           </Grid>
         </Grid>
       </Grid>
-      {dialogType !== "addChild" ?
+      {dialogType !== "addChild"  && dialogType !== "editChild" ?
         <Grid style={{ marginLeft: "30px" }}>
           <Grid container display="flex"
           >
@@ -180,9 +190,10 @@ const GuestView = (props) => {
                         color: "#54A9FF",
                       },
                     }}
+                    name="flights"
                     className={classes.checkbox}
-                    onClick={e => setForm(prevForm => ({ ...prevForm, includesFlight: e.target.checked }))}
-                    checked={form.includesFlight}
+                    onClick={handleInputChange}
+                    checked={form.flights}
                   />
                 }
                 label={

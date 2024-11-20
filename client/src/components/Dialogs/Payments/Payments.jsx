@@ -9,11 +9,11 @@ import axios from "axios";
 const Payments = () => {
 const dispatch = useDispatch()
 const form = useSelector((state) => state.paymentsSlice.form)
-const userDetails = useSelector((state) => state.userSlice.parent)
+const parentDetails = useSelector((state) => state.userSlice.parent)
 
 const handleInputChange = (e) => {
   const { name, value } = e.target;
-  const parentId = userDetails.parentId;
+  const parentId = parentDetails.parent_id;
   const numericValue = value.replace(/[^0-9.]/g, "");
   const formattedValue = new Intl.NumberFormat().format(numericValue);
 
@@ -56,10 +56,17 @@ const submit = async () => {
 
 const getPayments = async () => {
 try {
-  const parentId = userDetails.parentId;
+  const parentId = parentDetails.parent_id;
+  console.log(parentId)
   let response = await axios.get(`http://localhost:5000/payments/${parentId}`)
-  response.data[0].mainRemainsToBePaid = response.data[0].remainsToBePaid
-  dispatch(paymentsSlice.updateForm(response.data[0]));
+  console.log(response)
+  if(response.data.length > 0){
+    response.data[0].mainRemainsToBePaid = response.data[0].remains_to_be_paid
+    dispatch(paymentsSlice.updateForm(response.data[0]));
+  }else {
+    dispatch(paymentsSlice.updateForm({}));
+  }
+ 
 } catch (error) {
   console.log(error)
 }

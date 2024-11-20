@@ -25,7 +25,6 @@ const FlightsView = (props) => {
   const form = useSelector((state) => state.flightsSlice.form)
   const dispatch = useDispatch()
   const {
-    closeModal,
     handleInputChange,
     submit
   } = props;

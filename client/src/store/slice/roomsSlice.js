@@ -27,7 +27,7 @@ export const roomsSlice = createSlice({
         (room) => room.roomId !== action.payload.roomId
       );
     },
-    clearForm: (state) => {
+    resetForm: (state) => {
       state.selectedRooms = []; // Clear all rooms from the form
     },
   },
@@ -35,6 +35,6 @@ export const roomsSlice = createSlice({
 
 });
 
-export const { addRoomToForm,removeRoomFromForm,clearForm,updateRoomsList,updateSelectedRoomsList } = roomsSlice.actions;
+export const { addRoomToForm,removeRoomFromForm,resetForm,updateRoomsList,updateSelectedRoomsList } = roomsSlice.actions;
 
 export default roomsSlice.reducer;

@@ -4,12 +4,12 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import ChildDetailsView from "./ChildDetails.view";
 
-const ChildDetails = ({childDataDetails}) => {
+const ChildDetails = ({handleDialogTypeOpen}) => {
 
 
   return(
   <>
-  <ChildDetailsView childDataDetails={childDataDetails}/>;
+  <ChildDetailsView handleDialogTypeOpen={handleDialogTypeOpen}/>;
 
   </>
   )

@@ -21,7 +21,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import { ReactComponent as Trash } from "../../../assets/icons/trash.svg"
 const RoomsView = ({ 
   submit, 
-  handleDeletButton,
+  handleDeleteButton,
   searchTerm,
   setSearchTerm,
   isListOpen,
@@ -55,7 +55,9 @@ const RoomsView = ({
            
           </Grid>
           <Grid item xs={12} style={{position:'relative'}}> 
-          <List style={{
+          <List 
+            onMouseEnter={() => setIsListOpen(true)}
+          style={{
             maxHeight:"260px",
             overflow:"auto", 
             width:"151px",
@@ -121,7 +123,7 @@ const RoomsView = ({
              <Grid item>
              <IconButton
               onClick={() =>
-               handleDeletButton(room.roomId)
+               handleDeleteButton(room.roomId)
               }>
               <DeleteIcon className={classes.delete}/>
               </IconButton>

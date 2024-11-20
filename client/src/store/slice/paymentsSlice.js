@@ -22,10 +22,21 @@ export const paymentsSlice = createSlice({
     updateForm: (state, action) => {
       state.form = action.payload;
     },
+    resetForm: (state, action) => {
+      state.form = {
+        amount:"",
+        amountReceived:"",
+        formOfPayment:"",
+        parentId:"",
+        paymentCurrency:"",
+        paymentDate:"",
+        remainsToBePaid:""
+      };
+    },
   },
 });
 
-export const { updateFormField,updateForm } = paymentsSlice.actions;
+export const { updateFormField,updateForm,resetForm } = paymentsSlice.actions;
 
 
 

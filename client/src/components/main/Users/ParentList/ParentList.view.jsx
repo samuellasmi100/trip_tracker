@@ -17,8 +17,7 @@ import { useStyles } from "./ParentList.style";
 import SearchInput from "../../../ReusableComps/SearchInput/SearchInput";
 import { ReactComponent as DownloadIcon } from "../../../../assets/icons/download.svg";
 import { ReactComponent as EditIcon } from "../../../../assets/icons/edit.svg";
-import { ReactComponent as Profile } from "../../../../assets/icons/profile.svg";
-
+import DescriptionIcon from '@mui/icons-material/Description';
 
 function ParentListView(props) {
 
@@ -92,17 +91,20 @@ function ParentListView(props) {
             <TableBody className={classes.dataTableBody}>
               {tableData?.map((user, index) => {
                 return (             
+                  
                     <TableRow key={index}>
                       <Button onClick={() => handleNameClick(user)}>
                         <TableCell className={classes.dataTableCell}>
-                          {user.name}
+                          {user.first_name}
                         </TableCell>
                       </Button>
                       <TableCell className={classes.dataTableCell}>
-                        {user.lastName}
+                        {user.last_name}
                       </TableCell>
                       <TableCell className={classes.dataTableCell}>
-                        {user.totalAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                        {user.remains_to_be_paid !== null && user.remains_to_be_paid !== undefined ? user.remains_to_be_paid :
+                        user.total_amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                        }
                       </TableCell>
                       <TableCell className={classes.dataTableCell}>
                         {user.flights}
@@ -141,7 +143,7 @@ function ParentListView(props) {
                           size={"small"}
                           onClick={() => handleDialogTypeOpen("addChild", user)}
                         >
-                          <Profile />
+                          <DescriptionIcon style={{color:"rgb(255, 158, 84)"}}/>
                         </IconButton>
                       </TableCell>
                     </TableRow>

@@ -11,13 +11,14 @@ const Rooms = () => {
   const rooms = useSelector((state) => state.roomsSlice.rooms);
   const [searchTerm, setSearchTerm] = useState("");
   const [isListOpen, setIsListOpen] = useState(false);
-  const userDetails = useSelector((state) => state.userSlice.parent);
+  const parentDetails = useSelector((state) => state.userSlice.parent);
+
   const selectedRooms = useSelector((state) => state.roomsSlice.selectedRooms);
-  let roomsChosen = userDetails?.numberOfRooms - selectedRooms.length
+  let roomsChosen = parentDetails?.number_of_rooms - selectedRooms.length
 
    const submit = async () => {
       try {
-        let parentId = userDetails.parentId
+        let parentId = parentDetails.parent_id
         let response = await axios.post("http://localhost:5000/rooms",{selectedRooms,parentId})    
         dispatch(
           snackbarSlice.setSnackBar({
@@ -27,7 +28,7 @@ const Rooms = () => {
           })
         )
         dispatch(dialogSlice.closeModal())
-        dispatch(roomsSlice.clearForm())
+        dispatch(roomsSlice.resetForm())
         dispatch(dialogSlice.initialActiveButton())
         dispatch(dialogSlice.initialDialogType())
       } catch (error) {
@@ -48,7 +49,7 @@ const Rooms = () => {
 
    const getParentRooms = async () => {
     try {
-      let parentId = userDetails.parentId
+      let parentId = parentDetails.parent_id
       let response = await axios.get(`http://localhost:5000/rooms/${parentId}`)   
       dispatch(roomsSlice.updateSelectedRoomsList(response.data))
     } catch (error) {
@@ -78,7 +79,7 @@ const Rooms = () => {
     if (isSelected) {
       dispatch(roomsSlice.removeRoomFromForm({ roomId: room.roomId }));
     } else {
-      if(Number(selectedRooms.length + 1) > Number(userDetails.numberOfRooms)){
+      if(Number(selectedRooms.length + 1) > Number(parentDetails.numberOfRooms)){
         dispatch(
           snackbarSlice.setSnackBar({
             type: "warn",
@@ -95,7 +96,7 @@ const Rooms = () => {
     }
   };
   
-  const handleDeletButton = (roomId) => {
+  const handleDeleteButton = (roomId) => {
     dispatch(roomsSlice.removeRoomFromForm({ roomId: roomId}));
   }
 
@@ -110,7 +111,7 @@ const Rooms = () => {
   return (
    <RoomsView 
    submit={submit} 
-   handleDeletButton={handleDeletButton}
+   handleDeleteButton={handleDeleteButton}
    searchTerm={searchTerm}
    setSearchTerm={setSearchTerm}
    isListOpen={isListOpen}

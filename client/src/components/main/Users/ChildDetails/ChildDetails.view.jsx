@@ -7,20 +7,18 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    Button,
-    Collapse,
-    Box,
-    Typography,
   } from "@mui/material";
-  import React, { useState,useRef } from "react";
+  import React from "react";
   import { useStyles } from "./ChildDetails.style";
-  import SearchInput from "../../../ReusableComps/SearchInput/SearchInput";
   import { ReactComponent as DownloadIcon } from "../../../../assets/icons/download.svg";
   import { ReactComponent as EditIcon } from "../../../../assets/icons/edit.svg";
-  
-  
-  function ChildDetailsView({childDataDetails}) {
-  
+  import DescriptionIcon from '@mui/icons-material/Description';
+   import { useSelector } from "react-redux";
+
+  function ChildDetailsView({childDataDetails,handleDialogTypeOpen}) {
+   const childrenDetails = useSelector((state) => state.userSlice.children)
+   const child = useSelector((state) => state.userSlice.child)
+ 
     const classes = useStyles();
 
     const headers = [
@@ -28,6 +26,7 @@ import {
       "שם משפחה",
       "תעודת זהות",
       "ערוך",
+      "פרטים"
     ];
     
     return (
@@ -55,17 +54,28 @@ import {
               </TableRow>
             </TableHead>
             <TableBody className={classes.dataTableBody}>
-              {childDataDetails?.map((user, index) => {
+               {childrenDetails?.map((user, index) => {
                 return (             
                     <TableRow key={index}>
                         <TableCell className={classes.dataTableCell}>
-                          {user.name}
+                          {user.first_name}
                         </TableCell>
                       <TableCell className={classes.dataTableCell}>
-                        {user.lastName}
+                        {user.last_ame}
                       </TableCell>
                       <TableCell className={classes.dataTableCell}>
-                        {user.identityId}
+                        {user.identity_id}
+                      </TableCell>
+                      <TableCell
+                        className={classes.dataTableCell}
+                        style={{ maxWidth: "1px" }}
+                      >
+                        <IconButton
+                          size={"small"}
+                          onClick={() => handleDialogTypeOpen("editChild", user)}
+                        >
+                          <EditIcon />
+                        </IconButton>
                       </TableCell>
                       <TableCell
                         className={classes.dataTableCell}
@@ -75,7 +85,7 @@ import {
                           size={"small"}
                         //   onClick={() => handleDialogTypeOpen("addChild", user)}
                         >
-                          <EditIcon />
+                          <DescriptionIcon style={{color:"rgb(255, 158, 84)"}}/>
                         </IconButton>
                       </TableCell>
                     </TableRow>

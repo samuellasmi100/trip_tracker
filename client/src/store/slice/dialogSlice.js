@@ -21,7 +21,6 @@ export const dialogSlice = createSlice({
       state.type = "";
     },
     updateActiveButton: (state, action) => {
-      console.log(action.payload)
       state.activeButton = action.payload;
     },
     initialActiveButton: (state, action) => {

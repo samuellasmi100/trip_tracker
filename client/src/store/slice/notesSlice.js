@@ -1,9 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-export const flightsSlice = createSlice({
-  name: "flightsSlice",
+export const notesSlice = createSlice({
+  name: "notesSlice",
   initialState: {
-    form: {},
+    form: {}
   },
   reducers: {
     updateFormField: (state, action) => {
@@ -19,9 +19,9 @@ export const flightsSlice = createSlice({
   },
 });
 
-export const { updateFormField,updateForm,resetForm } = flightsSlice.actions;
+export const { updateFormField,updateForm,resetForm } = notesSlice.actions;
 
 
 
 
-export default flightsSlice.reducer;
+export default notesSlice.reducer;
