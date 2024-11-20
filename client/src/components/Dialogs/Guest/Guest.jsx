@@ -16,6 +16,7 @@ const Guest = () => {
   const dispatch = useDispatch();
   const areaCodes = ["052", "053", "054", "058"];
   const childDetails = useSelector((state) => state.userSlice.child)
+  
 
   const handleButtonString = () => {
     if (dialogType === "addParent") {
@@ -31,16 +32,23 @@ const Guest = () => {
 
   const handleInputChange = (e) => {
     let { name, value,checked } = e.target
+    console.log(name, value,checked )
     let userId 
     if(userType === "parent"){
       userId = parentDetails.parent_id
       dispatch(userSlice.updateFormField({ field: "parent_id",value:userId }))
     }else {
+
       userId = childDetails.child_id
       dispatch(userSlice.updateFormField({ field: "child_id",value:userId }))
     }
+    if(name === "flights_direction"){
+      dispatch(userSlice.updateFormField({ field: "flights_direction", value:checked ? e.target.value : "" }))
+
+    }
     if(name === "flights"){
-      value = checked
+    value = checked
+    console.log(name,value)
     dispatch(userSlice.updateFormField({ field: name, value }))
     }else {
       dispatch(userSlice.updateFormField({ field: name, value }))

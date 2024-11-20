@@ -180,7 +180,7 @@ const GuestView = (props) => {
         <Grid style={{ marginLeft: "30px" }}>
           <Grid container display="flex"
           >
-            <Grid item>
+            <Grid item >
               <FormControlLabel
                 control={
                   <Checkbox
@@ -202,6 +202,77 @@ const GuestView = (props) => {
                   </Typography>
                 }
               />
+              {form.flights ? 
+              <Grid>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    sx={{
+                      color: "#686B76",
+                      "&.Mui-checked": {
+                        color: "#54A9FF",
+                      },
+                    }}
+                    name="flights_direction"
+                    value="round_trip" 
+                    className={classes.checkbox}
+                    onClick={handleInputChange}
+                    checked={form.flights_direction === "round_trip"}
+                  />
+                }
+                label={
+                  <Typography style={{ color: "##757882", fontSize: "15px" }}>
+                    הלוך ושוב
+                  </Typography>
+                }
+              />
+               <FormControlLabel
+                control={
+                  <Checkbox
+                    sx={{
+                      color: "#686B76",
+                      "&.Mui-checked": {
+                        color: "#54A9FF",
+                      },
+                    }}
+                    name="flights_direction"
+                    value="one_way_outbound" 
+                    className={classes.checkbox}
+                    onClick={handleInputChange}
+                    checked={form.flights_direction === "one_way_outbound"}
+                  />
+                }
+                label={
+                  <Typography style={{ color: "##757882", fontSize: "15px" }}>
+                      הלוך בלבד
+                  </Typography>
+                }
+              />
+               <FormControlLabel
+                control={
+                  <Checkbox
+                    sx={{
+                      color: "#686B76",
+                      "&.Mui-checked": {
+                        color: "#54A9FF",
+                      },
+                    }}
+                    name="flights_direction"
+                    value="one_way_return"
+                    className={classes.checkbox}
+                    onClick={handleInputChange}
+                    checked={form.flights_direction === "one_way_return"}
+                  />
+                }
+                label={
+                  <Typography style={{ color: "##757882", fontSize: "15px" }}>
+                    חזור בלבד 
+                  </Typography>
+                }
+              />
+              </Grid>
+              :<></>}
+              
             </Grid>
 
           </Grid>

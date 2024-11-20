@@ -9,16 +9,27 @@ import axios from "axios";
 
 const Flights = () => {
 const dispatch = useDispatch()
-
+  const userType = useSelector((state) => state.userSlice.userType)
   const parentDetails = useSelector((state) => state.userSlice.parent)
+  const childDetails = useSelector((state) => state.userSlice.child)
 
   const form = useSelector((state) => state.flightsSlice.form)
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
-    const parentId = parentDetails.parent_id
+    let userId 
+    if(userType === "parent"){
+      userId = parentDetails.parent_id
+      dispatch(userSlice.updateFormField({ field: "parent_id",value:userId }))
+    }else {
+     const childId = childDetails.child_id
+     const parentId = parentDetails.parent_id
+      dispatch(flightsSlice.updateFormField({ field: "child_id",value:childId }))
+      dispatch(flightsSlice.updateFormField({ field: "parent_id",value:parentId }))
+    }
+
     dispatch(flightsSlice.updateFormField({ field: name, value }))
-    dispatch(flightsSlice.updateFormField({ field: "parent_id",value:parentId }))
+
     if (name === "birthDate") {
       const age = calculateAge(value);
       dispatch(flightsSlice.updateFormField({ field: "age", value: age }));
@@ -38,33 +49,33 @@ const dispatch = useDispatch()
 
   const submit = async () => {
     try {
-      const parentId = parentDetails.parent_id
-     if(form.type === "edit"){
-      let response = await axios.put(`http://localhost:5000/flights/${parentId}`,form)
-      dispatch(
-        snackBarSlice.setSnackBar({
-          type: "success",
-          message: response.data,
-          timeout: 3000,
-        })
-      );
-      dispatch(dialogSlice.initialActiveButton())
-      dispatch(dialogSlice.initialDialogType())
-      dispatch(dialogSlice.closeModal())
-
+    let response 
+     const parentId = parentDetails.parent_id
+     if(userType === "parent"){
+      if(form.type === "edit"){
+        response = await axios.put(`http://localhost:5000/flights/${parentId}`,form)
+        }else {
+         response = await axios.post("http://localhost:5000/flights",form)
+        }
+       
      }else {
-      let response = await axios.post("http://localhost:5000/flights",form)
-      dispatch(
-        snackBarSlice.setSnackBar({
-          type: "success",
-          message: response.data,
-          timeout: 3000,
-        })
-      );
+     const childId = childDetails.child_id
+      if(form.type === "edit"){
+       response = await axios.put(`http://localhost:5000/flights/child/${childId}`,form)
+      }else {
+       response = await axios.post(`http://localhost:5000/flights/child`,form)
+      }
      }
-     dispatch(dialogSlice.initialActiveButton())
-     dispatch(dialogSlice.initialDialogType())
-     dispatch(dialogSlice.closeModal())
+     dispatch(
+      snackBarSlice.setSnackBar({
+        type: "success",
+        message: response.data,
+        timeout: 3000,
+      })
+    );
+    dispatch(dialogSlice.initialActiveButton())
+    dispatch(dialogSlice.initialDialogType())
+    dispatch(dialogSlice.closeModal())
     } catch (error) {
       console.log(error)
     }
@@ -75,14 +86,31 @@ const dispatch = useDispatch()
     const parentId = parentDetails.parent_id
     try {
       let response = await axios.get(`http://localhost:5000/flights/${parentId}`)
-      response.data[0].type = "edit"
+       response.data[0].type = "edit"
        dispatch(flightsSlice.updateForm(response.data[0]))
     } catch (error) {
       console.log(error)
     }
   }
+  const getChildData = async () => {
+    const childId= childDetails.child_id
+    try {
+      let response = await axios.get(`http://localhost:5000/flights/child/${childId}`)
+      if(response.data.length > 0){
+        response.data[0].type = "edit"
+        dispatch(flightsSlice.updateForm(response.data[0]))
+      }
+      
+    } catch (error) {
+      console.log(error)
+    }
+  }
   useEffect(() => {
-    getParentData()
+    if(userType === "parent"){
+      getParentData()
+    }else {
+      getChildData()
+    }
   }, [])
   
   return (
