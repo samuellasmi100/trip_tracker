@@ -3,15 +3,13 @@ import {
   Button,
   Grid,
   InputLabel,
-  Select,
-  MenuItem,
-  OutlinedInput,
   Typography,
   TextField,
   List,
   ListItem,
   ListItemText,
-  Checkbox
+  Checkbox,
+  IconButton
 } from "@mui/material";
 import { useStyles } from "./Rooms.style";
 import { useSelector, useDispatch } from "react-redux";
@@ -19,10 +17,11 @@ import * as dialogSlice from "../../../store/slice/dialogSlice";
 import * as roomsSlice from "../../../store/slice/roomsSlice";
 import * as userSlice from "../../../store/slice/userSlice";
 import * as snackbarSlice from "../../../store/slice/snackbarSlice";
-
+import DeleteIcon from '@mui/icons-material/Delete'
+import { ReactComponent as Trash } from "../../../assets/icons/trash.svg"
 const RoomsView = ({ 
   submit, 
-  handleInputChange,
+  handleDeletButton,
   searchTerm,
   setSearchTerm,
   isListOpen,
@@ -119,7 +118,15 @@ const RoomsView = ({
                 filter: isListOpen ? "blur(5px)" : "none", 
                 transition: "filter 0.3s ease" 
               }}>
-            <Grid item >
+             <Grid item>
+             <IconButton
+              onClick={() =>
+               handleDeletButton(room.roomId)
+              }>
+              <DeleteIcon className={classes.delete}/>
+              </IconButton>
+              </Grid>   
+            <Grid item>
              <InputLabel className={classes.inputSelectLabelStyle}>
               חדר
              </InputLabel>
@@ -146,7 +153,7 @@ const RoomsView = ({
              <TextField
                 name="roomType"
                 value={room.roomFloor}
-               className={classes.shortTextField}
+               className={classes.shortTextField2}
              />
            </Grid>
            <Grid item >
@@ -156,7 +163,7 @@ const RoomsView = ({
              <TextField
                 name="size"
                 value={room.roomSize}
-               className={classes.shortTextField}
+               className={classes.shortTextField2}
              />
            </Grid>
            <Grid item >

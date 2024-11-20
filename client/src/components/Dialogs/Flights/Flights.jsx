@@ -49,6 +49,10 @@ const dispatch = useDispatch()
           timeout: 3000,
         })
       );
+      dispatch(dialogSlice.initialActiveButton())
+      dispatch(dialogSlice.initialDialogType())
+      dispatch(dialogSlice.closeModal())
+
      }else {
       let response = await axios.post("http://localhost:5000/flights",form)
       dispatch(

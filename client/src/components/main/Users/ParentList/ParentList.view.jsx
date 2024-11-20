@@ -17,6 +17,7 @@ import { useStyles } from "./ParentList.style";
 import SearchInput from "../../../ReusableComps/SearchInput/SearchInput";
 import { ReactComponent as DownloadIcon } from "../../../../assets/icons/download.svg";
 import { ReactComponent as EditIcon } from "../../../../assets/icons/edit.svg";
+import { ReactComponent as Profile } from "../../../../assets/icons/profile.svg";
 
 
 function ParentListView(props) {
@@ -140,7 +141,7 @@ function ParentListView(props) {
                           size={"small"}
                           onClick={() => handleDialogTypeOpen("addChild", user)}
                         >
-                          <EditIcon />
+                          <Profile />
                         </IconButton>
                       </TableCell>
                     </TableRow>

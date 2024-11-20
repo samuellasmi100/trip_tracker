@@ -28,6 +28,8 @@ const Rooms = () => {
         )
         dispatch(dialogSlice.closeModal())
         dispatch(roomsSlice.clearForm())
+        dispatch(dialogSlice.initialActiveButton())
+        dispatch(dialogSlice.initialDialogType())
       } catch (error) {
         dispatch(
           snackbarSlice.setSnackBar({
@@ -72,7 +74,7 @@ const Rooms = () => {
   );
 
   const handleRoomToggle = (room) => {
-    const isSelected = selectedRooms.some((r) => r.roomId === room.roomId);
+    const isSelected = selectedRooms.some((r) => Number(r.roomId) === Number(room.roomId));
     if (isSelected) {
       dispatch(roomsSlice.removeRoomFromForm({ roomId: room.roomId }));
     } else {
@@ -92,7 +94,11 @@ const Rooms = () => {
       setSearchTerm("")
     }
   };
- 
+  
+  const handleDeletButton = (roomId) => {
+    dispatch(roomsSlice.removeRoomFromForm({ roomId: roomId}));
+  }
+
 
    useEffect(() => {
     getAllRooms()
@@ -104,7 +110,7 @@ const Rooms = () => {
   return (
    <RoomsView 
    submit={submit} 
-   handleInputChange={handleInputChange}
+   handleDeletButton={handleDeletButton}
    searchTerm={searchTerm}
    setSearchTerm={setSearchTerm}
    isListOpen={isListOpen}

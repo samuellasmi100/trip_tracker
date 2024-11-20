@@ -47,6 +47,8 @@ const submit = async () => {
   try {
     await axios.post("http://localhost:5000/payments",form)
     dispatch(dialogSlice.closeModal())
+    dispatch(dialogSlice.initialActiveButton())
+    dispatch(dialogSlice.initialDialogType())
   } catch (error) {
     console.log(error)
   }
