@@ -20,7 +20,7 @@ const dispatch = useDispatch()
     let userId 
     if(userType === "parent"){
       userId = parentDetails.parent_id
-      dispatch(userSlice.updateFormField({ field: "parent_id",value:userId }))
+      dispatch(flightsSlice.updateFormField({ field: "parent_id",value:userId }))
     }else {
      const childId = childDetails.child_id
      const parentId = parentDetails.parent_id
@@ -30,7 +30,7 @@ const dispatch = useDispatch()
 
     dispatch(flightsSlice.updateFormField({ field: name, value }))
 
-    if (name === "birthDate") {
+    if (name === "birth_date") {
       const age = calculateAge(value);
       dispatch(flightsSlice.updateFormField({ field: "age", value: age }));
     }
@@ -86,12 +86,15 @@ const dispatch = useDispatch()
     const parentId = parentDetails.parent_id
     try {
       let response = await axios.get(`http://localhost:5000/flights/${parentId}`)
-       response.data[0].type = "edit"
-       dispatch(flightsSlice.updateForm(response.data[0]))
+      if(response.data.length > 0){
+        response.data[0].type = "edit"
+        dispatch(flightsSlice.updateForm(response.data[0]))
+      }
     } catch (error) {
       console.log(error)
     }
   }
+
   const getChildData = async () => {
     const childId= childDetails.child_id
     try {

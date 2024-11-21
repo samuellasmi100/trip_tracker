@@ -12,21 +12,34 @@ const Rooms = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isListOpen, setIsListOpen] = useState(false);
   const parentDetails = useSelector((state) => state.userSlice.parent);
-
+  const childDetails = useSelector((state) => state.userSlice.child);
+  const userType = useSelector((state) => state.userSlice.userType)
   const selectedRooms = useSelector((state) => state.roomsSlice.selectedRooms);
   let roomsChosen = parentDetails?.number_of_rooms - selectedRooms.length
-
+  const selectedChildRoomId = useSelector((state) => state.roomsSlice.selectedChildRoomId);
+  
    const submit = async () => {
       try {
+     
+        let response
         let parentId = parentDetails.parent_id
-        let response = await axios.post("http://localhost:5000/rooms",{selectedRooms,parentId})    
-        dispatch(
-          snackbarSlice.setSnackBar({
-            type: "success",
-            message: response.data,
-            timeout: 3000,
-          })
-        )
+        if(userType === "parne"){
+    
+          response = await axios.post("http://localhost:5000/rooms",{selectedRooms,parentId})    
+        }else {
+          let childId = childDetails.child_id
+          let roomData = {}
+          response = await axios.post(`http://localhost:5000/rooms/child/${childId}`,{parentId,selectedChildRoomId})    
+
+        }
+        // dispatch(
+        //   snackbarSlice.setSnackBar({
+        //     type: "success",
+        //     message: response.data,
+        //     timeout: 3000,
+        //   })
+        // )
+        dispatch(roomsSlice.resterChildRoom())
         dispatch(dialogSlice.closeModal())
         dispatch(roomsSlice.resetForm())
         dispatch(dialogSlice.initialActiveButton())
@@ -43,19 +56,23 @@ const Rooms = () => {
       }
    }
 
-   const handleInputChange = () => {
-
+   const handleCheckboxChange  = (roomId) => {
+    dispatch(roomsSlice.updateChildRoom(selectedChildRoomId === roomId ? null : roomId));
+    dispatch(roomsSlice.toggleExpandRoom(roomId));
    }
 
    const getParentRooms = async () => {
     try {
       let parentId = parentDetails.parent_id
-      let response = await axios.get(`http://localhost:5000/rooms/${parentId}`)   
+      let response = await axios.get(`http://localhost:5000/rooms/${parentId}`)  
+      if(userType === "child"){
+        dispatch(roomsSlice.updateRoomsList(response.data))
+      } 
       dispatch(roomsSlice.updateSelectedRoomsList(response.data))
     } catch (error) {
       console.log(error)
     }
-      }
+  }
 
    const getAllRooms = async () => {
     try {
@@ -70,8 +87,7 @@ const Rooms = () => {
     if(searchTerm !== ""){
       return room.roomId.includes(searchTerm)
     }
-  }
-    
+  } 
   );
 
   const handleRoomToggle = (room) => {
@@ -102,8 +118,10 @@ const Rooms = () => {
 
 
    useEffect(() => {
-    getAllRooms()
-   }, [])
+     if(userType === "parent"){
+      getAllRooms()
+     }
+   }, [userType])
    useEffect(() => {
     getParentRooms()
    }, [])
@@ -119,6 +137,7 @@ const Rooms = () => {
    roomsChosen={roomsChosen}
    filteredRooms={filteredRooms}
    handleRoomToggle={handleRoomToggle}
+   handleCheckboxChange={handleCheckboxChange}
    />
   );
 };

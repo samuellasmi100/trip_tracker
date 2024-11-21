@@ -32,7 +32,6 @@ const Guest = () => {
 
   const handleInputChange = (e) => {
     let { name, value,checked } = e.target
-    console.log(name, value,checked )
     let userId 
     if(userType === "parent"){
       userId = parentDetails.parent_id
@@ -48,7 +47,6 @@ const Guest = () => {
     }
     if(name === "flights"){
     value = checked
-    console.log(name,value)
     dispatch(userSlice.updateFormField({ field: name, value }))
     }else {
       dispatch(userSlice.updateFormField({ field: name, value }))

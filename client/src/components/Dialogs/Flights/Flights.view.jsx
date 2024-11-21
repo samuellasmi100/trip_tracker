@@ -24,10 +24,9 @@ const FlightsView = (props) => {
   const classes = useStyles();
   const form = useSelector((state) => state.flightsSlice.form)
   const parentDetails = useSelector((state) => state.userSlice.parent)
-  console.log(parentDetails)
+
 
   const handleFligthsInputsView = () => {
-    console.log(parentDetails.flights_direction)
     if (parentDetails.flights_direction === "round_trip") {
       return (
         <>
@@ -37,8 +36,8 @@ const FlightsView = (props) => {
             </InputLabel>
             <TextField
               type="date"
-              name="outboundFlightDate"
-              value={form?.outboundFlightDate}
+              name="outbound_flight_date"
+              value={form?.outbound_flight_date}
               className={classes.textField}
               onChange={handleInputChange}
             />
@@ -49,8 +48,8 @@ const FlightsView = (props) => {
             </InputLabel>
             <TextField
               type="date"
-              name="returnFlightDate"
-              value={form?.returnFlightDate}
+              name="return_flight_date"
+              value={form?.return_flight_date}
               className={classes.textField}
               onChange={handleInputChange}
             />
@@ -60,8 +59,8 @@ const FlightsView = (props) => {
               מספר טיסה הלוך
             </InputLabel>
             <TextField
-              name="flightNumber"
-              value={form?.outboundFlightNumber}
+              name="outbound_flight_number"
+              value={form?.outbound_flight_number}
               className={classes.textField}
               onChange={handleInputChange}
             />
@@ -71,8 +70,8 @@ const FlightsView = (props) => {
               מספר טיסה חזור
             </InputLabel>
             <TextField
-              name="flightNumber"
-              value={form?.returnFlightNumber}
+              name="return_flight_number"
+              value={form?.return_flight_number}
               className={classes.textField}
               onChange={handleInputChange}
             />
@@ -88,8 +87,8 @@ const FlightsView = (props) => {
             </InputLabel>
             <TextField
               type="date"
-              name="returnFlightDate"
-              value={form?.returnFlightDate}
+              name="return_flight_date"
+              value={form?.return_flight_date}
               className={classes.textField}
               onChange={handleInputChange}
             />
@@ -99,8 +98,8 @@ const FlightsView = (props) => {
               מספר טיסה חזור
             </InputLabel>
             <TextField
-              name="flightNumber"
-              value={form?.returnFlightNumber}
+              name="return_flight_number"
+              value={form?.return_flight_number}
               className={classes.textField}
               onChange={handleInputChange}
             />
@@ -116,24 +115,23 @@ const FlightsView = (props) => {
         </InputLabel>
         <TextField
           type="date"
-          name="outboundFlightDate"
-          value={form?.outboundFlightDate}
+          name="outbound_flight_date"
+          value={form?.outbound_flight_date}
           className={classes.textField}
           onChange={handleInputChange}
         />
       </Grid>
       <Grid item>
-        <InputLabel className={classes.inputLabelStyle}>
-          תאריך טיסה חזור
-        </InputLabel>
-        <TextField
-          type="date"
-          name="returnFlightDate"
-          value={form?.returnFlightDate}
-          className={classes.textField}
-          onChange={handleInputChange}
-        />
-      </Grid>
+            <InputLabel className={classes.inputLabelStyle}>
+              מספר טיסה הלוך
+            </InputLabel>
+            <TextField
+              name="outbound_flight_number"
+              value={form?.outbound_flight_number}
+              className={classes.textField}
+              onChange={handleInputChange}
+            />
+          </Grid>
     </>
      )
     }
@@ -155,8 +153,8 @@ const FlightsView = (props) => {
                 מספר דרכון
               </InputLabel>
               <TextField
-                name="passportNumber"
-                value={form.passportNumber}
+                name="passport_number"
+                value={form.passport_number}
                 className={classes.textField}
                 onChange={handleInputChange}
               />
@@ -167,8 +165,8 @@ const FlightsView = (props) => {
               </InputLabel>
               <TextField
                 type="date"
-                name="validityPassport"
-                value={form.validityPassport}
+                name="validity_passport"
+                value={form.validity_passport}
                 className={classes.textField}
                 onChange={handleInputChange}
               />
@@ -179,8 +177,8 @@ const FlightsView = (props) => {
               </InputLabel>
               <TextField
                 type="date"
-                name="birthDate"
-                value={form.birthDate}
+                name="birth_date"
+                value={form.birth_date}
                 className={classes.textField}
                 onChange={handleInputChange}
               />

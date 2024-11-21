@@ -23,7 +23,6 @@ const PaymentsView = (props) => {
   const formOfPayment = ["מזומן","העברה בנקאית","כרטיס אשראי"]
   const paymentCurrency = ["שקל","דולר","יורו"]
   const form = useSelector((state) => state.paymentsSlice.form)
-  console.log(form)
   const classes = useStyles();
   const dispatch = useDispatch()
   const {

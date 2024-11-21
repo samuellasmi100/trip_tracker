@@ -9,16 +9,16 @@ import {
   ListItem,
   ListItemText,
   Checkbox,
-  IconButton
+  IconButton,
+  FormControlLabel,
+  Collapse
 } from "@mui/material";
 import { useStyles } from "./Rooms.style";
 import { useSelector, useDispatch } from "react-redux";
 import * as dialogSlice from "../../../store/slice/dialogSlice";
-import * as roomsSlice from "../../../store/slice/roomsSlice";
-import * as userSlice from "../../../store/slice/userSlice";
-import * as snackbarSlice from "../../../store/slice/snackbarSlice";
 import DeleteIcon from '@mui/icons-material/Delete'
-import { ReactComponent as Trash } from "../../../assets/icons/trash.svg"
+import { Roofing } from "@mui/icons-material";
+
 const RoomsView = ({ 
   submit, 
   handleDeleteButton,
@@ -29,23 +29,32 @@ const RoomsView = ({
   roomsChosen,
   filteredRooms,
   handleRoomToggle,
+  handleCheckboxChange
  }) => {
 
   const classes = useStyles();
   const dispatch = useDispatch();
   const selectedRooms = useSelector((state) => state.roomsSlice.selectedRooms);
+   const userType = useSelector((state) => state.userSlice.userType)
+   const selectedChildRoomId = useSelector((state) => state.roomsSlice.selectedChildRoomId);
+   const expandedRoomId = useSelector((state) => state.roomsSlice.expandedRoomId);
 
+  
   return (
     <>
-      <Grid style={{ padding: "20px"}} 
-      >
+      <Grid style={{ padding: "20px"}}>
         <Grid item style={{ marginTop: "-10px" }}>
+          {userType === "parent" ? 
           <Typography>
              בעבור אורח זה אנא בחר עוד: {roomsChosen} חדרים
           </Typography>
+           :
+           <Typography>
+            בחר חדר עבור משתמש זה
+        </Typography> }
         </Grid>
-        <Grid item xs={12} style={{ }}>
-            <TextField
+        <Grid item xs={12}>  
+           <TextField
               className={classes.textField}
               onChange={(e) => setSearchTerm(e.target.value)}
               value={searchTerm}
@@ -111,22 +120,44 @@ const RoomsView = ({
           </Grid>
           {selectedRooms?.map((room) => {
             return(
+              <>
             <Grid item container
               xs={12}
               style={{
                 display: "flex",
                 flexDirection: "row",
                 justifyContent: "space-between",
-                filter: isListOpen ? "blur(5px)" : "none", 
-                transition: "filter 0.3s ease" 
+                // filter: isListOpen ? "blur(5px)" : "none", 
+                // transition: "filter 0.3s ease" 
               }}>
              <Grid item>
+              {userType === "parent" ? 
              <IconButton
               onClick={() =>
                handleDeleteButton(room.roomId)
               }>
               <DeleteIcon className={classes.delete}/>
               </IconButton>
+              : <FormControlLabel
+              style={{ marginTop:"18px",marginRight:"-12px"}}
+              control={
+                <Checkbox
+                 
+                  sx={{
+                    color: "#686B76",
+                    "&.Mui-checked": {
+                      color: "#54A9FF",
+                     
+                    },
+                  }}
+                  name="flights_direction"
+                  value="one_way_return"
+                  checked={expandedRoomId === room.roomId} 
+                  onChange={() => handleCheckboxChange(room.roomId)}
+                />
+              }
+              
+            />}
               </Grid>   
             <Grid item>
              <InputLabel className={classes.inputSelectLabelStyle}>
@@ -158,6 +189,7 @@ const RoomsView = ({
                className={classes.shortTextField2}
              />
            </Grid>
+           
            <Grid item >
              <InputLabel className={classes.inputSelectLabelStyle}>
                גודל
@@ -176,10 +208,26 @@ const RoomsView = ({
                 name="direction"
                 value={room.roomDirection}
                className={classes.shortTextField}
-
              />
            </Grid>
            </Grid>
+                  <Collapse in={expandedRoomId === room.roomId} timeout="auto" unmountOnExit>
+                  <Grid
+                    style={{
+                      border: "1px solid #494C55",
+                      padding: "10px",
+                      marginTop: "10px",
+                      marginBottom: "10px",
+                      height:"50px",
+                      borderRadius: "8px",
+                    }}
+                  >
+                    <Grid item>
+                      <Typography>חדר זה מכיל {room.base_occupancy} מיטות || מיטות פנויות: 4 מתוך {room.base_occupancy} </Typography>
+                    </Grid>
+                  </Grid>
+                </Collapse>
+                </>
             )
           })}
       </Grid>

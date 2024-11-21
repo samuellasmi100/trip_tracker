@@ -57,9 +57,7 @@ const submit = async () => {
 const getPayments = async () => {
 try {
   const parentId = parentDetails.parent_id;
-  console.log(parentId)
   let response = await axios.get(`http://localhost:5000/payments/${parentId}`)
-  console.log(response)
   if(response.data.length > 0){
     response.data[0].mainRemainsToBePaid = response.data[0].remains_to_be_paid
     dispatch(paymentsSlice.updateForm(response.data[0]));
