@@ -2,7 +2,26 @@ const router = require("express").Router();
 const notesService = require("./notesService")
 const uuid = require("uuid").v4;
 
+router.get("/child/:id", async (req, res, next) => {
+  try {
+    const childId = req.params.id
+    const response = await notesService.getChildNote(childId)
+    res.send(response)
 
+  } catch (error) {
+    return next(error);
+  }
+});
+router.get("/parent/:id", async (req, res, next) => {
+  try {
+    const childId = req.params.id
+    const response = await notesService.getChildNote(childId)
+    res.send(response)
+
+  } catch (error) {
+    return next(error);
+  }
+});
 router.get("/", async (req, res, next) => {
   try {
     const response = await notesService.getAll()
@@ -45,16 +64,7 @@ router.get("/:id", async (req, res, next) => {
     return next(error);
   }
 });
-router.get("/child/:id", async (req, res, next) => {
-  try {
-    const childId = req.params.id
-    const response = await notesService.getChildNote(childId)
-    res.send(response)
 
-  } catch (error) {
-    return next(error);
-  }
-});
 
 // router.put("/", async (req, res, next) => {
 //    const userData = req.body

@@ -15,9 +15,9 @@ router.post("/", async (req, res, next) => {
 });
 
 router.get("/:id", async (req, res, next) => {
-  const parentId = req.params.id
+  const familyId = req.params.id
   try {
-    const response = await paymentsService.getPayments(parentId)
+    const response = await paymentsService.getPayments(familyId)
     res.send(response)
 
   } catch (error) {
@@ -25,16 +25,6 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-
-router.put("/", async (req, res, next) => {
-  const UpdatePaymentsDetails = req.body
-  try {
-   await paymentsService.updatePayments(UpdatePaymentsDetails)
-   res.send("העדכון עבר בהצלחה")
-  } catch (error) {
-    return next(error);
-  }
-});
 
 
 module.exports = router;

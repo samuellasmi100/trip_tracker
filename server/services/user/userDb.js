@@ -1,34 +1,66 @@
 const connection = require("../../db/connection-wrapper");
 const userQuery = require("../../sql/query/userQuery")
 
-const addParent = async (userData) => {
+const addGuest = async (data) => {
   try {
-    const sql = userQuery.addParent(userData)
-    const parameters = Object.values(userData)
+    const sql = userQuery.addGuest(data)
+    const parameters = Object.values(data)
     await connection.executeWithParameters(sql,parameters)
   } catch (error) { 
     console.log(error)
   }
 }
 
-const addChild = async (userData) => {
+const addFamily = async (data) => {
+  try {
+    const sql = userQuery.addFamily(data)
+    const parameters = Object.values(data)
+    await connection.executeWithParameters(sql,parameters)
+  } catch (error) { 
+    console.log(error)
+  }
+}
+
+const addChild = async (data) => {
     try {
-      const sql = userQuery.addChild(userData)
-      const parameters = Object.values(userData)
+      const sql = userQuery.addChild(data)
+      const parameters = Object.values(data)
       await connection.executeWithParameters(sql,parameters)
     } catch (error) { 
       console.log(error)
     }
 }
 
-const getMainUsers = async () => {
+const getFamilyMambers = async (id) => {
     try {
-      const sql = userQuery.getMainUsers()
-      const response = await connection.execute(sql)
+      const sql = userQuery.getFamilyMambers()
+      const parameters = [id]
+      const response = await connection.executeWithParameters(sql,parameters)
       return response
     } catch (error) { 
       console.log(error)
     }
+}
+
+const getFamilies = async () => {
+  try {
+    const sql = userQuery.getFamilies()
+    const response = await connection.execute(sql)
+    return response
+  } catch (error) { 
+    console.log(error)
+  }
+}
+
+const getAllFamilyMambers = async (id) => {
+  try {
+    const sql = userQuery.getAllFamilyMambers()
+    const parameters = [id]
+    const response = await connection.executeWithParameters(sql)
+    return response
+  } catch (error) { 
+    console.log(error)
+  }
 }
 
 const getChildByParentId = async (id) => {
@@ -43,13 +75,13 @@ const getChildByParentId = async (id) => {
     }
 }
 
-const updateParentUser = async (userData) => {
+const updateGuest = async (data) => {
     try {
-      const parentId = userData.parent_id
-      delete userData.parent_id
-      delete userData.remains_to_be_paid
-      const sql = userQuery.updateParentUser(userData,parentId)
-      const parameters = Object.values(userData)
+      const parentId = data.parent_id
+      delete data.parent_id
+      delete data.family_name
+      const sql = userQuery.updateGuest(data,parentId)
+      const parameters = Object.values(data)
       const response = await connection.executeWithParameters(sql,parameters)
       return response
      
@@ -58,13 +90,14 @@ const updateParentUser = async (userData) => {
     }
 }
 
-const updateChildUser = async (userData) => {
+const updateChild = async (data) => {
     try {
-      const childId = userData.child_id
-      delete userData.child_id
-      delete userData.flights
-      const sql = userQuery.updateChildUser(userData,childId)
-      const parameters = Object.values(userData)
+      const childId = data.child_id
+      delete data.child_id
+      delete data.family_name
+
+      const sql = userQuery.updateChild(data,childId)
+      const parameters = Object.values(data)
       const response = await connection.executeWithParameters(sql,parameters)
       return response
      
@@ -72,11 +105,16 @@ const updateChildUser = async (userData) => {
       console.log(error)
     }
 }
+
+
 module.exports = {
-    addParent,
+    addGuest,
     addChild,
-    getMainUsers,
+    getFamilyMambers,
     getChildByParentId,
-    updateParentUser,
-    updateChildUser
+    updateGuest,
+    updateChild,
+    addFamily,
+    getFamilies,
+    getAllFamilyMambers
 }

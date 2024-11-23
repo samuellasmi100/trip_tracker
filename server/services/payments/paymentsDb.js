@@ -13,40 +13,38 @@ const getPayments = async (id) => {
     }
 }
 
+const numericAmount = (val) => {
+  return  parseFloat(val.replace(/,/g, ""));
+ }
+
 const addPayments = async (paymentDetails) => {
 
+  const remainsToBePaid = numericAmount(paymentDetails.remainsToBePaid)
+  const amountReceived = numericAmount(paymentDetails.amountReceived)
+  const result = remainsToBePaid - amountReceived
+  const rawValue = result.toString().replace(/,/g, "");
+  const formattedValue = rawValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   try {
     const sql = paymentsQuery.addPayments()
     const parameters = [
-      paymentDetails.parentId,
       paymentDetails.paymentDate,
       paymentDetails.amount,
       paymentDetails.formOfPayment,
-      paymentDetails.remainsToBePaid,
+      paymentDetails.remainsToBePaid === "" ? numericAmount(paymentDetails.amount) - numericAmount(paymentDetails.amountReceived) : formattedValue,
       paymentDetails.paymentCurrency,
       paymentDetails.amountReceived,
+      paymentDetails.familyId,
     ]
      await connection.executeWithParameters(sql,parameters)
-
-   
   } catch (error) { 
     console.log(error)
   }
 }
 
-const updatePayments = async (paymentDetails) => {
-  try {
-    const sql = paymentsQuery.updatePayments()
-    const parameters = [parentId,roomId]
-     await connection.executeWithParameters(sql,parameters)
-  } catch (error) { 
-    console.log(error)
-  }
-}
+
 
 
 module.exports = {
   addPayments,
-  getPayments,
-  updatePayments
+  getPayments
 }

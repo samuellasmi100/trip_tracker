@@ -1,47 +1,115 @@
-
-
 const getAll = () => {
   return `SELECT rooms_id as roomId,type as roomType,size as roomSize,direction as roomDirection,floor as roomFloor FROM rooms WHERE is_taken = 0;`
 }
-const getParentRoom = () => {
-  return `
-    SELECT r.rooms_id as roomId,r.type as roomType,r.size as roomSize,r.direction as roomDirection,r.floor as roomFloor 
-FROM rooms r 
-join parent_room_details prd
-on prd.room_id = r.rooms_id
-where prd.parent_id = ?`
+const getFamilyRoom = () => {
+return `
+  SELECT 
+    r.rooms_id AS roomId,
+    r.type AS roomType,
+    r.size AS roomSize,
+    r.direction AS roomDirection,
+    r.floor AS roomFloor,
+    r.base_occupancy,
+    COALESCE(ura.people_count, 0) AS peopleCount
+FROM rooms r
+JOIN family_room_details frd
+    ON frd.room_id = r.rooms_id
+LEFT JOIN (
+    SELECT 
+        room_id, 
+        COUNT(*) AS people_count
+    FROM user_room_assignments
+    GROUP BY room_id
+) ura
+    ON ura.room_id = r.rooms_id
+WHERE frd.family_id = ?`
 }
+
 const assignMainRoom = () => {
   return `
-  INSERT INTO parent_room_details(parent_id,room_id) VALUES(?,?)`;
+  INSERT INTO family_room_details(family_id,room_id) VALUES(?,?)`;
 }
-const updateMainRoom = () => {
 
+const assignParentRoom = () => {
+  return `
+  INSERT INTO user_room_assignments(parent_id,room_id,family_id) VALUES(?,?,?)`;
+}
+
+const assignChildRoom = () => {
+  return `
+  INSERT INTO user_room_assignments(child_id,room_id,family_id) VALUES(?,?,?)`;
+}
+
+const getParentRoom = () => {
+  return `SELECT r.rooms_id as roomId,r.type as roomType,r.size as roomSize,r.direction as roomDirection,r.floor as roomFloor,base_occupancy 
+FROM rooms r 
+join user_room_assignments ur
+on ur.room_id = r.rooms_id
+where ur.parent_id = ?`
+}
+
+const getChildRoom = () => {
+  return `SELECT r.rooms_id as roomId,r.type as roomType,r.size as roomSize,r.direction as roomDirection,r.floor as roomFloor,base_occupancy 
+FROM rooms r 
+join user_room_assignments ur
+on ur.room_id = r.rooms_id
+where ur.child_id = ?`
+}
+
+const updateMainRoom = () => {
   return  `
-  INSERT INTO parent_room_details (room_id, parent_id)
+  INSERT INTO family_room_details (room_id, parent_id)
   VALUES ${roomDetails.map(() => '(?, ?)').join(', ')}
   ON DUPLICATE KEY UPDATE room_id = VALUES(room_id);
 `;
 }
+
+const updateAssignParentRoom = () => {
+  return `UPDATE user_room_assignments SET room_id = ? where parent_id = ?`
+}
+
+const updateAssignChildRoom = () => {
+  return `UPDATE user_room_assignments SET room_id = ? where child_id = ?`
+}
+
+const removeUserAssignMainRoom = () => {
+  return `DELETE FROM user_room_assignments where family_id = ?`
+}
+const removeUserAssignMainRoomOfUser = () => {
+  return `DELETE FROM user_room_assignments where room_id = ? AND family_id = ? `
+}
+
+
 const removeMainRoom = () => {
   return `
-   DELETE FROM parent_room_details WHERE parent_id= ?`;
+   DELETE FROM family_room_details WHERE family_id= ?`;
 }
+
 const lockRoom = () => {
   return `
   update rooms set is_taken = ? where rooms_id = ?`;
 }
+
 const unLockRoom = () => {
   return `
   update rooms set is_taken = ? where rooms_id = ?`;
 }
+
 module.exports = {
   getAll,
   assignMainRoom,
   lockRoom,
-  getParentRoom,
+  getFamilyRoom,
   updateMainRoom,
   removeMainRoom,
-  unLockRoom
+  unLockRoom,
+  assignParentRoom,
+  assignChildRoom,
+  getParentRoom,
+getChildRoom,
+updateAssignParentRoom,
+updateAssignChildRoom,
+removeUserAssignMainRoom,
+removeUserAssignMainRoomOfUser
 }
 

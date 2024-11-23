@@ -3,19 +3,10 @@ const flightsQuery = require("../../sql/query/fligthsQuery")
 
 
 
-const addParentFlightsDetails = async (paymentsData) => {
+const addParentFlightsDetails = async (flightsData) => {
   try {
-    const sql = flightsQuery.addParentFlightsDetails()
-    const parameters = [
-      paymentsData.parent_id,
-      paymentsData.validityPassport,
-      paymentsData.passportNumber,
-      paymentsData.birthDate,
-      paymentsData.outboundFlightDate,
-      paymentsData.returnFlightDate,
-      paymentsData.flightNumber,
-      paymentsData.age,
-    ]
+    const sql = flightsQuery.addParentFlightsDetails(flightsData)
+    const parameters = Object.values(flightsData)
     await connection.executeWithParameters(sql, parameters)
 
 
@@ -24,42 +15,24 @@ const addParentFlightsDetails = async (paymentsData) => {
   }
 }
 
-const updateParentFlightsDetails = async (paymentsData) => {
-
+const updateParentFlightsDetails = async (flightsData) => {
+ const parentId = flightsData.parent_id
+ delete flightsData.parent_id
+ delete flightsData.type
+ delete flightsData.parentId
   try {
-    const sql = flightsQuery.updateParentFlightsDetails()
-    const parameters = [
-      paymentsData.validityPassport,
-      paymentsData.passportNumber,
-      paymentsData.birthDate,
-      paymentsData.outboundFlightDate,
-      paymentsData.returnFlightDate,
-      paymentsData.flightNumber,
-      paymentsData.age,
-      paymentsData.parent_id,
-
-    ]
+    const sql = flightsQuery.updateParentFlightsDetails(flightsData,parentId)
+    const parameters = Object.values(flightsData)
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     console.log(error)
   }
 }
 
-const addChildFlightsDetails = async (paymentsData) => {
+const addChildFlightsDetails = async (flightsData) => {
   try {
-    const sql = flightsQuery.addChildFlightsDetails()
-    const parameters = [
-      paymentsData.child_id,
-      paymentsData.parent_id,
-      paymentsData.validityPassport,
-      paymentsData.passportNumber,
-      paymentsData.birthDate,
-      paymentsData.outboundFlightDate,
-      paymentsData.returnFlightDate,
-      paymentsData.flightNumber,
-      paymentsData.age,
-    ]
-
+    const sql = flightsQuery.addChildFlightsDetails(flightsData)
+    const parameters = Object.values(flightsData)
     await connection.executeWithParameters(sql, parameters)
 
 
@@ -68,22 +41,14 @@ const addChildFlightsDetails = async (paymentsData) => {
   }
 }
 
-const updateChildrenFlightsDetails = async (paymentsData) => {
-  console.log(paymentsData,'paymentsData')
+const updateChildrenFlightsDetails = async (flightsData) => {
+  const childId = flightsData.child_id
+  delete flightsData.child_id
+  delete flightsData.type
+  delete flightsData.childId
   try {
-    const sql = flightsQuery.updateChildrenFlightsDetails()
-    const parameters = [
-      paymentsData.parentId,
-      paymentsData.validityPassport,
-      paymentsData.passportNumber,
-      paymentsData.birthDate,
-      paymentsData.outboundFlightDate,
-      paymentsData.returnFlightDate,
-      paymentsData.flightNumber,
-      paymentsData.age,
-      paymentsData.childId
-    ]
-    console.log(parameters,'parameters')
+    const sql = flightsQuery.updateChildrenFlightsDetails(flightsData,childId)
+    const parameters = Object.values(flightsData)
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     console.log(error)

@@ -1,28 +1,41 @@
 const userDb = require("./userDb")
 
-const addParent = async (userData) => {
-    return userDb.addParent(userData)
+const addGuest = async (data) => {
+    return userDb.addGuest(data)
 }
-const addChild = async (userData) => {
-    return userDb.addChild(userData)
+const addFamily = async (data) => {
+    return userDb.addFamily(data)
 }
-const getMainUsers = async () => {
-    return userDb.getMainUsers()
+const addChild = async (data) => {
+    return userDb.addChild(data)
+}
+const getFamilyMambers = async (id) => {
+    return userDb.getFamilyMambers(id)
 }
 const getChildByParentId = async (id) => {
-   return userDb.getChildByParentId(id)
-  }
-  const updateParentUser = async (userData) => {
-    return userDb.updateParentUser(userData)
-   }
-   const updateChildUser = async (userData) => {
-    return userDb.updateChildUser(userData)
-   }
+    return userDb.getChildByParentId(id)
+}
+const updateGuest = async (data) => {
+    return userDb.updateGuest(data)
+}
+const updateChild = async (data) => {
+    return userDb.updateChild(data)
+}
+const getFamilies = async () => {
+    return userDb.getFamilies()
+}
+const getAllFamilyMambers = async (id) => {
+    return userDb.getAllFamilyMambers(id)
+}
+
 module.exports = {
-    addParent,
+    addGuest,
     addChild,
-    getMainUsers,
+    getFamilyMambers,
     getChildByParentId,
-    updateParentUser,
-    updateChildUser
+    updateGuest,
+    updateChild,
+    addFamily,
+    getFamilies,
+    getAllFamilyMambers
 }

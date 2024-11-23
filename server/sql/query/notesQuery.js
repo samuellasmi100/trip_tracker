@@ -2,13 +2,16 @@ const getAll = () => {
 return `SELECT note FROM notes;`
 }
 const addParentNotes = () => {
-    return `INSERT INTO notes (note,parent_id) VALUES (?,?)`
+    return `INSERT INTO notes (note,parent_id,family_id) VALUES (?,?,?)`
 }
 const addChildNotes = () => {
-    return `INSERT INTO notes (note,child_id,parent_id) VALUES (?,?,?)`
+    return `INSERT INTO notes (note,child_id,family_id) VALUES (?,?,?)`
 }
 const getParentNote = () => {
     return `SELECT * FROM notes where parent_id = ?;`
+}
+const getFamilyNote = () => {
+    return `SELECT * FROM notes where family_id = ?;`
 }
 const getChildNote = () => {
     return `SELECT * FROM notes where child_id = ?;`
@@ -21,4 +24,5 @@ module.exports = {
     addChildNotes,
     getParentNote,
     getChildNote,
+    getFamilyNote
   }

@@ -22,6 +22,36 @@ const assignMainRoom = async (parentId,roomId) => {
     console.log(error)
   }
 }
+
+const assignRoom = async (userId,roomId,type,familyId) => {
+  try {
+    let sql
+    if(type === "parent"){
+      sql = roomsQuery.assignParentRoom()
+    }else {
+      sql = roomsQuery.assignChildRoom()
+    }  
+    const parameters = [userId,roomId,familyId]
+    await connection.executeWithParameters(sql,parameters) 
+  } catch (error) { 
+    console.log(error)
+  }
+}
+
+const updateAssignRoom = async (userId,roomId,type,familyId) => {
+  try {
+    let sql
+    if(type === "parent"){
+      sql = roomsQuery.updateAssignParentRoom()
+    }else {
+      sql = roomsQuery.updateAssignChildRoom()
+    }  
+    const parameters = [roomId,userId]
+    await connection.executeWithParameters(sql,parameters) 
+  } catch (error) { 
+    console.log(error)
+  }
+}
 const updateMainRoom = async (roomDetails,parentId) => {
  
   try {
@@ -36,6 +66,7 @@ const updateMainRoom = async (roomDetails,parentId) => {
     console.log(error)
   }
 }
+
 const removeMainRoom = async (parentId) => {
   try {
     const sql = roomsQuery.removeMainRoom()
@@ -45,10 +76,10 @@ const removeMainRoom = async (parentId) => {
     console.log(error)
   }
 }
-const getParentRoom = async (id) => {
- 
+
+const getFamilyRoom = async (id) => {
   try {
-    const sql = roomsQuery.getParentRoom()
+    const sql = roomsQuery.getFamilyRoom()
     const parameters = [id]
     const response = await connection.executeWithParameters(sql,parameters)
    return response
@@ -68,8 +99,8 @@ const unLockRoom = async (roomId) => {
     console.log(error)
   }
 }
+
 const lockRoom = async (roomId) => {
-  console.log(roomId)
   try {
     let sql = roomsQuery.lockRoom()
      const parameters = [1,roomId]
@@ -78,12 +109,59 @@ const lockRoom = async (roomId) => {
     console.log(error)
   }
 }
+
+const getChossenRoom = async (userId,type) => {
+  try {
+    let sql
+    if(type === "parent"){
+      sql = roomsQuery.getParentRoom()
+    }else {
+      sql = roomsQuery.getChildRoom()
+    }  
+     const parameters = [userId]
+     const response = await connection.executeWithParameters(sql,parameters)
+      return response
+
+  } catch (error) { 
+    console.log(error)
+  }
+}
+
+const removeUserAssignMainRoom = async (familyId) => {
+  try {
+     let sql = roomsQuery.removeUserAssignMainRoom()
+     const parameters = [familyId]
+     const response = await connection.executeWithParameters(sql,parameters)
+      return response
+
+  } catch (error) { 
+    console.log(error)
+  }
+}
+
+const removeUserAssignMainRoomOfUser = async (familyId,roomId) => {
+  console.log(familyId,roomId)
+  try {
+     let sql = roomsQuery.removeUserAssignMainRoomOfUser()
+     const parameters = [roomId,familyId]
+     const response = await connection.executeWithParameters(sql,parameters)
+      return response
+
+  } catch (error) { 
+    console.log(error)
+  }
+}
 module.exports = {
   getAll,
   assignMainRoom,
-  getParentRoom,
+  getFamilyRoom,
   updateMainRoom,
   removeMainRoom,
   unLockRoom,
-  lockRoom
+  lockRoom,
+  assignRoom,
+  getChossenRoom,
+  updateAssignRoom,
+  removeUserAssignMainRoom,
+  removeUserAssignMainRoomOfUser
 }
