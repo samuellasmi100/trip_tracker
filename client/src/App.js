@@ -12,8 +12,9 @@ import { useDispatch, useSelector } from "react-redux";
 // import * as actionSnackBar from "./store/slice/snackbarSlice";
 // import ApiLogs from "./apis/logRequest";
 import "moment/locale/en-gb";
-import UserLogs from "./components/main/Users/ParentList/ParentList";
+import FamilyList from "./components/main/body/Families/FamilyList/FamilyList";
 import Header from "./components/main/header/Header";
+import Sidebar from "./components/main/aside/Sidebar";
 
 function App() {
  
@@ -21,11 +22,12 @@ function App() {
   return (
     <Grid className="App" style={{ height:"100vh",width:"100vw"}}>
         <SnackBar />
+        <Sidebar /> 
        <Grid item xs={10} style={{padding:"12px"}}>
          <Header />
         </Grid>
         <Grid item xs={10} style={{padding:"12px"}}>
-         <UserLogs />
+         <FamilyList />
          </Grid>
           {/* <Routes>
             

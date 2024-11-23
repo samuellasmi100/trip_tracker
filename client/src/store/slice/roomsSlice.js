@@ -32,13 +32,14 @@ export const roomsSlice = createSlice({
     resetForm: (state) => {
       state.selectedRooms = []; 
     },
-    updateChildRoom: (state, action) => {
-      state.selectedChildRoomId = action.payload; 
+    updateChossenRoom: (state, action) => {
+      state.selectedChildRoomId = action.payload;
+      state.expandedRoomId = action.payload 
     },
     toggleExpandRoom: (state, action) => {
       state.expandedRoomId = state.expandedRoomId === action.payload ? null : action.payload;
     },
-    resterChildRoom:(state, action) => {
+    resetChildRoom:(state, action) => {
       state.selectedChildRoomId = null
       state.expandedRoomId = null
     },
@@ -48,8 +49,8 @@ export const roomsSlice = createSlice({
 });
 
 export const { addRoomToForm,removeRoomFromForm,resetForm,
-  updateRoomsList,updateSelectedRoomsList,updateChildRoom,
-  toggleExpandRoom ,resterChildRoom
+  updateRoomsList,updateSelectedRoomsList,updateChossenRoom,
+  toggleExpandRoom ,resetChildRoom
 } = roomsSlice.actions;
 
 export default roomsSlice.reducer;

@@ -13,59 +13,40 @@ import {
   FormControlLabel,
   Collapse
 } from "@mui/material";
-import { useStyles } from "./Rooms.style";
+import { useStyles } from "./RoomSelector.style";
 import { useSelector, useDispatch } from "react-redux";
 import * as dialogSlice from "../../../store/slice/dialogSlice";
 import DeleteIcon from '@mui/icons-material/Delete'
 import { Roofing } from "@mui/icons-material";
 
-const RoomsView = ({ 
+const RoomSelector = ({ 
   submit, 
-  handleDeleteButton,
   searchTerm,
   setSearchTerm,
   isListOpen,
   setIsListOpen,
-  roomsChosen,
   filteredRooms,
-  handleRoomToggle,
   handleCheckboxChange
  }) => {
 
   const classes = useStyles();
   const dispatch = useDispatch();
   const selectedRooms = useSelector((state) => state.roomsSlice.selectedRooms);
-   const userType = useSelector((state) => state.userSlice.userType)
-   const selectedChildRoomId = useSelector((state) => state.roomsSlice.selectedChildRoomId);
    const expandedRoomId = useSelector((state) => state.roomsSlice.expandedRoomId);
-
+console.log(selectedRooms)
   
   return (
     <>
       <Grid style={{ padding: "20px"}}>
-        <Grid item style={{ marginTop: "-10px" }}>
-          {userType === "parent" ? 
-          <Typography>
-             בעבור אורח זה אנא בחר עוד: {roomsChosen} חדרים
-          </Typography>
-           :
+        <Grid item style={{ marginTop: "-20px",marginBottom:"8px" }}>
            <Typography>
             בחר חדר עבור משתמש זה
-        </Typography> }
+        </Typography> 
         </Grid>
-        <Grid item xs={12}>  
-           <TextField
-              className={classes.textField}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              value={searchTerm}
-              onMouseEnter={() => setIsListOpen(true)}
-              onMouseLeave={() => setIsListOpen(false)}
-            />
-           
-          </Grid>
+     
           <Grid item xs={12} style={{position:'relative'}}> 
           <List 
-            onMouseEnter={() => setIsListOpen(true)}
+            // onMouseEnter={() => setIsListOpen(true)}
           style={{
             maxHeight:"260px",
             overflow:"auto", 
@@ -88,34 +69,15 @@ const RoomsView = ({
               },
               '&::-webkit-scrollbar-thumb': {
                 background: '#707079',
-                // background: theme.palette.svg.clearIcon,
                 borderRadius: '4px',
                 width: '2px',
                 height: '6px'
               },
               '& li:hover': {
                 background: '#babec7'
-                // backgroundColor: theme.palette.modal.primary
               }
             }}
           >
-
-        {filteredRooms.map((room) => (
-          <ListItem
-          style={{height:"50px",marginTop:"1px"}}
-            key={room.roomId}
-            onClick={() => handleRoomToggle(room)}
-          >
-            <Checkbox
-              style={{color:"white"}}
-              checked={selectedRooms.some((r) => r.roomId === room.roomId)}
-            />
-            <ListItemText
-             style={{}}
-              primary={room.roomId}
-            />
-          </ListItem>
-        ))}
           </List>
           </Grid>
           {selectedRooms?.map((room) => {
@@ -131,14 +93,7 @@ const RoomsView = ({
                 // transition: "filter 0.3s ease" 
               }}>
              <Grid item>
-              {userType === "parent" ? 
-             <IconButton
-              onClick={() =>
-               handleDeleteButton(room.roomId)
-              }>
-              <DeleteIcon className={classes.delete}/>
-              </IconButton>
-              : <FormControlLabel
+          <FormControlLabel
               style={{ marginTop:"18px",marginRight:"-12px"}}
               control={
                 <Checkbox
@@ -157,7 +112,7 @@ const RoomsView = ({
                 />
               }
               
-            />}
+            />
               </Grid>   
             <Grid item>
              <InputLabel className={classes.inputSelectLabelStyle}>
@@ -223,7 +178,7 @@ const RoomsView = ({
                     }}
                   >
                     <Grid item>
-                      <Typography>חדר זה מכיל {room.base_occupancy} מיטות || מיטות פנויות: 4 מתוך {room.base_occupancy} </Typography>
+                      <Typography>חדר זה מכיל {room.base_occupancy} מיטות || מיטות פנויות: {room.base_occupancy - room.peopleCount} </Typography>
                     </Grid>
                   </Grid>
                 </Collapse>
@@ -250,4 +205,4 @@ const RoomsView = ({
   );
 };
 
-export default RoomsView;
+export default RoomSelector;

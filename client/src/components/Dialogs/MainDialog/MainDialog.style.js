@@ -11,13 +11,12 @@ export const useStyles = makeStyles((theme) => ({
     backgroundColor: "#2D2D2D !important",
   
   },
+
   navButton:{
     color: "#757882 !important",
-    fontSize: "1.125rem",
+    fontSize: "2px",
     textTransform: "capitalize !important",
-    width: "90px ",
     height: "32px",
-    background: "",
     borderRadius: "4px",
     opacity: 1,
     "&.active": {

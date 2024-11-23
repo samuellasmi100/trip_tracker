@@ -5,7 +5,8 @@ export const dialogSlice = createSlice({
   initialState: {
     open:false,
     type:"addParent",
-    activeButton:"עדכון אורח"
+    activeButton:"עדכון אורח",
+   
   },
   reducers: {
     openModal: (state, action) => {

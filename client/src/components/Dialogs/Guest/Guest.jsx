@@ -16,7 +16,7 @@ const Guest = () => {
   const dispatch = useDispatch();
   const areaCodes = ["052", "053", "054", "058"];
   const childDetails = useSelector((state) => state.userSlice.child)
-  
+  const familyDetails = useSelector((state) => state.userSlice.family)
 
   const handleButtonString = () => {
     if (dialogType === "addParent") {
@@ -27,48 +27,53 @@ const Guest = () => {
       return "הוסף בן משפחה";
     }else if (dialogType === "editChild") {
       return  "עדכן בן משפחה"
+    }else if (dialogType === "addFamily"){
+      return "הוסף משפחה"
     }
   };
 
   const handleInputChange = (e) => {
     let { name, value,checked } = e.target
-    let userId 
-    if(userType === "parent"){
-      userId = parentDetails.parent_id
-      dispatch(userSlice.updateFormField({ field: "parent_id",value:userId }))
-    }else {
-
-      userId = childDetails.child_id
-      dispatch(userSlice.updateFormField({ field: "child_id",value:userId }))
+    let family_id = familyDetails.family_id
+    if(name === "total_amount"){
+      const rawValue = value.replace(/,/g, "");
+      const formattedValue = rawValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      dispatch(userSlice.updateFormField({ field: "total_amount",value:formattedValue }))
     }
-    if(name === "flights_direction"){
+    else if(name === "flights_direction"){
       dispatch(userSlice.updateFormField({ field: "flights_direction", value:checked ? e.target.value : "" }))
-
     }
-    if(name === "flights"){
+    else if(name === "flights"){
     value = checked
     dispatch(userSlice.updateFormField({ field: name, value }))
     }else {
       dispatch(userSlice.updateFormField({ field: name, value }))
     }
+    dispatch(userSlice.updateFormField({ field: "family_id",value:family_id }))
   };
   
   const submit = async () => {
     try {
       let response
-      if (dialogType === "addChild") {
+      if (dialogType === "addChild") {      
         response = await axios.post("http://localhost:5000/user/child",form);
+        dispatch(userSlice.updateGuets(response.data))
         dispatch(userSlice.resetForm())
       } else if (dialogType === "addParent") {
         response = await axios.post("http://localhost:5000/user", form);
         dispatch(userSlice.resetForm())
       } else if (dialogType === "editParent") {
         response = await axios.put(`http://localhost:5000/user`, form);
+        dispatch(userSlice.updateGuets(response.data))
         dispatch(userSlice.resetForm())
       } else if (dialogType === "editChild") {
         response = await axios.put("http://localhost:5000/user/child",form)
+        dispatch(userSlice.updateGuets(response.data))
         dispatch(userSlice.updateChild({}))
         dispatch(userSlice.updateForm({}))
+      }else if(dialogType === "addFamily"){
+        response = await axios.post("http://localhost:5000/user/family", form);
+        dispatch(userSlice.resetForm())
       }
        dispatch(
           snackBarSlice.setSnackBar({

@@ -1,22 +1,14 @@
 import React, { useState } from "react";
 import {
-  Button,
-  Checkbox,
   Dialog,
-  FormControlLabel,
   Grid,
-  Typography,
-  TextField,
-  InputLabel,
-  Select,
-  MenuItem,
-  FormControl,
-  IconButton,
-  setRef,
 } from "@mui/material";
+
 import { useStyles } from "./MainDialog.style";
+import { useSelector } from "react-redux";
 
 const MainDialogView = (props) => {
+  const dialogType = useSelector((state) => state.userSlice.dialogType)
   const {
     dialogOpen,
     closeModal,

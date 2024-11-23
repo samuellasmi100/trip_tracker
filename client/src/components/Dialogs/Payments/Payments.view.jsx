@@ -52,7 +52,7 @@ const PaymentsView = (props) => {
               </InputLabel>
               <TextField
                 name="amountReceived"
-                // value={form.amountReceived}
+                value={form.amountReceived}  
                 className={classes.textField}
                 onChange={handleInputChange}
 
@@ -91,7 +91,6 @@ const PaymentsView = (props) => {
                     sx: {
                       color: "#ffffff !important",
                       bgcolor: "#222222",
-                      paddingTop: "110px !important",
                     },
                   },
               }}>

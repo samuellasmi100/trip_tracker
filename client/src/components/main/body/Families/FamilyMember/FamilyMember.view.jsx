@@ -9,17 +9,19 @@ import {
     TableRow,
   } from "@mui/material";
   import React from "react";
-  import { useStyles } from "./ChildDetails.style";
-  import { ReactComponent as DownloadIcon } from "../../../../assets/icons/download.svg";
-  import { ReactComponent as EditIcon } from "../../../../assets/icons/edit.svg";
+  import { useStyles } from "./FamilyMember.style";
+  import { ReactComponent as EditIcon } from "../../../../../assets/icons/edit.svg";
   import DescriptionIcon from '@mui/icons-material/Description';
-   import { useSelector } from "react-redux";
+  import { useSelector } from "react-redux";
+  import SearchInput from "../../../../ReusableComps/SearchInput/SearchInput";
+  import { ReactComponent as DownloadIcon } from "../../../../../assets/icons/download.svg";
+  import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
+   import AddBoxIcon from '@mui/icons-material/AddBox';
 
-  function ChildDetailsView({childDataDetails,handleDialogTypeOpen}) {
-   const childrenDetails = useSelector((state) => state.userSlice.children)
-   const child = useSelector((state) => state.userSlice.child)
- 
-    const classes = useStyles();
+  function FamilyMemberView({childDataDetails,handleDialogTypeOpen}) {
+   const guests = useSelector((state) => state.userSlice.guests)
+   const isParentIdExist = guests.some((key) => {return key.parent_id})
+   const classes = useStyles();
 
     const headers = [
       "שם פרטי",
@@ -30,7 +32,33 @@ import {
     ];
     
     return (
-       <Grid item xs={12} style={{ border: "1px solid rgb(61, 63, 71)",background: "rgb(45, 45, 45)",width:"30vw",marginTop:"35px" }}>
+       <Grid item xs={12} style={{ border: "1px solid rgb(61, 63, 71)",background: "rgb(45, 45, 45)",width:"40vw"}}>
+          <Grid
+        item
+        xs={12}
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          borderRadius: "4px",
+        }}
+      >
+        <Grid style={{ display: "flex", justifyContent: "space-between" }} item>
+          <Grid item style={{ marginRight: "8px", marginTop: "5px" }}>
+            <SearchInput />
+          </Grid>
+          <Grid item style={{ marginRight: "8px", marginTop: "5px" }}>
+            <IconButton className={classes.downloadButton}>
+              <DownloadIcon style={{ color: "#54A9FF" }} />
+            </IconButton>
+          </Grid>
+        </Grid>
+
+        <Grid>
+          <IconButton onClick={() => handleDialogTypeOpen(isParentIdExist ? "addChild" : "addParent")}>
+            <AddBoxIcon style={{ color: "#54A9FF", fontSize: "30px" }} />
+          </IconButton>
+        </Grid>
+      </Grid>
         <TableContainer
           style={{
             border: "1px solid #3D3F47",
@@ -54,14 +82,14 @@ import {
               </TableRow>
             </TableHead>
             <TableBody className={classes.dataTableBody}>
-               {childrenDetails?.map((user, index) => {
+               {guests?.map((user, index) => {
                 return (             
-                    <TableRow key={index}>
-                        <TableCell className={classes.dataTableCell}>
+                    <TableRow key={index} style={user.parent_id !== undefined && user.parent_id !== null ? { background:"#54a9ff40 "} : {}}>
+                        <TableCell className={classes.dataTableCell} >
                           {user.first_name}
                         </TableCell>
                       <TableCell className={classes.dataTableCell}>
-                        {user.last_ame}
+                        {user.last_name}
                       </TableCell>
                       <TableCell className={classes.dataTableCell}>
                         {user.identity_id}
@@ -72,7 +100,10 @@ import {
                       >
                         <IconButton
                           size={"small"}
-                          onClick={() => handleDialogTypeOpen("editChild", user)}
+                          onClick={() => handleDialogTypeOpen(
+                            user.parent_id !== undefined && user.parent_id !== null ? "editParent" :
+                            "editChild", user
+                          )}
                         >
                           <EditIcon />
                         </IconButton>
@@ -99,5 +130,5 @@ import {
     );
   }
   
-  export default ChildDetailsView;
+  export default FamilyMemberView;
   

@@ -5,6 +5,7 @@ export const useStyles = makeStyles((theme) => ({
     inputLabelStyle: {
         color: "#757882 !important",
         fontSize: "15px",
+        marginBottom:"8px"
     },
     textField: {
         borderRadius: 4,

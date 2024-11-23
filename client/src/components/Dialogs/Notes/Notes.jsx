@@ -5,6 +5,7 @@ import * as notesSlice from "../../../store/slice/notesSlice";
 import * as dialogSlice from "../../../store/slice/dialogSlice";
 import axios from "axios";
 import * as noteSlice  from "../../../store/slice/notesSlice";
+import * as userSlice  from "../../../store/slice/userSlice";
 
 const Notes = () => {
   const userType = useSelector((state) => state.userSlice.userType)
@@ -12,6 +13,7 @@ const Notes = () => {
 
   const dispatch = useDispatch();
   const form = useSelector((state) => state.notesSlice.form);
+  const userForm = useSelector((state) => state.userSlice.form);
   const parentDetails = useSelector((state) => state.userSlice.parent);
 
   const handleInputChange = (e) => {
@@ -24,20 +26,18 @@ const Notes = () => {
       const childId = childDetails.child_id
       const parentId = parentDetails.parent_id
       dispatch(noteSlice.updateFormField({ field: "child_id",value:childId }))
-      dispatch(noteSlice.updateFormField({ field: "parent_id",value:parentId }))
-
     }
     dispatch(notesSlice.updateFormField({ field: name, value }));
+    dispatch(notesSlice.updateFormField({ field: "family_id",value:userForm.family_id }))
   
   };
 
   const submit = async () => {
     try {
       if(userType === "parent"){
-        let response = await axios.post(`http://localhost:5000/notes`, form);
+       await axios.post(`http://localhost:5000/notes`, form);
       }else {
-        let response = await axios.post(`http://localhost:5000/notes/child`, form);
-
+        await axios.post(`http://localhost:5000/notes/child`, form);
       }
       dispatch(dialogSlice.closeModal());
       dispatch(notesSlice.resetForm());

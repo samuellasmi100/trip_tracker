@@ -15,7 +15,6 @@ export const paymentsSlice = createSlice({
   },
   reducers: {
     updateFormField: (state, action) => {
-
       const { field, value } = action.payload;
       state.form[field] = value;
     },

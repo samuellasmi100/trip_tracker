@@ -1,45 +1,32 @@
 import React, { useEffect,useState } from "react";
-import RoomsView from "./Rooms.view"
+import RoomsView from "./RoomsAssigner.view"
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import * as roomsSlice from "../../../store/slice/roomsSlice"
 import * as snackbarSlice from "../../../store/slice/snackbarSlice"
 import * as dialogSlice from "../../../store/slice/dialogSlice"
 
-const Rooms = () => {
+const RoomsAssigner = () => {
   const dispatch = useDispatch()
+  const form = useSelector((state) => state.userSlice.form)
   const rooms = useSelector((state) => state.roomsSlice.rooms);
   const [searchTerm, setSearchTerm] = useState("");
   const [isListOpen, setIsListOpen] = useState(false);
-  const parentDetails = useSelector((state) => state.userSlice.parent);
-  const childDetails = useSelector((state) => state.userSlice.child);
-  const userType = useSelector((state) => state.userSlice.userType)
   const selectedRooms = useSelector((state) => state.roomsSlice.selectedRooms);
-  let roomsChosen = parentDetails?.number_of_rooms - selectedRooms.length
-  const selectedChildRoomId = useSelector((state) => state.roomsSlice.selectedChildRoomId);
-  
+  let roomsChosen = Number(form?.number_of_rooms) - selectedRooms.length
+ 
    const submit = async () => {
       try {
-     
-        let response
-        let parentId = parentDetails.parent_id
-        if(userType === "parne"){
-    
-          response = await axios.post("http://localhost:5000/rooms",{selectedRooms,parentId})    
-        }else {
-          let childId = childDetails.child_id
-          let roomData = {}
-          response = await axios.post(`http://localhost:5000/rooms/child/${childId}`,{parentId,selectedChildRoomId})    
-
-        }
-        // dispatch(
-        //   snackbarSlice.setSnackBar({
-        //     type: "success",
-        //     message: response.data,
-        //     timeout: 3000,
-        //   })
-        // )
-        dispatch(roomsSlice.resterChildRoom())
+        let familyId = form.family_id
+        let response = await axios.post("http://localhost:5000/rooms",{selectedRooms,familyId})    
+        dispatch(
+          snackbarSlice.setSnackBar({
+            type: "success",
+            message: response.data,
+            timeout: 3000,
+          })
+        )
+        dispatch(roomsSlice.resetChildRoom())
         dispatch(dialogSlice.closeModal())
         dispatch(roomsSlice.resetForm())
         dispatch(dialogSlice.initialActiveButton())
@@ -56,18 +43,13 @@ const Rooms = () => {
       }
    }
 
-   const handleCheckboxChange  = (roomId) => {
-    dispatch(roomsSlice.updateChildRoom(selectedChildRoomId === roomId ? null : roomId));
-    dispatch(roomsSlice.toggleExpandRoom(roomId));
-   }
-
-   const getParentRooms = async () => {
+   const getFamilyRooms = async () => {
     try {
-      let parentId = parentDetails.parent_id
-      let response = await axios.get(`http://localhost:5000/rooms/${parentId}`)  
-      if(userType === "child"){
-        dispatch(roomsSlice.updateRoomsList(response.data))
-      } 
+      let familyId = form.family_id
+      let response = await axios.get(`http://localhost:5000/rooms/${familyId}`)  
+      // if(userType === "child"){
+      //   dispatch(roomsSlice.updateRoomsList(response.data))
+      // } 
       dispatch(roomsSlice.updateSelectedRoomsList(response.data))
     } catch (error) {
       console.log(error)
@@ -95,7 +77,7 @@ const Rooms = () => {
     if (isSelected) {
       dispatch(roomsSlice.removeRoomFromForm({ roomId: room.roomId }));
     } else {
-      if(Number(selectedRooms.length + 1) > Number(parentDetails.numberOfRooms)){
+      if(Number(selectedRooms.length + 1) > Number(form.number_of_rooms)){
         dispatch(
           snackbarSlice.setSnackBar({
             type: "warn",
@@ -118,12 +100,10 @@ const Rooms = () => {
 
 
    useEffect(() => {
-     if(userType === "parent"){
       getAllRooms()
-     }
-   }, [userType])
+   }, [])
    useEffect(() => {
-    getParentRooms()
+    getFamilyRooms()
    }, [])
    
   return (
@@ -137,9 +117,8 @@ const Rooms = () => {
    roomsChosen={roomsChosen}
    filteredRooms={filteredRooms}
    handleRoomToggle={handleRoomToggle}
-   handleCheckboxChange={handleCheckboxChange}
    />
   );
 };
 
-export default Rooms;
+export default RoomsAssigner;

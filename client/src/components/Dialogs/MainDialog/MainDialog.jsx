@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import MainDialogView from "./MainDialog.view";
 import Guest from "../Guest/Guest";
-import Rooms from "../Rooms/Rooms";
+import RoomSelector from "../RoomSelector/RoomSelector";
+import RoomsAssigner from "../RoomsAssigner/RoomsAssigner";
 import Payments from "../Payments/Payments";
 import Flights from "../Flights/Flights";
 import Notes from "../Notes/Notes"
@@ -13,9 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as userSlice from "../../../store/slice/userSlice"
 
 const MainDialog = (props) => {
-  const parentDetails = useSelector((state) => state.userSlice.parent)
-  const childDetails = useSelector((state) => state.userSlice.child)
-  const child = useSelector((state) => state.userSlice.child)
+  const form = useSelector((state) => state.userSlice.form)
   const activeButton = useSelector((state) => state.dialogSlice.activeButton)
   const classes = useStyles();
   const dispatch = useDispatch()
@@ -29,11 +28,15 @@ const MainDialog = (props) => {
   const handleButtonClick = async (buttonName) => {
     dispatch(dialogSlice.updateActiveButton(buttonName))
   }
+  
   const handleDataView = () => {
+
     if (activeButton === "עדכון אורח") {
       return <Guest />
-    } else if (activeButton === "חדרים") {
-      return <Rooms />
+    } else if (activeButton === "הקצאת חדרים") {
+      return <RoomsAssigner />
+    }else if(activeButton === "בחירת חדרים"){
+      return <RoomSelector />
     } else if (activeButton === "טיסות") {
       return <Flights  />
     } else if (activeButton === "תשלום") {
@@ -44,12 +47,22 @@ const MainDialog = (props) => {
   }
 
   const handleButtonHeader = () => {
-  if(dialogType === "addParent"){
-    return <></>
-  }else if(dialogType === "editParent"){
-      return (parentDetails.flights === 1
-        ?  ["עדכון אורח", "חדרים", "טיסות", "תשלום", "הערות"] 
-        :  ["עדכון אורח", "חדרים", "תשלום", "הערות"]
+    if(form.child_id !== null){
+      return (Number(form.flights) === 1
+      ?  ["עדכון אורח", "בחירת חדרים", "טיסות", "הערות"] 
+      :  ["עדכון אורח", "בחירת חדרים", "הערות"]
+    ).map((label) => (
+      <Button
+        key={label}
+        className={`${classes.navButton} ${activeButton === label ? "active" : ""}`}
+        onClick={() => handleButtonClick(label)}>
+        {label}
+      </Button>
+     ))
+    }else {
+      return (Number(form.flights) === 1
+        ?  ["עדכון אורח","הקצאת חדרים","בחירת חדרים", "טיסות", "תשלום", "הערות"] 
+        :  ["עדכון אורח", "הקצאת חדרים", "בחירת חדרים","תשלום", "הערות"]
       ).map((label) => (
         <Button
           key={label}
@@ -58,19 +71,8 @@ const MainDialog = (props) => {
           {label}
         </Button>
       ))
-     }else if(dialogType === "editChild"){
-      return (child.flights === 1
-        ?  ["עדכון אורח", "חדרים", "טיסות", "הערות"] 
-        :  ["עדכון אורח", "חדרים","הערות"]
-      ).map((label) => (
-        <Button
-          key={label}
-          className={`${classes.navButton} ${activeButton === label ? "active" : ""}`}
-          onClick={() => handleButtonClick(label)}>
-          {label}
-        </Button>
-      ))
-     }
+    }
+      
   }
 
   return (

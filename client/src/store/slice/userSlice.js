@@ -9,6 +9,9 @@ export const userSlice = createSlice({
     children: [],
     child: {},
     userType: "",
+    families:[],
+    family:{},
+    guests:[]
   },
   reducers: {
     updateFormField: (state, action) => {
@@ -33,6 +36,9 @@ export const userSlice = createSlice({
     updateChildren: (state, action) => {
       state.children = action.payload;
     },
+    updateGuets: (state, action) => {
+      state.guests = action.payload;
+    },
     resetForm: (state, action) => {
       state.form = {};
       state.parents = [];
@@ -41,7 +47,14 @@ export const userSlice = createSlice({
       state.child = {};
       state.userType = "";
     },
+    updateFamiliesList: (state, action) => {
+      state.families = action.payload;
+    },
+    updateFamily:(state, action) => {
+      state.family = action.payload;
+    },
   },
+ 
 });
 
 export const {
@@ -52,7 +65,10 @@ export const {
   updateChild,
   updateChildren,
   updateUserType,
-  resetForm
+  resetForm,
+  updateFamiliesList,
+  updateFamily,
+  updateGuets
 } = userSlice.actions;
 
 export default userSlice.reducer;
