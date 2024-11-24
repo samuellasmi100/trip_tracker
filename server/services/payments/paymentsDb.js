@@ -12,6 +12,17 @@ const getPayments = async (id) => {
       console.log(error)
     }
 }
+const getHistoryPayments = async (id) => {
+  try {
+    const sql = paymentsQuery.getHistoryPayments()
+    const parameters = [id]
+    const response = await connection.executeWithParameters(sql,parameters)
+    return response
+   
+  } catch (error) { 
+    console.log(error)
+  }
+}
 
 const numericAmount = (val) => {
   return  parseFloat(val.replace(/,/g, ""));
@@ -46,5 +57,6 @@ const addPayments = async (paymentDetails) => {
 
 module.exports = {
   addPayments,
-  getPayments
+  getPayments,
+  getHistoryPayments
 }

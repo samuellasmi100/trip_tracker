@@ -15,6 +15,7 @@ const addFamily = async (data) => {
   try {
     const sql = userQuery.addFamily(data)
     const parameters = Object.values(data)
+
     await connection.executeWithParameters(sql,parameters)
   } catch (error) { 
     console.log(error)
@@ -42,6 +43,28 @@ const getFamilyMambers = async (id) => {
     }
 }
 
+const getFamilyMamber = async (id) => {
+  try {
+    const sql = userQuery.getFamilyMamber()
+    const parameters = [id]
+    const response = await connection.executeWithParameters(sql,parameters)
+    return response
+  } catch (error) { 
+    console.log(error)
+  }
+}
+
+const getParentFamilyMamber = async (id) => {
+  try {
+    const sql = userQuery.getParentFamilyMamber()
+    const parameters = [id]
+    const response = await connection.executeWithParameters(sql,parameters)
+    return response
+  } catch (error) { 
+    console.log(error)
+  }
+}
+
 const getFamilies = async () => {
   try {
     const sql = userQuery.getFamilies()
@@ -61,18 +84,6 @@ const getAllFamilyMambers = async (id) => {
   } catch (error) { 
     console.log(error)
   }
-}
-
-const getChildByParentId = async (id) => {
-    try {
-      const sql = userQuery.getChildByParentId()
-      const parameters = [id]
-      const response = await connection.executeWithParameters(sql,parameters)
-      return response
-     
-    } catch (error) { 
-      console.log(error)
-    }
 }
 
 const updateGuest = async (data) => {
@@ -105,16 +116,29 @@ const updateChild = async (data) => {
       console.log(error)
     }
 }
+const saveRegistrationForm = async (filename,fileType,filePath,id) => {
+  try {
 
+    const sql = userQuery.saveRegistrationForm()
+    const parameters = [filename,fileType,filePath,id]
+    const response = await connection.executeWithParameters(sql,parameters)
+    return response
+   
+  } catch (error) { 
+    console.log(error)
+  }
+}
 
 module.exports = {
     addGuest,
     addChild,
     getFamilyMambers,
-    getChildByParentId,
     updateGuest,
     updateChild,
     addFamily,
     getFamilies,
-    getAllFamilyMambers
+    getAllFamilyMambers,
+    getFamilyMamber,
+    getParentFamilyMamber,
+    saveRegistrationForm
 }

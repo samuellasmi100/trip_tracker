@@ -9,7 +9,32 @@ const addFamily = (userData) =>{
 }
 
 const getFamilies = () =>{
-  return `SELECT f.family_name,f.family_id,p.remains_to_be_paid FROM families f join payments p on p.family_id = f.family_id ORDER BY p.family_id DESC limit 1`
+ return `SELECT 
+    f.family_id,
+    f.family_name,
+    p.amount,
+    p.remains_to_be_paid
+FROM 
+    families f
+LEFT JOIN 
+    (SELECT 
+         family_id, 
+         id, 
+         created_at, 
+         amount,
+         remains_to_be_paid
+     FROM 
+         payments 
+     WHERE 
+         (family_id, created_at) IN 
+         (SELECT 
+              family_id, 
+              MAX(created_at) 
+          FROM 
+              payments 
+          GROUP BY 
+              family_id)) p
+ON f.family_id = p.family_id`
 }
 
 const getFamilyMambers = () => {
@@ -32,6 +57,39 @@ FROM families fa join guest gu
 on fa.family_id = gu.family_id where gu.family_id = ?`
 }
 
+const getFamilyMamber = () => {
+  return `SELECT fa.family_id,fa.family_name,
+gu.first_name,
+gu.last_name,
+gu.flights,
+gu.phone_a,
+gu.phone_b,
+gu.identity_id,
+gu.email,
+gu.flights_direction,
+gu.parent_id,
+gu.child_id
+FROM families fa join guest gu
+on fa.family_id = gu.family_id where gu.child_id= ?`
+}
+
+const getParentFamilyMamber = () => {
+  return `SELECT fa.family_id,fa.family_name,
+gu.first_name,
+gu.last_name,
+gu.flights,
+gu.phone_a,
+gu.phone_b,
+gu.identity_id,
+gu.email,
+gu.flights_direction,
+gu.parent_id,
+gu.child_id,
+gu.total_amount
+FROM families fa join guest gu
+on fa.family_id = gu.family_id where gu.parent_id= ?`
+}
+
 const updateGuest = (userData,id) => {
   return `UPDATE guest SET ${Object.keys(userData)
     .map(key => `${key}=?`)
@@ -45,16 +103,9 @@ const addChild = (userData) =>{
   INSERT INTO guest(${Object.keys(userData)}) VALUES(${Object.values(userData).map(() => '?')})`;
 }
 
-const getChildByParentId = () =>{
-  return `SELECT cg.first_name,cg.last_name,cg.phone_a,cg.phone_b,
-cg.identity_id,cg.email,
-cg.child_id, cg.parent_id ,pg.flights
-from child_guest cg 
-join parent_guest pg
-on pg.parent_id = cg.parent_id
-where cg.parent_id = ?;`
+const saveRegistrationForm = (userData) =>{
+  return `INSERT INTO files (filename, fileType, filePath,family_id) VALUES (?, ?, ?,?)`;
 }
-
 const updateChild = (userData,id) => {
   return `UPDATE guest SET ${Object.keys(userData)
     .map(key => `${key}=?`)
@@ -65,12 +116,15 @@ const updateChild = (userData,id) => {
 
 module.exports ={
   addChild,
-  getChildByParentId,
   updateGuest,
   updateChild,
   addFamily,
   getFamilies,
   addGuest,
-  getFamilyMambers
+  getFamilyMambers,
+  getFamilyMamber,
+  getFamilyMamber,
+  getParentFamilyMamber,
+  saveRegistrationForm
 }
 

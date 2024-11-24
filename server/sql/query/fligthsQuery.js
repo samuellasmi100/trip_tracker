@@ -21,13 +21,13 @@ const updateChildrenFlightsDetails = (flightsData,id) => {
 const getParentDetails = () => {
     return `SELECT parent_id,validity_passport,passport_number ,birth_date ,
    outbound_flight_date,return_flight_date ,
-   outbound_flight_number ,return_flight_number ,age FROM flights where parent_id = ?;`
+   outbound_flight_number ,return_flight_number ,age,outbound_airline,return_airline FROM flights where parent_id = ?;`
 }
 const getChildDetails = () => {
     return `SELECT parent_id ,validity_passport,passport_number,birth_date ,
    outbound_flight_date ,return_flight_date ,
    outbound_flight_number,return_flight_number,
-   age FROM flights where child_id = ?;`
+   age,outbound_airline,return_airline  FROM flights where child_id = ?;`
 }
 module.exports = {
     addParentFlightsDetails,
