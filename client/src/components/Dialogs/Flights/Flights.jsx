@@ -87,6 +87,7 @@ const dispatch = useDispatch()
     try {
       let response = await axios.get(`http://localhost:5000/flights/${parentId}`)
       if(response.data.length > 0){
+        console.log(response)
         response.data[0].type = "edit"
         dispatch(flightsSlice.updateForm(response.data[0]))
       }

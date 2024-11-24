@@ -30,14 +30,7 @@ const RoomSelector = () => {
 
 
       }
-      // let response = await axios.post("http://localhost:5000/rooms/room", { selectedChildRoomId, form })
-      // dispatch(
-      //   snackbarSlice.setSnackBar({
-      //     type: "success",
-      //     message: response.data,
-      //     timeout: 3000,
-      //   })
-      // )
+
       dispatch(roomsSlice.resetChildRoom())
       dispatch(dialogSlice.closeModal())
       dispatch(roomsSlice.resetForm())
@@ -78,7 +71,7 @@ const RoomSelector = () => {
       } else {
         userId = form.child_id
       }
-      let response = await axios.get(`http://localhost:5000/rooms/room${form.child_id}/${form.parent_id}`)
+      let response = await axios.get(`http://localhost:5000/rooms/room/${form.child_id}/${form.parent_id}`)
       if(response.data.length > 0){
         setRoomChossenType(true)
         dispatch(roomsSlice.updateChossenRoom(response.data[0].roomId));

@@ -11,6 +11,8 @@ import {
   Collapse,
   Box,
   Typography,
+  TextField,
+  Input,
 } from "@mui/material";
 import React from "react";
 import { useStyles } from "./FamilyList.style";
@@ -21,11 +23,12 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import { useSelector } from "react-redux";
 import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
+import  FamilyList  from "./FamilyList.css";
 
 function FamilyListView(props) {
   const classes = useStyles();
   const familiesList = useSelector((state) => state.userSlice.families)
-  const { handleDialogTypeOpen, handleNameClick } =
+  const { handleDialogTypeOpen, handleNameClick,handleUpload,handleFileChange } =
     props;
   const headers = [
     "שם משפחה",
@@ -100,18 +103,18 @@ function FamilyListView(props) {
                       style={{ maxWidth: "1px" }}
                     >
                       <IconButton
-                        size={"small"}
-                        onClick={() =>
-                          handleDialogTypeOpen("editParent", user)
-                        }
-                      >
-                        <DriveFolderUploadIcon style={{ color: "#54A9FF", fontSize: "27px" }} />
+                        size={"small"}>
+                     <Input    
+                    onChange={handleFileChange}  type="file" sx={{
+                      width:"105px",
+                      paddingRight:'2px'
+                     }}/>
+                        <DriveFolderUploadIcon style={{ color: "#54A9FF", fontSize: "27px" }} onClick={() => handleUpload(user.family_name,user.family_id)} />
                       </IconButton>
 
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
-                
-                        {user.remains_to_be_paid}
+                        {user.remains_to_be_paid === null ? user.total_amount : user.remains_to_be_paid }
                       </TableCell>
                     <TableCell className={classes.dataTableCell}>פסח</TableCell>
                   </TableRow>

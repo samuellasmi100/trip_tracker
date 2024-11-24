@@ -114,7 +114,8 @@ import {
                       >
                         <IconButton
                           size={"small"}
-                        //   onClick={() => handleDialogTypeOpen("addChild", user)}
+                          onClick={() => handleDialogTypeOpen(user.parent_id !== undefined && user.parent_id !== null ? "parentDetails" :
+                            "childDetails", user)}
                         >
                           <DescriptionIcon style={{color:"rgb(255, 158, 84)"}}/>
                         </IconButton>

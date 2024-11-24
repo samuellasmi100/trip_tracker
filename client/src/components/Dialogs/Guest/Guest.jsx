@@ -10,12 +10,9 @@ import * as dialogSlice from "../../../store/slice/dialogSlice";
 
 const Guest = () => {
   const dialogType = useSelector((state) => state.dialogSlice.type);
-  const parentDetails = useSelector((state) => state.userSlice.parent);
-  const userType = useSelector((state) => state.userSlice.userType)
   const form = useSelector((state) => state.userSlice.form);
   const dispatch = useDispatch();
   const areaCodes = ["052", "053", "054", "058"];
-  const childDetails = useSelector((state) => state.userSlice.child)
   const familyDetails = useSelector((state) => state.userSlice.family)
 
   const handleButtonString = () => {

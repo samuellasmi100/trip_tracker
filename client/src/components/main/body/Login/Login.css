@@ -1,0 +1,8 @@
+/* Add these styles to your CSS */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  background-color: transparent !important; /* Override autofill background */
+  color: black !important; /* Make sure text is black */
+  border: 1px solid #ccc !important; /* Optionally adjust border if needed */
+}

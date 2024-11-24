@@ -21,7 +21,8 @@ const FamilyList = (props) => {
   const dialogOpen = useSelector((state) => state.dialogSlice.open)
   const dialogType = useSelector((state) => state.dialogSlice.type)
   const familyDetails = useSelector((state) => state.userSlice.family)
-
+  const [file, setFile] = useState(null);
+  const [base64, setBase64] = useState("");
 
   const closeModal = () => {
     dispatch(dialogSlice.initialActiveButton())
@@ -63,6 +64,12 @@ const FamilyList = (props) => {
       dispatch(dialogSlice.openModal())
     } else if (type === "addFamily") {
       dispatch(dialogSlice.openModal())
+    }else if(type === "childDetails"){
+      dispatch(dialogSlice.openModal())
+      dispatch(userSlice.updateForm(userData))
+    }else if(type === "parentDetails"){
+      dispatch(dialogSlice.openModal())
+      dispatch(userSlice.updateForm(userData))
     }
 
   };
@@ -107,6 +114,38 @@ const FamilyList = (props) => {
     }
   }
 
+  const handleUpload = async (name,familyId) => {
+    if (!file) {
+      alert("Please select a file first.");
+      return;
+    }
+    try {
+      const response = await axios.post("http://localhost:5000/user/families/upload", {
+        filename: name,
+        fileType: file.type,
+        data: base64,
+        id:familyId
+      });
+    } catch (error) {
+      console.error("Error uploading file:", error);
+
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    console.log(selectedFile)
+    setFile(selectedFile);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setBase64(reader.result.split(",")[1]);
+    };
+    reader.readAsDataURL(selectedFile);
+  };
+  
+  const getRegisterform = () => {
+
+  }
   useEffect(() => {
     getMainUsers()
     getFamilies()
@@ -118,6 +157,8 @@ const FamilyList = (props) => {
         tableData={usersData}
         handleDialogTypeOpen={handleDialogTypeOpen}
         handleNameClick={handleNameClick}
+        handleUpload={handleUpload}
+        handleFileChange={handleFileChange}
       />
       {/* {showClientDetails ? <FamilyMember handleDialogTypeOpen={handleDialogTypeOpen} /> : <></>} */}
      <FamilyMember handleDialogTypeOpen={handleDialogTypeOpen} />

@@ -18,7 +18,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import clsx from "clsx";
 import { useSelector } from "react-redux";
-
+import AnalyticsIcon from '@mui/icons-material/Analytics';
 function SidebarView({
   logoutButtonFunction,
   handleMenuOpen,
@@ -34,42 +34,12 @@ function SidebarView({
   const classes = useStyles();
   const { pathname } = useLocation();
 
-  const handleUserPrivileges = () => {
 
-      return (
-        <>
-          <Grid item className={classes.sideBarIcons}>
-            <Link to="workspace">
-              <StyledTooltip title="Workspace" placement="bottom-end" arrow>
-                <Database
-                  fill={clsx({
-                    ["#ffffff"]: pathname.includes("/workspace"),
-                    ["#828282"]: !pathname.includes("/workspace"),
-                  })}
-                />
-              </StyledTooltip>
-            </Link>
-          </Grid>
-          <Grid item className={classes.sideBarIcons}>
-            <Link to="reports">
-              <StyledTooltip title="Reports" placement="bottom-end" arrow>
-                <Reports
-                  fill={clsx({
-                    ["#ffffff"]: pathname.includes("/reports"),
-                    ["#828282"]: !pathname.includes("/reports"),
-                  })}
-                />
-              </StyledTooltip>
-            </Link>
-          </Grid>
-        </>
-      );
-    }
-   
+
 
   return (
-    <AppBar className={classes.sideBarSx}>
-      <MakorIcon style={{ margin: "10 auto" }} />
+    <AppBar className={classes.sideBarSx} style={{ width: "3vw", height: "100vh" }}>
+      <Grid style={{ margin: "15px auto" }} />
       <Grid
         container
         direction="column"
@@ -85,20 +55,29 @@ function SidebarView({
           justifyContent="space-evenly"
           alignItems="center"
         >
-          {handleUserPrivileges()}
-
-            <Grid item className={classes.sideBarIcons}>
-              <Link to="client_info">
-                <StyledTooltip title="Static" placement="bottom-end" arrow>
-                  <ClientInfo
-                    fill={clsx({
-                      ["#ffffff"]: pathname.includes("/client_info"),
-                      ["#828282"]: !pathname.includes("/client_info"),
-                    })}
-                  />
-                </StyledTooltip>
-              </Link>
-            </Grid>
+          <Grid item className={classes.sideBarIcons}>
+            <Link to="workspace">
+              <StyledTooltip title="Workspace" placement="bottom-end" arrow>
+                <Database
+                  fill={clsx({
+                    ["#ffffff"]: pathname.includes("/workspace"),
+                    ["#828282"]: !pathname.includes("/workspace"),
+                  })}
+                />
+              </StyledTooltip>
+            </Link>
+          </Grid>
+          <Grid item className={classes.sideBarIcons}>
+            <Link to="analytics">
+              <StyledTooltip title="Static" placement="bottom-end" arrow>
+                <AnalyticsIcon
+                  style={{
+                    fill: pathname.includes("/analytics") ? "#ffffff" : "#828282",
+                  }}
+                />
+              </StyledTooltip>
+            </Link>
+          </Grid>
         </Grid>
         {/* // * bottom icons */}
         <Grid
@@ -110,14 +89,6 @@ function SidebarView({
           alignItems="center"
           style={{ gap: "20px" }}
         >
-          {/* <Link onClick={handleButtonClick}> */}
-
-
-          <StyledTooltip title="Support" placement="bottom-end" arrow>
-            <IconButton onClick={handleButtonClick}>
-              <Support />
-            </IconButton>
-          </StyledTooltip>
           {/* </Link> */}
 
           <ClickAwayListener onClickAway={handleMenuClose}>
