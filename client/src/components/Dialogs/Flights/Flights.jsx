@@ -34,8 +34,30 @@ const dispatch = useDispatch()
       const age = calculateAge(value);
       dispatch(flightsSlice.updateFormField({ field: "age", value: age }));
     }
+    if(name === "return_flight_date"){
+     const calculate = calculateAgeByFlightDate(form.birth_date,form.return_flight_date)
+     if(calculate > form.age){
+      dispatch(flightsSlice.updateFormField({ field: "age", value: calculate }));
+     }
+    }
   };
 
+  const calculateAgeByFlightDate = (birth_date,return_flight_date) => {
+    let birthDate = new Date(birth_date);
+    let returnDate = new Date(return_flight_date);
+    
+    let age = returnDate.getFullYear() - birthDate.getFullYear();
+    
+    if (
+        returnDate.getMonth() < birthDate.getMonth() || 
+        (returnDate.getMonth() === birthDate.getMonth() && returnDate.getDate() < birthDate.getDate())
+    ) {
+        return age--;
+    }else {
+      return age
+    }
+    
+  } 
   const calculateAge = (birthDate) => {
     const birth = new Date(birthDate);
     const today = new Date();
@@ -48,14 +70,29 @@ const dispatch = useDispatch()
   };
 
   const submit = async () => {
+    let birthDate = new Date(form.birth_date);
+    let returnDate = new Date(form.return_flight_date);
+    
+    // Calculate the difference in years
+    let age = returnDate.getFullYear() - birthDate.getFullYear();
+    
+    // Adjust for partial years
+    if (
+        returnDate.getMonth() < birthDate.getMonth() || 
+        (returnDate.getMonth() === birthDate.getMonth() && returnDate.getDate() < birthDate.getDate())
+    ) {
+        age--;
+    }
+    
+    console.log(`The difference is ${age} years.`);
     try {
     let response 
      const parentId = parentDetails.parent_id
      if(userType === "parent"){
       if(form.type === "edit"){
-        response = await axios.put(`http://localhost:5000/flights/${parentId}`,form)
+        // response = await axios.put(`http://localhost:5000/flights/${parentId}`,form)
         }else {
-         response = await axios.post("http://localhost:5000/flights",form)
+        //  response = await axios.post("http://localhost:5000/flights",form)
         }
        
      }else {
@@ -66,16 +103,16 @@ const dispatch = useDispatch()
        response = await axios.post(`http://localhost:5000/flights/child`,form)
       }
      }
-     dispatch(
-      snackBarSlice.setSnackBar({
-        type: "success",
-        message: response.data,
-        timeout: 3000,
-      })
-    );
-    dispatch(dialogSlice.initialActiveButton())
-    dispatch(dialogSlice.initialDialogType())
-    dispatch(dialogSlice.closeModal())
+    //  dispatch(
+    //   snackBarSlice.setSnackBar({
+    //     type: "success",
+    //     message: response.data,
+    //     timeout: 3000,
+    //   })
+    // );
+    // dispatch(dialogSlice.initialActiveButton())
+    // dispatch(dialogSlice.initialDialogType())
+    // dispatch(dialogSlice.closeModal())
     } catch (error) {
       console.log(error)
     }

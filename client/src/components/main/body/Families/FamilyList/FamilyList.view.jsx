@@ -106,11 +106,11 @@ function FamilyListView(props) {
                     >
                       <IconButton
                         size={"small"}>
-                     <Input    
+                     {/* <Input    
                     onChange={handleFileChange}  type="file" sx={{
                       width:"105px",
                       paddingRight:'2px'
-                     }}/>
+                     }}/> */}
                         <DriveFolderUploadIcon style={{ color: "#54A9FF", fontSize: "27px" }} onClick={() => handleUpload(user.family_name,user.family_id)} />
                       </IconButton>
 

@@ -48,6 +48,29 @@ function Flights({areaCodes,handleInputChange }) {
               />
               {form.flights ? 
               <Grid>
+                   <FormControlLabel
+                control={
+                  <Checkbox
+                    sx={{
+                      color: "#686B76",
+                      "&.Mui-checked": {
+                        color: "#54A9FF",
+                      },
+                    }}
+                    name="flying_with_us"
+                    value="flying_with_us"
+                    className={classes.checkbox}
+                    onClick={handleInputChange}
+                    checked={form.flying_with_us}
+                  />
+                }
+                label={
+                  <Typography style={{ color: "##757882", fontSize: "15px" }}>
+                    טסים איתנו
+                  </Typography>
+                }
+                
+              />
               <FormControlLabel
                 control={
                   <Checkbox
@@ -113,7 +136,9 @@ function Flights({areaCodes,handleInputChange }) {
                     חזור בלבד 
                   </Typography>
                 }
+                
               />
+
               </Grid>
               :<></>}
               

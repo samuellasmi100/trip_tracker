@@ -40,7 +40,7 @@ const Guest = () => {
     else if(name === "flights_direction"){
       dispatch(userSlice.updateFormField({ field: "flights_direction", value:checked ? e.target.value : "" }))
     }
-    else if(name === "flights"){
+    else if(name === "flights" || name === "flying_with_us"){
     value = checked
     dispatch(userSlice.updateFormField({ field: name, value }))
     }else {
@@ -55,7 +55,6 @@ const Guest = () => {
       if (dialogType === "addChild") {      
         response = await axios.post("http://localhost:5000/user/child",form);
         await getGuests()
-        // dispatch(userSlice.updateGuets(response.data))
         dispatch(userSlice.resetForm())
       } else if (dialogType === "addParent") {
         response = await axios.post("http://localhost:5000/user", form);
@@ -63,12 +62,10 @@ const Guest = () => {
         dispatch(userSlice.resetForm())
       } else if (dialogType === "editParent") {
         response = await axios.put(`http://localhost:5000/user`, form);
-        // dispatch(userSlice.updateGuets(response.data))
         await getGuests()
         dispatch(userSlice.resetForm())
       } else if (dialogType === "editChild") {
         response = await axios.put("http://localhost:5000/user/child",form)
-        // dispatch(userSlice.updateGuets(response.data))
         await getGuests()
         dispatch(userSlice.updateChild({}))
         dispatch(userSlice.updateForm({}))

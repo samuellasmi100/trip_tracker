@@ -55,22 +55,11 @@ const MainDialog = (props) => {
     if(dialogType === "childDetails" || dialogType === "parentDetails"){
      
     }else {
-      if(form.child_id !== null){
-        return (Number(form.flights) === 1
-        ?  ["עדכון אורח", "בחירת חדרים", "טיסות", "הערות"] 
-        :  ["עדכון אורח", "בחירת חדרים", "הערות"]
-      ).map((label) => (
-        <Button
-          key={label}
-          className={`${classes.navButton} ${activeButton === label ? "active" : ""}`}
-          onClick={() => handleButtonClick(label)}>
-          {label}
-        </Button>
-       ))
-      }else {
-        return (Number(form.flights) === 1
-          ?  ["עדכון אורח","הקצאת חדרים","בחירת חדרים", "טיסות", "תשלום", "הערות"] 
-          :  ["עדכון אורח", "הקצאת חדרים", "בחירת חדרים","תשלום", "הערות"]
+      if(dialogType !== "addChild" && dialogType !== "addParent"){
+        if(form.child_id !== null){
+          return (Number(form.flights) === 1
+          ?  ["עדכון אורח", "בחירת חדרים", "טיסות", "הערות"] 
+          :  ["עדכון אורח", "בחירת חדרים", "הערות"]
         ).map((label) => (
           <Button
             key={label}
@@ -78,8 +67,22 @@ const MainDialog = (props) => {
             onClick={() => handleButtonClick(label)}>
             {label}
           </Button>
-        ))
+         ))
+        }else {
+          return (Number(form.flights) === 1
+            ?  ["עדכון אורח","הקצאת חדרים","בחירת חדרים", "טיסות", "תשלום", "הערות"] 
+            :  ["עדכון אורח", "הקצאת חדרים", "בחירת חדרים","תשלום", "הערות"]
+          ).map((label) => (
+            <Button
+              key={label}
+              className={`${classes.navButton} ${activeButton === label ? "active" : ""}`}
+              onClick={() => handleButtonClick(label)}>
+              {label}
+            </Button>
+          ))
+        }
       }
+     
     }
        
   }

@@ -26,7 +26,6 @@ function FamilyMemberView({ handleDialogTypeOpen }) {
   });
   const classes = useStyles();
   const family = useSelector((state) => state.userSlice.family);
- console.log(family)
   const headers = ["שם פרטי", "שם משפחה", "תעודת זהות", "ערוך", "פרטים"];
 
   return (
@@ -59,10 +58,12 @@ function FamilyMemberView({ handleDialogTypeOpen }) {
             </IconButton>
           </Grid>
         </Grid>
+        {family.family_id !== undefined ? (
+          <>
         <Grid item style={{ marginRight: "-100px", marginTop: "10px" }}>
             <Typography style={{color:"white"}}> כלל האורחים משפחה /קבוצה {family.family_name} </Typography>
           </Grid>
-        {family.family_id !== undefined ? (
+        
           <Grid>
             <IconButton
               onClick={() =>
@@ -72,6 +73,7 @@ function FamilyMemberView({ handleDialogTypeOpen }) {
               <AddBoxIcon style={{ color: "#54A9FF", fontSize: "30px" }} />
             </IconButton>
           </Grid>
+          </>
         ) : (
           ""
         )}
