@@ -106,6 +106,7 @@ const addChild = (userData) =>{
 const saveRegistrationForm = (userData) =>{
   return `INSERT INTO files (filename, fileType, filePath,family_id) VALUES (?, ?, ?,?)`;
 }
+
 const updateChild = (userData,id) => {
   return `UPDATE guest SET ${Object.keys(userData)
     .map(key => `${key}=?`)
