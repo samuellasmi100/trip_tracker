@@ -5,35 +5,35 @@ const notesService = require("../notes/notesService")
 const paymentsService = require("../payments/paymentsService")
 
 const addGuest = async (data) => {
-    return userDb.addGuest(data)
+    return await userDb.addGuest(data)
 }
 const addFamily = async (data) => {
-    return userDb.addFamily(data)
+    return await userDb.addFamily(data)
 }
 const addChild = async (data) => {
-    return userDb.addChild(data)
+    return await userDb.addChild(data)
 }
 const getFamilyMambers = async (id) => {
-    return userDb.getFamilyMambers(id)
+    return await userDb.getFamilyMambers(id)
 }
 const updateGuest = async (data) => {
-    return userDb.updateGuest(data)
+    return await userDb.updateGuest(data)
 }
 const updateChild = async (data) => {
-    return userDb.updateChild(data)
+    return await userDb.updateChild(data)
 }
 const getFamilies = async () => {
-    return userDb.getFamilies()
+    return await userDb.getFamilies()
 }
 const getAllFamilyMambers = async (id) => {
-    return userDb.getAllFamilyMambers(id)
+    return await userDb.getAllFamilyMambers(id)
 }
 const getChildDetails = async (id) => {
     const [userDetails, flightsDetails, roomsDetails, notesDetails] = await Promise.all([
-        getFamilyMamber(id),
-        flightsService.getChildDetails(id),
-        roomsService.getChossenRoom(id, "child"),
-        notesService.getChildNote(id),
+         getFamilyMamber(id),
+         flightsService.getChildDetails(id),
+         roomsService.getChossenRoom(id, "child"),
+         notesService.getChildNote(id),
       ])
 let dataToReturn = {
     userDetails, flightsDetails, roomsDetails, notesDetails
@@ -55,13 +55,13 @@ let dataToReturn = {
 }
 
 const getFamilyMamber = async (id) => {
-    return userDb.getFamilyMamber(id)
+    return await userDb.getFamilyMamber(id)
 }
 const getParentFamilyMamber = async (id) => {
-    return userDb.getParentFamilyMamber(id)
+    return await userDb.getParentFamilyMamber(id)
 }
 const saveRegistrationForm = async (filename,fileType,filePath,id) => {
-    return userDb.saveRegistrationForm(filename,fileType,filePath,id)
+    return await userDb.saveRegistrationForm(filename,fileType,filePath,id)
 }
 
 module.exports = {

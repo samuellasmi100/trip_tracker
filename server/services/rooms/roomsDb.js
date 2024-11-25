@@ -140,7 +140,6 @@ const removeUserAssignMainRoom = async (familyId) => {
 }
 
 const removeUserAssignMainRoomOfUser = async (familyId,roomId) => {
-  console.log(familyId,roomId)
   try {
      let sql = roomsQuery.removeUserAssignMainRoomOfUser()
      const parameters = [roomId,familyId]

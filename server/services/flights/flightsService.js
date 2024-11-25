@@ -1,22 +1,22 @@
 const flightsDb = require("./flightsDb")
 
 const addParentFlightsDetails = async (paymentsData) => {
-    return flightsDb.addParentFlightsDetails(paymentsData)
+    return await flightsDb.addParentFlightsDetails(paymentsData)
 }
 const addChildFlightsDetails = async (paymentsData) => {
-    return flightsDb.addChildFlightsDetails(paymentsData)
+    return await flightsDb.addChildFlightsDetails(paymentsData)
 }
 const updateParentFlightsDetails = async (paymentsData) => {
-    return flightsDb.updateParentFlightsDetails(paymentsData)
+    return await flightsDb.updateParentFlightsDetails(paymentsData)
 }
 const getParentDetails = async (id) => {
-    return flightsDb.getParentDetails(id)
+    return await flightsDb.getParentDetails(id)
 }
 const getChildDetails = async (id) => {
-    return flightsDb.getChildDetails(id)
+    return await flightsDb.getChildDetails(id)
 }
 const updateChildrenFlightsDetails = async (paymentsData) => {
-    return flightsDb.updateChildrenFlightsDetails(paymentsData)
+    return await flightsDb.updateChildrenFlightsDetails(paymentsData)
 }
 module.exports = {
     addParentFlightsDetails,

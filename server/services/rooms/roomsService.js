@@ -1,7 +1,7 @@
 const roomsDb = require("./roomsDb")
 
 const getAll = async () => {
-    return roomsDb.getAll()
+    return await roomsDb.getAll()
 }
 
 const assignMainRoom = async (roomDetails, familyId) => {
@@ -32,19 +32,19 @@ const assignMainRoom = async (roomDetails, familyId) => {
 }
 
 const getFamilyRoom = async (id) => {
-    return roomsDb.getFamilyRoom(id)
+    return await roomsDb.getFamilyRoom(id)
 }
 
 const assignRoom = async (userId,roomId,assignRoom,familyId) => {
-    return roomsDb.assignRoom(userId,roomId,assignRoom,familyId)
+    return await roomsDb.assignRoom(userId,roomId,assignRoom,familyId)
 }
 
 const updateAssignRoom = async (userId,roomId,assignRoom,familyId) => {
-    return roomsDb.updateAssignRoom(userId,roomId,assignRoom,familyId)
+    return await roomsDb.updateAssignRoom(userId,roomId,assignRoom,familyId)
 }
 
 const getChossenRoom = async (id,type) => {
-    return roomsDb.getChossenRoom(id,type)
+    return await roomsDb.getChossenRoom(id,type)
 }
 
 module.exports = {
