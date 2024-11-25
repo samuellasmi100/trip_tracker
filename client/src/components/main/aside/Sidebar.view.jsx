@@ -8,34 +8,23 @@ import {
   MenuItem,
 } from "@mui/material";
 import { StyledTooltip, useStyles } from "./Sidebar.style";
-import { ReactComponent as MakorIcon } from "../../../assets/icons/sidebar-makor.svg";
 import { ReactComponent as Database } from "../../../assets/icons/database.svg";
-import { ReactComponent as Reports } from "../../../assets/icons/reports.svg";
 import { ReactComponent as ClientInfo } from "../../../assets/icons/client-info.svg";
-import { ReactComponent as Support } from "../../../assets/icons/support.svg";
-
 import { Link, useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+
 import clsx from "clsx";
-import { useSelector } from "react-redux";
+
 import AnalyticsIcon from '@mui/icons-material/Analytics';
+
 function SidebarView({
   logoutButtonFunction,
   handleMenuOpen,
   handleMenuClose,
   menuOpen,
-  handleButtonClick,
 }) {
-  const permission = useSelector((state) => +state.userSlice.permission);
-  const privileges = useSelector((state) => state.userSlice.privileges);
-  // const { viewAsClientUser } = useSelector((state) => state.impersonationSlice);
-  const viewAsClientUser = []
   const iconRef = React.useRef(null);
   const classes = useStyles();
   const { pathname } = useLocation();
-
-
-
 
   return (
     <AppBar className={classes.sideBarSx} style={{ width: "3vw", height: "100vh" }}>

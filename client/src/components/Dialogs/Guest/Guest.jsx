@@ -54,22 +54,27 @@ const Guest = () => {
       let response
       if (dialogType === "addChild") {      
         response = await axios.post("http://localhost:5000/user/child",form);
-        dispatch(userSlice.updateGuets(response.data))
+        await getGuests()
+        // dispatch(userSlice.updateGuets(response.data))
         dispatch(userSlice.resetForm())
       } else if (dialogType === "addParent") {
         response = await axios.post("http://localhost:5000/user", form);
+        await getGuests()
         dispatch(userSlice.resetForm())
       } else if (dialogType === "editParent") {
         response = await axios.put(`http://localhost:5000/user`, form);
-        dispatch(userSlice.updateGuets(response.data))
+        // dispatch(userSlice.updateGuets(response.data))
+        await getGuests()
         dispatch(userSlice.resetForm())
       } else if (dialogType === "editChild") {
         response = await axios.put("http://localhost:5000/user/child",form)
-        dispatch(userSlice.updateGuets(response.data))
+        // dispatch(userSlice.updateGuets(response.data))
+        await getGuests()
         dispatch(userSlice.updateChild({}))
         dispatch(userSlice.updateForm({}))
       }else if(dialogType === "addFamily"){
         response = await axios.post("http://localhost:5000/user/family", form);
+        
         dispatch(userSlice.resetForm())
       }
        dispatch(
@@ -87,6 +92,21 @@ const Guest = () => {
       console.log(error);
     }
   };
+
+  const getGuests = async () => {
+    let family_id = form.family_id
+    try {
+      let response = await axios.get(`http://localhost:5000/user/${family_id}`)
+      if(response.data.length > 0){
+        dispatch(userSlice.updateGuets(response.data))
+      }else {
+        dispatch(userSlice.updateGuets([]))
+
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <GuestView

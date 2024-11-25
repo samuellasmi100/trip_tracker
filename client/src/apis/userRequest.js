@@ -3,39 +3,14 @@ import Api from "./baseApi";
 
 export default {
   login(body) {
+    console.log(`/${END_POINT.LOGIN}`)
     return Api.post(`/${END_POINT.LOGIN}`, body);
   },
 
 
-  createParentUser(userData) {
-    return Api.post(
-      `/${END_POINT.USER}`,
-      userData,
-      // {
-      //   headers: { Authorization: token },
-      // }
-    );
-  },
-  createChildUser(userData) {
-    return Api.post(
-      `/${END_POINT.USER}/child`,
-      userData,
-      // {
-      //   headers: { Authorization: token },
-      // }
-    );
-  },
-  getMainUsers() {
-
-    return Api.get(`${END_POINT.USER}/all`, {
-        // headers: { Authorization: token },
-      })
-},
-getChildUser(id) {
-  return Api.get(`/${END_POINT.USER}/child/${id}`, {
-      // headers: { Authorization: token },
-    })
-}}
+ 
+ 
+}
 
   
 

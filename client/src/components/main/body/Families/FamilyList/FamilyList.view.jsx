@@ -58,7 +58,9 @@ function FamilyListView(props) {
             </IconButton>
           </Grid>
         </Grid>
-
+        <Grid item style={{  marginRight: "-100px", marginTop: "10px"  }}>
+            <Typography style={{color:"white"}}> נרשמים </Typography>
+          </Grid>
         <Grid>
           <IconButton onClick={() => handleDialogTypeOpen("addFamily")}>
             <AddBoxIcon style={{ color: "#54A9FF", fontSize: "30px" }} />

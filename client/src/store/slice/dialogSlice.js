@@ -4,7 +4,7 @@ export const dialogSlice = createSlice({
   name: "dialogSlice",
   initialState: {
     open:false,
-    type:"addParent",
+    type:"",
     activeButton:"עדכון אורח",
    
   },

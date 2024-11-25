@@ -1,29 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
+const storageToken = sessionStorage.getItem("token")
 
 export const authSlice = createSlice({
   name: "authSlice",
   initialState: {
-    token: "",
-    tokenType: "",
-    userPhone: "",
-    userEmail: "",
-    chosenWay: "",
-    name : "",
-    clientName : ""
+    token: storageToken !== null && storageToken !== undefined && storageToken !== "" ? storageToken : "",
   },
   reducers: {
     setUserData: (state, action) => {
-      state.token = action.payload.token;
-      state.userPhone = action.payload.phone;
-      state.userEmail = action.payload.email;
-      state.tokenType = action.payload.type;
+
+      state.token = action.payload;
     },
     clearUserData: (state, action) => {
       state.token = "";
-      state.userPhone = "";
-      state.userEmail = "";
-      state.tokenType = "";
-      state.chosenWay = "";
     },
     setChosenWay: (state, action) => {
       state.chosenWay = action.payload;

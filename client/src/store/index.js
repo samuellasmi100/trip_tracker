@@ -3,6 +3,7 @@ import thunkMiddleware from 'redux-thunk'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import createRootReducer from './reducers'
 
+
 export default function configureAppStore (preloadedState) {
   const middleware = [thunkMiddleware]
   const enhancers = [applyMiddleware(...middleware)]

@@ -24,23 +24,27 @@ const Login = () => {
   };
 
   const loginPostRequest = async (event) => {
+
     event.preventDefault();
     try {
       let response = await Api.login({
         email: formState.email,
         password: formState.password,
       });
-
-      if (response.data.type === "auth") {
-        if (response.data.entrance === 0) {
-          dispatch(authSlice.setUserData(response.data));
-        //   dispatch(userSlice.updateEntrance(response.data.entrance))
-          navigate("/forgot_password");
-        } else {
-          dispatch(authSlice.setUserData(response.data));
-          navigate("/verify");
-        }
+      if(response.data.httpCode === 401){
+        dispatch(
+          snackBarSlice.setSnackBar({
+            type: "error",
+            message: response.data.message,
+            timeout: 3000,
+          })
+        );
+      }else {
+        navigate("/workspace");
+        dispatch(authSlice.setUserData("Bearer " + response.data))
+        sessionStorage.setItem("token", "Bearer " + response.data);
       }
+   
     } catch (error) {
       dispatch(
         snackBarSlice.setSnackBar({

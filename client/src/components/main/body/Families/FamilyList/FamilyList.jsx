@@ -39,6 +39,7 @@ const FamilyList = (props) => {
     dispatch(roomsSlice.resetForm())
     dispatch(notesSlice.resetForm())
     dispatch(paymentsSlice.resetForm())
+    dispatch(userSlice.updateFamily({}))
   }
 
   const handleDialogTypeOpen = (type, userData) => {
@@ -120,12 +121,12 @@ const FamilyList = (props) => {
       return;
     }
     try {
-      const response = await axios.post("http://localhost:5000/user/families/upload", {
-        filename: name,
-        fileType: file.type,
-        data: base64,
-        id:familyId
-      });
+      // const response = await axios.post("http://localhost:5000/user/families/upload", {
+      //   filename: name,
+      //   fileType: file.type,
+      //   data: base64,
+      //   id:familyId
+      // });
     } catch (error) {
       console.error("Error uploading file:", error);
 
@@ -134,7 +135,6 @@ const FamilyList = (props) => {
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    console.log(selectedFile)
     setFile(selectedFile);
     const reader = new FileReader();
     reader.onload = () => {
@@ -143,9 +143,7 @@ const FamilyList = (props) => {
     reader.readAsDataURL(selectedFile);
   };
   
-  const getRegisterform = () => {
 
-  }
   useEffect(() => {
     getMainUsers()
     getFamilies()
@@ -162,6 +160,7 @@ const FamilyList = (props) => {
       />
       {/* {showClientDetails ? <FamilyMember handleDialogTypeOpen={handleDialogTypeOpen} /> : <></>} */}
      <FamilyMember handleDialogTypeOpen={handleDialogTypeOpen} />
+
       <MainDialog
         dialogType={dialogType}
         dialogOpen={dialogOpen}
