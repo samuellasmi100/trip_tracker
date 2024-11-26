@@ -15,7 +15,7 @@ const getAll = async () => {
 const addParentNotes = async (noteDetails) => {
   try {
     const sql = notesQuery.addParentNotes()
-    const parameters = [noteDetails.note,noteDetails.parent_id,noteDetails.family_id]
+    const parameters = [noteDetails.note,noteDetails.parent_id,noteDetails.family_id,noteDetails.categoryName]
      await connection.executeWithParameters(sql,parameters)   
   } catch (error) { 
     console.log(error)
@@ -25,7 +25,7 @@ const addParentNotes = async (noteDetails) => {
 const addChildNotes = async (noteDetails) => {
   try {
     const sql = notesQuery.addChildNotes()
-    const parameters = [noteDetails.note,noteDetails.child_id,noteDetails.family_id]
+    const parameters = [noteDetails.note,noteDetails.child_id,noteDetails.family_id,noteDetails.categoryName]
      await connection.executeWithParameters(sql,parameters)   
   } catch (error) { 
     console.log(error)

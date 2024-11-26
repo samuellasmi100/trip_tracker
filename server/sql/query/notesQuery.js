@@ -2,10 +2,10 @@ const getAll = () => {
 return `SELECT note FROM notes;`
 }
 const addParentNotes = () => {
-    return `INSERT INTO notes (note,parent_id,family_id) VALUES (?,?,?)`
+    return `INSERT INTO notes (note,parent_id,family_id,category_name) VALUES (?,?,?,?)`
 }
 const addChildNotes = () => {
-    return `INSERT INTO notes (note,child_id,family_id) VALUES (?,?,?)`
+    return `INSERT INTO notes (note,child_id,family_id,category_name) VALUES (?,?,?,?)`
 }
 const getParentNote = () => {
     return `SELECT * FROM notes where parent_id = ?;`
