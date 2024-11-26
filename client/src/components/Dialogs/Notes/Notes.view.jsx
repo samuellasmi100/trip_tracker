@@ -4,6 +4,7 @@ import {
   Grid,
   TextField,
   InputLabel,
+  Select,OutlinedInput,MenuItem
 } from "@mui/material";
 import { useStyles } from "./Notes.style";
 import { useSelector,useDispatch } from "react-redux";
@@ -13,6 +14,13 @@ const NotesView = (props) => {
   const dispatch = useDispatch()
   const classes = useStyles();
   const form = useSelector((state) => state.notesSlice.form)
+  const CategoryNotes = [
+    {categoryName:"חדרים",id:1},
+    {categoryName:"קולינרי",id:2},
+    {categoryName:"טיסות",id:3},
+    {categoryName:"חדר אוכל",id:4},
+    {categoryName:"כללי",id:4},
+  ]
   const {
     handleInputChange,
     submit
@@ -23,6 +31,33 @@ const NotesView = (props) => {
         <Grid container  style={{ minHeight: "350px", padding: "20px" }}>
           <Grid item xs={6}>
             <Grid container>
+            <Grid item style={{marginBottom:"10px"}}>
+              <InputLabel className={classes.inputLabelStyle}>
+               בחר קטגוריה
+              </InputLabel>
+               <Select
+               name="categoryName"
+               onChange={handleInputChange}     
+                input={
+                  <OutlinedInput
+                    className={classes.selectOutline}
+                  />
+                }
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      color: "#ffffff !important",
+                      bgcolor: "#222222",
+                    },
+                  },
+              }}>
+          {CategoryNotes?.map((type) => (
+            <MenuItem key={type.id} value={type.categoryName} className={classes.selectedMenuItem}>
+              {type.categoryName}
+            </MenuItem>
+          ))}
+        </Select>
+            </Grid>
               <Grid item>
                 <TextField
                 multiline 
