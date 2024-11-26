@@ -94,6 +94,7 @@ const Guest = () => {
     let family_id = form.family_id
     try {
       let response = await axios.get(`http://localhost:5000/user/${family_id}`)
+      console.log(response)
       if(response.data.length > 0){
         dispatch(userSlice.updateGuets(response.data))
       }else {

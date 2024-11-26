@@ -18,28 +18,29 @@ import { useSelector } from "react-redux";
 function Parent({areaCodes,handleInputChange }) {
     const classes = useStyles();
     const form = useSelector((state) => state.userSlice.form)
+    console.log(form)
     return (
         <>
             <Grid item xs={6}>
                 <Grid container spacing={2} justifyContent="center">
                     <Grid item>
                         <InputLabel className={classes.inputLabelStyle}>
-                            שם פרטי
+                            שם פרטי ושם משפחה בעברית
                         </InputLabel>
                         <TextField
-                            name="first_name"
-                            value={form.first_name}
+                            name="hebrew_name"
+                            value={form.hebrew_name}
                             className={classes.textField}
                             onChange={handleInputChange}
                         />
                     </Grid>
                     <Grid item>
                         <InputLabel className={classes.inputLabelStyle}>
-                            שם משפחה
+                            שם פרטי ושם משפחה באנגלית
                         </InputLabel>
                         <TextField
-                            name="last_name"
-                            value={form.last_name}
+                            name="english_name"
+                            value={form.english_name}
                             className={classes.textField}
                             onChange={handleInputChange}
                         />

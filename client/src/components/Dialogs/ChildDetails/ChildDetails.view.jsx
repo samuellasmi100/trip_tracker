@@ -102,8 +102,8 @@ const ChildDetailsView = ({ userData }) => {
                     <Typography className={classes.inputLabelStyle}> {userDetails[0]?.family_name}</Typography>
                 </Grid>
                 <Grid style={{ display: 'flex', gap: "5px" }}>
-                    <Typography className={classes.inputLabelStyle}>שם :</Typography>
-                    <Typography className={classes.inputLabelStyle}>{userDetails[0]?.first_name} </Typography>
+                    <Typography className={classes.inputLabelStyle}>שם פרטי ושם משפחה:</Typography>
+                    <Typography className={classes.inputLabelStyle}>{userDetails[0]?.hebrew_name} </Typography>
                 </Grid>
                 <Grid style={{ display: 'flex', gap: "5px" }}>
                     <Typography className={classes.inputLabelStyle}>גיל :</Typography>
