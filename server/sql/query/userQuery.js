@@ -39,8 +39,8 @@ ON f.family_id = p.family_id`
 
 const getFamilyMambers = () => {
   return `SELECT fa.family_id,fa.family_name,
-gu.first_name,
-gu.last_name,
+gu.hebrew_name,
+gu.english_name,
 gu.flights,
 gu.phone_a,
 gu.phone_b,
@@ -59,8 +59,8 @@ on fa.family_id = gu.family_id where gu.family_id = ?`
 
 const getFamilyMamber = () => {
   return `SELECT fa.family_id,fa.family_name,
-gu.first_name,
-gu.last_name,
+gu.hebrew_name,
+gu.english_name,
 gu.flights,
 gu.phone_a,
 gu.phone_b,
@@ -75,8 +75,8 @@ on fa.family_id = gu.family_id where gu.child_id= ?`
 
 const getParentFamilyMamber = () => {
   return `SELECT fa.family_id,fa.family_name,
-gu.first_name,
-gu.last_name,
+gu.hebrew_name,
+gu.english_name,
 gu.flights,
 gu.phone_a,
 gu.phone_b,
