@@ -9,16 +9,12 @@ import axios from "axios";
 
 const Flights = () => {
 const dispatch = useDispatch()
-  const userType = useSelector((state) => state.userSlice.userType)
-  const parentDetails = useSelector((state) => state.userSlice.parent)
-  const childDetails = useSelector((state) => state.userSlice.child)
-   const dialogType = useSelector((state) =>state.dialogSlice.type)
   const form = useSelector((state) => state.flightsSlice.form)
   const userForm = useSelector((state) => state.userSlice.form)
 
 
   const handleInputChange = (e) => {
-    console.log(form)
+
     let { name, value,checked } = e.target
     if (name === "birth_date") {
       const age = calculateAge(value);
@@ -91,7 +87,8 @@ const dispatch = useDispatch()
   const getFlightData = async () => {
     const userId = userForm.user_id
     let familyId = userForm.family_id
-    let isInGroup = true
+    let isInGroup = userForm.is_in_group
+    console.log(userForm)
     try {
       let response = await axios.get(`http://localhost:5000/flights/${userId}/${familyId}/${isInGroup}`)
       console.log(response)

@@ -19,7 +19,6 @@ import * as dialogSlice from "../../../store/slice/dialogSlice"
 import Parent from "./Parent/Parent"
 import Child from "./Child/Child"
 import CreateFamily from "./CreateFamily/CreateFamily"
-import Flights from "./Flights/Flights"
 
 
 const GuestView = (props) => {
@@ -45,11 +44,6 @@ const handleDataInputsView = () => {
   }
 }
 
-const handleFlightsCheckbox = () => {
-  if(dialogType !== "addFamily"){
-    return <Flights handleInputChange={handleInputChange}/>
-  }
-}
   return (
     <>
       <Grid container style={{ minHeight: "340px" }}>
@@ -59,7 +53,7 @@ const handleFlightsCheckbox = () => {
           </Grid> : <></>}
         {handleDataInputsView()}
       </Grid>
-       {handleFlightsCheckbox()}
+  
       <Grid
         item
         xs={12}

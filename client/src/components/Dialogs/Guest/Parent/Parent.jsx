@@ -18,6 +18,7 @@ import { useSelector } from "react-redux";
 function Parent({areaCodes,handleInputChange }) {
     const classes = useStyles();
     const form = useSelector((state) => state.userSlice.form)
+    const dialogType = useSelector((state) => state.dialogSlice.type)
     return (
         <>
             <Grid item xs={6}>
@@ -121,40 +122,18 @@ function Parent({areaCodes,handleInputChange }) {
                     </Grid>
                     <Grid item>
                         <InputLabel className={classes.inputLabelStyle}>
-                            כמות נופשים
+                         כתובת מלאה
                         </InputLabel>
                         <TextField
-                            name="number_of_guests"
-                            value={form.number_of_guests}
-                            className={classes.textField}
-                            onChange={handleInputChange}
-                        />
-                    </Grid>
-
-                    <Grid item>
-                        <InputLabel className={classes.inputLabelStyle}>
-                            כמות חדרים
-                        </InputLabel>
-                        <TextField
-                            name="number_of_rooms"
-                            value={form.number_of_rooms}
-                            className={classes.textField}
-                            onChange={handleInputChange}
-                        />
-                    </Grid>
-                    <Grid item>
-                        <InputLabel className={classes.inputLabelStyle}>
-                            סכום עסקה
-                        </InputLabel>
-                        <TextField
-                            name="total_amount"
-                            value={form.total_amount}
+                            name="address"
+                            value={form.address}
                             className={classes.textField}
                             onChange={handleInputChange}
                         />
                     </Grid>
                 </Grid>
             </Grid>
+
         </>
     )
 }

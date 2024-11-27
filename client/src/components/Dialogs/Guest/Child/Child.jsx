@@ -119,6 +119,17 @@ function Child({areaCodes,handleInputChange }) {
                             </Grid>
                         </Grid>
                     </Grid>
+                    <Grid item>
+                        <InputLabel className={classes.inputLabelStyle}>
+                         כתובת מלאה
+                        </InputLabel>
+                        <TextField
+                            name="address"
+                            value={form.address}
+                            className={classes.textField}
+                            onChange={handleInputChange}
+                        />
+                    </Grid>
                 </Grid>
             </Grid>
         </>

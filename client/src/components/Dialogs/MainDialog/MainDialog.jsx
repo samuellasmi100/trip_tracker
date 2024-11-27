@@ -5,14 +5,15 @@ import RoomSelector from "../RoomSelector/RoomSelector";
 import RoomsAssigner from "../RoomsAssigner/RoomsAssigner";
 import Payments from "../Payments/Payments";
 import Flights from "../Flights/Flights";
+import Reservation from "../Reservation/Reservation";
 import Notes from "../Notes/Notes"
 import { Button } from "@mui/material";
 import { useStyles } from "./MainDialog.style";
-import axios from "axios";
+
 import * as dialogSlice from "../../../store/slice/dialogSlice"
 import { useDispatch, useSelector } from "react-redux";
-import * as userSlice from "../../../store/slice/userSlice"
 import ChildDetails from "../ChildDetails/ChildDetails"
+
 const MainDialog = (props) => {
   const form = useSelector((state) => state.userSlice.form)
   const activeButton = useSelector((state) => state.dialogSlice.activeButton)
@@ -34,8 +35,10 @@ const MainDialog = (props) => {
     if(dialogType === "childDetails" || dialogType === "parentDetails"){
       return <ChildDetails />
     }else {
-       if (activeButton === "עדכון אורח") {
+       if (activeButton === "פרטים אישיים") {
         return <Guest />
+      } else if (activeButton === "פרטי הזמנה" || activeButton === "פרטי נסיעה" ) {
+        return <Reservation />
       } else if (activeButton === "הקצאת חדרים") {
         return <RoomsAssigner />
       }else if(activeButton === "בחירת חדרים"){
@@ -56,8 +59,8 @@ const MainDialog = (props) => {
     }else {
         if(form.user_type === "client"){
           return (Number(form.flights) === 1
-          ?  ["עדכון אורח", "בחירת חדרים", "טיסות", "הערות"] 
-          :  ["עדכון אורח", "בחירת חדרים", "הערות"]
+          ?  ["פרטים אישיים","פרטי נסיעה", "בחירת חדרים", "טיסות", "הערות"] 
+          :  ["פרטים אישיים","פרטי נסיעה", "בחירת חדרים", "הערות"]
         ).map((label) => (
           <Button
             key={label}
@@ -68,8 +71,8 @@ const MainDialog = (props) => {
          ))
         }else {
           return (Number(form.flights) === 1
-            ?  ["עדכון אורח","הקצאת חדרים","בחירת חדרים", "טיסות", "תשלום", "הערות"] 
-            :  ["עדכון אורח", "הקצאת חדרים", "בחירת חדרים","תשלום", "הערות"]
+            ?  ["פרטים אישיים","פרטי הזמנה","הקצאת חדרים","בחירת חדרים", "טיסות", "תשלום", "הערות"] 
+            :  ["פרטים אישיים","פרטי הזמנה", "הקצאת חדרים", "בחירת חדרים","תשלום", "הערות"]
           ).map((label) => (
             <Button
               key={label}

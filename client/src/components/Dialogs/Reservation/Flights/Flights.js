@@ -12,7 +12,7 @@ import {
     ListItemText,
     OutlinedInput
 } from "@mui/material";
-import { useStyles } from "../Guest.style";
+import { useStyles } from "../../Guest/Guest.style";
 import { useSelector } from "react-redux";
 
 function Flights({areaCodes,handleInputChange }) {
@@ -21,7 +21,7 @@ function Flights({areaCodes,handleInputChange }) {
     const form = useSelector((state) => state.userSlice.form)
     return (
         <>
-        <Grid style={{ marginLeft: "30px" }}>
+        <Grid style={{ marginRight: "20px",marginTop: form.user_type === "parent" ? "20px" : "90px"}}>
           <Grid container display="flex"
           >
             <Grid item >
@@ -43,6 +43,27 @@ function Flights({areaCodes,handleInputChange }) {
                 label={
                   <Typography style={{ color: "##757882", fontSize: "15px" }}>
                     כולל טיסות
+                  </Typography>
+                }
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    sx={{
+                      color: "#686B76",
+                      "&.Mui-checked": {
+                        color: "#54A9FF",
+                      },
+                    }}
+                    name="is_in_group"
+                    className={classes.checkbox}
+                    onClick={handleInputChange}
+                    checked={form.is_in_group}
+                  />
+                }
+                label={
+                  <Typography style={{ color: "##757882", fontSize: "15px" }}>
+                     חלק מקבוצה?
                   </Typography>
                 }
               />
@@ -140,7 +161,7 @@ function Flights({areaCodes,handleInputChange }) {
               />
 
               </Grid>
-              :<></>}
+              :<Grid></Grid>}
               
             </Grid>
 

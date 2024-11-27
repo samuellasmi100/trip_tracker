@@ -38,7 +38,7 @@ const MainDialogView = (props) => {
           justifyContent="space-between"
           
         >
-          <Grid item xs={12} container justifyContent="center" style={{ marginTop: "20px", gap: "10px", marginBottom: "30px" }} >
+          <Grid item xs={12} container justifyContent="center" style={{ marginTop: "20px", marginBottom: "30px" }} >
          { handleButtonHeader()}
           </Grid>
         </Grid>

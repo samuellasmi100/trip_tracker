@@ -5,7 +5,7 @@ export const dialogSlice = createSlice({
   initialState: {
     open:false,
     type:"",
-    activeButton:"עדכון אורח",
+    activeButton:"פרטים אישיים",
    
   },
   reducers: {
@@ -25,7 +25,7 @@ export const dialogSlice = createSlice({
       state.activeButton = action.payload;
     },
     initialActiveButton: (state, action) => {
-      state.activeButton = "עדכון אורח";
+      state.activeButton = "פרטים אישיים";
     },
     
   },
