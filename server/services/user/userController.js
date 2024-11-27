@@ -6,27 +6,22 @@ const uuid = require("uuid").v4;
 
 router.post("/", async (req, res, next) => {
     const userData = req.body
-    userData.parent_id = uuid();
+    if(userData.userType === "addParent"){
+      userData.is_main_user = true
+      userData.user_type = "parent"
+    }else {
+      userData.is_main_user = false
+      userData.user_type = "client"
+
+    }
+    userData.user_id = uuid();
     try {
        userService.addGuest(userData)
-       const response = await userService.getFamilyMambers(userData.family_id)
+       const response = await userService.getFamilyMamber(userData.family_id)
        res.send(response)
     } catch (error) {
       return next(error);
     }
-});
-
-router.post("/child", async (req, res, next) => {
-  const userData = req.body
-    userData.child_id = uuid();
-  try {
-   await userService.addChild(userData)
-   const response = await userService.getFamilyMambers(userData.family_id)
-   res.send(response)
-
-  } catch (error) {
-    return next(error);
-  }
 });
 
 router.post("/family", async (req, res, next) => {
@@ -85,22 +80,12 @@ try {
   }
 });
 
-router.get("/child_details/:id", async (req, res, next) => {
-  const id = req.params.id
-  try {
-   const response = await userService.getChildDetails(id)
-   res.send(response)
-
-  } catch (error) {
-    return next(error);
-  }
-});
-
-router.get("/parent_details/:id/:familyId", async (req, res, next) => {
+router.get("/details/:id/:familyId", async (req, res, next) => {
   const id = req.params.id
   const familyId= req.params.familyId
+
   try {
-   const response = await userService.getparentDetails(id,familyId)
+   const response = await userService.getUserDetails(id,familyId)
    res.send(response)
 
   } catch (error) {
@@ -111,7 +96,7 @@ router.get("/parent_details/:id/:familyId", async (req, res, next) => {
 router.get("/:id", async (req, res, next) => {
   const familyId = req.params.id
   try {
-    const response = await userService.getFamilyMambers(familyId)
+    const response = await userService.getFamilyGuests(familyId)
     res.send(response)
 
   } catch (error) {
@@ -123,23 +108,14 @@ router.put("/", async (req, res, next) => {
    const userData = req.body
   try {
    await userService.updateGuest(userData)
-   const response = await userService.getFamilyMambers(userData.family_id)
+   const response = await userService.getFamilyMamber(userData.family_id)
    res.send(response)
   } catch (error) {
     return next(error);
   }
 });
 
-router.put("/child", async (req, res, next) => {
-  const userData = req.body
- try {
-    await userService.updateChild(userData)
-    const response = await userService.getFamilyMambers(userData.family_id)
-    res.send(response)
- } catch (error) {
-   return next(error);
- }
-});
+
 
 
 

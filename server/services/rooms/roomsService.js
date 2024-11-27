@@ -35,16 +35,16 @@ const getFamilyRoom = async (id) => {
     return await roomsDb.getFamilyRoom(id)
 }
 
-const assignRoom = async (userId,roomId,assignRoom,familyId) => {
-    return await roomsDb.assignRoom(userId,roomId,assignRoom,familyId)
+const assignRoom = async (userId,roomId,familyId) => {
+    return await roomsDb.assignRoom(userId,roomId,familyId)
 }
 
-const updateAssignRoom = async (userId,roomId,assignRoom,familyId) => {
-    return await roomsDb.updateAssignRoom(userId,roomId,assignRoom,familyId)
+const updateAssignRoom = async (userId,roomId) => {
+    return await roomsDb.updateAssignRoom(userId,roomId)
 }
 
-const getChossenRoom = async (id,type) => {
-    return await roomsDb.getChossenRoom(id,type)
+const getChossenRoom = async (id) => {
+    return await roomsDb.getChossenRoom(id)
 }
 
 module.exports = {

@@ -12,25 +12,20 @@ const getAll = async () => {
     }
 }
 
-const assignMainRoom = async (parentId,roomId) => {
+const assignMainRoom = async (userId,roomId) => {
  
   try {
     const sql = roomsQuery.assignMainRoom()
-    const parameters = [parentId,roomId]
+    const parameters = [userId,roomId]
      await connection.executeWithParameters(sql,parameters) 
   } catch (error) { 
     console.log(error)
   }
 }
 
-const assignRoom = async (userId,roomId,type,familyId) => {
+const assignRoom = async (userId,roomId,familyId) => {
   try {
-    let sql
-    if(type === "parent"){
-      sql = roomsQuery.assignParentRoom()
-    }else {
-      sql = roomsQuery.assignChildRoom()
-    }  
+    let sql = roomsQuery.assignRoom()
     const parameters = [userId,roomId,familyId]
     await connection.executeWithParameters(sql,parameters) 
   } catch (error) { 
@@ -38,28 +33,23 @@ const assignRoom = async (userId,roomId,type,familyId) => {
   }
 }
 
-const updateAssignRoom = async (userId,roomId,type,familyId) => {
+const updateAssignRoom = async (userId,roomId) => {
   try {
-    let sql
-    if(type === "parent"){
-      sql = roomsQuery.updateAssignParentRoom()
-    }else {
-      sql = roomsQuery.updateAssignChildRoom()
-    }  
+    let sql  = roomsQuery.updateAssignRoom()
     const parameters = [roomId,userId]
     await connection.executeWithParameters(sql,parameters) 
   } catch (error) { 
     console.log(error)
   }
 }
-const updateMainRoom = async (roomDetails,parentId) => {
+const updateMainRoom = async (roomDetails,userId) => {
  
   try {
     const sql = `
-    INSERT INTO parent_room_details (room_id, parent_id)
+    INSERT INTO parent_room_details (room_id, userId)
     VALUES ${roomDetails.map(() => '(?, ?)').join(', ')}
     ON DUPLICATE KEY UPDATE room_id = VALUES(room_id);`;
-    const parameters = roomDetails.flatMap((room) => [room.roomId,parentId]);
+    const parameters = roomDetails.flatMap((room) => [room.roomId,userId]);
     await connection.executeWithParameters(sql,parameters)
 
   } catch (error) { 
@@ -67,10 +57,10 @@ const updateMainRoom = async (roomDetails,parentId) => {
   }
 }
 
-const removeMainRoom = async (parentId) => {
+const removeMainRoom = async (userId) => {
   try {
     const sql = roomsQuery.removeMainRoom()
-    const parameters = [parentId]
+    const parameters = [userId]
     await connection.executeWithParameters(sql,parameters)
   } catch (error) { 
     console.log(error)
@@ -110,14 +100,10 @@ const lockRoom = async (roomId) => {
   }
 }
 
-const getChossenRoom = async (userId,type) => {
+const getChossenRoom = async (userId) => {
+
   try {
-    let sql
-    if(type === "parent"){
-      sql = roomsQuery.getParentRoom()
-    }else {
-      sql = roomsQuery.getChildRoom()
-    }  
+    let sql = roomsQuery.getChossenRoom()
      const parameters = [userId]
      const response = await connection.executeWithParameters(sql,parameters)
       return response

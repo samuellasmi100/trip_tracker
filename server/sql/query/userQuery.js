@@ -37,7 +37,7 @@ LEFT JOIN
 ON f.family_id = p.family_id`
 }
 
-const getFamilyMambers = () => {
+const getFamilyGuests = () => {
   return `SELECT fa.family_id,fa.family_name,
 gu.hebrew_name,
 gu.english_name,
@@ -49,10 +49,8 @@ gu.email,
 gu.number_of_guests,
 gu.number_of_rooms,
 gu.total_amount,
-gu.parent_id,
 gu.flights_direction,
-gu.child_id,
-gu.parent_id
+gu.user_id,gu.is_main_user,gu.user_type
 FROM families fa join guest gu
 on fa.family_id = gu.family_id where gu.family_id = ?`
 }
@@ -66,11 +64,9 @@ gu.phone_a,
 gu.phone_b,
 gu.identity_id,
 gu.email,
-gu.flights_direction,
-gu.parent_id,
-gu.child_id
+gu.flights_direction,gu.is_main_user,gu.user_type
 FROM families fa join guest gu
-on fa.family_id = gu.family_id where gu.child_id= ?`
+on fa.family_id = gu.family_id where gu.user_id= ?`
 }
 
 const getParentFamilyMamber = () => {
@@ -83,46 +79,28 @@ gu.phone_b,
 gu.identity_id,
 gu.email,
 gu.flights_direction,
-gu.parent_id,
-gu.child_id,
-gu.total_amount
+gu.total_amount,gu.is_main_user,gu.user_type
 FROM families fa join guest gu
-on fa.family_id = gu.family_id where gu.parent_id= ?`
+on fa.family_id = gu.family_id where gu.user_id= ?`
 }
 
 const updateGuest = (userData,id) => {
   return `UPDATE guest SET ${Object.keys(userData)
     .map(key => `${key}=?`)
     .join(',')}
-  WHERE parent_id = '${id}'`
-
-}
-
-const addChild = (userData) =>{
-  return `
-  INSERT INTO guest(${Object.keys(userData)}) VALUES(${Object.values(userData).map(() => '?')})`;
+  WHERE user_id = '${id}'`
 }
 
 const saveRegistrationForm = (userData) =>{
   return `INSERT INTO files (filename, fileType, filePath,family_id) VALUES (?, ?, ?,?)`;
 }
 
-const updateChild = (userData,id) => {
-  return `UPDATE guest SET ${Object.keys(userData)
-    .map(key => `${key}=?`)
-    .join(',')}
-  WHERE child_id = '${id}'`
-
-}
-
 module.exports ={
-  addChild,
   updateGuest,
-  updateChild,
   addFamily,
   getFamilies,
   addGuest,
-  getFamilyMambers,
+  getFamilyGuests,
   getFamilyMamber,
   getFamilyMamber,
   getParentFamilyMamber,

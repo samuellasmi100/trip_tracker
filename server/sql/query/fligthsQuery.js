@@ -1,39 +1,29 @@
-const addParentFlightsDetails = (flightsData) => {
+const addFlightsDetails = (flightsData) => {
     return `INSERT INTO flights (${Object.keys(flightsData)}) values (${Object.values(flightsData).map(() => '?')})`
 }
-const updateParentFlightsDetails = (flightsData,id) => {
+
+const updateFlightsDetails = (flightsData,id) => {
     return `UPDATE flights SET ${Object.keys(flightsData)
     .map(key => `${key}=?`)
     .join(',')}
-  WHERE parent_id = '${id}'`
+  WHERE user_id = '${id}'`
 }
 
-const addChildFlightsDetails = (flightsData) => {
-    return `INSERT INTO flights (${Object.keys(flightsData)}) values (${Object.values(flightsData).map(() => '?')})`
-}
-const updateChildrenFlightsDetails = (flightsData,id) => {
-    return `UPDATE flights SET ${Object.keys(flightsData)
-    .map(key => `${key}=?`)
-    .join(',')}
-    WHERE child_id = '${id}'`
-}
-
-const getParentDetails = () => {
-    return `SELECT parent_id,validity_passport,passport_number ,birth_date ,
+const getFlightsDetails = () => {
+    return `SELECT validity_passport,passport_number ,birth_date ,
    outbound_flight_date,return_flight_date ,
-   outbound_flight_number ,return_flight_number ,age,outbound_airline,return_airline FROM flights where parent_id = ?;`
+   outbound_flight_number ,return_flight_number,age,outbound_airline,return_airline,is_source_user FROM flights where user_id = ?;`
 }
-const getChildDetails = () => {
-    return `SELECT parent_id ,validity_passport,passport_number,birth_date ,
-   outbound_flight_date ,return_flight_date ,
-   outbound_flight_number,return_flight_number,
-   age,outbound_airline,return_airline  FROM flights where child_id = ?;`
+
+const getFlightsByFamily = () => {
+  return `SELECT * FROM trip_tracker.flights where family_id = ? AND is_source_user = 1;`
 }
+
+
+
 module.exports = {
-    addParentFlightsDetails,
-    addChildFlightsDetails,
-    updateParentFlightsDetails,
-    getParentDetails,
-    getChildDetails,
-    updateChildrenFlightsDetails
+    addFlightsDetails,
+    updateFlightsDetails,
+    getFlightsDetails,
+    getFlightsByFamily
 }

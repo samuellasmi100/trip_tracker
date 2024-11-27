@@ -30,55 +30,37 @@ const assignMainRoom = () => {
   INSERT INTO family_room_details(family_id,room_id) VALUES(?,?)`;
 }
 
-const assignParentRoom = () => {
+const assignRoom = () => {
   return `
-  INSERT INTO user_room_assignments(parent_id,room_id,family_id) VALUES(?,?,?)`;
+  INSERT INTO user_room_assignments(user_id,room_id,family_id) VALUES(?,?,?)`;
 }
 
-const assignChildRoom = () => {
-  return `
-  INSERT INTO user_room_assignments(child_id,room_id,family_id) VALUES(?,?,?)`;
-}
-
-const getParentRoom = () => {
+const getChossenRoom = () => {
   return `SELECT r.rooms_id as roomId,r.type as roomType,r.size as roomSize,r.direction as roomDirection,r.floor as roomFloor,base_occupancy 
 FROM rooms r 
 join user_room_assignments ur
 on ur.room_id = r.rooms_id
-where ur.parent_id = ?`
-}
-
-const getChildRoom = () => {
-  return `SELECT r.rooms_id as roomId,r.type as roomType,r.size as roomSize,r.direction as roomDirection,r.floor as roomFloor,base_occupancy 
-FROM rooms r 
-join user_room_assignments ur
-on ur.room_id = r.rooms_id
-where ur.child_id = ?`
+where ur.user_id = ?`
 }
 
 const updateMainRoom = () => {
   return  `
-  INSERT INTO family_room_details (room_id, parent_id)
+  INSERT INTO family_room_details (room_id, userId)
   VALUES ${roomDetails.map(() => '(?, ?)').join(', ')}
   ON DUPLICATE KEY UPDATE room_id = VALUES(room_id);
 `;
 }
 
-const updateAssignParentRoom = () => {
-  return `UPDATE user_room_assignments SET room_id = ? where parent_id = ?`
+const updateAssignRoom = () => {
+  return `UPDATE user_room_assignments SET room_id = ? where user_id = ?`
 }
-
-const updateAssignChildRoom = () => {
-  return `UPDATE user_room_assignments SET room_id = ? where child_id = ?`
-}
-
 const removeUserAssignMainRoom = () => {
   return `DELETE FROM user_room_assignments where family_id = ?`
 }
+
 const removeUserAssignMainRoomOfUser = () => {
   return `DELETE FROM user_room_assignments where room_id = ? AND family_id = ? `
 }
-
 
 const removeMainRoom = () => {
   return `
@@ -103,12 +85,9 @@ module.exports = {
   updateMainRoom,
   removeMainRoom,
   unLockRoom,
-  assignParentRoom,
-  assignChildRoom,
-  getParentRoom,
-getChildRoom,
-updateAssignParentRoom,
-updateAssignChildRoom,
+  assignRoom,
+  getChossenRoom,
+  updateAssignRoom,
 removeUserAssignMainRoom,
 removeUserAssignMainRoomOfUser
 }

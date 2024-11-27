@@ -3,6 +3,7 @@ const userQuery = require("../../sql/query/userQuery")
 
 const addGuest = async (data) => {
   try {
+    delete data.userType
     const sql = userQuery.addGuest(data)
     const parameters = Object.values(data)
     await connection.executeWithParameters(sql,parameters)
@@ -22,19 +23,9 @@ const addFamily = async (data) => {
   }
 }
 
-const addChild = async (data) => {
+const getFamilyGuests = async (id) => {
     try {
-      const sql = userQuery.addChild(data)
-      const parameters = Object.values(data)
-      await connection.executeWithParameters(sql,parameters)
-    } catch (error) { 
-      console.log(error)
-    }
-}
-
-const getFamilyMambers = async (id) => {
-    try {
-      const sql = userQuery.getFamilyMambers()
+      const sql = userQuery.getFamilyGuests()
       const parameters = [id]
       const response = await connection.executeWithParameters(sql,parameters)
       return response
@@ -44,6 +35,7 @@ const getFamilyMambers = async (id) => {
 }
 
 const getFamilyMamber = async (id) => {
+
   try {
     const sql = userQuery.getFamilyMamber()
     const parameters = [id]
@@ -75,23 +67,13 @@ const getFamilies = async () => {
   }
 }
 
-const getAllFamilyMambers = async (id) => {
-  try {
-    const sql = userQuery.getAllFamilyMambers()
-    const parameters = [id]
-    const response = await connection.executeWithParameters(sql)
-    return response
-  } catch (error) { 
-    console.log(error)
-  }
-}
-
 const updateGuest = async (data) => {
     try {
-      const parentId = data.parent_id
-      delete data.parent_id
+      const userId = data.user_id
       delete data.family_name
-      const sql = userQuery.updateGuest(data,parentId)
+      delete data.userType
+
+      const sql = userQuery.updateGuest(data,userId)
       const parameters = Object.values(data)
       const response = await connection.executeWithParameters(sql,parameters)
       return response
@@ -101,21 +83,6 @@ const updateGuest = async (data) => {
     }
 }
 
-const updateChild = async (data) => {
-    try {
-      const childId = data.child_id
-      delete data.child_id
-      delete data.family_name
-
-      const sql = userQuery.updateChild(data,childId)
-      const parameters = Object.values(data)
-      const response = await connection.executeWithParameters(sql,parameters)
-      return response
-     
-    } catch (error) { 
-      console.log(error)
-    }
-}
 const saveRegistrationForm = async (filename,fileType,filePath,id) => {
   try {
 
@@ -131,13 +98,10 @@ const saveRegistrationForm = async (filename,fileType,filePath,id) => {
 
 module.exports = {
     addGuest,
-    addChild,
-    getFamilyMambers,
+    getFamilyGuests,
     updateGuest,
-    updateChild,
     addFamily,
     getFamilies,
-    getAllFamilyMambers,
     getFamilyMamber,
     getParentFamilyMamber,
     saveRegistrationForm

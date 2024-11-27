@@ -10,24 +10,18 @@ const addGuest = async (data) => {
 const addFamily = async (data) => {
     return await userDb.addFamily(data)
 }
-const addChild = async (data) => {
-    return await userDb.addChild(data)
-}
-const getFamilyMambers = async (id) => {
-    return await userDb.getFamilyMambers(id)
+
+const getFamilyGuests = async (id) => {
+    return await userDb.getFamilyGuests(id)
 }
 const updateGuest = async (data) => {
     return await userDb.updateGuest(data)
 }
-const updateChild = async (data) => {
-    return await userDb.updateChild(data)
-}
+
 const getFamilies = async () => {
     return await userDb.getFamilies()
 }
-const getAllFamilyMambers = async (id) => {
-    return await userDb.getAllFamilyMambers(id)
-}
+
 const getChildDetails = async (id) => {
     const [userDetails, flightsDetails, roomsDetails, notesDetails] = await Promise.all([
          getFamilyMamber(id),
@@ -40,11 +34,12 @@ let dataToReturn = {
 }
     return dataToReturn
 }
-const getparentDetails = async (id,familyId) => {
+
+const getUserDetails = async (id,familyId) => {
     const [userDetails, flightsDetails, roomsDetails, notesDetails,paymentsDetails] = await Promise.all([
         getParentFamilyMamber(id),
-        flightsService.getParentDetails(id),
-        roomsService.getChossenRoom(id, "parent"),
+        flightsService.getFlightsDetails(id),
+        roomsService.getChossenRoom(id),
         notesService.getParentNote(id),
         paymentsService.getHistoryPayments(familyId)
       ])
@@ -66,15 +61,12 @@ const saveRegistrationForm = async (filename,fileType,filePath,id) => {
 
 module.exports = {
     addGuest,
-    addChild,
-    getFamilyMambers,
+    getFamilyGuests,
     updateGuest,
-    updateChild,
     addFamily,
     getFamilies,
-    getAllFamilyMambers,
     getChildDetails,
     getFamilyMamber,
-    getparentDetails,
+    getUserDetails,
     saveRegistrationForm
 }

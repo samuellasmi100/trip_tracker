@@ -7,7 +7,7 @@ const uuid = require("uuid").v4;
 router.post("/", async (req, res, next) => {
   const flightsDetails = req.body
   try {
-    await flightsService.addParentFlightsDetails(flightsDetails)
+    await flightsService.addFlightsDetails(flightsDetails)
     res.send("נתוני טיסה התקבלו בהצלחה")
 
   } catch (error) {
@@ -15,46 +15,25 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.post("/child", async (req, res, next) => {
-  const paymentsDetails = req.body
-  try {
-    const response = await flightsService.addChildFlightsDetails(paymentsDetails)
-    res.send("hello")
-
-  } catch (error) {
-    return next(error);
-  }
-});
-
 router.put("/:id", async (req, res, next) => {
-  const parentId = req.params.id
+  const userId = req.params.id
   const flightsDetails = req.body
-  flightsDetails.parentId = parentId
+  flightsDetails.user_id = userId
   try {
-     await flightsService.updateParentFlightsDetails(flightsDetails)
+     await flightsService.updateFlightsDetails(flightsDetails)
     res.send("נתוני טיסה עודכנו בהצלחה")
 
   } catch (error) {
     return next(error);
   }
 });
-router.put("/child/:id", async (req, res, next) => {
 
-  const childId = req.params.id
-  const flightsDetails = req.body
-  flightsDetails.childId = childId
+router.get("/:id/:familyId/:isInGroup", async (req, res, next) => {
+  const userId = req.params.id
+  const familyId = req.params.familyId
+  const isInGroup = req.params.isInGroup
   try {
-     await flightsService.updateChildrenFlightsDetails(flightsDetails)
-    res.send("נתוני טיסה עודכנו בהצלחה")
-
-  } catch (error) {
-    return next(error);
-  }
-});
-router.get("/:id", async (req, res, next) => {
-  const parentId = req.params.id
-  try {
-    const response = await flightsService.getParentDetails(parentId)
+    const response = await flightsService.getFlightsDetails(userId,familyId,isInGroup)
     res.send(response)
 
   } catch (error) {
@@ -62,17 +41,17 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-router.get("/child/:id", async (req, res, next) => {
-
-  const childId = req.params.id
+router.get("family/:id", async (req, res, next) => {
+  const familyId = req.params.id
   try {
-    const response = await flightsService.getChildDetails(childId)
+    const response = await flightsService.getFlightsByFamily(familyId)
     res.send(response)
 
   } catch (error) {
     return next(error);
   }
 });
+
 
 
 module.exports = router;
