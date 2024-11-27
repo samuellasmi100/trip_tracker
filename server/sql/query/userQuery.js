@@ -50,7 +50,7 @@ gu.number_of_guests,
 gu.number_of_rooms,
 gu.total_amount,
 gu.flights_direction,
-gu.user_id,gu.is_main_user,gu.user_type
+gu.user_id,gu.is_main_user,gu.user_type,gu.is_in_group,gu.arrival_date,gu.departure_date,gu.address
 FROM families fa join guest gu
 on fa.family_id = gu.family_id where gu.family_id = ?`
 }
@@ -64,7 +64,7 @@ gu.phone_a,
 gu.phone_b,
 gu.identity_id,
 gu.email,
-gu.flights_direction,gu.is_main_user,gu.user_type
+gu.flights_direction,gu.is_main_user,gu.user_type,gu.is_in_group,gu.arrival_date,gu.departure_date,gu.address
 FROM families fa join guest gu
 on fa.family_id = gu.family_id where gu.user_id= ?`
 }
@@ -79,7 +79,7 @@ gu.phone_b,
 gu.identity_id,
 gu.email,
 gu.flights_direction,
-gu.total_amount,gu.is_main_user,gu.user_type
+gu.total_amount,gu.is_main_user,gu.user_type,gu.is_in_group,gu.arrival_date,gu.departure_date,gu.address
 FROM families fa join guest gu
 on fa.family_id = gu.family_id where gu.user_id= ?`
 }
