@@ -27,7 +27,7 @@ const GuestView = (props) => {
   const dialogType = useSelector(((state) => state.dialogSlice.type))
   const classes = useStyles();
   const guests = useSelector((state) => state.userSlice.guests)
-
+  const form = useSelector((state) => state.userSlice.form)
   const {
     submit,
     areaCodes,
@@ -36,7 +36,6 @@ const GuestView = (props) => {
   } = props;
 
 const handleDataInputsView = () => {
-
   if(dialogType === "addParent" || dialogType === "editParent"){
     return <Parent areaCodes={areaCodes} handleInputChange={handleInputChange}/>
   }else if(dialogType === "addChild" || dialogType === "editChild"){

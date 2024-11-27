@@ -32,8 +32,8 @@ const RoomSelector = ({
   const classes = useStyles();
   const dispatch = useDispatch();
   const selectedRooms = useSelector((state) => state.roomsSlice.selectedRooms);
-   const expandedRoomId = useSelector((state) => state.roomsSlice.expandedRoomId);
-console.log(selectedRooms)
+  const expandedRoomId = useSelector((state) => state.roomsSlice.expandedRoomId);
+
   
   return (
     <>

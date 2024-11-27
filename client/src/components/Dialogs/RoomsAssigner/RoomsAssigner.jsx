@@ -47,9 +47,6 @@ const RoomsAssigner = () => {
     try {
       let familyId = form.family_id
       let response = await axios.get(`http://localhost:5000/rooms/${familyId}`)  
-      // if(userType === "child"){
-      //   dispatch(roomsSlice.updateRoomsList(response.data))
-      // } 
       dispatch(roomsSlice.updateSelectedRoomsList(response.data))
     } catch (error) {
       console.log(error)

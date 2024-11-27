@@ -47,20 +47,7 @@ const Notes = () => {
       console.log(error);
     }
   };
-
-  // const getParentNote = async () => {
-  //   const parentId = parentDetails.parentId;
-  //   try {
-  //     let response = await axios.get(`http://localhost:5000/notes/${parentId}`);
-  //     console.log(response)
-  //     dispatch(notesSlice.updateForm(response.data[0]))
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-  // useEffect(() => {
-  //   getParentNote();
-  // }, []);
+;
 
   return <NotesView handleInputChange={handleInputChange} submit={submit} />;
 };

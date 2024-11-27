@@ -12,34 +12,34 @@ const dispatch = useDispatch()
   const userType = useSelector((state) => state.userSlice.userType)
   const parentDetails = useSelector((state) => state.userSlice.parent)
   const childDetails = useSelector((state) => state.userSlice.child)
-
+   const dialogType = useSelector((state) =>state.dialogSlice.type)
   const form = useSelector((state) => state.flightsSlice.form)
+  const userForm = useSelector((state) => state.userSlice.form)
+
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target
-    let userId 
-    if(userType === "parent"){
-      userId = parentDetails.parent_id
-      dispatch(flightsSlice.updateFormField({ field: "parent_id",value:userId }))
-    }else {
-     const childId = childDetails.child_id
-     const parentId = parentDetails.parent_id
-      dispatch(flightsSlice.updateFormField({ field: "child_id",value:childId }))
-      dispatch(flightsSlice.updateFormField({ field: "parent_id",value:parentId }))
-    }
-
-    dispatch(flightsSlice.updateFormField({ field: name, value }))
-
+    console.log(form)
+    let { name, value,checked } = e.target
     if (name === "birth_date") {
       const age = calculateAge(value);
       dispatch(flightsSlice.updateFormField({ field: "age", value: age }));
     }
-    if(name === "return_flight_date"){
+    else if(name === "return_flight_date"){
      const calculate = calculateAgeByFlightDate(form.birth_date,form.return_flight_date)
      if(calculate > form.age){
       dispatch(flightsSlice.updateFormField({ field: "age", value: calculate }));
      }
     }
+    else if(name === "is_source_user"){
+      value = checked
+     dispatch(flightsSlice.updateFormField({ field: name, value:value }))
+    }else {
+      dispatch(flightsSlice.updateFormField({ field: name, value }))
+    }
+
+    dispatch(flightsSlice.updateFormField({ field: "family_id",value:userForm.family_id }))
+    dispatch(flightsSlice.updateFormField({ field: "user_id",value:userForm.user_id}))
+ 
   };
 
   const calculateAgeByFlightDate = (birth_date,return_flight_date) => {
@@ -58,6 +58,7 @@ const dispatch = useDispatch()
     }
     
   } 
+
   const calculateAge = (birthDate) => {
     const birth = new Date(birthDate);
     const today = new Date();
@@ -70,88 +71,41 @@ const dispatch = useDispatch()
   };
 
   const submit = async () => {
-    let birthDate = new Date(form.birth_date);
-    let returnDate = new Date(form.return_flight_date);
-    
-    // Calculate the difference in years
-    let age = returnDate.getFullYear() - birthDate.getFullYear();
-    
-    // Adjust for partial years
-    if (
-        returnDate.getMonth() < birthDate.getMonth() || 
-        (returnDate.getMonth() === birthDate.getMonth() && returnDate.getDate() < birthDate.getDate())
-    ) {
-        age--;
-    }
-    
-    console.log(`The difference is ${age} years.`);
     try {
     let response 
-     const parentId = parentDetails.parent_id
-     if(userType === "parent"){
-      if(form.type === "edit"){
-        // response = await axios.put(`http://localhost:5000/flights/${parentId}`,form)
-        }else {
-        //  response = await axios.post("http://localhost:5000/flights",form)
-        }
-       
-     }else {
-     const childId = childDetails.child_id
-      if(form.type === "edit"){
-       response = await axios.put(`http://localhost:5000/flights/child/${childId}`,form)
-      }else {
-       response = await axios.post(`http://localhost:5000/flights/child`,form)
-      }
-     }
-    //  dispatch(
-    //   snackBarSlice.setSnackBar({
-    //     type: "success",
-    //     message: response.data,
-    //     timeout: 3000,
-    //   })
-    // );
-    // dispatch(dialogSlice.initialActiveButton())
-    // dispatch(dialogSlice.initialDialogType())
-    // dispatch(dialogSlice.closeModal())
-    } catch (error) {
-      console.log(error)
-    }
-
-  }
-
-  const getParentData = async () => {
-    const parentId = parentDetails.parent_id
-    try {
-      let response = await axios.get(`http://localhost:5000/flights/${parentId}`)
-      if(response.data.length > 0){
-        console.log(response)
-        response.data[0].type = "edit"
-        dispatch(flightsSlice.updateForm(response.data[0]))
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  const getChildData = async () => {
-    const childId= childDetails.child_id
-    try {
-      let response = await axios.get(`http://localhost:5000/flights/child/${childId}`)
-      if(response.data.length > 0){
-        response.data[0].type = "edit"
-        dispatch(flightsSlice.updateForm(response.data[0]))
-      }
-      
-    } catch (error) {
-      console.log(error)
-    }
-  }
-  useEffect(() => {
-    if(userType === "parent"){
-      getParentData()
+    if(form.type === "edit"){
+      await axios.put(`http://localhost:5000/flights/${userForm.user_id}`,form)
     }else {
-      getChildData()
+      response = await axios.post("http://localhost:5000/flights",form)
     }
+     dispatch(flightsSlice.resetForm())
+    dispatch(dialogSlice.initialActiveButton())
+    dispatch(dialogSlice.initialDialogType())
+    dispatch(dialogSlice.closeModal())
+    } catch (error) {
+      console.log(error)
+    }
+
+  }
+  
+  const getFlightData = async () => {
+    const userId = userForm.user_id
+    let familyId = userForm.family_id
+    let isInGroup = true
+    try {
+      let response = await axios.get(`http://localhost:5000/flights/${userId}/${familyId}/${isInGroup}`)
+      console.log(response)
+      if(response.data.length > 0){
+        response.data[0].type = "edit"
+        dispatch(flightsSlice.updateForm(response.data[0]))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    getFlightData()
   }, [])
   
   return (

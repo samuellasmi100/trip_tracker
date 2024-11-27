@@ -3,7 +3,9 @@ import { createSlice } from "@reduxjs/toolkit";
 export const flightsSlice = createSlice({
   name: "flightsSlice",
   initialState: {
-    form: {},
+    form: {
+      is_source_user:false
+    },
   },
   reducers: {
     updateFormField: (state, action) => {

@@ -22,7 +22,7 @@ import AddBoxIcon from "@mui/icons-material/AddBox";
 function FamilyMemberView({ handleDialogTypeOpen }) {
   const guests = useSelector((state) => state.userSlice.guests);
   const isParentIdExist = guests.some((key) => {
-    return key.parent_id;
+    return key.is_main_user;
   });
   const classes = useStyles();
   const family = useSelector((state) => state.userSlice.family);
@@ -106,7 +106,7 @@ function FamilyMemberView({ handleDialogTypeOpen }) {
                 <TableRow
                   key={index}
                   style={
-                    user.parent_id !== undefined && user.parent_id !== null
+                    user.is_main_user 
                       ? { background: "#54a9ff40 " }
                       : {}
                   }
@@ -125,8 +125,7 @@ function FamilyMemberView({ handleDialogTypeOpen }) {
                       size={"small"}
                       onClick={() =>
                         handleDialogTypeOpen(
-                          user.parent_id !== undefined &&
-                            user.parent_id !== null
+                          user.is_main_user
                             ? "editParent"
                             : "editChild",
                           user
@@ -144,8 +143,7 @@ function FamilyMemberView({ handleDialogTypeOpen }) {
                       size={"small"}
                       onClick={() =>
                         handleDialogTypeOpen(
-                          user.parent_id !== undefined &&
-                            user.parent_id !== null
+                          user.is_main_user
                             ? "parentDetails"
                             : "childDetails",
                           user

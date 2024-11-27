@@ -18,7 +18,6 @@ import { useSelector } from "react-redux";
 function Parent({areaCodes,handleInputChange }) {
     const classes = useStyles();
     const form = useSelector((state) => state.userSlice.form)
-    console.log(form)
     return (
         <>
             <Grid item xs={6}>

@@ -17,13 +17,7 @@ const dispatch = useDispatch()
 
   const getGuestData = async () => {
     try {
-        let response 
-        if(form.child_id === null){
-           response = await axios.get(`http://localhost:5000/user/parent_details/${form.parent_id}/${form.family_id}`)
-         }else {
-         response = await axios.get(`http://localhost:5000/user/child_details/${form.child_id}`)
-        }
-
+        let response = await axios.get(`http://localhost:5000/user/details/${form.user_id}/${form.family_id}`)
       if(response?.data?.userDetails !== undefined){
         setResponse(true)
         setUserData(response.data)

@@ -52,11 +52,9 @@ const MainDialog = (props) => {
   }
 
   const handleButtonHeader = () => {
-    if(dialogType === "childDetails" || dialogType === "parentDetails"){
-     
+    if(dialogType === "childDetails" || dialogType === "parentDetails" || dialogType === "addChild" || dialogType === "addParent" || dialogType === "addFamily"){
     }else {
-      if(dialogType !== "addChild" && dialogType !== "addParent"){
-        if(form.child_id !== null){
+        if(form.user_type === "client"){
           return (Number(form.flights) === 1
           ?  ["עדכון אורח", "בחירת חדרים", "טיסות", "הערות"] 
           :  ["עדכון אורח", "בחירת חדרים", "הערות"]
@@ -81,7 +79,7 @@ const MainDialog = (props) => {
             </Button>
           ))
         }
-      }
+      
      
     }
        

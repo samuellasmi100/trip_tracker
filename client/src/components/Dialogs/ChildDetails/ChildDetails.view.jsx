@@ -171,9 +171,9 @@ const ChildDetailsView = ({ userData }) => {
                     </Grid>
                     
                 </Grid>
-                {console.log(userDetails.child_id)}
+    
                  {
-                    userDetails[0]?.child_id === null ?   <Grid>
+                    userDetails[0]?.user_type === "parent" ?   <Grid>
                     <Grid>
                         <Typography style={{ fontSize: "25px", marginTop: "12px" }}>תשלום</Typography>
                     </Grid>

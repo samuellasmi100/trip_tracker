@@ -7,7 +7,6 @@ export const paymentsSlice = createSlice({
       amount:"",
       amountReceived:"",
       formOfPayment:"",
-      parentId:"",
       paymentCurrency:"",
       paymentDate:"",
       remainsToBePaid:""
@@ -26,7 +25,6 @@ export const paymentsSlice = createSlice({
         amount:"",
         amountReceived:"",
         formOfPayment:"",
-        parentId:"",
         paymentCurrency:"",
         paymentDate:"",
         remainsToBePaid:""

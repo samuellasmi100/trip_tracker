@@ -180,7 +180,7 @@ const FlightsView = (props) => {
 
   return (
     <>
-      <Grid container style={{ minHeight: "350px", padding: "20px" }}>
+      <Grid container style={{ minHeight: "380px", padding: "20px" }}>
         <Grid item xs={6}>
           <Grid container spacing={1} justifyContent="center">
             <Grid item>
@@ -245,6 +245,29 @@ const FlightsView = (props) => {
           <Grid container spacing={1} justifyContent="center">
             {handleFligthsInputsView()}
           </Grid>
+        </Grid>
+        <Grid item style={{marginRight:"20px",marginTop:"15px"}}>
+        <FormControlLabel
+                label={
+                  <Typography style={{ color: "##757882", fontSize: "15px" }}>
+                    משמש כמקור מידע
+                  </Typography>
+                }
+                      control={
+                  <Checkbox
+                    sx={{
+                      color: "#686B76",
+                      "&.Mui-checked": {
+                        color: "#54A9FF",
+                      },
+                    }}
+                    name="is_source_user"
+                    className={classes.checkbox}
+                    onChange={handleInputChange}
+                    checked={form.is_source_user}
+                  />
+                }
+              />
         </Grid>
       </Grid>
 

@@ -47,41 +47,25 @@ const Guest = () => {
       dispatch(userSlice.updateFormField({ field: name, value }))
     }
     dispatch(userSlice.updateFormField({ field: "family_id",value:family_id }))
+    dispatch(userSlice.updateFormField({ field: "userType",value:dialogType }))
   };
   
   const submit = async () => {
     try {
       let response
-      if (dialogType === "addChild") {      
-        response = await axios.post("http://localhost:5000/user/child",form);
+      if (dialogType === "addParent" || dialogType === "addChild" ) {      
+        response = await axios.post("http://localhost:5000/user/",form);
         await getGuests()
         dispatch(userSlice.resetForm())
-      } else if (dialogType === "addParent") {
-        response = await axios.post("http://localhost:5000/user", form);
-        await getGuests()
-        dispatch(userSlice.resetForm())
-      } else if (dialogType === "editParent") {
-        response = await axios.put(`http://localhost:5000/user`, form);
-        await getGuests()
-        dispatch(userSlice.resetForm())
-      } else if (dialogType === "editChild") {
-        response = await axios.put("http://localhost:5000/user/child",form)
+      } else if (dialogType === "editChild" || dialogType === "editParent") {
+        response = await axios.put("http://localhost:5000/user/",form)
         await getGuests()
         dispatch(userSlice.updateChild({}))
         dispatch(userSlice.updateForm({}))
       }else if(dialogType === "addFamily"){
         response = await axios.post("http://localhost:5000/user/family", form);
-        
         dispatch(userSlice.resetForm())
       }
-       dispatch(
-          snackBarSlice.setSnackBar({
-            type: "success",
-            message: response.data,
-            timeout: 3000,
-          })
-        );
-     
       dispatch(dialogSlice.closeModal())
       dispatch(dialogSlice.initialActiveButton())
       dispatch(dialogSlice.initialDialogType())
@@ -94,7 +78,6 @@ const Guest = () => {
     let family_id = form.family_id
     try {
       let response = await axios.get(`http://localhost:5000/user/${family_id}`)
-      console.log(response)
       if(response.data.length > 0){
         dispatch(userSlice.updateGuets(response.data))
       }else {
