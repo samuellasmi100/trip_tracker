@@ -29,6 +29,7 @@ const RoomSelector = () => {
     let dataTosend = {userId, roomId, familyId,status}
    try {
     let response = await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/rooms/room/parent`, { dataTosend })
+    setGuestsRoomList(response.data.userAssignRoom)
    } catch (error) {
     console.log(error)
    }

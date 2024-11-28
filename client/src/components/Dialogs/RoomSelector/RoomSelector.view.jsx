@@ -31,7 +31,6 @@ const RoomSelector = ({
     (state) => state.roomsSlice.expandedRoomId
   );
 
-
   return (
     <>
       <Grid style={{ padding: "20px" }}>
@@ -179,7 +178,9 @@ const RoomSelector = ({
                   }}
                 >
                   {userForm.user_type === "parent" ? <>
+                  
                     {names.map((key, index) => (
+                   
                       <Grid
                         key={index}
                         style={{
@@ -187,6 +188,7 @@ const RoomSelector = ({
                           height: "60px",
                         }}
                       >
+                           
                         <FormControlLabel
                           style={{ marginBottom: "21px", marginRight: "5px" }}
                           control={
@@ -200,7 +202,7 @@ const RoomSelector = ({
                               checked={guestsRoomList.some(
                                 (item) =>
                                   item.userId === key.userId &&
-                                  item.roomId === room.roomId && // Ensure `roomId` matches
+                                  item.roomId === room.roomId && 
                                   item.family_id === key.family_id
                               )}
                               onChange={(e) =>
