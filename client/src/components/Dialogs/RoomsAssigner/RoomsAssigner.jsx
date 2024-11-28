@@ -18,7 +18,7 @@ const RoomsAssigner = () => {
    const submit = async () => {
       try {
         let familyId = form.family_id
-        let response = await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/room`,{selectedRooms,familyId})    
+        let response = await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/rooms`,{selectedRooms,familyId})    
         dispatch(
           snackbarSlice.setSnackBar({
             type: "success",
