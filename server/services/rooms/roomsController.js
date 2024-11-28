@@ -16,7 +16,7 @@ router.get("/", async (req, res, next) => {
 router.post("/", async (req, res, next) => {
   const roomDetails = req.body.selectedRooms
   const familyId = req.body.familyId
-
+console.log(roomDetails,familyId)
   try {
     const response = await roomsService.assignMainRoom(roomDetails,familyId)
     res.send("שיוך החדרים עבר בהצלחה")
