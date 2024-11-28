@@ -8,11 +8,10 @@ import {
   TableHead,
   TableRow,
   Button,
-  Collapse,
-  Box,
   Typography,
   TextField,
-  Input,
+  InputAdornment,
+  FormControl
 } from "@mui/material";
 import React from "react";
 import { useStyles } from "./FamilyList.style";
@@ -24,11 +23,12 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 import { useSelector } from "react-redux";
 import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
 import  FamilyList  from "./FamilyList.css";
+import SearchIcon from "@material-ui/icons/Search";
 
 function FamilyListView(props) {
   const classes = useStyles();
   const familiesList = useSelector((state) => state.userSlice.families)
-  const { handleDialogTypeOpen, handleNameClick,handleUpload,handleFileChange } =
+  const { handleDialogTypeOpen, handleNameClick,handleUpload,handleFileChange,filteredRooms,searchTerm,setSearchTerm } =
     props;
   const headers = [
     "שם משפחה",
@@ -49,14 +49,27 @@ function FamilyListView(props) {
         }}
       >
         <Grid style={{ display: "flex", justifyContent: "space-between" }} item>
-          <Grid item style={{ marginRight: "8px", marginTop: "5px" }}>
-            <SearchInput />
-          </Grid>
-          <Grid item style={{ marginRight: "8px", marginTop: "5px" }}>
-            <IconButton className={classes.downloadButton}>
-              <DownloadIcon style={{ color: "#54A9FF" }} />
-            </IconButton>
-          </Grid>
+     <Grid style={{marginRight:"5px",marginTop:'5px',}}>
+     <FormControl>
+        <TextField
+          size="small"
+          className={classes.searchField}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          value={searchTerm}
+          InputProps={{ 
+            endAdornment: (
+              <InputAdornment
+                position="end"
+                // style={{ display: showClearIcon }}
+                // onClick={handleClick}
+              >
+                <SearchIcon style={{color: 'rgb(84, 169, 255)'}}/>
+              </InputAdornment>
+            )
+          }}
+        />
+      </FormControl>
+     </Grid>
         </Grid>
         <Grid item style={{  marginRight: "-100px", marginTop: "10px"  }}>
             <Typography style={{color:"white"}}> נרשמים </Typography>
@@ -92,7 +105,7 @@ function FamilyListView(props) {
               </TableRow>
             </TableHead>
             <TableBody className={classes.dataTableBody}>
-              {familiesList?.map((user, index) => {
+              {filteredRooms?.map((user, index) => {
                 return (
                   <TableRow key={index}>
                     <Button onClick={() => handleNameClick(user)}>

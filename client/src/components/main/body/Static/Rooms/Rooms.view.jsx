@@ -14,12 +14,15 @@ import {
   import { useStyles } from "./Rooms.style";
   import { useSelector } from "react-redux";
   import { ReactComponent as EditIcon  } from "../../../../../assets/icons/edit.svg"
-
-  function StaticView() {
+  import CloseIcon from '@mui/icons-material/Close';
+  import DoneIcon from '@mui/icons-material/Done';
+  function StaticView({
+    filteredRooms
+  }) {
     const classes = useStyles();
-    const headers = ["מספר חדר", "סוג חדר","קומה","כיוון","גודל","קיבולת החדר","תפוסה מקסימלית","מספר מקומות פנויים","ערוך"];
+    const headers = ["מספר חדר", "סוג חדר","קומה","כיוון","גודל","קיבולת החדר","תפוסה מקסימלית","מספר אנשים בחדר ","ערוך","זמינות"];
     const rooms = useSelector((state) => state.roomsSlice.rooms);
- 
+
     return (
       <Grid>
         <TableContainer
@@ -45,33 +48,33 @@ import {
               </TableRow>
             </TableHead>
             <TableBody className={classes.dataTableBody}>
-              {rooms?.map((room, index) => {
+              {filteredRooms?.map((room, index) => {
                 return (
                   <TableRow
                     key={index}>
                     <TableCell className={classes.dataTableCell}>
-                      {room.roomId}
+                      {room.rooms_id}
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
-                      {room.roomType}
+                      {room.type}
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
-                      {room.roomFloor}
+                      {room.floor}
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
-                      {room.roomDirection}
+                      {room.direction}
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
-                      {room.roomSize}
+                      {room.size}
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
-                      {0}
+                      {room.base_occupancy}
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
-                      {0}
+                      {"?"}
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
-                      {0}
+                      {room.number_of_people}
                     </TableCell>
                     <TableCell
                       className={classes.dataTableCell} style={{ maxWidth: "1px" }}>
@@ -79,6 +82,10 @@ import {
                             <EditIcon />
                       </IconButton>
                     </TableCell>
+                    <TableCell className={classes.dataTableCell}>
+                      {room.is_taken === 1 ? <CloseIcon style={{color:"red"}}/> : < DoneIcon style={{color:"green"}}/>}
+                    </TableCell>
+                    
                 
                   </TableRow>
                 )

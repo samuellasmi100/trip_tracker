@@ -20,6 +20,7 @@ const FamilyList = (props) => {
   const dialogOpen = useSelector((state) => state.dialogSlice.open)
   const dialogType = useSelector((state) => state.dialogSlice.type)
   const [file, setFile] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const closeModal = () => {
     dispatch(dialogSlice.initialActiveButton())
@@ -130,7 +131,7 @@ const FamilyList = (props) => {
     }
   };
 
-  const handleFileChange = (e) => {
+const handleFileChange = (e) => {
     // const selectedFile = e.target.files[0];
     // setFile(selectedFile);
     // const reader = new FileReader();
@@ -138,9 +139,15 @@ const FamilyList = (props) => {
     //   setBase64(reader.result.split(",")[1]);
     // };
     // reader.readAsDataURL(selectedFile);
-  };
-  
+};
 
+const filteredRooms = usersData?.filter((user) => {
+  if (searchTerm !== "") {
+    return user.family_name.includes(searchTerm)
+  }else {
+    return user
+  }}
+);
   useEffect(() => {
     getMainUsers()
     getFamilies()
@@ -154,8 +161,11 @@ const FamilyList = (props) => {
         handleNameClick={handleNameClick}
         handleUpload={handleUpload}
         handleFileChange={handleFileChange}
+        filteredRooms={filteredRooms}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
       />
-      {/* {showClientDetails ? <FamilyMember handleDialogTypeOpen={handleDialogTypeOpen} /> : <></>} */}
+
      <FamilyMember handleDialogTypeOpen={handleDialogTypeOpen} />
 
       <MainDialog

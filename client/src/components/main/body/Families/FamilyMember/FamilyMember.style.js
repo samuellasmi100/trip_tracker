@@ -48,4 +48,38 @@ export const useStyles = makeStyles((theme) => ({
     borderRadius: "4px",
     opacity: 1,
   },
+  searchField: {
+    borderRadius: 4,
+  
+    "& .MuiInputBase-input": {
+        position: "relative",
+        color: "#FFFFFF",
+        fontSize: 16,
+        width: "120px",
+        padding: "5px 18px",
+        height: "25px",
+    },
+    "& .MuiFormLabel-root": {
+        color: "#757882", // or black
+        fontSize: "14px",
+    },
+    "& label.Mui-focused": {
+        color: "#54A9FF",
+        top: "0px",
+    },
+    "& .MuiInput-underline:after": {
+        borderBottomColor: "#54A9FF",
+    },
+    "& .MuiOutlinedInput-root": {
+        "& fieldset": {
+            borderColor: "#494C55",
+        },
+        "&:hover fieldset": {
+            borderColor: "#494C55",
+        },
+        "&.Mui-focused fieldset": {
+            borderColor: "#54A9FF",
+        },
+    },
+  },
 }));

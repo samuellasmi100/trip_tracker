@@ -8,6 +8,9 @@ import {
   TableHead,
   TableRow,
   Typography,
+  InputAdornment,
+  FormControl,
+  TextField
 } from "@mui/material";
 import React from "react";
 import { useStyles } from "./FamilyMember.style";
@@ -18,15 +21,23 @@ import SearchInput from "../../../../ReusableComps/SearchInput/SearchInput";
 import { ReactComponent as DownloadIcon } from "../../../../../assets/icons/download.svg";
 import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
 import AddBoxIcon from "@mui/icons-material/AddBox";
+import SearchIcon from "@material-ui/icons/Search";
+import CircleIcon from "@mui/icons-material/Circle";
+import { ReactComponent as DoneIcon } from "../../../../../assets/icons/done-icon.svg";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
-function FamilyMemberView({ handleDialogTypeOpen }) {
+function FamilyMemberView({ handleDialogTypeOpen, handleSearchChange }) {
   const guests = useSelector((state) => state.userSlice.guests);
   const isParentIdExist = guests.some((key) => {
     return key.is_main_user;
   });
   const classes = useStyles();
   const family = useSelector((state) => state.userSlice.family);
-  const headers = ["שם", "תעודת זהות", "ערוך", "פרטים"];
+  const headers = ["שם", "תעודת זהות", "ערוך", "פרטים", "סטטוס"];
+  let status1 = 1
+  let status2 = 2
+  let status3 = 3
+  let status4 = 4
 
   return (
     <Grid
@@ -38,6 +49,7 @@ function FamilyMemberView({ handleDialogTypeOpen }) {
         width: "40vw",
       }}
     >
+
       <Grid
         item
         xs={12}
@@ -48,31 +60,42 @@ function FamilyMemberView({ handleDialogTypeOpen }) {
         }}
       >
         <Grid style={{ display: "flex", justifyContent: "space-between" }} item>
-          <Grid item style={{ marginRight: "8px", marginTop: "5px" }}>
-            <SearchInput />
-          </Grid>
-         
-          <Grid item style={{ marginRight: "8px", marginTop: "5px" }}>
-            <IconButton className={classes.downloadButton}>
-              <DownloadIcon style={{ color: "#54A9FF" }} />
-            </IconButton>
+          <Grid style={{ marginRight: "5px", marginTop: '5px', marginBottom: "7px" }}>
+            <FormControl>
+              <TextField
+                size="small"
+                className={classes.searchField}
+                onChange={handleSearchChange}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment
+                      position="end"
+                    // style={{ display: showClearIcon }}
+                    // onClick={handleClick}
+                    >
+                      <SearchIcon style={{ color: 'rgb(84, 169, 255)' }} />
+                    </InputAdornment>
+                  )
+                }}
+              />
+            </FormControl>
           </Grid>
         </Grid>
         {family.family_id !== undefined ? (
           <>
-        <Grid item style={{ marginRight: "-100px", marginTop: "10px" }}>
-            <Typography style={{color:"white"}}> כלל האורחים משפחה /קבוצה {family.family_name} </Typography>
-          </Grid>
-        
-          <Grid>
-            <IconButton
-              onClick={() =>
-                handleDialogTypeOpen(isParentIdExist ? "addChild" : "addParent")
-              }
-            >
-              <AddBoxIcon style={{ color: "#54A9FF", fontSize: "30px" }} />
-            </IconButton>
-          </Grid>
+            <Grid item style={{ marginRight: "-100px", marginTop: "10px" }}>
+              <Typography style={{ color: "white" }}> כלל האורחים משפחה /קבוצה {family.family_name} </Typography>
+            </Grid>
+
+            <Grid>
+              <IconButton
+                onClick={() =>
+                  handleDialogTypeOpen(isParentIdExist ? "addChild" : "addParent")
+                }
+              >
+                <AddBoxIcon style={{ color: "#54A9FF", fontSize: "30px" }} />
+              </IconButton>
+            </Grid>
           </>
         ) : (
           ""
@@ -106,7 +129,7 @@ function FamilyMemberView({ handleDialogTypeOpen }) {
                 <TableRow
                   key={index}
                   style={
-                    user.is_main_user 
+                    user.is_main_user
                       ? { background: "#54a9ff40 " }
                       : {}
                   }
@@ -153,6 +176,36 @@ function FamilyMemberView({ handleDialogTypeOpen }) {
                       <DescriptionIcon style={{ color: "rgb(255, 158, 84)" }} />
                     </IconButton>
                   </TableCell>
+                  <TableCell
+                    className={classes.dataTableCell}
+                    style={{ maxWidth: "1px" }}
+                  >
+                    <IconButton
+                      size={"small"}
+                      onClick={() =>
+                        handleDialogTypeOpen(
+                          user.is_main_user
+                            ? "parentDetails"
+                            : "childDetails",
+                          user
+                        )
+                      }>
+                        
+                      <CheckCircleIcon
+                        style={{
+                          color: user.is_main_user
+                            ? "green"
+                            : user.address !== null
+                              ? "orange"
+                              : "red",
+                          height: "25px",
+                          width: "25px",
+                        }}
+                      />
+
+                    </IconButton>
+                  </TableCell>
+
                 </TableRow>
               );
             })}

@@ -12,13 +12,14 @@ import { useSelector } from "react-redux";
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
-function StaticView({ handleButtonClick ,handleNavButtonClicked}) {
+
+function StaticView({ handleButtonClick ,handleNavButtonClicked,searchTerm,
+  setSearchTerm}) {
   const classes = useStyles();
 
-  const headers = ["חדרים", "מלונות",];
+  const headers = ["חדרים", "מלונות","אורחים","תשלומים"];
   const activeButton = useSelector((state) => state.staticSlice.activeButton)
 
-  const { search } = useStyles();
   return (
     <Grid
       item
@@ -27,7 +28,7 @@ function StaticView({ handleButtonClick ,handleNavButtonClicked}) {
         border: "1px solid rgb(61, 63, 71)",
         background: "rgb(45, 45, 45)",
         width: "80vw",
-        height: "calc(100vh - 160px)",
+        height: "calc(100vh - 170px)",
       }}
     >
       <Grid item style={{ display: "flex",justifyContent:"space-between" }}>
@@ -46,11 +47,12 @@ function StaticView({ handleButtonClick ,handleNavButtonClicked}) {
         <Grid>
          <Grid style={{display:'flex'}}>
           <Grid style={{marginTop:"5px",}}> 
-          <FormControl className={search}>
+          <FormControl>
         <TextField
           size="small"
           className={classes.textField}
-          // onChange={handleChange}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          value={searchTerm}
           InputProps={{ 
             endAdornment: (
               <InputAdornment
