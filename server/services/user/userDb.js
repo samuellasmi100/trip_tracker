@@ -14,6 +14,7 @@ const addGuest = async (data) => {
 
 const addFamily = async (data) => {
   try {
+    delete data.userType
     const sql = userQuery.addFamily(data)
     const parameters = Object.values(data)
 

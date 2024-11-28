@@ -15,6 +15,7 @@ router.post("/", async (req, res, next) => {
 
     }
     userData.user_id = uuid();
+    console.log(userData)
     try {
        userService.addGuest(userData)
        const response = await userService.getFamilyMamber(userData.family_id)
