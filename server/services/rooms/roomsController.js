@@ -69,7 +69,8 @@ router.post("/room/parent", async (req, res, next) => {
   const status = form.status
   try {
     await roomsService.assignRoom(userId,roomId,familyId,status)
-    res.send("העידכון עבר בהצלחה")
+    const response = await roomsService.getFamilyRoom(familyId)
+    res.send(response)
     // const response = await roomsService.getChossenRoom(userId)
     // res.send(response)
 
