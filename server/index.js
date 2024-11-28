@@ -30,7 +30,6 @@ app.use("/auth",authController)
 
 app.use(errorHandler);
 const launchServer = async () => {
-  console.log(process.env.REST_API_PORT)
   app.listen(process.env.REST_API_PORT, () =>
     console.log(`The Main Server is running on ${process.env.REST_API_PORT}`)
   );

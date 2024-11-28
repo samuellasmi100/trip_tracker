@@ -16,7 +16,6 @@ router.get("/", async (req, res, next) => {
 router.post("/", async (req, res, next) => {
   const roomDetails = req.body.selectedRooms
   const familyId = req.body.familyId
-console.log(roomDetails,familyId)
   try {
     const response = await roomsService.assignMainRoom(roomDetails,familyId)
     res.send("שיוך החדרים עבר בהצלחה")
@@ -70,6 +69,7 @@ router.post("/room/parent", async (req, res, next) => {
   const status = form.status
   try {
     await roomsService.assignRoom(userId,roomId,familyId,status)
+    res.send("העידכון עבר בהצלחה")
     // const response = await roomsService.getChossenRoom(userId)
     // res.send(response)
 
