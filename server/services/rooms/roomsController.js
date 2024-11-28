@@ -62,7 +62,21 @@ router.post("/room", async (req, res, next) => {
     return next(error);
   }
 });
+router.post("/room/parent", async (req, res, next) => {
+  const form = req.body.dataTosend
+  let userId = form.userId
+  const roomId = form.roomId
+  const familyId = form.familyId
+  const status = form.status
+  try {
+    await roomsService.assignRoom(userId,roomId,familyId,status)
+    // const response = await roomsService.getChossenRoom(userId)
+    // res.send(response)
 
+  } catch (error) {
+    return next(error);
+  }
+});
 router.put("/room", async (req, res, next) => {
   const form = req.body.form
   let userId = form.user_id

@@ -23,10 +23,24 @@ const assignMainRoom = async (userId,roomId) => {
   }
 }
 
-const assignRoom = async (userId,roomId,familyId) => {
+const assignRoom = async (userId,roomId,familyId,status) => {
   try {
-    let sql = roomsQuery.assignRoom()
-    const parameters = [userId,roomId,familyId]
+    let sql
+    let parameters;
+     let isGuestAlradyChoosRoom = await getChossenRoom(userId)
+     if(isGuestAlradyChoosRoom.length > 0){
+      if(isGuestAlradyChoosRoom[0].roomId === roomId && status === false){
+        sql = roomsQuery.removeUserAssignRoom()
+        parameters = [userId]
+      }else {
+        sql = roomsQuery.updateAssignRoom()
+        parameters = [roomId,userId]
+      }
+      
+     }else {
+       sql = roomsQuery.assignRoom()
+        parameters = [userId,roomId,familyId]
+     }
     await connection.executeWithParameters(sql,parameters) 
   } catch (error) { 
     console.log(error)
@@ -42,6 +56,7 @@ const updateAssignRoom = async (userId,roomId) => {
     console.log(error)
   }
 }
+
 const updateMainRoom = async (roomDetails,userId) => {
  
   try {
@@ -113,6 +128,17 @@ const getChossenRoom = async (userId) => {
   }
 }
 
+const getAllUserRooms = async (familyId) => {
+  try {
+    let sql = roomsQuery.getAllUserRooms()
+    const parameters = [familyId]
+    const response = await connection.executeWithParameters(sql,parameters)
+     return response
+ } catch (error) { 
+   console.log(error)
+ }
+}
+
 const removeUserAssignMainRoom = async (familyId) => {
   try {
      let sql = roomsQuery.removeUserAssignMainRoom()
@@ -125,9 +151,9 @@ const removeUserAssignMainRoom = async (familyId) => {
   }
 }
 
-const removeUserAssignMainRoomOfUser = async (familyId,roomId) => {
+const removeAllUserAssignRoom = async (familyId,roomId) => {
   try {
-     let sql = roomsQuery.removeUserAssignMainRoomOfUser()
+     let sql = roomsQuery.removeAllUserAssignRoom()
      const parameters = [roomId,familyId]
      const response = await connection.executeWithParameters(sql,parameters)
       return response
@@ -136,6 +162,7 @@ const removeUserAssignMainRoomOfUser = async (familyId,roomId) => {
     console.log(error)
   }
 }
+
 module.exports = {
   getAll,
   assignMainRoom,
@@ -148,5 +175,6 @@ module.exports = {
   getChossenRoom,
   updateAssignRoom,
   removeUserAssignMainRoom,
-  removeUserAssignMainRoomOfUser
+  removeAllUserAssignRoom,
+  getAllUserRooms
 }

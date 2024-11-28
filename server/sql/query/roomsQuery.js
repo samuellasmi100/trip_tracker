@@ -42,7 +42,9 @@ join user_room_assignments ur
 on ur.room_id = r.rooms_id
 where ur.user_id = ?`
 }
-
+const getAllUserRooms = () => {
+  return `SELECT room_id as roomId,family_id,user_id as userId FROM user_room_assignments where family_id = ?`
+}
 const updateMainRoom = () => {
   return  `
   INSERT INTO family_room_details (room_id, userId)
@@ -58,8 +60,11 @@ const removeUserAssignMainRoom = () => {
   return `DELETE FROM user_room_assignments where family_id = ?`
 }
 
-const removeUserAssignMainRoomOfUser = () => {
+const removeAllUserAssignRoom = () => {
   return `DELETE FROM user_room_assignments where room_id = ? AND family_id = ? `
+}
+const removeUserAssignRoom = () => {
+  return `DELETE FROM user_room_assignments where user_id = ? `
 }
 
 const removeMainRoom = () => {
@@ -89,6 +94,8 @@ module.exports = {
   getChossenRoom,
   updateAssignRoom,
 removeUserAssignMainRoom,
-removeUserAssignMainRoomOfUser
+removeAllUserAssignRoom,
+getAllUserRooms,
+removeUserAssignRoom
 }
 

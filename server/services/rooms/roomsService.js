@@ -21,7 +21,7 @@ const assignMainRoom = async (roomDetails, familyId) => {
             const ids = checkIfUserAlreadyAssign.map((key) => { return key.roomId })
             const userIds = roomDetails.map((key) => { return key.roomId })
             const result = ids.filter(item => !userIds.includes(item));
-            await Promise.all(result.map((room) => roomsDb.removeUserAssignMainRoomOfUser(familyId, room)));
+            await Promise.all(result.map((room) => roomsDb.removeAllUserAssignRoom(familyId, room)));
             await Promise.all(ids.map((room) => roomsDb.unLockRoom(room)));
             await roomsDb.removeMainRoom(familyId)
             await Promise.all(roomDetails.map((room) => roomsDb.assignMainRoom(familyId, room.roomId)));
@@ -31,12 +31,18 @@ const assignMainRoom = async (roomDetails, familyId) => {
 
 }
 
-const getFamilyRoom = async (id) => {
-    return await roomsDb.getFamilyRoom(id)
+const assignGroupUserRoom = async (selectedRoomList) => {
+    await Promise.all(selectedRoomList.map((room) => roomsDb.assignRoom(room.userId,room.roomId,room.familyId)));
 }
 
-const assignRoom = async (userId,roomId,familyId) => {
-    return await roomsDb.assignRoom(userId,roomId,familyId)
+const getFamilyRoom = async (id) => {
+    const familyRooms = await roomsDb.getFamilyRoom(id) 
+    const userAssignRoom = await roomsDb.getAllUserRooms(id)
+    return {familyRooms,userAssignRoom}
+}
+
+const assignRoom = async (userId,roomId,familyId,status) => {
+    return await roomsDb.assignRoom(userId,roomId,familyId,status)
 }
 
 const updateAssignRoom = async (userId,roomId) => {
@@ -53,5 +59,6 @@ module.exports = {
     getFamilyRoom,
     assignRoom,
     getChossenRoom,
-    updateAssignRoom
+    updateAssignRoom,
+    assignGroupUserRoom
 }
