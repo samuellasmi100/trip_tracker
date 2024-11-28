@@ -3,7 +3,9 @@ const roomsDb = require("./roomsDb")
 const getAll = async () => {
     return await roomsDb.getAll()
 }
-
+const getRoomDetailsWithCounts = async () => {
+    return await roomsDb.getRoomDetailsWithCounts()
+}
 const assignMainRoom = async (roomDetails, familyId) => {
     const checkIfUserAlreadyAssign = await roomsDb.getFamilyRoom(familyId)
     if(roomDetails.length === 0){
@@ -60,5 +62,6 @@ module.exports = {
     assignRoom,
     getChossenRoom,
     updateAssignRoom,
-    assignGroupUserRoom
+    assignGroupUserRoom,
+    getRoomDetailsWithCounts
 }

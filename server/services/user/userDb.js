@@ -105,5 +105,6 @@ module.exports = {
     getFamilies,
     getFamilyMamber,
     getParentFamilyMamber,
-    saveRegistrationForm
+    saveRegistrationForm,
+    
 }

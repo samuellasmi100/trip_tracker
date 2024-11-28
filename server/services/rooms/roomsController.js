@@ -12,7 +12,15 @@ router.get("/", async (req, res, next) => {
     return next(error);
   }
 });
+router.get("/count", async (req, res, next) => {
+  try {
+    const response = await roomsService.getRoomDetailsWithCounts()
+    res.send(response)
 
+  } catch (error) {
+    return next(error);
+  }
+});
 router.post("/", async (req, res, next) => {
   const roomDetails = req.body.selectedRooms
   const familyId = req.body.familyId
@@ -71,13 +79,12 @@ router.post("/room/parent", async (req, res, next) => {
     await roomsService.assignRoom(userId,roomId,familyId,status)
     const response = await roomsService.getFamilyRoom(familyId)
     res.send(response)
-    // const response = await roomsService.getChossenRoom(userId)
-    // res.send(response)
 
   } catch (error) {
     return next(error);
   }
 });
+
 router.put("/room", async (req, res, next) => {
   const form = req.body.form
   let userId = form.user_id

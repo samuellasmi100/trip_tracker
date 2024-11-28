@@ -1,6 +1,20 @@
 const getAll = () => {
   return `SELECT rooms_id as roomId,type as roomType,size as roomSize,direction as roomDirection,floor as roomFloor FROM rooms WHERE is_taken = 0;`
 }
+const getRoomDetailsWithCounts = () => {
+return `SELECT 
+    r.*,
+    COUNT(ura.user_id) AS number_of_people
+FROM 
+    rooms r
+LEFT JOIN 
+    user_room_assignments ura
+ON 
+    r.rooms_id = ura.room_id
+GROUP BY 
+    r.rooms_id;
+`
+}
 const getFamilyRoom = () => {
 return `
   SELECT 
@@ -42,9 +56,11 @@ join user_room_assignments ur
 on ur.room_id = r.rooms_id
 where ur.user_id = ?`
 }
+
 const getAllUserRooms = () => {
   return `SELECT room_id as roomId,family_id,user_id as userId FROM user_room_assignments where family_id = ?`
 }
+
 const updateMainRoom = () => {
   return  `
   INSERT INTO family_room_details (room_id, userId)
@@ -56,6 +72,7 @@ const updateMainRoom = () => {
 const updateAssignRoom = () => {
   return `UPDATE user_room_assignments SET room_id = ? where user_id = ?`
 }
+
 const removeUserAssignMainRoom = () => {
   return `DELETE FROM user_room_assignments where family_id = ?`
 }
@@ -63,6 +80,7 @@ const removeUserAssignMainRoom = () => {
 const removeAllUserAssignRoom = () => {
   return `DELETE FROM user_room_assignments where room_id = ? AND family_id = ? `
 }
+
 const removeUserAssignRoom = () => {
   return `DELETE FROM user_room_assignments where user_id = ? `
 }
@@ -96,6 +114,7 @@ module.exports = {
 removeUserAssignMainRoom,
 removeAllUserAssignRoom,
 getAllUserRooms,
-removeUserAssignRoom
+removeUserAssignRoom,
+getRoomDetailsWithCounts
 }
 

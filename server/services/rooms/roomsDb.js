@@ -11,6 +11,16 @@ const getAll = async () => {
       console.log(error)
     }
 }
+const getRoomDetailsWithCounts = async () => {
+  try {
+    const sql = roomsQuery.getRoomDetailsWithCounts()
+    const response = await connection.execute(sql)
+    return response
+   
+  } catch (error) { 
+    console.log(error)
+  }
+}
 
 const assignMainRoom = async (userId,roomId) => {
  
@@ -177,5 +187,6 @@ module.exports = {
   updateAssignRoom,
   removeUserAssignMainRoom,
   removeAllUserAssignRoom,
-  getAllUserRooms
+  getAllUserRooms,
+  getRoomDetailsWithCounts
 }
