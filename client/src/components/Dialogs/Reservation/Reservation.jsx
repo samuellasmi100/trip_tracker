@@ -53,7 +53,7 @@ const Reservation = () => {
   const submit = async () => {
     console.log(form);
     try {
-      let response = await axios.put("http://localhost:5000/user/", form);
+      let response = await axios.put(`${process.env.REACT_APP_SERVER_BASE_URL}/user/`, form);
       await getGuests();
       dispatch(userSlice.updateChild({}));
       dispatch(userSlice.updateForm({}));
@@ -68,7 +68,7 @@ const Reservation = () => {
   const getGuests = async () => {
     let family_id = form.family_id
     try {
-      let response = await axios.get(`http://localhost:5000/user/${family_id}`)
+      let response = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${family_id}`)
       if(response.data.length > 0){
         dispatch(userSlice.updateGuets(response.data))
       }else {

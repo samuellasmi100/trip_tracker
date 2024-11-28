@@ -1,15 +1,15 @@
 import "./App.css";
-import { useEffect, useState } from "react";
-import { Grid, useMediaQuery, useTheme } from "@mui/material";
+import { Grid} from "@mui/material";
 import SnackBar from "./components/Snackbar";
 import Analytics from "./components/main/body/Analytics/Analytics";
 import {  Route, Routes, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import {useSelector } from "react-redux";
 import "moment/locale/en-gb";
 import FamilyList from "./components/main/body/Families/FamilyList/FamilyList";
 import Header from "./components/main/header/Header";
 import Sidebar from "./components/main/aside/Sidebar";
 import Login from "./components/main/body/Login/Login";
+import Static from "./components/main/body/Static/Static";
 
 function App() {
   const token = useSelector((state) => state.authSlice.token);
@@ -28,6 +28,7 @@ function App() {
           {isAuthenticated ? (
             <>
               <Route path="/workspace" element={<FamilyList />} />
+              <Route path="/static" element={<Static />} />
               <Route path="/analytics" element={<Analytics />} />
             </>
           ) : (

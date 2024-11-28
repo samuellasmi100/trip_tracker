@@ -70,9 +70,9 @@ const dispatch = useDispatch()
     try {
     let response 
     if(form.type === "edit"){
-      await axios.put(`http://localhost:5000/flights/${userForm.user_id}`,form)
+      await axios.put(`${process.env.REACT_APP_SERVER_BASE_URL}/flights/${userForm.user_id}`,form)
     }else {
-      response = await axios.post("http://localhost:5000/flights",form)
+      response = await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/flights`,form)
     }
      dispatch(flightsSlice.resetForm())
     dispatch(dialogSlice.initialActiveButton())
@@ -90,7 +90,7 @@ const dispatch = useDispatch()
     let isInGroup = userForm.is_in_group
     console.log(userForm)
     try {
-      let response = await axios.get(`http://localhost:5000/flights/${userId}/${familyId}/${isInGroup}`)
+      let response = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/${userId}/${familyId}/${isInGroup}`)
       console.log(response)
       if(response.data.length > 0){
         response.data[0].type = "edit"

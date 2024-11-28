@@ -35,9 +35,9 @@ const Notes = () => {
   const submit = async () => {
     try {
       if(userType === "parent"){
-       await axios.post(`http://localhost:5000/notes`, form);
+       await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/notes`, form);
       }else {
-        await axios.post(`http://localhost:5000/notes/child`, form);
+        await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/notes/child`, form);
       }
       dispatch(dialogSlice.closeModal());
       dispatch(notesSlice.resetForm());

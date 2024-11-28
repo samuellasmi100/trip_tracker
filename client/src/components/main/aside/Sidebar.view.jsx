@@ -10,6 +10,7 @@ import {
 import { StyledTooltip, useStyles } from "./Sidebar.style";
 import { ReactComponent as Database } from "../../../assets/icons/database.svg";
 import { ReactComponent as ClientInfo } from "../../../assets/icons/client-info.svg";
+import { ReactComponent as Statis } from "../../../assets/icons/static_select.svg";
 import { Link, useLocation } from "react-router-dom";
 
 import clsx from "clsx";
@@ -57,8 +58,19 @@ function SidebarView({
             </Link>
           </Grid>
           <Grid item className={classes.sideBarIcons}>
-            <Link to="analytics">
+            <Link to="static">
               <StyledTooltip title="Static" placement="bottom-end" arrow>
+                <Statis
+                  style={{
+                    fill: pathname.includes("/static") ? "#ffffff" : "#828282",
+                  }}
+                />
+              </StyledTooltip>
+            </Link>
+          </Grid>
+          <Grid item className={classes.sideBarIcons}>
+            <Link to="analytics">
+              <StyledTooltip title="Analytics" placement="bottom-end" arrow>
                 <AnalyticsIcon
                   style={{
                     fill: pathname.includes("/analytics") ? "#ffffff" : "#828282",

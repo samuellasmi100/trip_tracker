@@ -7,6 +7,7 @@ import notesSlice from "./slice/notesSlice";
 import flightsSlice from "./slice/flightsSlice";
 import dialogSlice from "./slice/dialogSlice"
 import authSlice from "./slice/authSlice"
+import staticSlice from "./slice/staticSlice"
 
 const createRootReducer = () =>
   combineReducers({
@@ -17,7 +18,8 @@ const createRootReducer = () =>
     notesSlice: notesSlice,
     dialogSlice : dialogSlice,
     flightsSlice:flightsSlice,
-    authSlice:authSlice
+    authSlice:authSlice,
+    staticSlice:staticSlice
   });
 
 export default createRootReducer;

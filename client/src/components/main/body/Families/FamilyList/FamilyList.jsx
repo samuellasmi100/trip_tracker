@@ -16,13 +16,10 @@ import * as paymentsSlice from "../../../../../store/slice/paymentsSlice";
 const FamilyList = (props) => {
   const [showClientDetails, setShowClientDetails] = useState(false);
   const [usersData, setUsersData] = useState([]);
-  const [childDataDetails, setChildDataDetails] = useState([]);
   const dispatch = useDispatch();
   const dialogOpen = useSelector((state) => state.dialogSlice.open)
   const dialogType = useSelector((state) => state.dialogSlice.type)
-  const familyDetails = useSelector((state) => state.userSlice.family)
   const [file, setFile] = useState(null);
-  const [base64, setBase64] = useState("");
 
   const closeModal = () => {
     dispatch(dialogSlice.initialActiveButton())
@@ -77,7 +74,7 @@ const FamilyList = (props) => {
 
   const getMainUsers = async () => {
     try {
-      let response = await axios.get("http://localhost:5000/user/all")
+      let response = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/user/all`)
       if (response?.data) {
         dispatch(userSlice.updateParents(response.data))
         setUsersData(response.data)
@@ -90,7 +87,7 @@ const FamilyList = (props) => {
 
   const getFamilies = async () => {
     try {
-      let response = await axios.get("http://localhost:5000/user/families")
+      let response = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/user/families`)
       dispatch(userSlice.updateFamiliesList(response.data))
       setUsersData(response.data)
     } catch (error) {
@@ -103,7 +100,7 @@ const FamilyList = (props) => {
     let family_id = user.family_id
     setShowClientDetails(true)
     try {
-      let response = await axios.get(`http://localhost:5000/user/${family_id}`)
+      let response = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${family_id}`)
       if(response.data.length > 0){
         dispatch(userSlice.updateGuets(response.data))
       }else {
@@ -134,13 +131,13 @@ const FamilyList = (props) => {
   };
 
   const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    setFile(selectedFile);
-    const reader = new FileReader();
-    reader.onload = () => {
-      setBase64(reader.result.split(",")[1]);
-    };
-    reader.readAsDataURL(selectedFile);
+    // const selectedFile = e.target.files[0];
+    // setFile(selectedFile);
+    // const reader = new FileReader();
+    // reader.onload = () => {
+    //   setBase64(reader.result.split(",")[1]);
+    // };
+    // reader.readAsDataURL(selectedFile);
   };
   
 

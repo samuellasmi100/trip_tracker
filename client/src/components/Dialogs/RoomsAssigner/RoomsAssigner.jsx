@@ -18,7 +18,7 @@ const RoomsAssigner = () => {
    const submit = async () => {
       try {
         let familyId = form.family_id
-        let response = await axios.post("http://localhost:5000/rooms",{selectedRooms,familyId})    
+        let response = await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/room`,{selectedRooms,familyId})    
         dispatch(
           snackbarSlice.setSnackBar({
             type: "success",
@@ -46,8 +46,9 @@ const RoomsAssigner = () => {
    const getFamilyRooms = async () => {
     try {
       let familyId = form.family_id
-      let response = await axios.get(`http://localhost:5000/rooms/${familyId}`)  
-      dispatch(roomsSlice.updateSelectedRoomsList(response.data))
+      let response = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/rooms/${familyId}`)  
+      
+      dispatch(roomsSlice.updateSelectedRoomsList(response.data.familyRooms))
     } catch (error) {
       console.log(error)
     }
@@ -55,7 +56,7 @@ const RoomsAssigner = () => {
 
    const getAllRooms = async () => {
     try {
-      let response = await axios.get("http://localhost:5000/rooms")
+      let response = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/rooms`)
       dispatch(roomsSlice.updateRoomsList(response.data))
     } catch (error) {
       console.log(error)

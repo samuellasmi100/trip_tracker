@@ -6,27 +6,31 @@ import {
   Typography,
   TextField,
   List,
-  ListItem,
-  ListItemText,
   Checkbox,
-  IconButton,
   FormControlLabel,
   Collapse,
 } from "@mui/material";
 import { useStyles } from "./RoomSelector.style";
 import { useSelector, useDispatch } from "react-redux";
 import * as dialogSlice from "../../../store/slice/dialogSlice";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { Roofing } from "@mui/icons-material";
 
-const RoomSelector = ({ submit, handleCheckboxChange }) => {
+
+const RoomSelector = ({
+  submit,
+  handleCheckboxChange,
+  names,
+  selectedRoomList,
+  handleUserCheckboxChange,
+  guestsRoomList
+}) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const selectedRooms = useSelector((state) => state.roomsSlice.selectedRooms);
+  const userForm = useSelector((state) => state.userSlice.form);
   const expandedRoomId = useSelector(
     (state) => state.roomsSlice.expandedRoomId
   );
-  const names = ["דוד", "יונתן", "אריאל", "יעקב", "רות", "תמר", "דבורה","דוד", "יונתן", "אריאל", "יעקב", "רות", "תמר", "דבורה"];
+
 
   return (
     <>
@@ -161,47 +165,60 @@ const RoomSelector = ({ submit, handleCheckboxChange }) => {
                 timeout="auto"
                 unmountOnExit
               >
-            <Grid
-    style={{
-      padding:"8px",
-      border: "1px solid #494C55",
-      marginTop: "10px",
-      marginBottom: "10px",
-      borderRadius: "8px",
-      display: "grid",
-      gridTemplateColumns: "repeat(7, 1fr)",
-      gap: "10px",
-    }}
-  >
-    {names.map((key, index) => (
-      <Grid
-        key={index}
-        style={{
-          display: "flex", 
-          height: "30px", 
-        }}
-      >
-        <FormControlLabel
-          style={{ marginTop: "8px", marginRight: "0" }}
-          control={
-            <Checkbox
-              sx={{
-                color: "#686B76",
-                "&.Mui-checked": {
-                  color: "#54A9FF",
-                },
-              }}
-              name="flights_direction"
-              value="one_way_return"
-              // checked={expandedRoomId === room.roomId}
-              onChange={() => handleCheckboxChange(room.roomId)}
-            />
-          }
-        />
-        <Typography style={{marginRight:"4px",marginTop:"6px"}}>{key}</Typography>
-      </Grid>
-    ))}
-  </Grid>
+
+                <Grid
+                  style={{
+
+                    border: "1px solid #494C55",
+                    marginTop: "10px",
+                    marginBottom: "10px",
+                    borderRadius: "8px",
+                    display: "grid",
+                    gridTemplateColumns: "repeat(4, 1fr)",
+                    gap: "10px",
+                  }}
+                >
+                  {userForm.user_type === "parent" ? <>
+                    {names.map((key, index) => (
+                      <Grid
+                        key={index}
+                        style={{
+                          display: "flex",
+                          height: "60px",
+                        }}
+                      >
+                        <FormControlLabel
+                          style={{ marginBottom: "21px", marginRight: "5px" }}
+                          control={
+                            <Checkbox
+                              sx={{
+                                color: "#686B76",
+                                "&.Mui-checked": {
+                                  color: "#54A9FF",
+                                },
+                              }}
+                              checked={guestsRoomList.some(
+                                (item) =>
+                                  item.userId === key.userId &&
+                                  item.roomId === room.roomId && // Ensure `roomId` matches
+                                  item.family_id === key.family_id
+                              )}
+                              onChange={(e) =>
+                                handleUserCheckboxChange(e,key.userId, room.roomId, key.family_id)
+                              }
+                            />
+                          }
+                        />
+                        <Typography style={{ marginRight: "4px", marginTop: "6px", whiteSpace: 'nowrap', }}>{key.name}</Typography>
+                      </Grid>
+                    ))}
+                  </> : <Typography>
+                    חדר זה מכיל {room.base_occupancy} מיטות || מיטות פנויות:{" "}
+                    {room.base_occupancy - room.peopleCount}{" "}
+                  </Typography>}
+
+
+                </Grid>
               </Collapse>
             </>
           );

@@ -34,7 +34,7 @@ const handleInputChange = (e) => {
 
 const submit = async () => {
   try {
-    await axios.post("http://localhost:5000/payments",form)
+    await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/payments`,form)
     dispatch(dialogSlice.closeModal())
     dispatch(dialogSlice.initialActiveButton())
     dispatch(dialogSlice.initialDialogType())
@@ -46,7 +46,7 @@ const submit = async () => {
 const getPayments = async () => {
 try {
   const familyId = userForm.family_id;
-  let response = await axios.get(`http://localhost:5000/payments/${familyId}`)
+  let response = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/payments/${familyId}`)
   if(response.data.length > 0){
     response.data[0].mainRemainsToBePaid = response.data[0].remains_to_be_paid
     dispatch(paymentsSlice.updateForm(response.data[0]));

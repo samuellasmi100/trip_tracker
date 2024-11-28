@@ -54,16 +54,16 @@ const Guest = () => {
     try {
       let response
       if (dialogType === "addParent" || dialogType === "addChild" ) {      
-        response = await axios.post("http://localhost:5000/user/",form);
+        response = await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/user/`,form);
         await getGuests()
         dispatch(userSlice.resetForm())
       } else if (dialogType === "editChild" || dialogType === "editParent") {
-        response = await axios.put("http://localhost:5000/user/",form)
+        response = await axios.put(`${process.env.REACT_APP_SERVER_BASE_URL}/user/`,form)
         await getGuests()
         dispatch(userSlice.updateChild({}))
         dispatch(userSlice.resetForm())
       }else if(dialogType === "addFamily"){
-        response = await axios.post("http://localhost:5000/user/family", form);
+        response = await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/user/family`, form);
         dispatch(userSlice.resetForm())
       }
       dispatch(dialogSlice.closeModal())
@@ -77,7 +77,7 @@ const Guest = () => {
   const getGuests = async () => {
     let family_id = form.family_id
     try {
-      let response = await axios.get(`http://localhost:5000/user/${family_id}`)
+      let response = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${family_id}`)
       if(response.data.length > 0){
         dispatch(userSlice.updateGuets(response.data))
       }else {
