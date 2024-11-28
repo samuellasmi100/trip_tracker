@@ -17,6 +17,7 @@ const assignMainRoom = async (userId,roomId) => {
   try {
     const sql = roomsQuery.assignMainRoom()
     const parameters = [userId,roomId]
+    console.log(parameters)
      await connection.executeWithParameters(sql,parameters) 
   } catch (error) { 
     console.log(error)
