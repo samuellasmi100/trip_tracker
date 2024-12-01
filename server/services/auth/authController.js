@@ -9,6 +9,7 @@ router.post("/login", async (req, res, next) => {
 
   try {
     const response = await authService.login(loginData)
+    console.log(response,"login")
     res.send(response)
 
   } catch (error) {
