@@ -6,6 +6,7 @@ const uuid = require("uuid").v4;
 
 router.post("/", async (req, res, next) => {
     const familyName = req.body
+    console.log(familyName)
     familyName.family_id = uuid();
     try {
       const response = familyService.addFamily(familyName)
