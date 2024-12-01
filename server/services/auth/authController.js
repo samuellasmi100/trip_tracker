@@ -4,7 +4,7 @@ const authService = require("./authService")
 
 
 router.post("/login", async (req, res, next) => {
-
+console.log(req.body,"hhhhhhhhhhhh")
   let loginData = req.body
 
   try {
