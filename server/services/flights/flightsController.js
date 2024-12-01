@@ -32,7 +32,6 @@ router.get("/:id/:familyId/:isInGroup", async (req, res, next) => {
   const userId = req.params.id
   const familyId = req.params.familyId
   const isInGroup = req.params.isInGroup
-  console.log("sss")
   try {
     const response = await flightsService.getFlightsDetails(userId,familyId,isInGroup)
     res.send(response)
@@ -46,6 +45,7 @@ router.get("family/:id", async (req, res, next) => {
   const familyId = req.params.id
   try {
     const response = await flightsService.getFlightsByFamily(familyId)
+    console.log(response)
     res.send(response)
 
   } catch (error) {

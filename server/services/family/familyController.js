@@ -6,7 +6,6 @@ const uuid = require("uuid").v4;
 
 router.post("/", async (req, res, next) => {
     const familyName = req.body
-    console.log(familyName)
     familyName.family_id = uuid();
     try {
       const response = familyService.addFamily(familyName)
@@ -20,7 +19,6 @@ router.post("/", async (req, res, next) => {
   router.get("/", async (req, res, next) => {
     try {
       const response = await familyService.getFamilies()
-      console.log(response,"jfgslfdjgsldjk")
       res.send(response)
   
     } catch (error) {

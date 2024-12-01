@@ -22,8 +22,11 @@ router.get("/count", async (req, res, next) => {
   }
 });
 router.post("/", async (req, res, next) => {
+  console.log(req.body)
   const roomDetails = req.body.selectedRooms
   const familyId = req.body.familyId
+  console.log(familyId)
+  console.log(roomDetails)
   try {
     const response = await roomsService.assignMainRoom(roomDetails,familyId)
     res.send("שיוך החדרים עבר בהצלחה")
