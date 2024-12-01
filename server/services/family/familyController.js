@@ -20,6 +20,7 @@ router.post("/", async (req, res, next) => {
   router.get("/", async (req, res, next) => {
     try {
       const response = await familyService.getFamilies()
+      console.log(response,"jfgslfdjgsldjk")
       res.send(response)
   
     } catch (error) {
