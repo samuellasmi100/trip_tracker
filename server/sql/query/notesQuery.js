@@ -1,7 +1,7 @@
 const getAll = () => {
 return `SELECT note FROM notes;`
 }
-const addParentNotes = () => {
+const addNotes = () => {
     return `INSERT INTO notes (note,parent_id,family_id,category_name) VALUES (?,?,?,?)`
 }
 const addChildNotes = () => {
@@ -20,7 +20,7 @@ const getChildNote = () => {
 
 module.exports = {
     getAll,
-    addParentNotes,
+    addNotes,
     addChildNotes,
     getParentNote,
     getChildNote,

@@ -4,8 +4,8 @@ const getAll = async () => {
     return notesDb.getAll()
 }
 
-const addParentNotes = async (notesDetails) => {
-  await notesDb.addParentNotes(notesDetails);
+const addNotes = async (notesDetails) => {
+  await notesDb.addNotes(notesDetails);
 }
 
 const addChildNotes = async (notesDetails) => {
@@ -26,7 +26,7 @@ const getFamilyNote = async (id) => {
 
 module.exports = {
     getAll,
-    addParentNotes,
+    addNotes,
     getParentNote,
     getChildNote,
     addChildNotes,

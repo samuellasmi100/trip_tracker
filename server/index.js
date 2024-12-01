@@ -3,7 +3,7 @@ const cors = require("cors");
 const app = express();
 require("dotenv").config();
 const errorHandler = require("./serverLogs/errorHandler");
-const checkAuthorizationMiddleware = require("./middleware/authMiddleware/checkAuthorization");
+// const checkAuthorizationMiddleware = require("./middleware/authMiddleware/checkAuthorization");
 
 //! services
 const userController = require("./services/user/userController");
@@ -12,6 +12,7 @@ const flightsController = require("./services/flights/flightsController");
 const paymentsController = require("./services/payments/paymentsController");
 const notesController = require("./services/notes/notesController");
 const authController = require("./services/auth/authController");
+const familyController = require("./services/family/familyController");
 
 
 app.use(cors());
@@ -19,16 +20,17 @@ app.use(express.json());
 
 // app.use(checkAuthorizationMiddleware.checkAuthorization);
 
-
+app.use("/auth",authController)
 app.use("/user", userController);
+app.use("/family", familyController);
 app.use("/rooms", roomsController);
 app.use("/flights",flightsController)
 app.use("/payments",paymentsController)
 app.use("/notes",notesController)
-app.use("/auth",authController)
 
 
-app.use(errorHandler);
+
+// app.use(errorHandler);
 const launchServer = async () => {
   app.listen(process.env.REST_API_PORT, () =>
     console.log(`The Main Server is running on ${process.env.REST_API_PORT}`)

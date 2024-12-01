@@ -35,7 +35,7 @@ router.get("/", async (req, res, next) => {
 router.post("/", async (req, res, next) => {
   const roomDetails = req.body
   try {
-    const response = await notesService.addParentNotes(roomDetails)
+    const response = await notesService.addNotes(roomDetails)
     res.send("hello")
 
   } catch (error) {
@@ -43,16 +43,16 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.post("/child", async (req, res, next) => {
-  const roomDetails = req.body
-  try {
-    const response = await notesService.addChildNotes(roomDetails)
-    res.send(response)
+// router.post("/child", async (req, res, next) => {
+//   const roomDetails = req.body
+//   try {
+//     const response = await notesService.addChildNotes(roomDetails)
+//     res.send(response)
 
-  } catch (error) {
-    return next(error);
-  }
-});
+//   } catch (error) {
+//     return next(error);
+//   }
+// });
 
 router.get("/:id", async (req, res, next) => {
   const parentId = req.params.id

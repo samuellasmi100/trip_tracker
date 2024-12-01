@@ -3,6 +3,7 @@ const ErrorType = require("../../serverLogs/errorType");
 const ErrorMessage = require("../../serverLogs/errorMessage");
 
 const checkAuthorization = async (req, res, next) => {
+ 
   if (req.url === "/auth/login" || req.url === "/auth/forgot_password") {
     next();
   } else {
@@ -33,18 +34,6 @@ const verifyToken = (req, token) => {
           reject(new ErrorMessage(ErrorType.INVALID_TOKEN));
         }
         
-        req.clientUserId = decoded.clientUserId;
-        req.userId = decoded.userId;
-        req.userType = decoded.userType;
-        req.dailyLimit = decoded.dailyLimit;
-        req.privileges = decoded.privileges;
-        req.permission = decoded.permission;
-        req.phone = decoded.phone;
-        req.email = decoded.email;
-        req.userTableId = decoded.userTableId;
-        req.traderId = decoded.traderId
-        req.name = decoded.name;
-        req.clientName = decoded.clientName;
         return resolve(decoded);
       }
     );

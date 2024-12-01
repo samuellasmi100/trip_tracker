@@ -12,10 +12,10 @@ const getAll = async () => {
     }
 }
 
-const addParentNotes = async (noteDetails) => {
+const addNotes = async (noteDetails) => {
   try {
-    const sql = notesQuery.addParentNotes()
-    const parameters = [noteDetails.note,noteDetails.parent_id,noteDetails.family_id,noteDetails.categoryName]
+    const sql = notesQuery.addNotes()
+    const parameters = [noteDetails.note,noteDetails.user_id,noteDetails.family_id,noteDetails.categoryName]
      await connection.executeWithParameters(sql,parameters)   
   } catch (error) { 
     console.log(error)
@@ -67,7 +67,7 @@ const getFamilyNote = async (id) => {
 
 module.exports = {
   getAll,
-  addParentNotes,
+  addNotes,
   addChildNotes,
   getParentNote,
   getChildNote,
