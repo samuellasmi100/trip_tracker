@@ -2,6 +2,12 @@ import { END_POINT } from "../utils/constants";
 import Api from "./baseApi";
 
 export default {
+  login(email,password) {
+    console.log(email,password,"gggggggggggg")
+    let loginData = {email,password}
+    return Api.post(`${END_POINT.AUTH}/login`, loginData, {
+    });
+  },
   addUser(token,form) {
     return Api.post(`${END_POINT.USER}`, form, {
       headers: { Authorization: token },
@@ -32,11 +38,7 @@ export default {
       headers: { Authorization: token },
     });
   },
-  login(email,password) {
-    console.log("ddddddddddddddddddddddddddddddddd")
-    return Api.post(`${END_POINT.AUTH}/login`, email,password, {
-    });
-  },
+  
 }
 
 

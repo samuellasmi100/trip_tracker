@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import LoginView from "./Login.view";
-import Api from "../../../../apis/userRequest";
+import ApiUser from "../../../../apis/userRequest";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import * as authSlice from "../../../../store/slice/authSlice";
@@ -30,7 +30,7 @@ const Login = () => {
     let email = formState.email
     let password = formState.password
     try {
-      let response = await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/auth/login`,{email,password})
+      let response = await ApiUser.login(email,password)
       
         navigate("/workspace");
         dispatch(authSlice.setUserData("Bearer " + response.data))
@@ -57,33 +57,7 @@ const Login = () => {
   };
 
   const handleClickForgotPassword = async () => {
-    if (formState.email !== "") {
-      try {
-        let response = await Api.forgotPassword({
-          email: formState.email,
-        });
-        if (response.data.type === "fp") {
-          dispatch(authSlice.setUserData(response.data));
-          navigate("/forgot_password");
-        }
-      } catch (error) {
-        dispatch(
-          snackBarSlice.setSnackBar({
-            type: "error",
-            message: error.response.data,
-            timeout: 3000,
-          })
-        );
-      }
-    } else {
-      dispatch(
-        snackBarSlice.setSnackBar({
-          type: "error",
-          message: "Please enter your email address",
-          timeout: 3000,
-        })
-      );
-    }
+   
   };
 
   return (

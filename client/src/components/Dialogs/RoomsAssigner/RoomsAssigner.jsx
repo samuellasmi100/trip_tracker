@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as roomsSlice from "../../../store/slice/roomsSlice"
 import * as snackbarSlice from "../../../store/slice/snackbarSlice"
 import * as dialogSlice from "../../../store/slice/dialogSlice"
+import ApiRooms from "../../../apis/roomsRequest"
 
 const RoomsAssigner = () => {
   const dispatch = useDispatch()
@@ -13,12 +14,13 @@ const RoomsAssigner = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isListOpen, setIsListOpen] = useState(false);
   const selectedRooms = useSelector((state) => state.roomsSlice.selectedRooms);
+  const token = sessionStorage.getItem("token")
   let roomsChosen = Number(form?.number_of_rooms) - selectedRooms.length
  
    const submit = async () => {
       try {
         let familyId = form.family_id
-        let response = await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/rooms`,{selectedRooms,familyId})    
+        let response = ApiRooms.assignRoom(token,selectedRooms,familyId)   
         dispatch(
           snackbarSlice.setSnackBar({
             type: "success",
@@ -46,8 +48,7 @@ const RoomsAssigner = () => {
    const getFamilyRooms = async () => {
     try {
       let familyId = form.family_id
-      let response = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/rooms/${familyId}`)  
-      
+      let response = await ApiRooms.getFamilyRoom(token,familyId)
       dispatch(roomsSlice.updateSelectedRoomsList(response.data.familyRooms))
     } catch (error) {
       console.log(error)
@@ -56,7 +57,7 @@ const RoomsAssigner = () => {
 
    const getAllRooms = async () => {
     try {
-      let response = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/rooms`)
+      let response = await ApiRooms.getAll(token)
       dispatch(roomsSlice.updateRoomsList(response.data))
     } catch (error) {
       console.log(error)

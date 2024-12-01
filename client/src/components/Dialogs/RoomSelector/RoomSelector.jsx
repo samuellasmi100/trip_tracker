@@ -5,9 +5,10 @@ import { useDispatch, useSelector } from "react-redux";
 import * as roomsSlice from "../../../store/slice/roomsSlice"
 import * as snackbarSlice from "../../../store/slice/snackbarSlice"
 import * as dialogSlice from "../../../store/slice/dialogSlice"
-
+import ApiRoom from "../../../apis/roomsRequest"
 
 const RoomSelector = () => {
+  const token = sessionStorage.getItem("token")
   const dispatch = useDispatch()
   const rooms = useSelector((state) => state.roomsSlice.rooms);
   const [searchTerm, setSearchTerm] = useState("");
@@ -26,9 +27,10 @@ const RoomSelector = () => {
   
   const handleUserCheckboxChange = async(e,userId, roomId, familyId) => {
    let status = e.target.checked
-    let dataTosend = {userId, roomId, familyId,status}
    try {
-    let response = await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/rooms/room/parent`, { dataTosend })
+    let dataTosend = {userId, roomId, familyId,status}
+
+    let response = await ApiRoom.assignRoomToGroupOfUser(token,dataTosend)
     setGuestsRoomList(response.data.userAssignRoom)
    } catch (error) {
     console.log(error)
@@ -43,9 +45,9 @@ const RoomSelector = () => {
 
       }else {
         if(roomChossenType){
-          response = await axios.put(`${process.env.REACT_APP_SERVER_BASE_URL}/rooms/room`, { selectedChildRoomId, form })
+          response = ApiRoom.updateUserToRoom(token,selectedChildRoomId, form )
         }else {
-            response = await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/rooms/room`, { selectedChildRoomId, form })
+            response = ApiRoom.assignUserToRoom(token,selectedChildRoomId,form)
         }
       }
      
@@ -77,7 +79,7 @@ const RoomSelector = () => {
     
     try {
       let familyId = form.family_id
-      let response = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/rooms/${familyId}`)
+      let response = await ApiRoom.getFamilyRoom(token,familyId)
       setGuestsRoomList(response.data.userAssignRoom)
       dispatch(roomsSlice.updateSelectedRoomsList(response.data.familyRooms))
     } catch (error) {
@@ -87,7 +89,7 @@ const RoomSelector = () => {
 
   const getChossenRoom = async () => {
     try {
-      let response = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/rooms/room/${form.user_id}`)
+        let response = await ApiRoom.getUserRoom(token,form.user_id)
       if(response.data.length > 0){
         setRoomChossenType(true)
         dispatch(roomsSlice.updateChossenRoom(response.data[0].roomId));

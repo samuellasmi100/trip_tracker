@@ -77,7 +77,7 @@ const Guest = () => {
   const getUsers = async () => {
     let family_id = form.family_id
     try {
-      let response = await ApiUser.getUser(token,family_id)
+      let response = await ApiUser.getUserFamilyList(token,family_id)
       if(response.data.length > 0){
         dispatch(userSlice.updateGuets(response.data))
       }else {

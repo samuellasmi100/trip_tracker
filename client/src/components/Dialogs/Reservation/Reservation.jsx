@@ -3,7 +3,8 @@ import ReservationView from "./Reservation.view";
 import { useDispatch, useSelector } from "react-redux";
 import * as userSlice from "../../../store/slice/userSlice";
 import * as dialogSlice from "../../../store/slice/dialogSlice";
-import moment from "moment";
+import ApiUser from "../../../apis/userRequest";
+
 import axios from "axios";
 
 const Reservation = () => {
@@ -12,7 +13,7 @@ const Reservation = () => {
   const userForm = useSelector((state) => state.userSlice.form);
   const dialogType = useSelector((state) => state.dialogSlice.type);
   const familyDetails = useSelector((state) => state.userSlice.family);
-
+  const token = sessionStorage.getItem("token")
   const handleInputChange = (e) => {
     let { name, value, checked } = e.target;
     let family_id = familyDetails.family_id;
@@ -52,7 +53,7 @@ const Reservation = () => {
 
   const submit = async () => {
     try {
-      let response = await axios.put(`${process.env.REACT_APP_SERVER_BASE_URL}/user/`, form);
+      let response = await ApiUser.updateUser(token,form);
       await getGuests();
       dispatch(userSlice.updateChild({}));
       dispatch(userSlice.updateForm({}));
@@ -65,9 +66,10 @@ const Reservation = () => {
   };
 
   const getGuests = async () => {
+  
     let family_id = form.family_id
     try {
-      let response = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${family_id}`)
+      let response = await ApiUser.getUserFamilyList(token,family_id)
       if(response.data.length > 0){
         dispatch(userSlice.updateGuets(response.data))
       }else {
