@@ -72,7 +72,6 @@ const FamilyList = () => {
 
   };
 
-
   const getFamilies = async () => {
     try {
       let response = await ApiUser.getFamilyList(token)
@@ -134,6 +133,7 @@ const filteredFamilyList = usersData?.filter((user) => {
     return user
   }}
 );
+
   useEffect(() => {
     getFamilies()
   }, [dialogOpen])

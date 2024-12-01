@@ -38,6 +38,11 @@ export default {
       headers: { Authorization: token },
     });
   },
+  getUserDetails(token,userId,familyId,isIngroup) {
+    return Api.get(`${END_POINT.USER}/details/${userId}/${familyId}/${isIngroup}`, {
+      headers: { Authorization: token },
+    });
+  },
   
 }
 

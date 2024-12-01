@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ChildDetailsView from "./ChildDetails.view";
 import { useDispatch, useSelector } from "react-redux";
-import * as flightsSlice from "../../../store/slice/flightsSlice"
-import * as dialogSlice from "../../../store/slice/dialogSlice"
-import * as snackBarSlice from "../../../store/slice/snackbarSlice"
-import * as userSlice from "../../../store/slice/userSlice"
+import ApiUser from "../../../apis/userRequest"
 import axios from "axios";
 
 const ChildDetails = () => {
@@ -14,15 +11,17 @@ const dispatch = useDispatch()
   const form = useSelector((state) => state.userSlice.form)
   const [userData, setUserData] = useState({})
   const [response, setResponse] = useState(false)
-
+  const token = sessionStorage.getItem("token")
+  
   const getGuestData = async () => {
- 
+
     try {
+      let response = await ApiUser.getUserDetails(token,form.user_id,form.family_id,form.is_in_group)
       //   let response = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/user/details/${form.user_id}/${form.family_id}`)
-      // if(response?.data?.userDetails !== undefined){
-      //   setResponse(true)
-      //   setUserData(response.data)
-      // }     
+      if(response?.data?.userDetails !== undefined){
+        setResponse(true)
+        setUserData(response.data)
+      }     
     } catch (error) {
       console.log(error)
     }

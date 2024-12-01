@@ -261,10 +261,11 @@ const FlightsView = (props) => {
                         color: "#54A9FF",
                       },
                     }}
+                    checked={(form?.is_source_user === 1 || form?.is_source_user === true) ? true : false}
                     name="is_source_user"
                     className={classes.checkbox}
                     onChange={handleInputChange}
-                    checked={form.is_source_user}
+      
                   />
                 }
               />

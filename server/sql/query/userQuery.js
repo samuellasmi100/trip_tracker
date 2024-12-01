@@ -6,8 +6,8 @@ const addGuest = (userData) =>{
 
 const getFamilyGuests = () => {
   return `SELECT fa.family_id,fa.family_name,
-gu.hebrew_name,
-gu.english_name,
+gu.hebrew_first_name,gu.hebrew_last_name,
+gu.english_first_name,gu.english_last_name,
 gu.flights,
 gu.phone_a,
 gu.phone_b,
@@ -24,8 +24,8 @@ on fa.family_id = gu.family_id where gu.family_id = ?`
 
 const getFamilyMamber = () => {
   return `SELECT fa.family_id,fa.family_name,
-gu.hebrew_name,
-gu.english_name,
+gu.hebrew_first_name,gu.hebrew_last_name,
+gu.english_first_name,gu.english_last_name,
 gu.flights,
 gu.phone_a,
 gu.phone_b,
@@ -38,8 +38,8 @@ on fa.family_id = gu.family_id where gu.user_id= ?`
 
 const getParentFamilyMamber = () => {
   return `SELECT fa.family_id,fa.family_name,
-gu.hebrew_name,
-gu.english_name,
+gu.hebrew_first_name,gu.hebrew_last_name,
+gu.english_first_name,gu.english_last_name,
 gu.flights,
 gu.phone_a,
 gu.phone_b,

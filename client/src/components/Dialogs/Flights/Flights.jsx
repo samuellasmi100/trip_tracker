@@ -15,6 +15,7 @@ const token = sessionStorage.getItem("token")
   const handleInputChange = (e) => {
 
     let { name, value,checked } = e.target
+    console.log(name,value)
     if (name === "birth_date") {
       const age = calculateAge(value);
       dispatch(flightsSlice.updateFormField({ field: "age", value: age }));
@@ -24,9 +25,11 @@ const token = sessionStorage.getItem("token")
      if(calculate > form.age){
       dispatch(flightsSlice.updateFormField({ field: "age", value: calculate }));
      }
+     dispatch(flightsSlice.updateFormField({ field: name, value }))
     }
     else if(name === "is_source_user"){
       value = checked
+      console.log(value)
      dispatch(flightsSlice.updateFormField({ field: name, value:value }))
     }else {
       dispatch(flightsSlice.updateFormField({ field: name, value }))
@@ -66,6 +69,7 @@ const token = sessionStorage.getItem("token")
   };
 
   const submit = async () => {
+
     try {
     let response 
     if(form.type === "edit"){

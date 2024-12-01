@@ -17,13 +17,10 @@ import { useStyles } from "./FamilyMember.style";
 import { ReactComponent as EditIcon } from "../../../../../assets/icons/edit.svg";
 import DescriptionIcon from "@mui/icons-material/Description";
 import { useSelector } from "react-redux";
-import SearchInput from "../../../../ReusableComps/SearchInput/SearchInput";
 import { ReactComponent as DownloadIcon } from "../../../../../assets/icons/download.svg";
 import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import SearchIcon from "@material-ui/icons/Search";
-import CircleIcon from "@mui/icons-material/Circle";
-import { ReactComponent as DoneIcon } from "../../../../../assets/icons/done-icon.svg";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 function FamilyMemberView({ handleDialogTypeOpen, handleSearchChange }) {

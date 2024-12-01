@@ -22,7 +22,6 @@ router.post("/", async (req, res, next) => {
     }
 });
 
-
 router.get("/:id", async (req, res, next) => {
 
   const familyId = req.params.id
@@ -41,6 +40,20 @@ router.put("/", async (req, res, next) => {
    await userService.updateGuest(userData)
    const response = await userService.getFamilyMamber(userData.family_id)
    res.send(response)
+  } catch (error) {
+    return next(error);
+  }
+});
+
+router.get("/details/:id/:familyId/:isIngroup", async (req, res, next) => {
+  const id = req.params.id
+  const familyId= req.params.familyId
+  const isIngroup = req.params.isIngroup
+
+  try {
+   const response = await userService.getUserDetails(id,familyId,isIngroup)
+   res.send(response)
+
   } catch (error) {
     return next(error);
   }
