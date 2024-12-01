@@ -4,41 +4,25 @@ import NotesView from "./Notes.view";
 import * as notesSlice from "../../../store/slice/notesSlice";
 import * as dialogSlice from "../../../store/slice/dialogSlice";
 import axios from "axios";
-import * as noteSlice  from "../../../store/slice/notesSlice";
-import * as userSlice  from "../../../store/slice/userSlice";
+import ApiNotes from "../../../apis/notesRequest"
 
 const Notes = () => {
-  const userType = useSelector((state) => state.userSlice.userType)
-  const childDetails = useSelector((state) => state.userSlice.child)
-
   const dispatch = useDispatch();
   const form = useSelector((state) => state.notesSlice.form);
   const userForm = useSelector((state) => state.userSlice.form);
-  const parentDetails = useSelector((state) => state.userSlice.parent);
+ const token = sessionStorage.getItem("token")
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    let userId 
-    if(userType === "parent"){
-      userId = parentDetails.parent_id
-      dispatch(noteSlice.updateFormField({ field: "parent_id",value:userId }))
-    }else {
-      const childId = childDetails.child_id
-      const parentId = parentDetails.parent_id
-      dispatch(noteSlice.updateFormField({ field: "child_id",value:childId }))
-    }
     dispatch(notesSlice.updateFormField({ field: name, value }));
     dispatch(notesSlice.updateFormField({ field: "family_id",value:userForm.family_id }))
+    dispatch(notesSlice.updateFormField({ field: "user_id",value:userForm.user_id }))
   
   };
 
   const submit = async () => {
     try {
-      if(userType === "parent"){
-       await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/notes`, form);
-      }else {
-        await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/notes/child`, form);
-      }
+       await ApiNotes.addNotes(token,form)
       dispatch(dialogSlice.closeModal());
       dispatch(notesSlice.resetForm());
       dispatch(dialogSlice.initialActiveButton());

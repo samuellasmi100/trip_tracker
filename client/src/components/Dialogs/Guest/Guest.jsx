@@ -14,6 +14,7 @@ const Guest = () => {
   const dispatch = useDispatch();
   const areaCodes = ["052", "053", "054", "058"];
   const familyDetails = useSelector((state) => state.userSlice.family)
+  const token = sessionStorage.getItem("token")
 
   const handleButtonString = () => {
     if (dialogType === "addParent") {
@@ -54,30 +55,29 @@ const Guest = () => {
     try {
       let response
       if (dialogType === "addParent" || dialogType === "addChild" ) {      
-        response = await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/user/`,form);
-        await getGuests()
+        response = await ApiUser.addUser(token,form)
+        await getUsers()
         dispatch(userSlice.resetForm())
       } else if (dialogType === "editChild" || dialogType === "editParent") {
-        response = await axios.put(`${process.env.REACT_APP_SERVER_BASE_URL}/user/`,form)
-        await getGuests()
+        response = await ApiUser.updateUser(token,form)
+        await getUsers()
         dispatch(userSlice.updateChild({}))
         dispatch(userSlice.resetForm())
       }else if(dialogType === "addFamily"){
-        response = await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/user/family`, form);
+        response = await ApiUser.addFamily(token,form)
         dispatch(userSlice.resetForm())
       }
-      dispatch(dialogSlice.closeModal())
-      dispatch(dialogSlice.initialActiveButton())
-      dispatch(dialogSlice.initialDialogType())
+      dispatch(dialogSlice.resetState())
+
     } catch (error) {
       console.log(error);
     }
   };
 
-  const getGuests = async () => {
+  const getUsers = async () => {
     let family_id = form.family_id
     try {
-      let response = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${family_id}`)
+      let response = await ApiUser.getUser(token,family_id)
       if(response.data.length > 0){
         dispatch(userSlice.updateGuets(response.data))
       }else {

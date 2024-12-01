@@ -2,16 +2,43 @@ import { END_POINT } from "../utils/constants";
 import Api from "./baseApi";
 
 export default {
-  login(body) {
-    console.log(`/${END_POINT.LOGIN}`)
-    return Api.post(`/${END_POINT.LOGIN}`, body);
+  addUser(token,form) {
+    return Api.post(`${END_POINT.USER}`, form, {
+      headers: { Authorization: token },
+    });
   },
-
-
- 
- 
+  updateUser(token,form) {
+    return Api.put(`${END_POINT.USER}`, form, {
+      headers: { Authorization: token },
+    });
+  },
+  addFamily(token,form) {
+    return Api.post(`${END_POINT.FAMILY}`, form, {
+      headers: { Authorization: token },
+    });
+  },
+  getFamilyList(token) {
+    return Api.get(`${END_POINT.FAMILY}`, {
+      headers: { Authorization: token },
+    });
+  },
+  getUser(token,familyId) {
+    return Api.get(`${END_POINT.USER}/${familyId}`, {
+      headers: { Authorization: token },
+    });
+  },
+  getUserFamilyList(token,familyId) {
+    return Api.get(`${END_POINT.USER}/${familyId}`, {
+      headers: { Authorization: token },
+    });
+  },
+  login(email,password) {
+    console.log("ddddddddddddddddddddddddddddddddd")
+    return Api.post(`${END_POINT.AUTH}/login`, email,password, {
+    });
+  },
 }
 
-  
+
 
 

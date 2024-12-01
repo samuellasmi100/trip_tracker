@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import MainDialog from "../../../../Dialogs/MainDialog/MainDialog";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-
+import ApiUser from "../../../../../apis/userRequest"
 import FamilyMember from "../FamilyMember/FamilyMember";
 import { Grid } from "@mui/material";
 import FamilyListView from "./FamilyList.view";
@@ -13,21 +13,20 @@ import * as roomsSlice from "../../../../../store/slice/roomsSlice";
 import * as notesSlice from "../../../../../store/slice/notesSlice";
 import * as paymentsSlice from "../../../../../store/slice/paymentsSlice";
 
-const FamilyList = (props) => {
-  const [showClientDetails, setShowClientDetails] = useState(false);
+const FamilyList = () => {
   const [usersData, setUsersData] = useState([]);
   const dispatch = useDispatch();
   const dialogOpen = useSelector((state) => state.dialogSlice.open)
   const dialogType = useSelector((state) => state.dialogSlice.type)
   const [file, setFile] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const token = sessionStorage.getItem(('token'))
 
   const closeModal = () => {
     dispatch(dialogSlice.initialActiveButton())
     dispatch(dialogSlice.initialDialogType())
     dispatch(dialogSlice.closeModal())
     clearModalForms()
-    setShowClientDetails(false)
     dispatch(roomsSlice.resetChildRoom())
   };
 
@@ -73,22 +72,10 @@ const FamilyList = (props) => {
 
   };
 
-  const getMainUsers = async () => {
-    try {
-      let response = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/user/all`)
-      if (response?.data) {
-        dispatch(userSlice.updateParents(response.data))
-        setUsersData(response.data)
-      }
-
-    } catch (error) {
-      console.log(error)
-    }
-  }
 
   const getFamilies = async () => {
     try {
-      let response = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/user/families`)
+      let response = await ApiUser.getFamilyList(token)
       dispatch(userSlice.updateFamiliesList(response.data))
       setUsersData(response.data)
     } catch (error) {
@@ -99,9 +86,8 @@ const FamilyList = (props) => {
   const handleNameClick = async (user) => {
     dispatch(userSlice.updateFamily(user))
     let family_id = user.family_id
-    setShowClientDetails(true)
     try {
-      let response = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${family_id}`)
+      let response = await ApiUser.getUserFamilyList(token,family_id)
       if(response.data.length > 0){
         dispatch(userSlice.updateGuets(response.data))
       }else {
@@ -141,7 +127,7 @@ const handleFileChange = (e) => {
     // reader.readAsDataURL(selectedFile);
 };
 
-const filteredRooms = usersData?.filter((user) => {
+const filteredFamilyList = usersData?.filter((user) => {
   if (searchTerm !== "") {
     return user.family_name.includes(searchTerm)
   }else {
@@ -149,19 +135,17 @@ const filteredRooms = usersData?.filter((user) => {
   }}
 );
   useEffect(() => {
-    getMainUsers()
     getFamilies()
   }, [dialogOpen])
 
   return (
     <Grid style={{ display: "flex",justifyContent:"center" }}>
       <FamilyListView
-        tableData={usersData}
         handleDialogTypeOpen={handleDialogTypeOpen}
         handleNameClick={handleNameClick}
         handleUpload={handleUpload}
         handleFileChange={handleFileChange}
-        filteredRooms={filteredRooms}
+        filteredFamilyList={filteredFamilyList}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
       />

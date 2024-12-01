@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import * as authSlice from "../../../../store/slice/authSlice";
 import * as userSlice from "../../../../store/slice/userSlice";
 import * as snackBarSlice from "../../../../store/slice/snackbarSlice";
+import axios from "axios";
 
 const Login = () => {
   let navigate = useNavigate();
@@ -25,27 +26,19 @@ const Login = () => {
 
   const loginPostRequest = async (event) => {
 
-    event.preventDefault();
+
+    let email = formState.email
+    let password = formState.password
     try {
-      let response = await Api.login({
-        email: formState.email,
-        password: formState.password,
-      });
-      if(response.data.httpCode === 401){
-        dispatch(
-          snackBarSlice.setSnackBar({
-            type: "error",
-            message: response.data.message,
-            timeout: 3000,
-          })
-        );
-      }else {
+      let response = await axios.post("http://localhost:5000/auth/login",{email,password})
+      
         navigate("/workspace");
         dispatch(authSlice.setUserData("Bearer " + response.data))
         sessionStorage.setItem("token", "Bearer " + response.data);
-      }
+    
    
     } catch (error) {
+      console.log(error)
       dispatch(
         snackBarSlice.setSnackBar({
           type: "error",

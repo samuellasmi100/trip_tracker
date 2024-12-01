@@ -51,7 +51,6 @@ const Reservation = () => {
   };
 
   const submit = async () => {
-    console.log(form);
     try {
       let response = await axios.put(`${process.env.REACT_APP_SERVER_BASE_URL}/user/`, form);
       await getGuests();

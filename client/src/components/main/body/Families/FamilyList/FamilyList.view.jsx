@@ -27,8 +27,7 @@ import SearchIcon from "@material-ui/icons/Search";
 
 function FamilyListView(props) {
   const classes = useStyles();
-  const familiesList = useSelector((state) => state.userSlice.families)
-  const { handleDialogTypeOpen, handleNameClick,handleUpload,handleFileChange,filteredRooms,searchTerm,setSearchTerm } =
+  const { handleDialogTypeOpen, handleNameClick,handleUpload,handleFileChange,filteredFamilyList,searchTerm,setSearchTerm } =
     props;
   const headers = [
     "שם משפחה",
@@ -105,7 +104,7 @@ function FamilyListView(props) {
               </TableRow>
             </TableHead>
             <TableBody className={classes.dataTableBody}>
-              {filteredRooms?.map((user, index) => {
+              {filteredFamilyList?.map((user, index) => {
                 return (
                   <TableRow key={index}>
                     <Button onClick={() => handleNameClick(user)}>

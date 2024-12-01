@@ -3,15 +3,14 @@ import FlightsView from "./Flights.view";
 import { useDispatch, useSelector } from "react-redux";
 import * as flightsSlice from "../../../store/slice/flightsSlice"
 import * as dialogSlice from "../../../store/slice/dialogSlice"
-import * as snackBarSlice from "../../../store/slice/snackbarSlice"
-import * as userSlice from "../../../store/slice/userSlice"
+import ApiFlights from "../../../apis/flightsRequest"
 import axios from "axios";
 
 const Flights = () => {
 const dispatch = useDispatch()
   const form = useSelector((state) => state.flightsSlice.form)
   const userForm = useSelector((state) => state.userSlice.form)
-
+const token = sessionStorage.getItem("token")
 
   const handleInputChange = (e) => {
 
@@ -70,14 +69,13 @@ const dispatch = useDispatch()
     try {
     let response 
     if(form.type === "edit"){
-      await axios.put(`${process.env.REACT_APP_SERVER_BASE_URL}/flights/${userForm.user_id}`,form)
+      await ApiFlights.updateUserFligets(token,userForm.user_id,form)
     }else {
-      response = await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/flights`,form)
+      response = await ApiFlights.addUserFlights(token,form)
     }
      dispatch(flightsSlice.resetForm())
-    dispatch(dialogSlice.initialActiveButton())
-    dispatch(dialogSlice.initialDialogType())
-    dispatch(dialogSlice.closeModal())
+     dispatch(dialogSlice.resetState())
+
     } catch (error) {
       console.log(error)
     }
@@ -85,13 +83,12 @@ const dispatch = useDispatch()
   }
   
   const getFlightData = async () => {
+
     const userId = userForm.user_id
     let familyId = userForm.family_id
     let isInGroup = userForm.is_in_group
-    console.log(userForm)
     try {
-      let response = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/${userId}/${familyId}/${isInGroup}`)
-      console.log(response)
+      let response = await ApiFlights.getUserFlightData(token,userId,familyId,isInGroup)
       if(response.data.length > 0){
         response.data[0].type = "edit"
         dispatch(flightsSlice.updateForm(response.data[0]))

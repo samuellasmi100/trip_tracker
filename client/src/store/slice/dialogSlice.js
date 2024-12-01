@@ -27,11 +27,15 @@ export const dialogSlice = createSlice({
     initialActiveButton: (state, action) => {
       state.activeButton = "פרטים אישיים";
     },
-    
+    resetState: (state, action) => {
+      state.open = false;
+      state.activeButton = "פרטים אישיים";
+      state.type = ""
+    },
   },
 });
 
-export const { openModal, closeModal,updateDialogType,initialDialogType, updateActiveButton,initialActiveButton} =
+export const { openModal, closeModal,updateDialogType,initialDialogType, updateActiveButton,initialActiveButton,resetState} =
 dialogSlice.actions;
 
 export default dialogSlice.reducer;

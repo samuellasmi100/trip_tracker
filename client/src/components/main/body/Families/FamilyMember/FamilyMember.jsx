@@ -3,9 +3,6 @@ import FamilyMemberView from "./FamilyMember.view";
 
 const FamilyMember = ({handleDialogTypeOpen}) => {
   
-const handleSearchChange = () => {
-
-}
 
   return(
   <>

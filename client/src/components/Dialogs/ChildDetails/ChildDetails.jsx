@@ -16,12 +16,13 @@ const dispatch = useDispatch()
   const [response, setResponse] = useState(false)
 
   const getGuestData = async () => {
+ 
     try {
-        let response = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/user/details/${form.user_id}/${form.family_id}`)
-      if(response?.data?.userDetails !== undefined){
-        setResponse(true)
-        setUserData(response.data)
-      }     
+      //   let response = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/user/details/${form.user_id}/${form.family_id}`)
+      // if(response?.data?.userDetails !== undefined){
+      //   setResponse(true)
+      //   setUserData(response.data)
+      // }     
     } catch (error) {
       console.log(error)
     }
