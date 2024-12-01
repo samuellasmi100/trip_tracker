@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as roomsSlice from "../../../../../store/slice/roomsSlice"
 import axios from "axios";
 
-const Rooms = ({ searchTerm }) => {
+const Rooms = ({ searchTerm,handleDialogTypeOpen }) => {
     const dispatch = useDispatch()
     const rooms = useSelector((state) => state.roomsSlice.rooms);
     const token = sessionStorage.getItem("token")
@@ -32,7 +32,7 @@ const Rooms = ({ searchTerm }) => {
 
     return (
         <>
-            <RoomsView filteredRooms={filteredRooms}
+            <RoomsView filteredRooms={filteredRooms} handleDialogTypeOpen={handleDialogTypeOpen}
             />;
         </>
     )

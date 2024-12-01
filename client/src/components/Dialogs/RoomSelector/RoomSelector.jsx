@@ -19,7 +19,7 @@ const RoomSelector = () => {
   const [roomChossenType, setRoomChossenType] = useState()
   const guests = useSelector((state) => state.userSlice.guests);
   const [names, setNames] = useState( guests.map((key) => {
-    return {userId:key.user_id,name:key.hebrew_name,family_id:key.family_id}
+    return {userId:key.user_id,name:key.hebrew_first_name,family_id:key.family_id}
   }));
  const [guestsRoomList, setGuestsRoomList] = useState([])
 

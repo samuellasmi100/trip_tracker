@@ -24,6 +24,7 @@ export const dialogSlice = createSlice({
     updateActiveButton: (state, action) => {
       state.activeButton = action.payload;
     },
+   
     initialActiveButton: (state, action) => {
       state.activeButton = "פרטים אישיים";
     },

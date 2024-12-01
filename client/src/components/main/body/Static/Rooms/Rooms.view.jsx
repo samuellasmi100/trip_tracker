@@ -17,7 +17,8 @@ import {
   import CloseIcon from '@mui/icons-material/Close';
   import DoneIcon from '@mui/icons-material/Done';
   function StaticView({
-    filteredRooms
+    filteredRooms,
+    handleDialogTypeOpen
   }) {
     const classes = useStyles();
     const headers = ["מספר חדר", "סוג חדר","קומה","כיוון","גודל","קיבולת החדר","תפוסה מקסימלית","מספר אנשים בחדר ","ערוך","זמינות"];
@@ -79,7 +80,7 @@ import {
                     <TableCell
                       className={classes.dataTableCell} style={{ maxWidth: "1px" }}>
                         <IconButton size={"small"}> 
-                            <EditIcon />
+                            <EditIcon onClick={() => handleDialogTypeOpen("editRoom",room)}/>
                       </IconButton>
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>

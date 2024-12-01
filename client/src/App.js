@@ -11,9 +11,13 @@ import Sidebar from "./components/main/aside/Sidebar";
 import Login from "./components/main/body/Login/Login";
 import Static from "./components/main/body/Static/Static";
 
+import { useEffect } from "react";
+
 function App() {
   const token = useSelector((state) => state.authSlice.token);
   const isAuthenticated = token !== null && token !== undefined && token !== "";
+
+
 
   return (
     <Grid className="App" style={{ height: "100vh", width: "100vw" }}>

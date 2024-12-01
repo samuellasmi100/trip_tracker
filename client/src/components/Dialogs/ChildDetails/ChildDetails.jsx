@@ -3,10 +3,11 @@ import ChildDetailsView from "./ChildDetails.view";
 import { useDispatch, useSelector } from "react-redux";
 import ApiUser from "../../../apis/userRequest"
 import axios from "axios";
+import jsPDF from "jspdf";
 
 const ChildDetails = () => {
 
-const dispatch = useDispatch()
+  const dispatch = useDispatch()
   const userType = useSelector((state) => state.userSlice.userType)
   const form = useSelector((state) => state.userSlice.form)
   const [userData, setUserData] = useState({})
@@ -26,6 +27,8 @@ const dispatch = useDispatch()
       console.log(error)
     }
   }
+
+ 
   useEffect(() => {
     getGuestData()
   }, [])

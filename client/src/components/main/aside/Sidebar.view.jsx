@@ -68,7 +68,7 @@ function SidebarView({
               </StyledTooltip>
             </Link>
           </Grid>
-          <Grid item className={classes.sideBarIcons}>
+          {/* <Grid item className={classes.sideBarIcons}>
             <Link to="analytics">
               <StyledTooltip title="Analytics" placement="bottom-end" arrow>
                 <AnalyticsIcon
@@ -78,7 +78,7 @@ function SidebarView({
                 />
               </StyledTooltip>
             </Link>
-          </Grid>
+          </Grid> */}
         </Grid>
         {/* // * bottom icons */}
         <Grid
