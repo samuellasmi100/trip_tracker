@@ -24,11 +24,22 @@ function Child({areaCodes,handleInputChange }) {
                 <Grid container spacing={2} justifyContent="center">
                 <Grid item>
                         <InputLabel className={classes.inputLabelStyle}>
-                            שם פרטי ושם משפחה בעברית
+                            שם פרטי בעברית
                         </InputLabel>
                         <TextField
-                            name="hebrew_name"
-                            value={form.hebrew_name}
+                            name="hebrew_first_name"
+                            value={form.hebrew_first_name}
+                            className={classes.textField}
+                            onChange={handleInputChange}
+                        />
+                    </Grid>
+                    <Grid item>
+                        <InputLabel className={classes.inputLabelStyle}>
+                             שם משפחה בעברית
+                        </InputLabel>
+                        <TextField
+                            name="hebrew_last_name"
+                            value={form.hebrew_last_name}
                             className={classes.textField}
                             onChange={handleInputChange}
                         />
@@ -38,13 +49,29 @@ function Child({areaCodes,handleInputChange }) {
                             שם פרטי ושם משפחה באנגלית
                         </InputLabel>
                         <TextField
-                            name="english_name"
-                            value={form.english_name}
+                            name="english_first_name"
+                            value={form.english_first_name}
                             className={classes.textField}
                             onChange={handleInputChange}
                         />
                     </Grid>
                     <Grid item>
+                        <InputLabel className={classes.inputLabelStyle}>
+                            שם משפחה באנגלית
+                        </InputLabel>
+                        <TextField
+                            name="english_last_name"
+                            value={form.english_last_name}
+                            className={classes.textField}
+                            onChange={handleInputChange}
+                        />
+                    </Grid>
+                   
+                </Grid>
+            </Grid>
+            <Grid item xs={5}>
+                <Grid container spacing={2} justifyContent="center">
+                <Grid item>
                         <InputLabel className={classes.inputLabelStyle}>
                             מספר זהות
                         </InputLabel>
@@ -64,10 +91,6 @@ function Child({areaCodes,handleInputChange }) {
                             onChange={handleInputChange}
                         />
                     </Grid>
-                </Grid>
-            </Grid>
-            <Grid item xs={5}>
-                <Grid container spacing={2} justifyContent="center">
                     <Grid item>
                         <InputLabel className={classes.inputLabelStyle}>
                             מספר טלפון

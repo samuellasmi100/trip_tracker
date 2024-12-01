@@ -131,8 +131,9 @@ function FamilyMemberView({ handleDialogTypeOpen, handleSearchChange }) {
                       : {}
                   }
                 >
+                  {console.log(user)}
                   <TableCell className={classes.dataTableCell}>
-                    {user.hebrew_name}
+                    {user.hebrew_first_name + " " + user.hebrew_last_name}
                   </TableCell>
                   <TableCell className={classes.dataTableCell}>
                     {user.identity_id}
