@@ -30,7 +30,7 @@ const Login = () => {
     let email = formState.email
     let password = formState.password
     try {
-      let response = await axios.post("http://localhost:5000/auth/login",{email,password})
+      let response = await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/auth/login`,{email,password})
       
         navigate("/workspace");
         dispatch(authSlice.setUserData("Bearer " + response.data))
