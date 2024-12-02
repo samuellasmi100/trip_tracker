@@ -1,17 +1,19 @@
 import {
     Grid,
     TextField,
-    InputLabel
+    InputLabel,
+    Button
   } from "@mui/material";
 import { useStyles } from "./Room.style";
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
-
+import { useSelector,useDispatch } from "react-redux";
+import * as staticSlice from "../../../../../../store/slice/staticSlice"
   
-  function RoomView(props) {
+  function RoomView({submit}) {
+    const dispatch = useDispatch()
     const classes = useStyles();
     const  roomDetails = useSelector((state) => state.staticSlice. roomDetails)
-    console.log( roomDetails)
+
     return (
     <Grid container>
      <Grid
@@ -106,6 +108,26 @@ import { useSelector } from "react-redux";
               />
             </Grid>
             
+          </Grid>
+        </Grid>
+        <Grid
+          item
+          xs={12}
+          container
+          style={{ marginTop: "150px" }}
+          justifyContent="space-around">
+          <Grid item>
+            <Button
+            onClick={submit}
+              className={classes.submitButton}
+            >  עדכן חדר 
+
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button className={classes.cancelButton} onClick={() => dispatch(staticSlice.closeModal())}>
+              סגור
+            </Button>
           </Grid>
         </Grid>
     </Grid>
