@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import RoomsView from "./Rooms.view";
+import RoomView from "./Rooms.view"
 import ApiRooms from "../../../../../apis/roomsRequest"
 import { useDispatch, useSelector } from "react-redux";
 import * as roomsSlice from "../../../../../store/slice/roomsSlice"
+import * as staticSlice from "../../../../../store/slice/staticSlice"
 import axios from "axios";
 
-const Rooms = ({ searchTerm,handleDialogTypeOpen }) => {
+const Rooms = ({ searchTerm,handleDialogTypeOpen}) => {
     const dispatch = useDispatch()
     const rooms = useSelector((state) => state.roomsSlice.rooms);
     const token = sessionStorage.getItem("token")
@@ -26,13 +27,14 @@ const Rooms = ({ searchTerm,handleDialogTypeOpen }) => {
         }
     }
     );
+    
     useEffect(() => {
         getAllRooms()
     }, [])
 
     return (
         <>
-            <RoomsView filteredRooms={filteredRooms} handleDialogTypeOpen={handleDialogTypeOpen}
+            <RoomView filteredRooms={filteredRooms} handleDialogTypeOpen={handleDialogTypeOpen} 
             />;
         </>
     )

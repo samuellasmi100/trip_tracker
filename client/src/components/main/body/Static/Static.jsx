@@ -19,10 +19,12 @@ const Static = () => {
 const closeModal = () => {
   dispatch(staticSlice.closeModal())
 }
+
+
   const handleDialogTypeOpen = (type,room) => {
     dispatch(staticSlice.updateDialogType(type))
     if(type === "editRoom"){
-    dispatch(staticSlice.updateRoomDetails(room))
+    dispatch(staticSlice.updateForm(room))
 
       dispatch(staticSlice.openModal())
     }
@@ -42,6 +44,7 @@ const closeModal = () => {
         handleButtonClick={handleButtonClick}
         handleNavButtonClicked={handleNavButtonClicked}
         searchTerm={searchTerm} setSearchTerm={setSearchTerm}
+       
       />;
       <MainDialog dialogOpen={dialogOpen} closeModal={closeModal}/>
     </Grid>

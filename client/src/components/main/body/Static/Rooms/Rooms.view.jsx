@@ -18,7 +18,7 @@ import {
   import DoneIcon from '@mui/icons-material/Done';
   function StaticView({
     filteredRooms,
-    handleDialogTypeOpen
+    handleDialogTypeOpen,
   }) {
     const classes = useStyles();
     const headers = ["מספר חדר", "סוג חדר","קומה","כיוון","גודל","קיבולת החדר","תפוסה מקסימלית","מספר אנשים בחדר ","ערוך","זמינות"];
@@ -72,7 +72,7 @@ import {
                       {room.base_occupancy}
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
-                      {"?"}
+                      {room.max_occupancy}
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
                       {room.number_of_people}

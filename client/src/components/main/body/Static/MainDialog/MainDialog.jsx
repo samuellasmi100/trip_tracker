@@ -8,7 +8,7 @@ const MainDialog = (props) => {
   const dialogType = useSelector((state) => state.staticSlice.type)
 
   const handleDataView = () => {
-    console.log(dialogType)
+
     if (dialogType === "editRoom") {
       return <Room />
     }

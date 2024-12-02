@@ -8,7 +8,6 @@ export const authSlice = createSlice({
   },
   reducers: {
     setUserData: (state, action) => {
-
       state.token = action.payload;
     },
     clearUserData: (state, action) => {

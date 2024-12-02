@@ -9,10 +9,10 @@ import React, { useState } from "react";
 import { useSelector,useDispatch } from "react-redux";
 import * as staticSlice from "../../../../../../store/slice/staticSlice"
   
-  function RoomView({submit}) {
+  function RoomView({submit,handleInputChange}) {
     const dispatch = useDispatch()
     const classes = useStyles();
-    const  roomDetails = useSelector((state) => state.staticSlice. roomDetails)
+    const form = useSelector((state) => state.staticSlice.form)
 
     return (
     <Grid container>
@@ -37,7 +37,8 @@ import * as staticSlice from "../../../../../../store/slice/staticSlice"
               <TextField
                 name=" rooms_id"
                 className={classes.textField}
-                value={ roomDetails?. rooms_id}
+                value={form?. rooms_id}
+                onChange={handleInputChange}
               />
             </Grid>
             <Grid item>
@@ -46,9 +47,9 @@ import * as staticSlice from "../../../../../../store/slice/staticSlice"
               </InputLabel>
               <TextField
                 name="floor"
-                value={ roomDetails?.floor}
+                value={ form?.floor}
                 className={classes.textField}
-
+                onChange={handleInputChange}
               />
             </Grid>
             <Grid item>
@@ -57,17 +58,18 @@ import * as staticSlice from "../../../../../../store/slice/staticSlice"
               </InputLabel>
               <TextField
               name="size"
-              value={ roomDetails?.size}
+              value={ form?.size}
               className={classes.textField}
-
+              onChange={handleInputChange}
               />
             </Grid>
             <Grid item>
               <InputLabel className={classes.inputLabelStyle}>כיוון</InputLabel>
               <TextField
                    name="direction"
-                   value={ roomDetails?.direction}
+                   value={ form?.direction}
                    className={classes.textField}
+                   onChange={handleInputChange}
               />
             </Grid>
            
@@ -82,9 +84,9 @@ import * as staticSlice from "../../../../../../store/slice/staticSlice"
               </InputLabel>
               <TextField
                   name="type"
-                  value={ roomDetails?.type}
+                  value={ form?.type}
                   className={classes.textField}
-
+                  onChange={handleInputChange}
               />
             </Grid>
           <Grid item>
@@ -94,7 +96,8 @@ import * as staticSlice from "../../../../../../store/slice/staticSlice"
               <TextField
                 name="base_occupancy"
                 className={classes.textField}
-               value={ roomDetails?.base_occupancy}
+               value={ form?.base_occupancy}
+               onChange={handleInputChange}
               />
             </Grid>
             <Grid item>
@@ -104,7 +107,8 @@ import * as staticSlice from "../../../../../../store/slice/staticSlice"
               <TextField
                  name="max_occupancy"
                  className={classes.textField}
-                value={ roomDetails?.max_occupancy}
+                value={ form?.max_occupancy}
+                onChange={handleInputChange}
               />
             </Grid>
             

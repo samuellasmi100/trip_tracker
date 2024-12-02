@@ -6,7 +6,8 @@ export const END_POINT = {
   ROOMS:'rooms',
   FLIGHTS:'flights',
   NOTES:'notes',
-  PAYMENTS:'payments'
+  PAYMENTS:'payments',
+  USER_ROOMS:'user_rooms'
 };
 
 // export function setAuthToken(token) {
