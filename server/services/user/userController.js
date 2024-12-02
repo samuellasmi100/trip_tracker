@@ -49,7 +49,7 @@ router.get("/details/:id/:familyId/:isIngroup", async (req, res, next) => {
   const id = req.params.id
   const familyId= req.params.familyId
   const isIngroup = req.params.isIngroup
-
+console.log(id,familyId,isIngroup)
   try {
    const response = await userService.getUserDetails(id,familyId,isIngroup)
    res.send(response)
