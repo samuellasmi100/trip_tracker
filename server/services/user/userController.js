@@ -65,4 +65,5 @@ router.get("/details/:id/:familyId/:isIngroup", async (req, res, next) => {
 
 
 
+
 module.exports = router;

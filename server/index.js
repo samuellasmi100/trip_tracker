@@ -13,6 +13,7 @@ const paymentsController = require("./services/payments/paymentsController");
 const notesController = require("./services/notes/notesController");
 const authController = require("./services/auth/authController");
 const familyController = require("./services/family/familyController");
+const userRoomsController = require("./services/userRooms/userRoomsController");
 
 
 app.use(cors());
@@ -25,6 +26,7 @@ app.use(checkAuthorizationMiddleware.checkAuthorization);
 app.use("/user", userController);
 app.use("/family", familyController);
 app.use("/rooms", roomsController);
+app.use("/user_rooms", userRoomsController);
 app.use("/flights",flightsController)
 app.use("/payments",paymentsController)
 app.use("/notes",notesController)
