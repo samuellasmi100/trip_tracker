@@ -3,8 +3,8 @@ const ErrorType = require("../../serverLogs/errorType");
 const ErrorMessage = require("../../serverLogs/errorMessage");
 
 const checkAuthorization = async (req, res, next) => {
- 
-  if (req.url === "/auth/login" || req.url === "/auth/forgot_password") {
+
+  if (req.url === "/auth/login") {
     next();
   } else {
     try {
