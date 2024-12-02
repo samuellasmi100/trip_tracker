@@ -8,72 +8,72 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 
 const ChildDetailsView = ({ userData }) => {
-    const handleDownloadPDF = (userDetails, flightDetails, roomsDetails, notesDetails, paymentsDetails) => {
-        const doc = new jsPDF();
+    // const handleDownloadPDF = (userDetails, flightDetails, roomsDetails, notesDetails, paymentsDetails) => {
+    //     const doc = new jsPDF();
       
-        // Title
-        doc.setFontSize(18);
-        doc.text("User Report", 105, 10, null, null, "center");
+    //     // Title
+    //     doc.setFontSize(18);
+    //     doc.text("User Report", 105, 10, null, null, "center");
       
-        // Add Guest Details
-        doc.setFontSize(16);
-        doc.text("פרטי אורח", 10, 20);
-        doc.setFontSize(12);
-        doc.text(`קבוצה / משפחה: ${userDetails[0]?.family_name || ""}`, 10, 30);
-        doc.text(`שם פרטי ושם משפחה: ${userDetails[0]?.hebrew_name || ""}`, 10, 40);
-        doc.text(`גיל: ${flightDetails[0]?.age || ""}`, 10, 50);
-        doc.text(`מספר זהות: ${userDetails[0]?.identity_id || ""}`, 10, 60);
+    //     // Add Guest Details
+    //     doc.setFontSize(16);
+    //     doc.text("פרטי אורח", 10, 20);
+    //     doc.setFontSize(12);
+    //     doc.text(`קבוצה / משפחה: ${userDetails[0]?.family_name || ""}`, 10, 30);
+    //     doc.text(`שם פרטי ושם משפחה: ${userDetails[0]?.hebrew_name || ""}`, 10, 40);
+    //     doc.text(`גיל: ${flightDetails[0]?.age || ""}`, 10, 50);
+    //     doc.text(`מספר זהות: ${userDetails[0]?.identity_id || ""}`, 10, 60);
       
-        // Add Flight Status
-        doc.setFontSize(16);
-        doc.text("סטטוס טיסה", 10, 70);
-        doc.setFontSize(12);
-        doc.text(`מספר דרכון: ${flightDetails[0]?.passport_number || ""}`, 10, 80);
-        doc.text(`תוקף דרכון: ${flightDetails[0]?.validity_passport || ""}`, 10, 90);
-        doc.text(`נוסע בטיסה: ${userDetails[0]?.flights === "1" ? "כן" : "לא"}`, 10, 100);
-        doc.text(`סוג טיסה: ${handleFlightStatus(userDetails)}`, 10, 110);
+    //     // Add Flight Status
+    //     doc.setFontSize(16);
+    //     doc.text("סטטוס טיסה", 10, 70);
+    //     doc.setFontSize(12);
+    //     doc.text(`מספר דרכון: ${flightDetails[0]?.passport_number || ""}`, 10, 80);
+    //     doc.text(`תוקף דרכון: ${flightDetails[0]?.validity_passport || ""}`, 10, 90);
+    //     doc.text(`נוסע בטיסה: ${userDetails[0]?.flights === "1" ? "כן" : "לא"}`, 10, 100);
+    //     doc.text(`סוג טיסה: ${handleFlightStatus(userDetails)}`, 10, 110);
       
-        // Add Room Details
-        doc.setFontSize(16);
-        doc.text("חדר", 10, 120);
-        doc.setFontSize(12);
-        doc.text(`מספר חדר: ${roomsDetails[0]?.roomId || ""}`, 10, 130);
-        doc.text(`סוג חדר: ${roomsDetails[0]?.roomType || ""}`, 10, 140);
-        doc.text(`קומה: ${roomsDetails[0]?.roomFloor || ""}`, 10, 150);
-        doc.text(`כיוון: ${roomsDetails[0]?.roomDirection || ""}`, 10, 160);
+    //     // Add Room Details
+    //     doc.setFontSize(16);
+    //     doc.text("חדר", 10, 120);
+    //     doc.setFontSize(12);
+    //     doc.text(`מספר חדר: ${roomsDetails[0]?.roomId || ""}`, 10, 130);
+    //     doc.text(`סוג חדר: ${roomsDetails[0]?.roomType || ""}`, 10, 140);
+    //     doc.text(`קומה: ${roomsDetails[0]?.roomFloor || ""}`, 10, 150);
+    //     doc.text(`כיוון: ${roomsDetails[0]?.roomDirection || ""}`, 10, 160);
       
-        // Add Notes
-        doc.setFontSize(16);
-        doc.text("הודעות", 10, 170);
-        doc.setFontSize(12);
-        notesDetails?.forEach((note, index) => {
-          doc.text(`${index + 1}. ${note.note}`, 10, 180 + index * 10);
-        });
+    //     // Add Notes
+    //     doc.setFontSize(16);
+    //     doc.text("הודעות", 10, 170);
+    //     doc.setFontSize(12);
+    //     notesDetails?.forEach((note, index) => {
+    //       doc.text(`${index + 1}. ${note.note}`, 10, 180 + index * 10);
+    //     });
       
-        // Add Payments
-        if (userDetails[0]?.user_type === "parent") {
-          doc.setFontSize(16);
-          doc.text("תשלום", 10, 190 + notesDetails.length * 10);
-          doc.setFontSize(12);
-          doc.text(`סכום מקורי: ${userDetails[0]?.total_amount || ""}`, 10, 200 + notesDetails.length * 10);
-          doc.text(
-            `היתרה לתשלום: ${paymentsDetails[paymentsDetails.length - 1]?.remainsToBePaid || ""}`,
-            10,
-            210 + notesDetails.length * 10
-          );
+    //     // Add Payments
+    //     if (userDetails[0]?.user_type === "parent") {
+    //       doc.setFontSize(16);
+    //       doc.text("תשלום", 10, 190 + notesDetails.length * 10);
+    //       doc.setFontSize(12);
+    //       doc.text(`סכום מקורי: ${userDetails[0]?.total_amount || ""}`, 10, 200 + notesDetails.length * 10);
+    //       doc.text(
+    //         `היתרה לתשלום: ${paymentsDetails[paymentsDetails.length - 1]?.remainsToBePaid || ""}`,
+    //         10,
+    //         210 + notesDetails.length * 10
+    //       );
       
-          paymentsDetails?.forEach((payment, index) => {
-            doc.text(
-              `סכום שהתקבל: ${payment.amountReceived || ""} בתאריך: ${payment.paymentDate || ""}`,
-              10,
-              220 + notesDetails.length * 10 + index * 10
-            );
-          });
-        }
+    //       paymentsDetails?.forEach((payment, index) => {
+    //         doc.text(
+    //           `סכום שהתקבל: ${payment.amountReceived || ""} בתאריך: ${payment.paymentDate || ""}`,
+    //           10,
+    //           220 + notesDetails.length * 10 + index * 10
+    //         );
+    //       });
+    //     }
       
-        // Save the PDF
-        doc.save("user-report.pdf");
-    };
+    //     // Save the PDF
+    //     doc.save("user-report.pdf");
+    // };
       
       // Helper Function for Flight Status
     const classes = useStyles();
@@ -250,7 +250,7 @@ const ChildDetailsView = ({ userData }) => {
                     </Grid>
                     <Grid style={{ display: 'flex', gap: "5px" }}>
                         <Typography className={classes.inputLabelStyle}>היתרה לתשלום  :</Typography>
-                        <Typography className={classes.inputLabelStyle}> {paymentsDetails[paymentsDetails?.length-1].remainsToBePaid}</Typography>
+                        <Typography className={classes.inputLabelStyle}> {paymentsDetails[paymentsDetails?.length-1]?.remainsToBePaid}</Typography>
                     </Grid>
                     <Grid style={{ display: 'flex', flexDirection: "column", gap: "5px", }}>
                         {paymentsDetails?.length > 0 ?

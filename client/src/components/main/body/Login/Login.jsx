@@ -31,10 +31,21 @@ const Login = () => {
     let password = formState.password
     try {
       let response = await ApiUser.login(email,password)
-      
+      if(response.data.httpCode === 401){
+        dispatch(
+          snackBarSlice.setSnackBar({
+            type: "error",
+            message: response.data.message,
+            timeout: 3000,
+          })
+        );
+      }else {
         navigate("/workspace");
         dispatch(authSlice.setUserData("Bearer " + response.data))
         sessionStorage.setItem("token", "Bearer " + response.data);
+      }
+     
+        
     
    
     } catch (error) {

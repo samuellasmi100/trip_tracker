@@ -20,7 +20,7 @@ const FamilyList = () => {
   const dialogType = useSelector((state) => state.dialogSlice.type)
   const [file, setFile] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const token = sessionStorage.getItem(('token'))
+  const token = sessionStorage.getItem('token')
 
   const closeModal = () => {
     dispatch(dialogSlice.initialActiveButton())
