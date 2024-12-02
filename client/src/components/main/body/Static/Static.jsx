@@ -38,12 +38,20 @@ const closeModal = () => {
       // return <Rooms />
     }
   }
+
+  const handleAddIcons = async () => {
+    if(activeButton === "חופשות"){
+      dispatch(staticSlice.updateDialogType(activeButton))
+      dispatch(staticSlice.openModal())
+    }
+  } 
   return (
     <Grid style={{ display: "flex", justifyContent: "center" }}>
       <StaticView
         handleButtonClick={handleButtonClick}
         handleNavButtonClicked={handleNavButtonClicked}
         searchTerm={searchTerm} setSearchTerm={setSearchTerm}
+        handleAddIcons={handleAddIcons}
        
       />;
       <MainDialog dialogOpen={dialogOpen} closeModal={closeModal}/>

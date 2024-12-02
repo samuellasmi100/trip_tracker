@@ -3,6 +3,7 @@ import MainDialogView from "./MainDialog.view";
 import { useStyles } from "./MainDialog.style";
 import { useDispatch, useSelector } from "react-redux";
 import Room from "./Room/Room"
+import Vacation from "./Vacation/Vacation";
 
 const MainDialog = (props) => {
   const dialogType = useSelector((state) => state.staticSlice.type)
@@ -11,6 +12,8 @@ const MainDialog = (props) => {
 
     if (dialogType === "editRoom") {
       return <Room />
+    }if(dialogType === "חופשות"){
+      return <Vacation />
     }
   }
 

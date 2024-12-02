@@ -14,10 +14,10 @@ import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
 
 function StaticView({ handleButtonClick ,handleNavButtonClicked,searchTerm,
-  setSearchTerm}) {
+  setSearchTerm,handleAddIcons}) {
   const classes = useStyles();
 
-  const headers = ["חדרים", "מלונות","אורחים","תשלומים"];
+  const headers = ["חדרים", "מלונות","אורחים","תשלומים","חופשות"];
   const activeButton = useSelector((state) => state.staticSlice.activeButton)
 
   return (
@@ -67,7 +67,7 @@ function StaticView({ handleButtonClick ,handleNavButtonClicked,searchTerm,
         />
       </FormControl>
           </Grid>
-         <IconButton>
+         <IconButton onClick={handleAddIcons}>
             <AddBoxIcon style={{ color: "#54A9FF", fontSize: "30px" }} />
           </IconButton>
          </Grid>
