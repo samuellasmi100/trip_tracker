@@ -1,6 +1,5 @@
-const addFamily = (userData) =>{
-    return `
-    INSERT INTO families(${Object.keys(userData)}) VALUES(${Object.values(userData).map(() => '?')})`;
+const addFamily = () =>{
+    return `INSERT INTO families (family_name,family_id) VALUES (?,?)`
   }
   
   const getFamilies = () =>{

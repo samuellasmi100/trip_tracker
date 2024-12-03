@@ -5,10 +5,12 @@ const path = require("path");
 const uuid = require("uuid").v4;
 
 router.post("/", async (req, res, next) => {
-    const familyName = req.body
-    familyName.family_id = uuid();
+
+    const familydata = req.body.form
+    familydata.familyId = req.body.newFamilyId
+    familydata.familyName = familydata.hebrew_first_name + " " + familydata.hebrew_last_name
     try {
-      const response = familyService.addFamily(familyName)
+      const response = familyService.addFamily(familydata)
       res.send("ההוספה עברה בהצלחה")
   
     } catch (error) {

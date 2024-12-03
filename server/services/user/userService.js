@@ -1,5 +1,5 @@
 const flightsService = require("../flights/flightsService")
-const roomsService = require("../rooms/roomsService")
+const userRoomsService = require("../userRooms/userRoomsService")
 const notesService = require("../notes/notesService")
 const paymentsService = require("../payments/paymentsService")
 const userDb = require("./userDb")
@@ -29,7 +29,7 @@ const getUserDetails = async (id,familyId,isIngroup) => {
     const [userDetails, flightsDetails, roomsDetails, notesDetails,paymentsDetails] = await Promise.all([
         getParentFamilyMamber(id),
         flightsService.getFlightsDetails(id,familyId,isIngroup),
-        roomsService.getChossenRoom(id),
+        userRoomsService.getChossenRoom(id),
         notesService.getParentNote(id),
         paymentsService.getHistoryPayments(familyId)
       ])

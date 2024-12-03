@@ -1,14 +1,19 @@
 const connection = require("../../db/connection-wrapper");
 const userQuery = require("../../sql/query/userQuery")
+const ErrorType = require("../../serverLogs/errorType");
+const ErrorMessage = require("../../serverLogs/errorMessage");
 
 const addGuest = async (data) => {
+  delete data.userType
+  const sql = userQuery.addGuest(data)
+  const parameters = Object.values(data)
   try {
-    delete data.userType
-    const sql = userQuery.addGuest(data)
-    const parameters = Object.values(data)
     await connection.executeWithParameters(sql,parameters)
   } catch (error) { 
-    console.log(error)
+    throw new ErrorMessage(ErrorType.SQL_GENERAL_ERROR,
+      { sql: sql, parameters: parameters, time: new Date() },
+      error
+    );
   }
 }
 
@@ -81,6 +86,7 @@ const updateGuest = async (data) => {
      
     } catch (error) { 
       console.log(error)
+      throw new ErrorMessage(error.errorType, sql, error);
     }
 }
 

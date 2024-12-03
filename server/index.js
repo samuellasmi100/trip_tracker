@@ -35,7 +35,7 @@ app.use("/vacations",vacationsController)
 
 
 
-// app.use(errorHandler);
+app.use(errorHandler);
 const launchServer = async () => {
   app.listen(process.env.REST_API_PORT, () =>
     console.log(`The Main Server is running on ${process.env.REST_API_PORT}`)

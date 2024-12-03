@@ -4,9 +4,8 @@ const familyQuery = require("../../sql/query/familyQuery")
 
 const addFamily = async (data) => {
   try {
-    delete data.userType
-    const sql = familyQuery.addFamily(data)
-    const parameters = Object.values(data)
+    const sql = familyQuery.addFamily()
+    const parameters = [data.familyName,data.familyId]
 
     await connection.executeWithParameters(sql,parameters)
   } catch (error) { 
