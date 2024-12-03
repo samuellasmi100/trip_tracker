@@ -3,7 +3,7 @@ import VacationView from "./Vacation.view";
 import * as staticSlice from "../../../../../../store/slice/staticSlice"
 import * as roomsSlice from "../../../../../../store/slice/roomsSlice"
 import { useSelector,useDispatch } from "react-redux";
-import ApiRooms from "../../../../../../apis/roomsRequest"
+import ApiVacations from "../../../../../../apis/vacationRequest"
 
 const Vacation = (props) => {
 const dispatch = useDispatch()
@@ -17,9 +17,8 @@ const dispatch = useDispatch()
   };
 
   const submit = async() => {
-    console.log(form)
   try {
-   
+   const response = await ApiVacations.addVacation(token,form)
   } catch (error) {
     console.log(error)
   }
