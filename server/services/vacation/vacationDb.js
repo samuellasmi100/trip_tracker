@@ -2,14 +2,15 @@ const connection = require("../../db/connection-wrapper");
 const vacationQuery = require("../../sql/query/vacationQuery")
 
 const addVacation = async (vacationId) => {
+
   try {
-    const sql = vacationQuery.addVacation(vacationId)
-    await connection.exports(sql)
+    const sqlAddName = vacationQuery.addVacation(vacationId)
+    // const
+    await connection.execute(sql)
   } catch (error) { 
     console.log(error)
   }
 }
-
 
 const getVacations = async () => {
     try {
@@ -26,6 +27,4 @@ const getVacations = async () => {
 module.exports = {
     addVacation,
     getVacations,
-    
-    
 }

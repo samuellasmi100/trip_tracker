@@ -4,8 +4,10 @@ const uuid = require("uuid").v4;
 
 router.post("/", async (req, res, next) => {
     const vacationId = uuid();
+    let vacationDetails = req.body
+    console.log(vacationDetails)
     try {
-      await vacationService.addVacation(vacationId)
+      await vacationService.addVacation(vacationDetails,vacationId)
     } catch (error) {
       return next(error);
     }
