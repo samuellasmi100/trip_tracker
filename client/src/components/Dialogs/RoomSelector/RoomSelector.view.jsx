@@ -21,7 +21,8 @@ const RoomSelector = ({
   names,
   selectedRoomList,
   handleUserCheckboxChange,
-  guestsRoomList
+  guestsRoomList,
+  handleCloseClicked
 }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -235,7 +236,7 @@ const RoomSelector = ({
         <Grid item style={{ marginTop: "auto", padding: "26px 0" }}>
           <Button
             className={classes.cancelButton}
-            onClick={() => dispatch(dialogSlice.closeModal())}
+            onClick={handleCloseClicked}
           >
             סגור
           </Button>
@@ -246,7 +247,3 @@ const RoomSelector = ({
 };
 
 export default RoomSelector;
-{/* <Typography>
-חדר זה מכיל {room.base_occupancy} מיטות || מיטות פנויות:{" "}
-{room.base_occupancy - room.peopleCount}{" "}
-</Typography> */}

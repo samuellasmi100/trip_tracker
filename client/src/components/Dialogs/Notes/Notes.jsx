@@ -3,7 +3,9 @@ import { useSelector, useDispatch } from "react-redux";
 import NotesView from "./Notes.view";
 import * as notesSlice from "../../../store/slice/notesSlice";
 import * as dialogSlice from "../../../store/slice/dialogSlice";
-import axios from "axios";
+import * as userSlice from "../../../store/slice/userSlice";
+import * as snackBarSlice from "../../../store/slice/snackbarSlice";
+
 import ApiNotes from "../../../apis/notesRequest"
 
 const Notes = () => {
@@ -23,17 +25,24 @@ const Notes = () => {
   const submit = async () => {
     try {
        await ApiNotes.addNotes(token,form)
-      dispatch(dialogSlice.closeModal());
-      dispatch(notesSlice.resetForm());
-      dispatch(dialogSlice.initialActiveButton());
-      dispatch(dialogSlice.initialDialogType());
+       dispatch(
+        snackBarSlice.setSnackBar({
+          type: "success",
+          message: "הערות עודכנו בהצלחה",
+          timeout: 3000,
+        })
+        )
     } catch (error) {
       console.log(error);
     }
   };
 ;
-
-  return <NotesView handleInputChange={handleInputChange} submit={submit} />;
+const handleCloseClicked = () => {
+  dispatch(userSlice.resetForm())
+  dispatch(notesSlice.resetForm())
+ dispatch(dialogSlice.resetState())
+ }
+  return <NotesView handleInputChange={handleInputChange} submit={submit}  handleCloseClicked={handleCloseClicked}/>;
 };
 
 export default Notes;

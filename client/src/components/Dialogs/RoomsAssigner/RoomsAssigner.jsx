@@ -6,6 +6,8 @@ import * as roomsSlice from "../../../store/slice/roomsSlice"
 import * as snackbarSlice from "../../../store/slice/snackbarSlice"
 import * as dialogSlice from "../../../store/slice/dialogSlice"
 import ApiRooms from "../../../apis/roomsRequest"
+import * as userSlice from "../../../store/slice/userSlice";
+import * as snackBarSlice from "../../../store/slice/snackbarSlice";
 
 const RoomsAssigner = () => {
   const dispatch = useDispatch()
@@ -28,11 +30,13 @@ const RoomsAssigner = () => {
             timeout: 3000,
           })
         )
-        dispatch(roomsSlice.resetChildRoom())
-        dispatch(dialogSlice.closeModal())
-        dispatch(roomsSlice.resetForm())
-        dispatch(dialogSlice.initialActiveButton())
-        dispatch(dialogSlice.initialDialogType())
+        dispatch(
+          snackBarSlice.setSnackBar({
+            type: "success",
+            message: "נתוני חדרים עודכנו בהצלחה",
+            timeout: 3000,
+          })
+        )
       } catch (error) {
         dispatch(
           snackbarSlice.setSnackBar({
@@ -96,7 +100,11 @@ const RoomsAssigner = () => {
   const handleDeleteButton = (roomId) => {
     dispatch(roomsSlice.removeRoomFromForm({ roomId: roomId}));
   }
-
+  const handleCloseClicked = () => {
+    dispatch(roomsSlice.resetForm())
+   dispatch(dialogSlice.resetState())
+   dispatch(userSlice.resetForm())
+   }
 
    useEffect(() => {
       getAllRooms()
@@ -116,6 +124,7 @@ const RoomsAssigner = () => {
    roomsChosen={roomsChosen}
    filteredRooms={filteredRooms}
    handleRoomToggle={handleRoomToggle}
+   handleCloseClicked={handleCloseClicked}
    />
   );
 };

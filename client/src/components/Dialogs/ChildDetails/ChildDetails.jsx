@@ -18,7 +18,6 @@ const ChildDetails = () => {
 
     try {
       let response = await ApiUser.getUserDetails(token,form.user_id,form.family_id,form.is_in_group)
-      //   let response = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/user/details/${form.user_id}/${form.family_id}`)
       if(response?.data?.userDetails !== undefined){
         setResponse(true)
         setUserData(response.data)

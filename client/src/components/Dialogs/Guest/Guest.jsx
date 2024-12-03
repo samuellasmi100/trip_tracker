@@ -7,6 +7,7 @@ import * as snackBarSlice from "../../../store/slice/snackbarSlice";
 import * as userSlice from "../../../store/slice/userSlice";
 import * as paymentsSlice from "../../../store/slice/paymentsSlice";
 import * as dialogSlice from "../../../store/slice/dialogSlice";
+import { v4 as uuidv4 } from 'uuid';
 
 const Guest = () => {
   const dialogType = useSelector((state) => state.dialogSlice.type);
@@ -54,25 +55,82 @@ const Guest = () => {
   const submit = async () => {
     try {
       let response
-      if (dialogType === "addParent" || dialogType === "addChild" ) {      
+      if (dialogType === "addParent" || dialogType === "addChild" || dialogType === "addFamily") {     
+      if(dialogType === "addParent"){
+        if(form.identity_id === undefined){
+          dispatch(
+            snackBarSlice.setSnackBar({
+              type: "error",
+              message: "מספר תעודת זהות הוא חובה",
+              timeout: 3000,
+            })
+          )
+          return
+        }else {
+          response = await ApiUser.addUser(token,form)
+          await getUsers()
+          dispatch(userSlice.resetForm())
+          dispatch(dialogSlice.resetState())
+        }
+      }else if(dialogType === "addFamily"){
+        if(form.identity_id === undefined || form.identity_id === ""){
+          dispatch(
+            snackBarSlice.setSnackBar({
+              type: "error",
+              message: "מספר תעודת זהות הוא חובה",
+              timeout: 3000,
+            })
+          )
+          return
+        }else {
+          const newFamilyId = uuidv4();
+          const newUserId = uuidv4();
+          response = await ApiUser.addUser(token,form,newFamilyId,newUserId)
+          await ApiUser.addFamily(token,form,newFamilyId)
+          dispatch(userSlice.updateFormField({ field: "family_id",value:newFamilyId }))
+          dispatch(userSlice.updateFormField({ field: "user_id",value:newUserId }))
+        }
+      }else {
         response = await ApiUser.addUser(token,form)
         await getUsers()
-        dispatch(userSlice.resetForm())
-      } else if (dialogType === "editChild" || dialogType === "editParent") {
-        response = await ApiUser.updateUser(token,form)
-        await getUsers()
-        dispatch(userSlice.updateChild({}))
-        dispatch(userSlice.resetForm())
-      }else if(dialogType === "addFamily"){
-        response = await ApiUser.addFamily(token,form)
-        dispatch(userSlice.resetForm())
       }
-      dispatch(dialogSlice.resetState())
-
+      } else if (dialogType === "editChild" || dialogType === "editParent") {
+        if(dialogType === "editParent"){
+          if(form.identity_id === undefined || form.identity_id === ""){
+            dispatch(
+              snackBarSlice.setSnackBar({
+                type: "error",
+                message: "מספר תעודת זהות הוא חובה",
+                timeout: 3000,
+              })
+            )
+            return
+          }else {
+            response = await ApiUser.updateUser(token,form)
+            await getUsers()
+          }
+        }else {
+          response = await ApiUser.updateUser(token,form)
+          await getUsers()
+        }
+       
+      }
+      dispatch(
+        snackBarSlice.setSnackBar({
+          type: "success",
+          message: "נתוני אורח עודכנו בהצלחה",
+          timeout: 3000,
+        })
+      )
     } catch (error) {
       console.log(error);
     }
   };
+
+ const handleCloseClicked = () => {
+  dispatch(userSlice.resetForm())
+ dispatch(dialogSlice.resetState())
+ }
 
   const getUsers = async () => {
     let family_id = form.family_id
@@ -95,6 +153,7 @@ const Guest = () => {
       areaCodes={areaCodes}
       handleButtonString={handleButtonString}
       handleInputChange={handleInputChange}
+      handleCloseClicked={handleCloseClicked}
     />
   );
 };

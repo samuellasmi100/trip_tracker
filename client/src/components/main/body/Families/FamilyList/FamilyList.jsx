@@ -36,7 +36,7 @@ const FamilyList = () => {
     dispatch(roomsSlice.resetForm())
     dispatch(notesSlice.resetForm())
     dispatch(paymentsSlice.resetForm())
-    dispatch(userSlice.updateFamily({}))
+    // dispatch(userSlice.updateFamily({}))
   }
 
   const handleDialogTypeOpen = (type, userData) => {

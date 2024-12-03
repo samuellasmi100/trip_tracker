@@ -4,18 +4,17 @@ import { useDispatch, useSelector } from "react-redux";
 import * as flightsSlice from "../../../store/slice/flightsSlice"
 import * as dialogSlice from "../../../store/slice/dialogSlice"
 import ApiFlights from "../../../apis/flightsRequest"
-import axios from "axios";
+import * as userSlice from "../../../store/slice/userSlice";
+import * as snackBarSlice from "../../../store/slice/snackbarSlice";
 
 const Flights = () => {
 const dispatch = useDispatch()
-  const form = useSelector((state) => state.flightsSlice.form)
-  const userForm = useSelector((state) => state.userSlice.form)
+const form = useSelector((state) => state.flightsSlice.form)
+const userForm = useSelector((state) => state.userSlice.form)
 const token = sessionStorage.getItem("token")
 
   const handleInputChange = (e) => {
-
     let { name, value,checked } = e.target
-    console.log(name,value)
     if (name === "birth_date") {
       const age = calculateAge(value);
       dispatch(flightsSlice.updateFormField({ field: "age", value: age }));
@@ -77,9 +76,13 @@ const token = sessionStorage.getItem("token")
     }else {
       response = await ApiFlights.addUserFlights(token,form)
     }
-     dispatch(flightsSlice.resetForm())
-     dispatch(dialogSlice.resetState())
-
+     dispatch(
+      snackBarSlice.setSnackBar({
+        type: "success",
+        message: "נתוני טיסה עודכנו בהצלחה",
+        timeout: 3000,
+      })
+    )
     } catch (error) {
       console.log(error)
     }
@@ -101,13 +104,17 @@ const token = sessionStorage.getItem("token")
       console.log(error)
     }
   }
-
+  const handleCloseClicked = () => {
+    dispatch(flightsSlice.resetForm())
+   dispatch(dialogSlice.resetState())
+   dispatch(userSlice.resetForm())
+   }
   useEffect(() => {
     getFlightData()
   }, [])
   
   return (
-    <FlightsView handleInputChange={handleInputChange} submit={submit}/>
+    <FlightsView handleInputChange={handleInputChange} submit={submit}  handleCloseClicked={handleCloseClicked}/>
   );
 };
 

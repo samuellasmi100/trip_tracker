@@ -29,6 +29,7 @@ const RoomsAssigner = ({
   roomsChosen,
   filteredRooms,
   handleRoomToggle,
+  handleCloseClicked
  }) => {
 
   const classes = useStyles();
@@ -193,7 +194,7 @@ const RoomsAssigner = ({
         <Grid item style={{ marginTop: "auto", padding: "16px 0" }}>
           <Button
             className={classes.cancelButton}
-            onClick={() => dispatch(dialogSlice.closeModal())}
+            onClick={handleCloseClicked}
           >
             סגור
           </Button>

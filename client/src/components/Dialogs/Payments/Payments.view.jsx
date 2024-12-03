@@ -20,14 +20,15 @@ import { useDispatch,useSelector } from "react-redux";
 import * as dialogSlice from "../../../store/slice/dialogSlice"
 
 const PaymentsView = (props) => {
-  const formOfPayment = ["מזומן","העברה בנקאית","כרטיס אשראי"]
+  const formOfPayment = ["מזומן","העברה בנקאית","כרטיס אשראי","המחאות"]
   const paymentCurrency = ["שקל","דולר","יורו"]
   const form = useSelector((state) => state.paymentsSlice.form)
   const classes = useStyles();
   const dispatch = useDispatch()
   const {
     handleInputChange,
-    submit
+    submit,
+    handleCloseClicked
   } = props;
 
     return (
@@ -126,7 +127,6 @@ const PaymentsView = (props) => {
                     sx: {
                       color: "#ffffff !important",
                       bgcolor: "#222222",
-                      paddingTop: "110px !important",
                     },
                   },
               }}>
@@ -156,7 +156,7 @@ const PaymentsView = (props) => {
           </Button>
         </Grid>
         <Grid item>
-          <Button className={classes.cancelButton} onClick={() => dispatch(dialogSlice.closeModal())}>
+          <Button className={classes.cancelButton} onClick={handleCloseClicked}>
             סגור
           </Button>
         </Grid>

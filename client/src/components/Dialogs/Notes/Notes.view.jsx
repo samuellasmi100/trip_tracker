@@ -23,7 +23,8 @@ const NotesView = (props) => {
   ]
   const {
     handleInputChange,
-    submit
+    submit,
+    handleCloseClicked
   } = props;
 
       return (
@@ -87,7 +88,7 @@ const NotesView = (props) => {
             </Button>
           </Grid>
           <Grid item>
-            <Button className={classes.cancelButton} onClick={() => dispatch(dialogSlice.closeModal())}>
+            <Button className={classes.cancelButton} onClick={handleCloseClicked}>
               סגור
             </Button>
           </Grid>

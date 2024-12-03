@@ -55,7 +55,7 @@ const MainDialog = (props) => {
   }
 
   const handleButtonHeader = () => {
-    if(dialogType === "childDetails" || dialogType === "parentDetails" || dialogType === "addChild" || dialogType === "addParent" || dialogType === "addFamily"){
+    if(dialogType === "childDetails" || dialogType === "parentDetails" || dialogType === "addChild" || dialogType === "addParent"){
     }else {
         if(form.user_type === "client"){
           return (Number(form.flights) === 1

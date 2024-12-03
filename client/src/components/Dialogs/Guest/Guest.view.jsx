@@ -31,17 +31,19 @@ const GuestView = (props) => {
     submit,
     areaCodes,
     handleButtonString,
-    handleInputChange
+    handleInputChange,
+    handleCloseClicked
   } = props;
 
 const handleDataInputsView = () => {
-  if(dialogType === "addParent" || dialogType === "editParent"){
+  if(dialogType === "addParent" || dialogType === "editParent" || dialogType === "addFamily" ){
     return <Parent areaCodes={areaCodes} handleInputChange={handleInputChange}/>
   }else if(dialogType === "addChild" || dialogType === "editChild"){
     return <Child areaCodes={areaCodes} handleInputChange={handleInputChange}/>
-  }else if(dialogType === "addFamily"){
-    return <CreateFamily handleInputChange={handleInputChange}/>
   }
+  // else if(dialogType === "addFamily"){
+  //   return <CreateFamily handleInputChange={handleInputChange}/>
+  // }
 }
 
   return (
@@ -68,7 +70,7 @@ const handleDataInputsView = () => {
           </Button>
         </Grid>
         <Grid item>
-          <Button className={classes.cancelButton} onClick={() =>  dispatch(dialogSlice.closeModal())}>
+          <Button className={classes.cancelButton} onClick={handleCloseClicked}>
             סגור
           </Button>
         </Grid>

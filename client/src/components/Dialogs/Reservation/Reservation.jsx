@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import * as userSlice from "../../../store/slice/userSlice";
 import * as dialogSlice from "../../../store/slice/dialogSlice";
 import ApiUser from "../../../apis/userRequest";
+import * as snackBarSlice from "../../../store/slice/snackbarSlice";
 
-import axios from "axios";
 
 const Reservation = () => {
   const dispatch = useDispatch();
@@ -14,9 +14,10 @@ const Reservation = () => {
   const dialogType = useSelector((state) => state.dialogSlice.type);
   const familyDetails = useSelector((state) => state.userSlice.family);
   const token = sessionStorage.getItem("token")
+
   const handleInputChange = (e) => {
     let { name, value, checked } = e.target;
-    let family_id = familyDetails.family_id;
+    let family_id = form.family_id;
     if (name === "total_amount") {
       const rawValue = value.replace(/,/g, "");
       const formattedValue = rawValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -55,11 +56,13 @@ const Reservation = () => {
     try {
       let response = await ApiUser.updateUser(token,form);
       await getGuests();
-      dispatch(userSlice.updateChild({}));
-      dispatch(userSlice.updateForm({}));
-      dispatch(dialogSlice.closeModal());
-      dispatch(dialogSlice.initialActiveButton());
-      dispatch(dialogSlice.initialDialogType());
+      dispatch(
+        snackBarSlice.setSnackBar({
+          type: "success",
+          message: "נתוני אורח התעדכנו בהצלחה",
+          timeout: 3000,
+        })
+      )
     } catch (error) {
       console.log(error);
     }
@@ -81,8 +84,25 @@ const Reservation = () => {
     }
   }
 
+  const handleCloseClicked = () => {
+    dispatch(userSlice.resetForm())
+   dispatch(dialogSlice.resetState())
+   dispatch(userSlice.resetForm())
+   }
+const getUserDetails = async() => {
+console.log(form)
+try {
+  
+} catch (error) {
+  
+}
+}
+   useEffect(() => {
+   getUserDetails()
+   }, [])
+   
   return (
-    <ReservationView handleInputChange={handleInputChange} submit={submit} />
+    <ReservationView handleInputChange={handleInputChange} submit={submit}  handleCloseClicked={handleCloseClicked}/>
   );
 };
 

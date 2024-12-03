@@ -3,9 +3,9 @@ import PaymentsView from "./Payments.view"
 import { useDispatch, useSelector } from "react-redux";
 import * as paymentsSlice from "../../../store/slice/paymentsSlice"
 import * as dialogSlice from "../../../store/slice/dialogSlice"
-import axios from "axios";
+import * as snackBarSlice from "../../../store/slice/snackbarSlice";
 import ApiPayments from "../../../apis/paymentsRequest"
-import { Token } from "@mui/icons-material";
+import * as userSlice from "../../../store/slice/userSlice";
 
 const Payments = () => {
 const dispatch = useDispatch()
@@ -36,9 +36,13 @@ const handleInputChange = (e) => {
 const submit = async () => {
   try {
     await ApiPayments.addPayments(token,form)
-    dispatch(dialogSlice.closeModal())
-    dispatch(dialogSlice.initialActiveButton())
-    dispatch(dialogSlice.initialDialogType())
+    dispatch(
+      snackBarSlice.setSnackBar({
+        type: "success",
+        message: "נתוני טיסה עודכנו בהצלחה",
+        timeout: 3000,
+      })
+    )
   } catch (error) {
     console.log(error)
   }
@@ -58,12 +62,17 @@ try {
   console.log(error)
 }
 }
+const handleCloseClicked = () => {
+  dispatch(paymentsSlice.resetForm())
+ dispatch(dialogSlice.resetState())
+ dispatch(userSlice.resetForm())
+ }
 useEffect(() => {
   getPayments()
 }, [])
 
   return (
-    <PaymentsView handleInputChange={handleInputChange} submit={submit}/>
+    <PaymentsView handleInputChange={handleInputChange} submit={submit}  handleCloseClicked={handleCloseClicked}/>
   );
 };
 

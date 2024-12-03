@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import RoomsView from "./RoomSelector.view"
-import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import * as roomsSlice from "../../../store/slice/roomsSlice"
-import * as snackbarSlice from "../../../store/slice/snackbarSlice"
+import * as snackBarSlice from "../../../store/slice/snackbarSlice";
 import * as dialogSlice from "../../../store/slice/dialogSlice"
 import ApiRoom from "../../../apis/roomsRequest"
+import * as userSlice from "../../../store/slice/userSlice";
 
 const RoomSelector = () => {
   const token = sessionStorage.getItem("token")
@@ -51,16 +51,16 @@ const RoomSelector = () => {
         }
       }
      
-
-      dispatch(roomsSlice.resetChildRoom())
-      dispatch(dialogSlice.closeModal())
-      dispatch(roomsSlice.resetForm())
-      dispatch(dialogSlice.initialActiveButton())
-      dispatch(dialogSlice.initialDialogType())
-
+      dispatch(
+        snackBarSlice.setSnackBar({
+          type: "error",
+          message: "נתוני חדרים עודכנו בהצלחה",
+          timeout: 3000,
+        })
+      )
     } catch (error) {
       dispatch(
-        snackbarSlice.setSnackBar({
+        snackBarSlice.setSnackBar({
           type: "error",
           message: "נתקלנו בבעיה",
           timeout: 3000,
@@ -108,7 +108,11 @@ const RoomSelector = () => {
   }
   );
 
-
+  const handleCloseClicked = () => {
+    dispatch(roomsSlice.resetForm())
+   dispatch(dialogSlice.resetState())
+   dispatch(userSlice.resetForm())
+   }
 
   useEffect(() => {
     getFamilyRooms()
@@ -127,6 +131,7 @@ const RoomSelector = () => {
       names={names}
       handleUserCheckboxChange={handleUserCheckboxChange}
       guestsRoomList={guestsRoomList}
+      handleCloseClicked={handleCloseClicked}
     />
   );
 };

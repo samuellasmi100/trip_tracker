@@ -23,20 +23,20 @@ import Flights from "./Flights/Flights"
 
 const ReservationView = (props) => {;
   const form = useSelector((state) => state.userSlice.form);
+  const dialogForm = useSelector((state) => state.dialogSlice.type);
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { handleInputChange, submit } = props;
+  const { handleInputChange, submit,handleCloseClicked } = props;
    const dialogType = useSelector((state) => state.dialogSlice.type)
 
   const handleFlightsCheckbox = () => {
-    if(dialogType !== "addFamily"){
       return <Flights handleInputChange={handleInputChange}/>
-    }
   }
+  console.log("user",form.user_type)
   return (
     <>
       <Grid container style={{height: "400px", padding: "20px" }}>
-      {form.user_type === "parent" ? 
+      {dialogType === "editParent" || dialogType === "addFamily"? 
         <Grid item xs={6}>
            <Grid container spacing={2} justifyContent="center">
            <Grid item>
@@ -78,7 +78,7 @@ const ReservationView = (props) => {;
          
         </Grid>
         :<></>}
-        <Grid item xs={form.user_type === "parent" ? 5 : 8} style={{marginRight: "46px"}}>
+        <Grid item xs={dialogType === "editParent" || dialogType === "addFamily" ? 5 : 8} style={{marginRight: "46px"}}>
           <Grid container spacing={2} >
             <Grid item>
               <InputLabel className={classes.inputLabelStyle}>
@@ -125,7 +125,7 @@ const ReservationView = (props) => {;
         <Grid item>
           <Button
             className={classes.cancelButton}
-            onClick={() => dispatch(dialogSlice.closeModal())}>
+            onClick={handleCloseClicked}>
             סגור
           </Button>
         </Grid>

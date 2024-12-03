@@ -3,13 +3,13 @@ import Api from "./baseApi";
 
 export default {
   login(email,password) {
-    console.log(email,password,"gggggggggggg")
     let loginData = {email,password}
     return Api.post(`${END_POINT.AUTH}/login`, loginData, {
     });
   },
-  addUser(token,form) {
-    return Api.post(`${END_POINT.USER}`, form, {
+  addUser(token,form,newFamilyId,newUserId) {
+   
+    return Api.post(`${END_POINT.USER}`, {form,newFamilyId,newUserId}, {
       headers: { Authorization: token },
     });
   },
@@ -18,8 +18,8 @@ export default {
       headers: { Authorization: token },
     });
   },
-  addFamily(token,form) {
-    return Api.post(`${END_POINT.FAMILY}`, form, {
+  addFamily(token,form,newFamilyId) {
+    return Api.post(`${END_POINT.FAMILY}`, {form,newFamilyId}, {
       headers: { Authorization: token },
     });
   },

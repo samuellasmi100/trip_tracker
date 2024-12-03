@@ -174,7 +174,8 @@ const FlightsView = (props) => {
   const dispatch = useDispatch()
   const {
     handleInputChange,
-    submit
+    submit,
+    handleCloseClicked
   } = props;
 
 
@@ -287,7 +288,7 @@ const FlightsView = (props) => {
           </Button>
         </Grid>
         <Grid item>
-          <Button className={classes.cancelButton} onClick={() => dispatch(dialogSlice.closeModal())}>
+          <Button className={classes.cancelButton} onClick={handleCloseClicked}>
             סגור
           </Button>
         </Grid>
