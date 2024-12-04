@@ -5,12 +5,12 @@ const paymentsService = require("../payments/paymentsService")
 const familyDb = require("./familyDb")
 
 
-const addFamily = async (data) => {
-    return await familyDb.addFamily(data)
+const addFamily = async (data,vacationId) => {
+    return await familyDb.addFamily(data,vacationId)
 }
 
-const getFamilies = async () => {
-    return await familyDb.getFamilies()
+const getFamilies = async (vacationId) => {
+    return await familyDb.getFamilies(vacationId)
 }
 
 const getUserDetails = async (id,familyId) => {

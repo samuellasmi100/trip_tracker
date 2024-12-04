@@ -1,18 +1,6 @@
 const connection = require("../../db/connection-wrapper");
 const vacationQuery = require("../../sql/query/vacationQuery")
-const {
-  dropTablesQueries,
-  createFamilyTableQuery,
-  createFamilyRoomTableQuery,
-  createFileTableQuery,
-  createFightsTableQuery,
-  createGuestTableQuery,
-  createNotesTableQuery,
-  createPaymentsTableQuery,
-  createRoomsTableQuery,
-  createUserRoomAssignmentsTableQuery,
-  insertRoomsDataQuery,
-} = require("../../sql/query/trip_tracker_dump")
+const createDatabaseAndTable = require("../../sql/utils/createDb")
 
 const addVacation = async (vacationId,vacationDetails) => {
   const dateEntries = [];
@@ -26,18 +14,15 @@ const addVacation = async (vacationId,vacationDetails) => {
   });
   try {
     const sqlAddName = vacationQuery.addVacation()
-    const sqlAddNameParameters = [vacationId,vacationDetails.vacation_name]
+    const sqlAddNameParameters = [vacationDetails.vacation_name,vacationId]
     const sqlAddDates = vacationQuery.addVacationDates(dateEntries)
     const sqlAddDatesParameters = dateEntries.flat();
-    const sqlCreateDb = vacationQuery.createDbForVacation(vacationId)
+
     
     await connection.executeWithParameters(sqlAddName,sqlAddNameParameters)
     await connection.executeWithParameters(sqlAddDates,sqlAddDatesParameters)
-    const response = await connection.execute(sqlCreateDb)
-    if(response.serverStatus == 2){
-
-    }
-    console.log(response.serverStatus)
+    await createDatabaseAndTable(vacationId)
+    
   } catch (error) { 
     console.log(error)
   }
@@ -45,9 +30,9 @@ const addVacation = async (vacationId,vacationDetails) => {
 
 const getVacations = async () => {
     try {
-      const sql = vacationQuery.getFamilyGuests()
-      const parameters = [id]
-      const response = await connection.executeWithParameters(sql,parameters)
+      const sql = vacationQuery.getVacations()
+      console.log(sql)
+      const response = await connection.execute(sql)
       return response
     } catch (error) { 
       console.log(error)

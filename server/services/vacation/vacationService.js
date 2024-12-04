@@ -1,11 +1,13 @@
 const vacationDb = require("./vacationDb")
 
 const addVacation = async (vacationId,vacationDetails) => {
-    const saveVacationDetails = await vacationDb.addVacation(vacationDetails,vacationId)
-    // const createSchemaForVacation = await vacationDb.addVacation(vacationId,vacationDetails)
-    // return await vacationDb.addVacation(vacationId)
+     await vacationDb.addVacation(vacationDetails,vacationId)
 }
 
+const getVacations = async () => {
+    return await vacationDb.getVacations()
+}
 module.exports = {
-    addVacation
+    addVacation,
+    getVacations
 }

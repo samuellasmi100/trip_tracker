@@ -9,8 +9,14 @@ const createDbForVacation = (vacationId) => {
   return `CREATE SCHEMA \`trip_tracker_${vacationId}\``;
 };
 
+const getVacations = () => {
+  return `SELECT v.name,v.vacation_id,vd.start_date,vd.end_date FROM vacations v
+join vacation_date vd on v.vacation_id = vd.vacation_id;`
+}
+
 module.exports = {
   addVacation,
   addVacationDates,
   createDbForVacation,
+  getVacations
 };

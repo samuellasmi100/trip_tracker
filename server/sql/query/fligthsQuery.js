@@ -12,11 +12,11 @@ const updateFlightsDetails = (flightsData,id) => {
 const getFlightsDetails = () => {
     return `SELECT validity_passport,passport_number ,birth_date ,
    outbound_flight_date,return_flight_date ,
-   outbound_flight_number ,return_flight_number,age,outbound_airline,return_airline,is_source_user FROM flights where user_id = ?;`
+   outbound_flight_number,return_flight_number,age,outbound_airline,return_airline,is_source_user FROM flights where user_id = ?;`
 }
 
 const getFlightsByFamily = () => {
-  return `SELECT * FROM trip_tracker.flights where family_id = ? AND is_source_user = 1;`
+  return `SELECT * FROM flights where family_id = ? AND is_source_user = 1;`
 }
 
 

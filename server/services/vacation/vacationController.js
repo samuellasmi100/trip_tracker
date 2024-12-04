@@ -23,10 +23,9 @@ router.put("/", async (req, res, next) => {
 });
 
 router.get("/", async (req, res, next) => {
-
   try {
-   
-
+   const response = await vacationService.getVacations()
+   res.send(response)
   } catch (error) {
     return next(error);
   }

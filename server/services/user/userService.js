@@ -5,25 +5,21 @@ const paymentsService = require("../payments/paymentsService")
 const userDb = require("./userDb")
 
 
-const addGuest = async (data) => {
-    return await userDb.addGuest(data)
+const addGuest = async (data,vacationId) => {
+    return await userDb.addGuest(data,vacationId)
 }
 
-const getFamilyGuests = async (id) => {
-    return await userDb.getFamilyGuests(id)
+const getFamilyGuests = async (id,vacationId) => {
+    return await userDb.getFamilyGuests(id,vacationId)
 }
-const updateGuest = async (data) => {
-    return await userDb.updateGuest(data)
+const updateGuest = async (data,vacationId) => {
+    return await userDb.updateGuest(data,vacationId)
 }
-
-const getFamilyMamber = async (id) => {
-    return await userDb.getFamilyMamber(id)
+const getFamilyMamber = async (id,vacationId) => {
+    return await userDb.getFamilyMamber(id,vacationId)
 }
 const saveRegistrationForm = async (filename,fileType,filePath,id) => {
     return await userDb.saveRegistrationForm(filename,fileType,filePath,id)
-}
-const getParentFamilyMamber = async (id) => {
-    return await userDb.getParentFamilyMamber(id)
 }
 const getUserDetails = async (id,familyId,isIngroup) => {
     const [userDetails, flightsDetails, roomsDetails, notesDetails,paymentsDetails] = await Promise.all([

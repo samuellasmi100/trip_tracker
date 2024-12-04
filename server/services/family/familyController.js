@@ -4,13 +4,13 @@ const fs = require("fs");
 const path = require("path");
 const uuid = require("uuid").v4;
 
-router.post("/", async (req, res, next) => {
-
+router.post("/:id", async (req, res, next) => {
+     const vacationId = req.params.id
     const familydata = req.body.form
     familydata.familyId = req.body.newFamilyId
     familydata.familyName = familydata.hebrew_first_name + " " + familydata.hebrew_last_name
     try {
-      const response = familyService.addFamily(familydata)
+      const response = familyService.addFamily(familydata,vacationId)
       res.send("ההוספה עברה בהצלחה")
   
     } catch (error) {
@@ -18,9 +18,10 @@ router.post("/", async (req, res, next) => {
     }
   });
   
-  router.get("/", async (req, res, next) => {
+  router.get("/:id", async (req, res, next) => {
     try {
-      const response = await familyService.getFamilies()
+      const vacationId = req.params.id
+      const response = await familyService.getFamilies(vacationId)
       res.send(response)
   
     } catch (error) {

@@ -2,7 +2,8 @@ const router = require("express").Router();
 const userService = require("./userService")
 const uuid = require("uuid").v4;
 
-router.post("/", async (req, res, next) => {
+router.post("/:id", async (req, res, next) => {
+  const vacationId = req.params.id
     const userData = req.body.form
     userData.family_id = req.body.newFamilyId
     if(userData.userType === "addParent" || userData.userType === "addFamily"){
@@ -12,10 +13,10 @@ router.post("/", async (req, res, next) => {
     }else{
       userData.is_main_user = false
       userData.user_type = "client"
-      userData.user_id = uuid();
+      userData.user_id = req.body.newUserId
     }
     try {
-      const response = await userService.addGuest(userData)
+      const response = await userService.addGuest(userData,vacationId)
    
        res.send(response)
     } catch (error) {
@@ -23,11 +24,11 @@ router.post("/", async (req, res, next) => {
     }
 });
 
-router.get("/:id", async (req, res, next) => {
-
+router.get("/:id/:vacationid", async (req, res, next) => {
+  const vacationId = req.params.vacationid
   const familyId = req.params.id
   try {
-    const response = await userService.getFamilyGuests(familyId)
+    const response = await userService.getFamilyGuests(familyId,vacationId)
     res.send(response)
 
   } catch (error) {
@@ -35,12 +36,13 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-router.put("/", async (req, res, next) => {
+router.put("/:id", async (req, res, next) => {
+  const vacationId = req.params.id
    const userData = req.body
-   console.log(userData)
+  
   try {
-   await userService.updateGuest(userData)
-   const response = await userService.getFamilyMamber(userData.family_id)
+   await userService.updateGuest(userData,vacationId)
+   const response = await userService.getFamilyMamber(userData.family_id,vacationId)
    res.send(response)
   } catch (error) {
     return next(error);

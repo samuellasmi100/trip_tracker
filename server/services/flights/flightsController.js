@@ -4,10 +4,11 @@ const uuid = require("uuid").v4;
 
 
 
-router.post("/", async (req, res, next) => {
+router.post("/:id", async (req, res, next) => {
+  const vacationId = req.params.id
   const flightsDetails = req.body
   try {
-    await flightsService.addFlightsDetails(flightsDetails)
+    await flightsService.addFlightsDetails(flightsDetails,vacationId)
     res.send("נתוני טיסה התקבלו בהצלחה")
 
   } catch (error) {
@@ -15,12 +16,14 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.put("/:id", async (req, res, next) => {
+router.put("/:id/:vacationId", async (req, res, next) => {
+  const vacationId = req.params.vacationId
+
   const userId = req.params.id
   const flightsDetails = req.body
   flightsDetails.user_id = userId
   try {
-     await flightsService.updateFlightsDetails(flightsDetails)
+     await flightsService.updateFlightsDetails(flightsDetails,vacationId)
     res.send("נתוני טיסה עודכנו בהצלחה")
 
   } catch (error) {
@@ -28,12 +31,13 @@ router.put("/:id", async (req, res, next) => {
   }
 });
 
-router.get("/:id/:familyId/:isInGroup", async (req, res, next) => {
+router.get("/:id/:familyId/:isInGroup/:vacationId", async (req, res, next) => {
+  const vacationId = req.params.vacationId
   const userId = req.params.id
   const familyId = req.params.familyId
   const isInGroup = req.params.isInGroup
   try {
-    const response = await flightsService.getFlightsDetails(userId,familyId,isInGroup)
+    const response = await flightsService.getFlightsDetails(userId,familyId,isInGroup,vacationId)
     res.send(response)
 
   } catch (error) {
