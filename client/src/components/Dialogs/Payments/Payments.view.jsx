@@ -1,30 +1,24 @@
-import React ,{useState} from "react";
+import React from "react";
 import {
   Button,
-  Checkbox,
-  Dialog,
-  FormControlLabel,
   Grid,
-  Typography,
   TextField,
   InputLabel,
   Select,
   MenuItem,
-  FormControl,
-  IconButton,
   OutlinedInput
 } from "@mui/material";
 import { useStyles } from "./Payments.style";
 import "./Payments.css"
 import { useDispatch,useSelector } from "react-redux";
-import * as dialogSlice from "../../../store/slice/dialogSlice"
+
 
 const PaymentsView = (props) => {
   const formOfPayment = ["מזומן","העברה בנקאית","כרטיס אשראי","המחאות"]
   const paymentCurrency = ["שקל","דולר","יורו"]
   const form = useSelector((state) => state.paymentsSlice.form)
   const classes = useStyles();
-  const dispatch = useDispatch()
+
   const {
     handleInputChange,
     submit,

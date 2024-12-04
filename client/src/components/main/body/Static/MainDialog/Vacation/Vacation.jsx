@@ -19,6 +19,7 @@ const dispatch = useDispatch()
   const submit = async() => {
   try {
    const response = await ApiVacations.addVacation(token,form)
+   dispatch(staticSlice.closeModal())
   } catch (error) {
     console.log(error)
   }

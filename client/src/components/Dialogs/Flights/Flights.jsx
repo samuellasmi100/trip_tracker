@@ -12,6 +12,7 @@ const dispatch = useDispatch()
 const form = useSelector((state) => state.flightsSlice.form)
 const userForm = useSelector((state) => state.userSlice.form)
 const token = sessionStorage.getItem("token")
+const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
 
   const handleInputChange = (e) => {
     let { name, value,checked } = e.target
@@ -72,9 +73,9 @@ const token = sessionStorage.getItem("token")
     try {
     let response 
     if(form.type === "edit"){
-      await ApiFlights.updateUserFligets(token,userForm.user_id,form)
+      await ApiFlights.updateUserFligets(token,userForm.user_id,form,vacationId)
     }else {
-      response = await ApiFlights.addUserFlights(token,form)
+      response = await ApiFlights.addUserFlights(token,form,vacationId)
     }
      dispatch(
       snackBarSlice.setSnackBar({
@@ -95,7 +96,7 @@ const token = sessionStorage.getItem("token")
     let familyId = userForm.family_id
     let isInGroup = userForm.is_in_group
     try {
-      let response = await ApiFlights.getUserFlightData(token,userId,familyId,isInGroup)
+      let response = await ApiFlights.getUserFlightData(token,userId,familyId,isInGroup,vacationId)
       if(response.data.length > 0){
         response.data[0].type = "edit"
         dispatch(flightsSlice.updateForm(response.data[0]))

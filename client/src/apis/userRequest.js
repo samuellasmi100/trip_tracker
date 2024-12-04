@@ -7,34 +7,35 @@ export default {
     return Api.post(`${END_POINT.AUTH}/login`, loginData, {
     });
   },
-  addUser(token,form,newFamilyId,newUserId) {
-   
-    return Api.post(`${END_POINT.USER}`, {form,newFamilyId,newUserId}, {
+  addUser(token,form,newFamilyId,newUserId,vacationId) {
+    console.log(token,form,newFamilyId,newUserId,vacationId)
+    return Api.post(`${END_POINT.USER}/${vacationId}`, {form,newFamilyId,newUserId}, {
       headers: { Authorization: token },
     });
   },
-  updateUser(token,form) {
-    return Api.put(`${END_POINT.USER}`, form, {
+  updateUser(token,form,vacationId) {
+    return Api.put(`${END_POINT.USER}/${vacationId}`, form, {
       headers: { Authorization: token },
     });
   },
-  addFamily(token,form,newFamilyId) {
-    return Api.post(`${END_POINT.FAMILY}`, {form,newFamilyId}, {
+  addFamily(token,form,newFamilyId,vacationId) {
+    return Api.post(`${END_POINT.FAMILY}/${vacationId}`, {form,newFamilyId}, {
       headers: { Authorization: token },
     });
   },
-  getFamilyList(token) {
-    return Api.get(`${END_POINT.FAMILY}`, {
+  getFamilyList(token,vacationId) {
+    return Api.get(`${END_POINT.FAMILY}/${vacationId}`, {
       headers: { Authorization: token },
     });
   },
-  getUser(token,familyId) {
-    return Api.get(`${END_POINT.USER}/${familyId}`, {
+  getUser(token,familyId,vacationId) {
+    return Api.get(`${END_POINT.USER}/${familyId}/${vacationId}`, {
       headers: { Authorization: token },
     });
   },
-  getUserFamilyList(token,familyId) {
-    return Api.get(`${END_POINT.USER}/${familyId}`, {
+  getUserFamilyList(token,familyId,vacationId) {
+    console.log(token,familyId,vacationId)
+    return Api.get(`${END_POINT.USER}/${familyId}/${vacationId}`, {
       headers: { Authorization: token },
     });
   },

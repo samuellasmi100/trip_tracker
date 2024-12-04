@@ -128,7 +128,6 @@ function FamilyListView(props) {
 
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
-                      {console.log(user)}
                         {user.remains_to_be_paid === null ? user.total_amount : user.remains_to_be_paid }
                       </TableCell>
                     <TableCell className={classes.dataTableCell}>פסח</TableCell>

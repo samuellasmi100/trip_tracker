@@ -14,6 +14,7 @@ const Reservation = () => {
   const dialogType = useSelector((state) => state.dialogSlice.type);
   const familyDetails = useSelector((state) => state.userSlice.family);
   const token = sessionStorage.getItem("token")
+  const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
 
   const handleInputChange = (e) => {
     let { name, value, checked } = e.target;
@@ -54,7 +55,7 @@ const Reservation = () => {
 
   const submit = async () => {
     try {
-      let response = await ApiUser.updateUser(token,form);
+      let response = await ApiUser.updateUser(token,form,vacationId);
       await getGuests();
       dispatch(
         snackBarSlice.setSnackBar({
@@ -72,7 +73,7 @@ const Reservation = () => {
   
     let family_id = form.family_id
     try {
-      let response = await ApiUser.getUserFamilyList(token,family_id)
+      let response = await ApiUser.getUserFamilyList(token,family_id,vacationId)
       if(response.data.length > 0){
         dispatch(userSlice.updateGuets(response.data))
       }else {
@@ -89,17 +90,7 @@ const Reservation = () => {
    dispatch(dialogSlice.resetState())
    dispatch(userSlice.resetForm())
    }
-const getUserDetails = async() => {
-console.log(form)
-try {
-  
-} catch (error) {
-  
-}
-}
-   useEffect(() => {
-   getUserDetails()
-   }, [])
+
    
   return (
     <ReservationView handleInputChange={handleInputChange} submit={submit}  handleCloseClicked={handleCloseClicked}/>

@@ -14,6 +14,7 @@ import * as notesSlice from "../../../../../store/slice/notesSlice";
 import * as paymentsSlice from "../../../../../store/slice/paymentsSlice";
 
 const FamilyList = () => {
+  const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
   const [usersData, setUsersData] = useState([]);
   const dispatch = useDispatch();
   const dialogOpen = useSelector((state) => state.dialogSlice.open)
@@ -74,9 +75,12 @@ const FamilyList = () => {
 
   const getFamilies = async () => {
     try {
-      let response = await ApiUser.getFamilyList(token)
-      dispatch(userSlice.updateFamiliesList(response.data))
-      setUsersData(response.data)
+      if(vacationId !== ""){
+        let response = await ApiUser.getFamilyList(token,vacationId)
+        dispatch(userSlice.updateFamiliesList(response.data))
+        setUsersData(response.data)
+      }
+     
     } catch (error) {
       console.log(error)
     }
@@ -86,7 +90,7 @@ const FamilyList = () => {
     dispatch(userSlice.updateFamily(user))
     let family_id = user.family_id
     try {
-      let response = await ApiUser.getUserFamilyList(token,family_id)
+      let response = await ApiUser.getUserFamilyList(token,family_id,vacationId)
       if(response.data.length > 0){
         dispatch(userSlice.updateGuets(response.data))
       }else {
@@ -136,7 +140,7 @@ const filteredFamilyList = usersData?.filter((user) => {
 
   useEffect(() => {
     getFamilies()
-  }, [dialogOpen])
+  }, [dialogOpen,vacationId])
 
   return (
     <Grid style={{ display: "flex",justifyContent:"center" }}>

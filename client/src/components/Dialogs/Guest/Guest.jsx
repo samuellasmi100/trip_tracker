@@ -16,6 +16,7 @@ const Guest = () => {
   const areaCodes = ["052", "053", "054", "058"];
   const familyDetails = useSelector((state) => state.userSlice.family)
   const token = sessionStorage.getItem("token")
+  const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
 
   const handleButtonString = () => {
     if (dialogType === "addParent") {
@@ -67,7 +68,7 @@ const Guest = () => {
           )
           return
         }else {
-          response = await ApiUser.addUser(token,form)
+          response = await ApiUser.addUser(token,form,vacationId)
           await getUsers()
           dispatch(userSlice.resetForm())
           dispatch(dialogSlice.resetState())
@@ -85,13 +86,16 @@ const Guest = () => {
         }else {
           const newFamilyId = uuidv4();
           const newUserId = uuidv4();
-          response = await ApiUser.addUser(token,form,newFamilyId,newUserId)
-          await ApiUser.addFamily(token,form,newFamilyId)
+          response = await ApiUser.addUser(token,form,newFamilyId,newUserId,vacationId)
+          await ApiUser.addFamily(token,form,newFamilyId,vacationId)
           dispatch(userSlice.updateFormField({ field: "family_id",value:newFamilyId }))
           dispatch(userSlice.updateFormField({ field: "user_id",value:newUserId }))
         }
       }else {
-        response = await ApiUser.addUser(token,form)
+        const newUserId = uuidv4();
+        response = await ApiUser.addUser(token,form,form.family_id,newUserId,vacationId)
+        dispatch(userSlice.updateFormField({ field: "family_id",value:form.family_id }))
+        dispatch(userSlice.updateFormField({ field: "user_id",value:newUserId }))
         await getUsers()
       }
       } else if (dialogType === "editChild" || dialogType === "editParent") {
@@ -106,11 +110,11 @@ const Guest = () => {
             )
             return
           }else {
-            response = await ApiUser.updateUser(token,form)
+            response = await ApiUser.updateUser(token,form,vacationId)
             await getUsers()
           }
         }else {
-          response = await ApiUser.updateUser(token,form)
+          response = await ApiUser.updateUser(token,form,vacationId)
           await getUsers()
         }
        
@@ -135,7 +139,7 @@ const Guest = () => {
   const getUsers = async () => {
     let family_id = form.family_id
     try {
-      let response = await ApiUser.getUserFamilyList(token,family_id)
+      let response = await ApiUser.getUserFamilyList(token,family_id,vacationId)
       if(response.data.length > 0){
         dispatch(userSlice.updateGuets(response.data))
       }else {
