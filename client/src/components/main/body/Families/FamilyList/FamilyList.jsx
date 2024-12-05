@@ -3,6 +3,7 @@ import MainDialog from "../../../../Dialogs/MainDialog/MainDialog";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import ApiUser from "../../../../../apis/userRequest"
+import ApiVacations from "../../../../../apis/vacationRequest"
 import FamilyMember from "../FamilyMember/FamilyMember";
 import { Grid } from "@mui/material";
 import FamilyListView from "./FamilyList.view";
@@ -11,6 +12,7 @@ import * as dialogSlice from "../../../../../store/slice/dialogSlice";
 import * as flightsSlice from "../../../../../store/slice/flightsSlice";
 import * as roomsSlice from "../../../../../store/slice/roomsSlice";
 import * as notesSlice from "../../../../../store/slice/notesSlice";
+import * as vacationSlice from "../../../../../store/slice/vacationSlice";
 import * as paymentsSlice from "../../../../../store/slice/paymentsSlice";
 
 const FamilyList = () => {
@@ -22,6 +24,7 @@ const FamilyList = () => {
   const [file, setFile] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const token = sessionStorage.getItem('token')
+  const vacationList = useSelector((state) => state.vacationSlice.vacations)
 
   const closeModal = () => {
     dispatch(dialogSlice.initialActiveButton())
@@ -138,10 +141,37 @@ const filteredFamilyList = usersData?.filter((user) => {
   }}
 );
 
+const getVacations = async () => {
+  try {
+    const response = await ApiVacations.getVacations(token)
+    if(response?.data?.vacations?.length > 0){
+      dispatch(vacationSlice.updateVacationList(response?.data?.vacations))
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
+const handleSelectInputChange =  async (e) => {
+  const getVacationId = vacationList?.find((key) => {
+    return key.name === e.target.value
+  }) 
+  dispatch(vacationSlice.updateChosenVacation(getVacationId.vacation_id))
+  sessionStorage.setItem("vacId",getVacationId.vacation_id)
+   try {
+   } catch (error) {
+    console.log(error)
+   }
+ }
+
   useEffect(() => {
     getFamilies()
   }, [dialogOpen,vacationId])
 
+  useEffect(() => {
+    getVacations()
+    }, [])
   return (
     <Grid style={{ display: "flex",justifyContent:"center" }}>
       <FamilyListView
@@ -152,6 +182,7 @@ const filteredFamilyList = usersData?.filter((user) => {
         filteredFamilyList={filteredFamilyList}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
+        handleSelectInputChange={handleSelectInputChange}
       />
 
      <FamilyMember handleDialogTypeOpen={handleDialogTypeOpen} />

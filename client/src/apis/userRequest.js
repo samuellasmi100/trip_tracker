@@ -34,7 +34,6 @@ export default {
     });
   },
   getUserFamilyList(token,familyId,vacationId) {
-    console.log(token,familyId,vacationId)
     return Api.get(`${END_POINT.USER}/${familyId}/${vacationId}`, {
       headers: { Authorization: token },
     });

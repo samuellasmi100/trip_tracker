@@ -3,9 +3,9 @@ import Api from "./baseApi";
 
 export default {
 
-  addNotes(token, form) {
+  addNotes(token, form,vacationId) {
     return Api.post(
-      `/${END_POINT.NOTES}`,form,{
+      `/${END_POINT.NOTES}/${vacationId}`,form,{
         headers: {
           Authorization: token,
         },

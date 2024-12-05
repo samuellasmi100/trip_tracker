@@ -2,7 +2,10 @@ import {
   Grid,
   TextField,
   InputLabel,
-  Button
+  Button,
+  Typography,
+Checkbox,
+FormControlLabel
 } from "@mui/material";
 import { useStyles } from "./Vacation.style";
 import React, { useState } from "react";
@@ -14,8 +17,6 @@ function VacationView({ submit, handleInputChange }) {
   const dispatch = useDispatch()
   const classes = useStyles();
   const form = useSelector((state) => state.staticSlice.form)
-
-
 
   return (
     <Grid container>
@@ -92,64 +93,41 @@ function VacationView({ submit, handleInputChange }) {
               />
             </Grid>
             </Grid>
-            {/* <Grid item>
-              <InputLabel className={classes.inputLabelStyle}>
-                {`מסלול מספר ${index+1}` }
-              </InputLabel>
-     
-              <TextField
-                name={`type_${index}`}
-                type="date"
-                multiple
-                value={form[`type_${index}`] || ''}
-                className={classes.textField}
-                onChange={(e) => handleInputChange(e, index)}
-              />
-            </Grid> */}
             </>
           ))}
-          {/* <Grid item>
-              <InputLabel className={classes.inputLabelStyle}>
-                 סוג חדר
-              </InputLabel>
-              <TextField
-                  name="type"
-                  value={ form?.type}
-                  className={classes.textField}
-                  onChange={handleInputChange}
-              />
-            </Grid>
-          <Grid item>
-              <InputLabel className={classes.inputLabelStyle}>
-                   אורחים בחדר
-              </InputLabel>
-              <TextField
-                name="base_occupancy"
-                className={classes.textField}
-               value={ form?.base_occupancy}
-               onChange={handleInputChange}
-              />
-            </Grid>
-            <Grid item>
-              <InputLabel className={classes.inputLabelStyle}>
-                  אורחים נוספים 
-              </InputLabel>
-              <TextField
-                 name="max_occupancy"
-                 className={classes.textField}
-                value={ form?.max_occupancy}
-                onChange={handleInputChange}
-              />
-            </Grid> */}
-
         </Grid>
+        {form?.vacation_routes ? <Grid item style={{marginRight:"-42px",marginTop:"15px"}}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              sx={{
+                color: "#686B76",
+                "&.Mui-checked": {
+                  color: "#54A9FF",
+                },
+              }}
+              name="exceptions"
+              className={classes.checkbox}
+              onClick={handleInputChange}
+              checked={form.exceptions}
+            />
+          }
+          label={
+            <Typography style={{ color: "##757882", fontSize: "15px" }}>
+               חריגים ?
+            </Typography>
+          }
+        />
+      </Grid> : ""}
       </Grid>
+     
       <Grid
         item
         xs={12}
         container
         style={{ marginTop: "150px" }}
         justifyContent="space-around">
+       
         <Grid item>
           <Button
             onClick={submit}

@@ -13,6 +13,8 @@ const Notes = () => {
   const form = useSelector((state) => state.notesSlice.form);
   const userForm = useSelector((state) => state.userSlice.form);
  const token = sessionStorage.getItem("token")
+const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -24,7 +26,7 @@ const Notes = () => {
 
   const submit = async () => {
     try {
-       await ApiNotes.addNotes(token,form)
+       await ApiNotes.addNotes(token,form,vacationId)
        dispatch(
         snackBarSlice.setSnackBar({
           type: "success",

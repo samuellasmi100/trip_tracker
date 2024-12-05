@@ -17,6 +17,7 @@ const Static = () => {
 
   }
 const closeModal = () => {
+  console.log("fffffffffff")
   dispatch(staticSlice.closeModal())
 }
 

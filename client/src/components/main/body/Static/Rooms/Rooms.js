@@ -29,7 +29,7 @@ const Rooms = ({ searchTerm,handleDialogTypeOpen}) => {
     );
     
     useEffect(() => {
-        getAllRooms()
+        // getAllRooms()
     }, [])
 
     return (

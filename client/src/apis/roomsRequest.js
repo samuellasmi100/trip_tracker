@@ -2,8 +2,8 @@ import { END_POINT } from "../utils/constants";
 import Api from "./baseApi";
 
 export default {
-  getAll(token,) {
-    return Api.get(`/${END_POINT.ROOMS}`, {
+  getAll(token,vacationId,startData,endDate) {
+    return Api.get(`/${END_POINT.ROOMS}/${vacationId}/${startData}/${endDate}`, {
       headers: { Authorization: token },
     });
   },
@@ -12,13 +12,13 @@ export default {
       headers: { Authorization: token },
     });
   },
-  assignRoom(token,selectedRooms,familyId) {
-    return Api.post(`${END_POINT.USER_ROOMS}`, {selectedRooms,familyId}, {
+  assignRoom(token,selectedRooms,familyId,dateChosen,vacationId) {
+    return Api.post(`${END_POINT.USER_ROOMS}`, {selectedRooms,familyId,dateChosen,vacationId}, {
       headers: { Authorization: token },
     });
   },
-  getFamilyRoom(token,familyId) {
-    return Api.get(`/${END_POINT.USER_ROOMS}/${familyId}`, {
+  getFamilyRoom(token,familyId,vacationId) {
+    return Api.get(`/${END_POINT.USER_ROOMS}/${familyId}/${vacationId}`, {
       headers: { Authorization: token },
     });
   },

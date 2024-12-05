@@ -18,18 +18,14 @@ const RoomsAssigner = () => {
   const selectedRooms = useSelector((state) => state.roomsSlice.selectedRooms);
   const token = sessionStorage.getItem("token")
   let roomsChosen = Number(form?.number_of_rooms) - selectedRooms.length
- 
+  const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
+
    const submit = async () => {
       try {
+
         let familyId = form.family_id
-        let response = ApiRooms.assignRoom(token,selectedRooms,familyId)   
-        dispatch(
-          snackbarSlice.setSnackBar({
-            type: "success",
-            message: response.data,
-            timeout: 3000,
-          })
-        )
+        let dateChosen = form.date_chosen
+        let response = ApiRooms.assignRoom(token,selectedRooms,familyId,dateChosen,vacationId)   
         dispatch(
           snackBarSlice.setSnackBar({
             type: "success",
@@ -52,7 +48,7 @@ const RoomsAssigner = () => {
    const getFamilyRooms = async () => {
     try {
       let familyId = form.family_id
-      let response = await ApiRooms.getFamilyRoom(token,familyId)
+      let response = await ApiRooms.getFamilyRoom(token,familyId,vacationId)
       dispatch(roomsSlice.updateSelectedRoomsList(response.data.familyRooms))
     } catch (error) {
       console.log(error)
@@ -60,8 +56,10 @@ const RoomsAssigner = () => {
   }
 
    const getAllRooms = async () => {
+    let startDate = form.arrival_date
+    let endDate = form.departure_date
     try {
-      let response = await ApiRooms.getAll(token)
+      let response = await ApiRooms.getAll(token,vacationId,startDate,endDate)
       dispatch(roomsSlice.updateRoomsList(response.data))
     } catch (error) {
       console.log(error)
@@ -100,8 +98,9 @@ const RoomsAssigner = () => {
   const handleDeleteButton = (roomId) => {
     dispatch(roomsSlice.removeRoomFromForm({ roomId: roomId}));
   }
+
   const handleCloseClicked = () => {
-    dispatch(roomsSlice.resetForm())
+   dispatch(roomsSlice.resetForm())
    dispatch(dialogSlice.resetState())
    dispatch(userSlice.resetForm())
    }

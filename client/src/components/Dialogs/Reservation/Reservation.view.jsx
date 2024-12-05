@@ -23,22 +23,51 @@ import Flights from "./Flights/Flights"
 
 const ReservationView = (props) => {;
   const form = useSelector((state) => state.userSlice.form);
-  const dialogForm = useSelector((state) => state.dialogSlice.type);
-  const classes = useStyles();
-  const dispatch = useDispatch();
-  const { handleInputChange, submit,handleCloseClicked } = props;
-   const dialogType = useSelector((state) => state.dialogSlice.type)
 
+  const classes = useStyles();
+  const { handleInputChange, submit,handleCloseClicked } = props;
+  const dialogType = useSelector((state) => state.dialogSlice.type)
+ const vacationsDates = useSelector((state) => state.vacationSlice.vacationsDates)
+ 
   const handleFlightsCheckbox = () => {
       return <Flights handleInputChange={handleInputChange}/>
   }
-  console.log("user",form.user_type)
   return (
     <>
       <Grid container style={{height: "400px", padding: "20px" }}>
       {dialogType === "editParent" || dialogType === "addFamily"? 
+      
         <Grid item xs={6}>
            <Grid container spacing={2} justifyContent="center">
+           <Grid item>
+              <InputLabel className={classes.inputLabelStyle}>
+               בחר מסלול
+              </InputLabel>
+              {console.log(form)}
+               <Select
+                name="week_chosen"
+                value={form.week_chosen}
+               onChange={handleInputChange}     
+                input={
+                  <OutlinedInput
+                    className={classes.selectOutline}
+                  />
+                }
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      color: "#ffffff !important",
+                      bgcolor: "#222222",
+                    },
+                  },
+              }}>
+          {vacationsDates?.map((type) => (
+            <MenuItem key={type} value={type.name} className={classes.selectedMenuItem}>
+              {type.name}
+            </MenuItem>
+          ))}
+        </Select>
+            </Grid>
            <Grid item>
              <InputLabel className={classes.inputLabelStyle}>
                כמות נופשים
@@ -62,7 +91,44 @@ const ReservationView = (props) => {;
                onChange={handleInputChange}
              />
            </Grid>
-           <Grid item>
+         </Grid> 
+          
+         
+        </Grid>
+        :<></>}
+
+           <Grid item xs={dialogType === "editParent" || dialogType === "addFamily" ? 5 : 8} style={{marginRight: "46px"}}>
+          <Grid container spacing={2}>
+            {dialogType === "editChild" || dialogType === "addChild" ?  <Grid item>
+              <InputLabel className={classes.inputLabelStyle}>
+               בחר מסלול
+              </InputLabel>
+               <Select
+               name="week_chosen"
+               value={form.week_chosen}
+               onChange={handleInputChange}     
+                input={
+                  <OutlinedInput
+                    className={classes.selectOutline}
+                  />
+                }
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      color: "#ffffff !important",
+                      bgcolor: "#222222",
+                    },
+                  },
+              }}>
+          {vacationsDates?.map((type) => (
+            <MenuItem key={type} value={type.name} className={classes.selectedMenuItem}>
+              {type.name}
+            </MenuItem>
+          ))}
+        </Select>
+            </Grid> : <></>}
+         
+         {dialogType !== "editChild" && dialogType !== "addChild" ? <Grid item>
              <InputLabel className={classes.inputLabelStyle}>
                סכום עסקה
              </InputLabel>
@@ -72,14 +138,9 @@ const ReservationView = (props) => {;
                className={classes.textField}
                onChange={handleInputChange}
              />
-           </Grid>
-         </Grid> 
-          
-         
-        </Grid>
-        :<></>}
-        <Grid item xs={dialogType === "editParent" || dialogType === "addFamily" ? 5 : 8} style={{marginRight: "46px"}}>
-          <Grid container spacing={2} >
+           </Grid>:<></>}
+        
+           
             <Grid item>
               <InputLabel className={classes.inputLabelStyle}>
                  תאריך הגעה

@@ -12,6 +12,8 @@ const dispatch = useDispatch()
 const form = useSelector((state) => state.paymentsSlice.form)
 const userForm = useSelector((state) => state.userSlice.form)
 const token = sessionStorage.getItem("token")
+const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
+
 const handleInputChange = (e) => {
   const { name, value } = e.target;
   const numericValue = value.replace(/[^0-9.]/g, "");
@@ -35,7 +37,7 @@ const handleInputChange = (e) => {
 
 const submit = async () => {
   try {
-    await ApiPayments.addPayments(token,form)
+    await ApiPayments.addPayments(token,form,vacationId)
     dispatch(
       snackBarSlice.setSnackBar({
         type: "success",
@@ -51,7 +53,7 @@ const submit = async () => {
 const getPayments = async () => {
 try {
   const familyId = userForm.family_id;
-  let response = await ApiPayments.getPayments(token,familyId)
+  let response = await ApiPayments.getPayments(token,familyId,vacationId)
   if(response.data.length > 0){
     response.data[0].mainRemainsToBePaid = response.data[0].remains_to_be_paid
     dispatch(paymentsSlice.updateForm(response.data[0]));

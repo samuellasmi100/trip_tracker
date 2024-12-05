@@ -21,10 +21,9 @@ function Flights({areaCodes,handleInputChange }) {
     const form = useSelector((state) => state.userSlice.form)
     return (
         <>
-        <Grid style={{ marginRight: "20px",marginTop: form.user_type === "parent" ? "20px" : "90px"}}>
-          <Grid container display="flex"
-          >
-            <Grid item >
+        <Grid style={{ marginRight: "20px",marginTop: form.user_type === "parent" ? "20px" : "50px"}}>
+          <Grid container display="flex">
+            <Grid item>
               <FormControlLabel
                 control={
                   <Checkbox
@@ -46,29 +45,29 @@ function Flights({areaCodes,handleInputChange }) {
                   </Typography>
                 }
               />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    sx={{
-                      color: "#686B76",
-                      "&.Mui-checked": {
-                        color: "#54A9FF",
-                      },
-                    }}
-                    name="is_in_group"
-                    className={classes.checkbox}
-                    onClick={handleInputChange}
-                    checked={form.is_in_group}
-                  />
-                }
-                label={
-                  <Typography style={{ color: "##757882", fontSize: "15px" }}>
-                     חלק מקבוצה?
-                  </Typography>
-                }
-              />
+               <FormControlLabel
+          control={
+            <Checkbox
+              sx={{
+                color: "#686B76",
+                "&.Mui-checked": {
+                  color: "#54A9FF",
+                },
+              }}
+              name="is_in_group"
+              className={classes.checkbox}
+              onClick={handleInputChange}
+              checked={form.is_in_group}
+            />
+          }
+          label={
+            <Typography style={{ color: "##757882", fontSize: "15px" }}>
+              חלק מקבוצה?
+            </Typography>
+          }
+        />
               {form.flights ? 
-              <Grid>
+              <Grid item>
                    <FormControlLabel
                 control={
                   <Checkbox

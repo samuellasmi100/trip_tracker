@@ -26,6 +26,7 @@ export const staticSlice = createSlice({
       state.open = true;
     },
     closeModal: (state, action) => {
+      console.log("ffffffffffff")
       state.open = false;
     },
     updateDialogType: (state, action) => {

@@ -3,9 +3,10 @@ import ReservationView from "./Reservation.view";
 import { useDispatch, useSelector } from "react-redux";
 import * as userSlice from "../../../store/slice/userSlice";
 import * as dialogSlice from "../../../store/slice/dialogSlice";
+import * as vacationSlice from "../../../store/slice/vacationSlice";
 import ApiUser from "../../../apis/userRequest";
 import * as snackBarSlice from "../../../store/slice/snackbarSlice";
-
+import ApiVacations  from "../../../apis/vacationRequest"
 
 const Reservation = () => {
   const dispatch = useDispatch();
@@ -15,6 +16,7 @@ const Reservation = () => {
   const familyDetails = useSelector((state) => state.userSlice.family);
   const token = sessionStorage.getItem("token")
   const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
+  const vacationsDates = useSelector((state) => state.vacationSlice.vacationsDates)
 
   const handleInputChange = (e) => {
     let { name, value, checked } = e.target;
@@ -28,6 +30,18 @@ const Reservation = () => {
           value: formattedValue,
         })
       );
+    } else if (name === "week_chosen") {
+    
+      const findVacationDateDetails = vacationsDates?.find((key) =>{
+        return key.name === value
+      })
+      if(findVacationDateDetails.name !== "חריגים"){
+        dispatch(userSlice.updateFormField({ field: "arrival_date", value: findVacationDateDetails.start_date }))
+        dispatch(userSlice.updateFormField({ field: "departure_date", value: findVacationDateDetails.end_date }))
+        dispatch(userSlice.updateFormField({ field: "date_chosen", value: `${findVacationDateDetails.end_date}/${findVacationDateDetails.start_date }` }))
+  
+      }
+      dispatch(userSlice.updateFormField({ field: name, value }));
     } else if (name === "flights_direction") {
       dispatch(
         userSlice.updateFormField({
@@ -85,11 +99,26 @@ const Reservation = () => {
     }
   }
 
+  const getVacations = async () => {
+    try {
+      const response = await ApiVacations.getVacations(token)
+      if(response?.data?.vacationsDate?.length > 0){
+        dispatch(vacationSlice.updateVacationDatesList(response?.data?.vacationsDate))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const handleCloseClicked = () => {
     dispatch(userSlice.resetForm())
    dispatch(dialogSlice.resetState())
    dispatch(userSlice.resetForm())
    }
+
+useEffect(() => {
+  getVacations()
+}, [])
 
    
   return (

@@ -68,7 +68,7 @@ function Parent({areaCodes,handleInputChange }) {
                         />
                     </Grid>
                    
-                   
+                 
                 </Grid>
             </Grid>
             <Grid item xs={5}>
@@ -144,6 +144,7 @@ function Parent({areaCodes,handleInputChange }) {
                             </Grid>
                         </Grid>
                     </Grid>
+
                     <Grid item>
                         <InputLabel className={classes.inputLabelStyle}>
                          כתובת מלאה
