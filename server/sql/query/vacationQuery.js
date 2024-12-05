@@ -1,22 +1,20 @@
 const addVacation = () => {
-  return `INSERT INTO vacations (name,vacation_id) VALUES (?,?)`;
-};
-const addVacationDates = (dateEntries) => {
-  const valuesPlaceholders = dateEntries.map(() => `(?, ?, ?)`).join(", ");
-  return `INSERT INTO vacation_date (vacation_id,start_date, end_date) VALUES ${valuesPlaceholders}`;
-};
-const createDbForVacation = (vacationId) => {
-  return `CREATE SCHEMA \`trip_tracker_${vacationId}\``;
+  return `INSERT INTO trip_tracker.vacations (name,vacation_id) VALUES (?,?)`;
 };
 
+const addVacationDates = () => {
+  return `INSERT INTO trip_tracker.vacation_date (vacation_id,start_date,end_date,name) VALUES(?,?,?,?)`;
+};
 const getVacations = () => {
-  return `SELECT v.name,v.vacation_id,vd.start_date,vd.end_date FROM vacations v
-join vacation_date vd on v.vacation_id = vd.vacation_id;`
+  return `SELECT name,vacation_id FROM trip_tracker.vacations`
 }
+const getVacationDates = () => {
+  return `SELECT name,vacation_id,start_date,end_date FROM trip_tracker.vacation_date`;
+};
 
 module.exports = {
   addVacation,
   addVacationDates,
-  createDbForVacation,
-  getVacations
+  getVacations,
+  getVacationDates
 };

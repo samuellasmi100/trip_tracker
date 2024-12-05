@@ -1,7 +1,7 @@
 const roomsDb = require("./roomsDb")
 
-const getAll = async () => {
-    return await roomsDb.getAll()
+const getAll = async (vacationId) => {
+    return await roomsDb.getAll(vacationId)
 }
 const getRoomDetailsWithCounts = async () => {
     return await roomsDb.getRoomDetailsWithCounts()

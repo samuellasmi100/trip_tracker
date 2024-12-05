@@ -5,10 +5,10 @@ const ErrorMessage = require("../../serverLogs/errorMessage");
 
 const addGuest = async (data,vacationId) => {
   delete data.userType
-  const sql = userQuery.addGuest(data)
+  const sql = userQuery.addGuest(data,vacationId)
   const parameters = Object.values(data)
   try {
-    await connection.executeWithParameters(sql,parameters,vacationId)
+    await connection.executeWithParameters(sql,parameters)
   } catch (error) { 
     throw new ErrorMessage(ErrorType.SQL_GENERAL_ERROR,
       { sql: sql, parameters: parameters, time: new Date() },
@@ -20,9 +20,9 @@ const addGuest = async (data,vacationId) => {
 
 const getFamilyGuests = async (id,vacationId) => {
     try {
-      const sql = userQuery.getFamilyGuests()
+      const sql = userQuery.getFamilyGuests(vacationId)
       const parameters = [id]
-      const response = await connection.executeWithParameters(sql,parameters,vacationId)
+      const response = await connection.executeWithParameters(sql,parameters)
       return response
     } catch (error) { 
       console.log(error)
@@ -30,11 +30,10 @@ const getFamilyGuests = async (id,vacationId) => {
 }
 
 const getFamilyMamber = async (id,vacationId) => {
-
   try {
-    const sql = userQuery.getFamilyMamber()
+    const sql = userQuery.getFamilyMamber(vacationId)
     const parameters = [id]
-    const response = await connection.executeWithParameters(sql,parameters,vacationId)
+    const response = await connection.executeWithParameters(sql,parameters)
     return response
   } catch (error) { 
     console.log(error)
@@ -48,14 +47,14 @@ const updateGuest = async (data,vacationId) => {
       delete data.family_name
       delete data.userType
 
-      const sql = userQuery.updateGuest(data,userId)
+      const sql = userQuery.updateGuest(data,userId,vacationId)
       const parameters = Object.values(data)
-      const response = await connection.executeWithParameters(sql,parameters,vacationId)
+      const response = await connection.executeWithParameters(sql,parameters)
       return response
      
     } catch (error) { 
       console.log(error)
-      throw new ErrorMessage(error.errorType, sql, error);
+      throw new ErrorMessage(error.errorType,sql, error);
     }
 }
 

@@ -8,10 +8,10 @@ const uuid = require("uuid").v4;
 router.post("/", async (req, res, next) => {
   const roomDetails = req.body.selectedRooms
   const familyId = req.body.familyId
-  console.log(familyId)
-  console.log(roomDetails)
+  const dateChosen = req.body.dateChosen
+  const vacationId = req.body.vacationId
   try {
-    const response = await userRoomsService.assignMainRoom(roomDetails,familyId)
+    const response = await userRoomsService.assignMainRoom(roomDetails,familyId,dateChosen,vacationId)
     res.send("שיוך החדרים עבר בהצלחה")
 
   } catch (error) {
@@ -30,10 +30,11 @@ router.get("/room/:id", async (req, res, next) => {
   }
 });
 
-router.get("/:id", async (req, res, next) => {
+router.get("/:id/:vacationId", async (req, res, next) => {
+  const vacationId = req.params.vacationId
   const familyId = req.params.id
   try {
-    const response = await userRoomsService.getFamilyRoom(familyId)
+    const response = await userRoomsService.getFamilyRoom(familyId,vacationId)
     res.send(response)
 
   } catch (error) {

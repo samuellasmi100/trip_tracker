@@ -1,5 +1,5 @@
-const getAll = () => {
-  return `SELECT rooms_id as roomId,type as roomType,size as roomSize,direction as roomDirection,floor as roomFloor FROM rooms WHERE is_taken = 0;`
+const getAll = (vacationId) => {
+  return `SELECT rooms_id as roomId,type as roomType,size as roomSize,direction as roomDirection,floor as roomFloor FROM trip_tracker_${vacationId}.rooms WHERE is_taken = 0;`
 }
 const getRoomDetailsWithCounts = () => {
 return `SELECT 

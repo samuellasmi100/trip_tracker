@@ -1,4 +1,18 @@
-const getFamilyRoom = () => {
+const getRoomAvailable = (vacationId) => {
+  return `
+    SSELECT r.*
+FROM trip_tracker_44dd1a40_b49f_4103_bccf_871addd98aa5.rooms r
+LEFT JOIN trip_tracker_44dd1a40_b49f_4103_bccf_871addd98aa5.room_taken rt
+ON r.rooms_id = rt.room_id
+   AND NOT (
+       rt.end_date < '2025-04-15' 
+       OR rt.start_date > '2025-04-10' 
+   )
+WHERE rt.room_id IS NULL; -- Exclude rooms with overlapping bookings
+`
+  }
+  
+  const getFamilyRoom = (vacationId) => {
     return `
       SELECT 
         r.rooms_id AS roomId,
@@ -8,19 +22,19 @@ const getFamilyRoom = () => {
         r.floor AS roomFloor,
         r.base_occupancy,
         COALESCE(ura.people_count, 0) AS peopleCount
-    FROM rooms r
-    JOIN family_room_details frd
+    FROM trip_tracker_${vacationId}.rooms r
+    JOIN trip_tracker_${vacationId}.family_room_details frd
         ON frd.room_id = r.rooms_id
     LEFT JOIN (
         SELECT 
             room_id, 
             COUNT(*) AS people_count
-        FROM user_room_assignments
+        FROM trip_tracker_${vacationId}.user_room_assignments
         GROUP BY room_id
     ) ura
         ON ura.room_id = r.rooms_id
     WHERE frd.family_id = ?`
-    }
+  }
     
     const assignMainRoom = () => {
       return `
@@ -40,8 +54,8 @@ const getFamilyRoom = () => {
     where ur.user_id = ?`
     }
     
-    const getAllUserRooms = () => {
-      return `SELECT room_id as roomId,family_id,user_id as userId FROM user_room_assignments where family_id = ?`
+    const getAllUserRooms = (vacationId) => {
+      return `SELECT room_id as roomId,family_id,user_id as userId FROM trip_tracker_${vacationId}.user_room_assignments where family_id = ?`
     }
     
     const updateMainRoom = () => {

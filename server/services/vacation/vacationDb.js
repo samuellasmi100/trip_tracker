@@ -2,45 +2,54 @@ const connection = require("../../db/connection-wrapper");
 const vacationQuery = require("../../sql/query/vacationQuery")
 const createDatabaseAndTable = require("../../sql/utils/createDb")
 
-const addVacation = async (vacationId,vacationDetails) => {
-  const dateEntries = [];
-  Object.keys(vacationDetails).forEach((key) => {
-      if (key.startsWith("start_date")) {
-          const index = key.split("_")[2];
-          const start_date = vacationDetails[`start_date_${index}`];
-          const end_date = vacationDetails[`end_date_${index}`];
-          dateEntries.push([vacationId, start_date, end_date]);
-      }
-  });
+const addVacation = async (vacationDetails,vacationId) => {
+  const sanitizedVacationId = vacationId.replace(/[^a-zA-Z0-9_]/g, '_');
+
   try {
     const sqlAddName = vacationQuery.addVacation()
-    const sqlAddNameParameters = [vacationDetails.vacation_name,vacationId]
-    const sqlAddDates = vacationQuery.addVacationDates(dateEntries)
-    const sqlAddDatesParameters = dateEntries.flat();
+    const sqlAddNameParameters = [vacationDetails.vacation_name,sanitizedVacationId]
 
-    
     await connection.executeWithParameters(sqlAddName,sqlAddNameParameters)
-    await connection.executeWithParameters(sqlAddDates,sqlAddDatesParameters)
-    await createDatabaseAndTable(vacationId)
+     await createDatabaseAndTable(sanitizedVacationId)
     
   } catch (error) { 
     console.log(error)
   }
 }
 
+const addVacationDates = async (vacationId,startData,endDate,name) => {
+  const sanitizedVacationId = vacationId.replace(/[^a-zA-Z0-9_]/g, '_');
+  try {
+    const sql = vacationQuery.addVacationDates()
+    let parameters = [sanitizedVacationId,startData,endDate,name]
+    await connection.executeWithParameters(sql,parameters)
+  } catch (error) {
+    console.log(error)
+  }
+}
 const getVacations = async () => {
     try {
       const sql = vacationQuery.getVacations()
-      console.log(sql)
       const response = await connection.execute(sql)
       return response
     } catch (error) { 
       console.log(error)
     }
 }
+const getVacationDates = async () => {
+  try {
+    const sql = vacationQuery.getVacationDates()
+    const response = await connection.execute(sql)
+    return response
+  } catch (error) { 
+    console.log(error)
+  }
+}
 
 
 module.exports = {
     addVacation,
     getVacations,
+    addVacationDates,
+    getVacationDates
 }

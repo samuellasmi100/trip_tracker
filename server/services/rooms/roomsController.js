@@ -3,9 +3,10 @@ const roomsService = require("./roomsService")
 const uuid = require("uuid").v4;
 
 
-router.get("/", async (req, res, next) => {
+router.get("/:id", async (req, res, next) => {
+  const vacationId = req.params.id
   try {
-    const response = await roomsService.getAll()
+    const response = await roomsService.getAll(vacationId)
     res.send(response)
 
   } catch (error) {

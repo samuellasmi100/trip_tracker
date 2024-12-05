@@ -1,9 +1,9 @@
 const connection = require("../../db/connection-wrapper");
 const roomsQuery = require("../../sql/query/roomsQuery")
 
-const getAll = async () => {
+const getAll = async (vacationId) => {
     try {
-      const sql = roomsQuery.getAll()
+      const sql = roomsQuery.getAll(vacationId)
       const response = await connection.execute(sql)
       return response
      

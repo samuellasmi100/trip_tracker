@@ -72,9 +72,9 @@ const removeMainRoom = async (userId) => {
   }
 }
 
-const getFamilyRoom = async (id) => {
+const getFamilyRoom = async (id,vacationId) => {
   try {
-    const sql = userRoomQuery.getFamilyRoom()
+    const sql = userRoomQuery.getFamilyRoom(vacationId)
     const parameters = [id]
     const response = await connection.executeWithParameters(sql,parameters)
    return response
@@ -118,9 +118,9 @@ const getChossenRoom = async (userId) => {
   }
 }
 
-const getAllUserRooms = async (familyId) => {
+const getAllUserRooms = async (familyId,vacationId) => {
   try {
-    let sql = userRoomQuery.getAllUserRooms()
+    let sql = userRoomQuery.getAllUserRooms(vacationId)
     const parameters = [familyId]
     const response = await connection.executeWithParameters(sql,parameters)
      return response

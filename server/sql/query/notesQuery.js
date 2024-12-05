@@ -1,28 +1,21 @@
-const getAll = () => {
-return `SELECT note FROM notes;`
+const getAll = (vacationId) => {
+return `SELECT note FROM trip_tracker_${vacationId}.notes;`
 }
-const addNotes = () => {
-    return `INSERT INTO notes (note,parent_id,family_id,category_name) VALUES (?,?,?,?)`
+const addNotes = (vacationId) => {
+    return `INSERT INTO trip_tracker_${vacationId}.notes (note,user_id,family_id,category_name) VALUES (?,?,?,?)`
 }
-const addChildNotes = () => {
-    return `INSERT INTO notes (note,child_id,family_id,category_name) VALUES (?,?,?,?)`
+const getUserNote = (vacationId) => {
+    return `SELECT * FROM trip_tracker_${vacationId}.notes where user_id = ?;`
 }
-const getParentNote = () => {
-    return `SELECT * FROM notes where parent_id = ?;`
+const getFamilyNote = (vacationId) => {
+    return `SELECT * FROM trip_tracker_${vacationId}.notes where family_id = ?;`
 }
-const getFamilyNote = () => {
-    return `SELECT * FROM notes where family_id = ?;`
-}
-const getChildNote = () => {
-    return `SELECT * FROM notes where child_id = ?;`
-}
+
 
 
 module.exports = {
     getAll,
     addNotes,
-    addChildNotes,
-    getParentNote,
-    getChildNote,
+    getUserNote,
     getFamilyNote
   }

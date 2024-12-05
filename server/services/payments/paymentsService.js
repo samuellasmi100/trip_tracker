@@ -1,14 +1,14 @@
 const paymentsDb = require("./paymentsDb")
 
-const getPayments = async (id) => {
-    return await paymentsDb.getPayments(id)
+const getPayments = async (id,vacationId) => {
+    return await paymentsDb.getPayments(id,vacationId)
 }
 
-const getHistoryPayments = async (id) => {
-    return await paymentsDb.getHistoryPayments(id)
+const getHistoryPayments = async (id,vacationId) => {
+    return await paymentsDb.getHistoryPayments(id,vacationId)
 }
-const addPayments = async (paymentDetails) => {
-    return await paymentsDb.addPayments(paymentDetails);  
+const addPayments = async (paymentDetails,vacationId) => {
+    return await paymentsDb.addPayments(paymentDetails,vacationId);  
 }
 
 module.exports = {

@@ -1,9 +1,9 @@
 const connection = require("../../db/connection-wrapper");
 const paymentsQuery = require("../../sql/query/paymentsQuery")
 
-const getPayments = async (id) => {
+const getPayments = async (id,vacationId) => {
     try {
-      const sql = paymentsQuery.getPayments()
+      const sql = paymentsQuery.getPayments(vacationId)
       const parameters = [id]
       const response = await connection.executeWithParameters(sql,parameters)
       return response
@@ -12,9 +12,9 @@ const getPayments = async (id) => {
       console.log(error)
     }
 }
-const getHistoryPayments = async (id) => {
+const getHistoryPayments = async (id,vacationId) => {
   try {
-    const sql = paymentsQuery.getHistoryPayments()
+    const sql = paymentsQuery.getHistoryPayments(vacationId)
     const parameters = [id]
     const response = await connection.executeWithParameters(sql,parameters)
     return response
@@ -28,7 +28,7 @@ const numericAmount = (val) => {
   return  parseFloat(val.replace(/,/g, ""));
  }
 
-const addPayments = async (paymentDetails) => {
+const addPayments = async (paymentDetails,vacationId) => {
 
   const remainsToBePaid = numericAmount(paymentDetails.remainsToBePaid)
   const amountReceived = numericAmount(paymentDetails.amountReceived)
@@ -36,7 +36,7 @@ const addPayments = async (paymentDetails) => {
   const rawValue = result.toString().replace(/,/g, "");
   const formattedValue = rawValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   try {
-    const sql = paymentsQuery.addPayments()
+    const sql = paymentsQuery.addPayments(vacationId)
     const parameters = [
       paymentDetails.paymentDate,
       paymentDetails.amount,

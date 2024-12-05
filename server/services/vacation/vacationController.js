@@ -5,8 +5,10 @@ const uuid = require("uuid").v4;
 router.post("/", async (req, res, next) => {
     const vacationId = uuid();
     let vacationDetails = req.body
+
     try {
       await vacationService.addVacation(vacationDetails,vacationId)
+      res.json("החופשה נוספה בהצלחה")
     } catch (error) {
       return next(error);
     }
@@ -24,8 +26,9 @@ router.put("/", async (req, res, next) => {
 
 router.get("/", async (req, res, next) => {
   try {
-   const response = await vacationService.getVacations()
-   res.send(response)
+   const vacations = await vacationService.getVacations()
+   const vacationsDate = await vacationService.getVacationDates()
+   res.send({vacations,vacationsDate})
   } catch (error) {
     return next(error);
   }

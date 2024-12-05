@@ -12,6 +12,7 @@ const {
     createRoomsTableQuery,
     createUserRoomAssignmentsTableQuery,
     insertRoomsDataQuery,
+    createRoomTakenTable
   } = require("../query/trip_tracker_dump")
   
  const createDatabaseAndTable = async (vacationId) => {
@@ -20,13 +21,13 @@ const {
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
   });
-  const sanitizedVacationId = vacationId.replace(/[^a-zA-Z0-9_]/g, '_');
+ 
   try {
 
-    await connection.query(`CREATE SCHEMA \`trip_tracker_${sanitizedVacationId}\``);
+    await connection.query(`CREATE SCHEMA \`trip_tracker_${vacationId}\``);
 
     // Use the created database with backticks around the schema name
-    await connection.query(`USE \`trip_tracker_${sanitizedVacationId}\``);
+    await connection.query(`USE \`trip_tracker_${vacationId}\``);
 
     // Create table
     await connection.query(createFamilyTableQuery);
@@ -39,6 +40,7 @@ const {
     await connection.query(createRoomsTableQuery);
     await connection.query(createUserRoomAssignmentsTableQuery);
     await connection.query(insertRoomsDataQuery);
+    await connection.query(createRoomTakenTable);
 
     console.log('Database and table created successfully');
   } catch (error) {
