@@ -100,10 +100,9 @@ const RoomSelector = ({
                             color: "#54A9FF",
                           },
                         }}
-                        name="flights_direction"
-                        value="one_way_return"
-                        checked={expandedRoomId === room.roomId}
-                        onChange={() => handleCheckboxChange(room.roomId)}
+                      
+                        checked={expandedRoomId === room.rooms_id}
+                        onChange={() => handleCheckboxChange(room.rooms_id)}
                       />
                     }
                   />
@@ -113,8 +112,8 @@ const RoomSelector = ({
                     חדר
                   </InputLabel>
                   <TextField
-                    name="roomId"
-                    value={room.roomId}
+                    name="rooms_id"
+                    value={room.rooms_id}
                     className={classes.shortTextField2}
                   />
                 </Grid>
@@ -123,8 +122,8 @@ const RoomSelector = ({
                     סוג חדר
                   </InputLabel>
                   <TextField
-                    name="roomType"
-                    value={room.roomType}
+                    name="type"
+                    value={room.type}
                     className={classes.textField}
                   />
                 </Grid>
@@ -133,8 +132,8 @@ const RoomSelector = ({
                     קומה
                   </InputLabel>
                   <TextField
-                    name="roomType"
-                    value={room.roomFloor}
+                    name="floor"
+                    value={room.floor}
                     className={classes.shortTextField2}
                   />
                 </Grid>
@@ -145,7 +144,7 @@ const RoomSelector = ({
                   </InputLabel>
                   <TextField
                     name="size"
-                    value={room.roomSize}
+                    value={room.size}
                     className={classes.shortTextField2}
                   />
                 </Grid>
@@ -155,13 +154,13 @@ const RoomSelector = ({
                   </InputLabel>
                   <TextField
                     name="direction"
-                    value={room.roomDirection}
+                    value={room.direction}
                     className={classes.shortTextField}
                   />
                 </Grid>
               </Grid>
               <Collapse
-                in={expandedRoomId === room.roomId}
+                in={expandedRoomId === room.rooms_id}
                 timeout="auto"
                 unmountOnExit
               >
@@ -203,11 +202,11 @@ const RoomSelector = ({
                               checked={guestsRoomList.some(
                                 (item) =>
                                   item.userId === key.userId &&
-                                  item.roomId === room.roomId && 
+                                  item.rooms_id === room.rooms_id && 
                                   item.family_id === key.family_id
                               )}
                               onChange={(e) =>
-                                handleUserCheckboxChange(e,key.userId, room.roomId, key.family_id)
+                                handleUserCheckboxChange(e,key.userId, room.rooms_id, key.family_id)
                               }
                             />
                           }

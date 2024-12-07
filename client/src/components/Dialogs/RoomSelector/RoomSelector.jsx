@@ -6,7 +6,7 @@ import * as snackBarSlice from "../../../store/slice/snackbarSlice";
 import * as dialogSlice from "../../../store/slice/dialogSlice"
 import ApiRoom from "../../../apis/roomsRequest"
 import * as userSlice from "../../../store/slice/userSlice";
-
+import  ApiRooms from "../../../apis/roomsRequest"
 const RoomSelector = () => {
   const token = sessionStorage.getItem("token")
   const dispatch = useDispatch()
@@ -22,13 +22,17 @@ const RoomSelector = () => {
     return {userId:key.user_id,name:key.hebrew_first_name,family_id:key.family_id}
   }));
  const [guestsRoomList, setGuestsRoomList] = useState([])
+ const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
 
+ const expandedRoomId = useSelector(
+  (state) => state.roomsSlice.expandedRoomId
+);
 
   
-  const handleUserCheckboxChange = async(e,userId, roomId, familyId) => {
+  const handleUserCheckboxChange = async(e,userId, roomsId, familyId) => {
    let status = e.target.checked
    try {
-    let dataTosend = {userId, roomId, familyId,status}
+    let dataTosend = {userId, roomsId, familyId,status}
 
     let response = await ApiRoom.assignRoomToGroupOfUser(token,dataTosend)
     setGuestsRoomList(response.data.userAssignRoom)
@@ -39,15 +43,16 @@ const RoomSelector = () => {
 
 
   const submit = async () => {
+    console.log(selectedChildRoomId)
     try {
       let response
       if(form.user_type === ""){
 
       }else {
         if(roomChossenType){
-          response = ApiRoom.updateUserToRoom(token,selectedChildRoomId, form )
+          response = ApiRoom.updateUserToRoom(token,selectedChildRoomId, form,vacationId )
         }else {
-            response = ApiRoom.assignUserToRoom(token,selectedChildRoomId,form)
+            response = ApiRoom.assignUserToRoom(token,selectedChildRoomId,form,vacationId)
         }
       }
      
@@ -70,17 +75,28 @@ const RoomSelector = () => {
     }
   }
 
-  const handleCheckboxChange = (roomId) => {
-    dispatch(roomsSlice.updateChossenRoom(Number(selectedChildRoomId === roomId) ? null : Number(roomId)));
-    dispatch(roomsSlice.toggleExpandRoom(roomId));
+const handleCheckboxChange = (rooms_id) => {
+  // Update both selected room and expanded room
+  const isCurrentlyExpanded = expandedRoomId === rooms_id;
+
+  // Toggle expanded state
+  dispatch(roomsSlice.toggleExpandRoom(rooms_id));
+
+  // If the room is expanded, update selectedChildRoomId (select room)
+  if (isCurrentlyExpanded) {
+    // Deselect the room (if it was previously selected)
+    dispatch(roomsSlice.updateChossenRoom(null));
+  } else {
+    // Select the room and expand it
+    dispatch(roomsSlice.updateChossenRoom(rooms_id));
   }
+};
+
 
   const getFamilyRooms = async () => {
-    
     try {
       let familyId = form.family_id
-      let response = await ApiRoom.getFamilyRoom(token,familyId)
-      setGuestsRoomList(response.data.userAssignRoom)
+      let response = await ApiRooms.getFamilyRoom(token,familyId,vacationId)
       dispatch(roomsSlice.updateSelectedRoomsList(response.data.familyRooms))
     } catch (error) {
       console.log(error)
@@ -103,7 +119,7 @@ const RoomSelector = () => {
 
   const filteredRooms = rooms?.filter((room) => {
     if (searchTerm !== "") {
-      return room.roomId.includes(searchTerm)
+      return room.rooms_id.includes(searchTerm)
     }
   }
   );
@@ -116,7 +132,7 @@ const RoomSelector = () => {
 
   useEffect(() => {
     getFamilyRooms()
-    getChossenRoom()
+    // getChossenRoom()
   }, [activeButton])
 
   return (

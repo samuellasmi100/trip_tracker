@@ -22,10 +22,12 @@ const RoomsAssigner = () => {
 
    const submit = async () => {
       try {
-
+        let startDate = form.arrival_date
+        let endDate = form.departure_date
         let familyId = form.family_id
         let dateChosen = form.date_chosen
-        let response = ApiRooms.assignRoom(token,selectedRooms,familyId,dateChosen,vacationId)   
+        let response = ApiRooms.assignRoom(token,selectedRooms,familyId,vacationId,startDate,endDate)  
+     
         dispatch(
           snackBarSlice.setSnackBar({
             type: "success",
@@ -66,17 +68,28 @@ const RoomsAssigner = () => {
     }
    }
 
+   const getRoomAvailable = async () => {
+    let startDate = form.arrival_date
+    let endDate = form.departure_date
+    try {
+      let response = await ApiRooms.getAll(token,vacationId,startDate,endDate)
+      dispatch(roomsSlice.updateRoomsList(response.data))
+    } catch (error) {
+      console.log(error)
+    }
+   }
+
   const filteredRooms = rooms?.filter((room) =>{
     if(searchTerm !== ""){
-      return room.roomId.includes(searchTerm)
+      return room.rooms_id.includes(searchTerm)
     }
   } 
   );
 
   const handleRoomToggle = (room) => {
-    const isSelected = selectedRooms.some((r) => Number(r.roomId) === Number(room.roomId));
+    const isSelected = selectedRooms.some((r) => Number(r.rooms_d) === Number(room.rooms_id));
     if (isSelected) {
-      dispatch(roomsSlice.removeRoomFromForm({ roomId: room.roomId }));
+      dispatch(roomsSlice.removeRoomFromForm({ rooms_id: room.rooms_id }));
     } else {
       if(Number(selectedRooms.length + 1) > Number(form.number_of_rooms)){
         dispatch(
@@ -95,8 +108,8 @@ const RoomsAssigner = () => {
     }
   };
   
-  const handleDeleteButton = (roomId) => {
-    dispatch(roomsSlice.removeRoomFromForm({ roomId: roomId}));
+  const handleDeleteButton = (rooms_id) => {
+    dispatch(roomsSlice.removeRoomFromForm({ rooms_id: rooms_id}));
   }
 
   const handleCloseClicked = () => {
@@ -106,7 +119,8 @@ const RoomsAssigner = () => {
    }
 
    useEffect(() => {
-      getAllRooms()
+      // getAllRooms()
+      getRoomAvailable()
    }, [])
    useEffect(() => {
     getFamilyRooms()

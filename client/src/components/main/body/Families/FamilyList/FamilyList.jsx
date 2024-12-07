@@ -154,11 +154,17 @@ const getVacations = async () => {
 
 
 const handleSelectInputChange =  async (e) => {
+  closeModal()
+  clearModalForms()
+  dispatch(userSlice.updateFamiliesList([]))
+  dispatch(userSlice.updateGuets([]))
   const getVacationId = vacationList?.find((key) => {
     return key.name === e.target.value
   }) 
   dispatch(vacationSlice.updateChosenVacation(getVacationId.vacation_id))
+  dispatch(vacationSlice.updateVacationName(getVacationId.name))
   sessionStorage.setItem("vacId",getVacationId.vacation_id)
+  sessionStorage.setItem("vacName",getVacationId.name)
    try {
    } catch (error) {
     console.log(error)

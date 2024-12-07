@@ -5,7 +5,8 @@ export const vacationSlice = createSlice({
   initialState: {
     vacations: [],
     vacationsDates:[],
-    vacationId:sessionStorage.getItem("vacId") !== null ? sessionStorage.getItem("vacId") : ""
+    vacationId:sessionStorage.getItem("vacId") !== null ? sessionStorage.getItem("vacId") : "",
+    vacationName:sessionStorage.getItem("vacName") !== null ? sessionStorage.getItem("vacName") : ""
   },
   reducers: {
     updateVacationList: (state, action) => {
@@ -17,10 +18,13 @@ export const vacationSlice = createSlice({
     updateVacationDatesList: (state, action) => {
       state.vacationsDates = action.payload;
     },
+    updateVacationName: (state, action) => {
+      state.vacationName = action.payload;
+    },
   },
 });
 
-export const { updateVacationList,updateChosenVacation,updateVacationDatesList } = vacationSlice.actions;
+export const { updateVacationList,updateChosenVacation,updateVacationDatesList,updateVacationName } = vacationSlice.actions;
 
 
 

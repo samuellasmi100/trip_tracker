@@ -9,8 +9,8 @@ export default {
     });
   },
  
-  getVacations(token) {
-    return Api.get(`${END_POINT.VACATIONS}`, {
+  getVacations(token,vacationId) {
+    return Api.get(`${END_POINT.VACATIONS}/${vacationId}`, {
       headers: { Authorization: token },
     });
   },

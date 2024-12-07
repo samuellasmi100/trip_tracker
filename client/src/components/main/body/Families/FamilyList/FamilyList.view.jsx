@@ -43,7 +43,7 @@ function FamilyListView(props) {
   } = props;
   const headers = ["שם משפחה", "הוסף קובץ רישום", "היתרה לתשלום", "מסלול"];
   const vacationList = useSelector((state) => state.vacationSlice.vacations)
-
+ const vacationName = useSelector((state) => state.vacationSlice.vacationName)
   return (
     <Grid
       container
@@ -65,7 +65,8 @@ function FamilyListView(props) {
       >
       <Grid style={{marginRight: "5px", marginTop: "5px" }}>
       <Select
-          onChange={handleSelectInputChange}  
+        value={vacationName}
+        onChange={handleSelectInputChange}  
         input={
           <OutlinedInput
             className={classes.selectOutline}
@@ -177,7 +178,7 @@ function FamilyListView(props) {
                         ? user.total_amount
                         : user.remains_to_be_paid}
                     </TableCell>
-                    <TableCell className={classes.dataTableCell}>פסח</TableCell>
+                    <TableCell className={classes.dataTableCell}>{vacationName}</TableCell>
                   </TableRow>
                 );
               })}

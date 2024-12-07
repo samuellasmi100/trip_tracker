@@ -97,11 +97,11 @@ const RoomsAssigner = ({
           >
             <Checkbox
               style={{color:"white"}}
-              checked={selectedRooms.some((r) => r.roomId === room.roomId)}
+              checked={selectedRooms.some((r) => r.rooms_id === room.rooms_id)}
             />
             <ListItemText
              style={{}}
-              primary={room.roomId}
+              primary={room.rooms_id}
             />
           </ListItem>
         ))}
@@ -123,7 +123,7 @@ const RoomsAssigner = ({
 
              <IconButton
               onClick={() =>
-               handleDeleteButton(room.roomId)
+               handleDeleteButton(room.rooms_id)
               }>
               <DeleteIcon className={classes.delete}/>
               </IconButton>
@@ -135,7 +135,7 @@ const RoomsAssigner = ({
              </InputLabel>
              <TextField
                 name="roomId"
-                value={room.roomId}
+                value={room.rooms_id}
                className={classes.shortTextField2}
              />
            </Grid>
@@ -144,8 +144,8 @@ const RoomsAssigner = ({
                 סוג חדר
               </InputLabel>
               <TextField
-                 name="roomType"
-                 value={room.roomType}
+                 name="type"
+                 value={room.type}
                 className={classes.textField}
               />
             </Grid>
@@ -154,8 +154,8 @@ const RoomsAssigner = ({
                קומה
              </InputLabel>
              <TextField
-                name="roomType"
-                value={room.roomFloor}
+                name="floor"
+                value={room.floor}
                className={classes.shortTextField2}
              />
            </Grid>
@@ -166,7 +166,7 @@ const RoomsAssigner = ({
              </InputLabel>
              <TextField
                 name="size"
-                value={room.roomSize}
+                value={room.size}
                className={classes.shortTextField2}
              />
            </Grid>
@@ -176,7 +176,7 @@ const RoomsAssigner = ({
              </InputLabel>
              <TextField
                 name="direction"
-                value={room.roomDirection}
+                value={room.direction}
                className={classes.shortTextField}
              />
            </Grid>

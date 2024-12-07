@@ -101,7 +101,8 @@ const Reservation = () => {
 
   const getVacations = async () => {
     try {
-      const response = await ApiVacations.getVacations(token)
+      const response = await ApiVacations.getVacations(token,vacationId)
+      console.log(response)
       if(response?.data?.vacationsDate?.length > 0){
         dispatch(vacationSlice.updateVacationDatesList(response?.data?.vacationsDate))
       }
