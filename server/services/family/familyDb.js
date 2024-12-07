@@ -15,6 +15,7 @@ const addFamily = async (data,vacationId) => {
 
 
 const getFamilies = async (vacationId) => {
+
   try {
     const sql = familyQuery.getFamilies(vacationId)
     const response = await connection.execute(sql)

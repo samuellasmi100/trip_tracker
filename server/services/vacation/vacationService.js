@@ -32,8 +32,8 @@ const addVacation = async (vacationDetails,vacationId) => {
 const getVacations = async () => {
     return await vacationDb.getVacations()
 }
-const getVacationDates = async () => {
-  return await vacationDb.getVacationDates()
+const getVacationDates = async (vacationId) => {
+  return await vacationDb.getVacationDates(vacationId)
 }
 module.exports = {
     addVacation,

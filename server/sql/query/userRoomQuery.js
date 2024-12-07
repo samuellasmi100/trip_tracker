@@ -1,29 +1,17 @@
-const getRoomAvailable = (vacationId) => {
-  return `
-    SSELECT r.*
-FROM trip_tracker_44dd1a40_b49f_4103_bccf_871addd98aa5.rooms r
-LEFT JOIN trip_tracker_44dd1a40_b49f_4103_bccf_871addd98aa5.room_taken rt
-ON r.rooms_id = rt.room_id
-   AND NOT (
-       rt.end_date < '2025-04-15' 
-       OR rt.start_date > '2025-04-10' 
-   )
-WHERE rt.room_id IS NULL; -- Exclude rooms with overlapping bookings
-`
-  }
+
   
   const getFamilyRoom = (vacationId) => {
     return `
       SELECT 
-        r.rooms_id AS roomId,
-        r.type AS roomType,
-        r.size AS roomSize,
-        r.direction AS roomDirection,
-        r.floor AS roomFloor,
+        r.rooms_id,
+        r.type,
+        r.size,
+        r.direction,
+        r.floor,
         r.base_occupancy,
         COALESCE(ura.people_count, 0) AS peopleCount
     FROM trip_tracker_${vacationId}.rooms r
-    JOIN trip_tracker_${vacationId}.family_room_details frd
+    JOIN trip_tracker_${vacationId}.room_taken frd
         ON frd.room_id = r.rooms_id
     LEFT JOIN (
         SELECT 
@@ -36,20 +24,20 @@ WHERE rt.room_id IS NULL; -- Exclude rooms with overlapping bookings
     WHERE frd.family_id = ?`
   }
     
-    const assignMainRoom = () => {
+    const assignMainRoom = (vacationId) => {
       return `
-      INSERT INTO family_room_details(family_id,room_id) VALUES(?,?)`;
+      INSERT INTO trip_tracker_${vacationId}.room_taken(family_id,room_id,start_date,end_date) VALUES(?,?,?,?)`;
     }
     
-    const assignRoom = () => {
+    const assignRoom = (vacationId) => {
       return `
-      INSERT INTO user_room_assignments(user_id,room_id,family_id) VALUES(?,?,?)`;
+      INSERT INTO trip_tracker_${vacationId}.user_room_assignments(user_id,room_id,family_id) VALUES(?,?,?)`;
     }
     
-    const getChossenRoom = () => {
-      return `SELECT r.rooms_id as roomId,r.type as roomType,r.size as roomSize,r.direction as roomDirection,r.floor as roomFloor,base_occupancy 
-    FROM rooms r 
-    join user_room_assignments ur
+    const getChossenRoom = (vacationId) => {
+      return `SELECT r.rooms_id,r.type,r.size,r.direction,r.floor,base_occupancy 
+    FROM trip_tracker_${vacationId}.rooms r 
+    join trip_tracker_${vacationId}.user_room_assignments ur
     on ur.room_id = r.rooms_id
     where ur.user_id = ?`
     }

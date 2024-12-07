@@ -9,7 +9,7 @@ const getVacations = () => {
   return `SELECT name,vacation_id FROM trip_tracker.vacations`
 }
 const getVacationDates = () => {
-  return `SELECT name,vacation_id,start_date,end_date FROM trip_tracker.vacation_date`;
+  return `SELECT name,vacation_id,start_date,end_date FROM trip_tracker.vacation_date where vacation_id = ?`;
 };
 
 module.exports = {

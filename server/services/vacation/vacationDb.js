@@ -36,10 +36,11 @@ const getVacations = async () => {
       console.log(error)
     }
 }
-const getVacationDates = async () => {
+const getVacationDates = async (vacationId) => {
   try {
     const sql = vacationQuery.getVacationDates()
-    const response = await connection.execute(sql)
+    const parameters = [vacationId]
+    const response = await connection.executeWithParameters(sql,parameters)
     return response
   } catch (error) { 
     console.log(error)

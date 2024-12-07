@@ -30,6 +30,7 @@ const getFamilyGuests = async (id,vacationId) => {
 }
 
 const getFamilyMamber = async (id,vacationId) => {
+
   try {
     const sql = userQuery.getFamilyMamber(vacationId)
     const parameters = [id]

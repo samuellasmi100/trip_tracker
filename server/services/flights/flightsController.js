@@ -49,7 +49,6 @@ router.get("family/:id", async (req, res, next) => {
   const familyId = req.params.id
   try {
     const response = await flightsService.getFlightsByFamily(familyId)
-    console.log(response)
     res.send(response)
 
   } catch (error) {

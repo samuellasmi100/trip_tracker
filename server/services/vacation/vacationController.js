@@ -24,10 +24,11 @@ router.put("/", async (req, res, next) => {
   }
 });
 
-router.get("/", async (req, res, next) => {
+router.get("/:id", async (req, res, next) => {
+  const vacationId = req.params.id
   try {
    const vacations = await vacationService.getVacations()
-   const vacationsDate = await vacationService.getVacationDates()
+   const vacationsDate = await vacationService.getVacationDates(vacationId)
    res.send({vacations,vacationsDate})
   } catch (error) {
     return next(error);

@@ -35,10 +35,21 @@ const updateRoom = async (data) => {
     console.log(error)
   }
 }
+const getRoomAvailable = async (vacationId,startData,endDate) => {
+  try {
+     let sql = roomsQuery.getRoomAvailable(vacationId)
+     const parameters = [startData,endDate]
+     const response = await connection.executeWithParameters(sql,parameters)
+    return response
 
+  } catch (error) { 
+    console.log(error)
+  }
+}
 
 module.exports = {
   getAll,
   updateRoom,
-  getRoomDetailsWithCounts
+  getRoomDetailsWithCounts,
+  getRoomAvailable
 }

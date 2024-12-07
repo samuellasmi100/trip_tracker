@@ -2,22 +2,23 @@ const connection = require("../../db/connection-wrapper");
 const userRoomQuery = require("../../sql/query/userRoomQuery")
 
 
-const assignMainRoom = async (userId,roomId) => {
+const assignMainRoom = async (vacationId,familyId,roomId,startDate,endDate) => {
  
   try {
-    const sql = userRoomQuery.assignMainRoom()
-    const parameters = [userId,roomId]
+    const sql = userRoomQuery.assignMainRoom(vacationId)
+    const parameters = [familyId,roomId,startDate,endDate]
      await connection.executeWithParameters(sql,parameters) 
   } catch (error) { 
     console.log(error)
   }
 }
 
-const assignRoom = async (userId,roomId,familyId,status) => {
+const assignRoom = async (userId,roomId,familyId,status,vacationId) => {
+  console.log(userId,roomId,familyId,status,vacationId)
   try {
     let sql
     let parameters;
-     let isGuestAlreadyChosenRoom = await getChossenRoom(userId)
+     let isGuestAlreadyChosenRoom = await getChossenRoom(userId,vacationId)
      if(isGuestAlreadyChosenRoom.length > 0){
       if(isGuestAlreadyChosenRoom[0].roomId === roomId && status === false){
         sql = userRoomQuery.removeUserAssignRoom()
@@ -28,7 +29,7 @@ const assignRoom = async (userId,roomId,familyId,status) => {
       }
       
      }else {
-       sql = userRoomQuery.assignRoom()
+       sql = userRoomQuery.assignRoom(vacationId)
         parameters = [userId,roomId,familyId]
      }
     await connection.executeWithParameters(sql,parameters) 
@@ -62,10 +63,10 @@ const updateMainRoom = async (roomDetails,userId) => {
   }
 }
 
-const removeMainRoom = async (userId) => {
+const removeMainRoom = async (familyId,vacationId) => {
   try {
-    const sql = userRoomQuery.removeMainRoom()
-    const parameters = [userId]
+    const sql = userRoomQuery.removeMainRoom(vacationId)
+    const parameters = [familyId]
     await connection.executeWithParameters(sql,parameters)
   } catch (error) { 
     console.log(error)
@@ -105,10 +106,10 @@ const lockRoom = async (roomId) => {
   }
 }
 
-const getChossenRoom = async (userId) => {
+const getChossenRoom = async (userId,vacationId) => {
 
   try {
-    let sql = userRoomQuery.getChossenRoom()
+    let sql = userRoomQuery.getChossenRoom(vacationId)
      const parameters = [userId]
      const response = await connection.executeWithParameters(sql,parameters)
       return response
@@ -153,6 +154,9 @@ const removeAllUserAssignRoom = async (familyId,roomId) => {
   }
 }
 
+
+
+
 module.exports = {
   assignMainRoom,
   getFamilyRoom,
@@ -166,4 +170,5 @@ module.exports = {
   removeUserAssignMainRoom,
   removeAllUserAssignRoom,
   getAllUserRooms,
+
 }
