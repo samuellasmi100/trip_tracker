@@ -11,8 +11,6 @@ import { useStyles } from "./Vacation.style";
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import * as staticSlice from "../../../../../../store/slice/staticSlice"
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css"
 import "./Vacation.css"
 function VacationView({ submit, handleInputChange }) {
 
