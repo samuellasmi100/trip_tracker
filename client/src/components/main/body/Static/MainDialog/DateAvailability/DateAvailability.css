@@ -1,0 +1,26 @@
+/* Default React-Calendar styles */
+.react-calendar {
+    border: none;
+    width: 100%;
+    max-width: 700px;
+  }
+  
+  .react-calendar__tile {
+    padding: 10px;
+    text-align: center;
+  }
+  
+  /* Available dates: Green background */
+  .available {
+    background-color: lightgreen;
+    border-radius: 50%;
+    color: black;
+  }
+  
+  /* Unavailable dates: Red background */
+  .unavailable {
+    background-color: lightcoral;
+    border-radius: 50%;
+    color: white;
+  }
+  
