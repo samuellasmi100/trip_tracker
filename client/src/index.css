@@ -20,7 +20,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: #171717;
   
-  direction: rtl;
+  /* direction: rtl; */
   
 }
 html, body, #root {

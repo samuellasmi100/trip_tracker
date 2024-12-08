@@ -7,8 +7,32 @@ import * as vacationSlice from "../../../../store/slice/vacationSlice"
 import Rooms from "./Rooms/Rooms";
 import MainDialog from "./MainDialog/MainDialog";
 import  ApiVacations from "../../../../apis/vacationRequest"
+import RGL, { WidthProvider } from "react-grid-layout";
+import './Static.css'
+const ReactGridLayout = WidthProvider(RGL);
+let idCounter = 0;
 
+const getId = () => {
+  idCounter++;
+  return idCounter.toString();
+};
 const Static = () => {
+ 
+  const [layout, setLayout] = useState([
+    { x: 0, y: 0, w: 1, h: 1, i: getId() },
+    { x: 1, y: 0, w: 1, h: 1, i: getId() },
+    { x: 2, y: 0, w: 1, h: 1, i: getId() },
+    { x: 0, y: 1, w: 1, h: 1, i: getId() },
+    { x: 1, y: 1, w: 1, h: 1, i: getId() },
+    { x: 2, y: 1, w: 1, h: 1, i: getId() },
+  ]);
+
+ 
+  const onLayoutChange = (newLayout) => {
+    setLayout(newLayout);
+  };
+
+
   const [searchTerm, setSearchTerm] = useState("");
   const dialogOpen = useSelector((state) => state.staticSlice.open)
   const dispatch = useDispatch()
@@ -70,16 +94,48 @@ const closeModal = () => {
   }, [])
   
   return (
-    <Grid style={{ display: "flex", justifyContent: "center" }}>
-      <StaticView
-        handleButtonClick={handleButtonClick}
-        handleNavButtonClicked={handleNavButtonClicked}
-        searchTerm={searchTerm} setSearchTerm={setSearchTerm}
-        handleAddIcons={handleAddIcons}
+    <React.Fragment>
+    <div className="dashboard">
+    <ReactGridLayout
+     
+      onLayoutChange={onLayoutChange}
+      // rowHeight={100} // Adjust row height based on your needs
+      // cols={3} // Defines the grid's number of columns
+      isDraggable={true}
+      isResizable={true} // Prevent resizing the widgets
+    >
+      {layout.map((item) => (
+        <div
+          key={item.i}
+          data-grid={item}
+          style={{
+            background: "#fff",
+            border: "1px solid #ddd",
+            padding: "10px",
+            boxSizing: "border-box",
+            height: "100px", // Fixed height
+            width: "100px",  // Fixed width
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <span>Widget {item.i}</span>
+        </div>
+      ))}
+    </ReactGridLayout>
+  </div>
+</React.Fragment>
+    // <Grid style={{ display: "flex", justifyContent: "center" }}>
+    //   <StaticView
+    //     handleButtonClick={handleButtonClick}
+    //     handleNavButtonClicked={handleNavButtonClicked}
+    //     searchTerm={searchTerm} setSearchTerm={setSearchTerm}
+    //     handleAddIcons={handleAddIcons}
        
-      />;
-      <MainDialog dialogOpen={dialogOpen} closeModal={closeModal}/>
-    </Grid>
+    //   />;
+    //   <MainDialog dialogOpen={dialogOpen} closeModal={closeModal}/>
+    // </Grid>
   )
 };
 
