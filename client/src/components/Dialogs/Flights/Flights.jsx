@@ -29,7 +29,6 @@ const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
     }
     else if(name === "is_source_user"){
       value = checked
-      console.log(value)
      dispatch(flightsSlice.updateFormField({ field: name, value:value }))
     }else {
       dispatch(flightsSlice.updateFormField({ field: name, value }))

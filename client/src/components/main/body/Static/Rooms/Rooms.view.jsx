@@ -14,8 +14,8 @@ import {
   import { useStyles } from "./Rooms.style";
   import { useSelector } from "react-redux";
   import { ReactComponent as EditIcon  } from "../../../../../assets/icons/edit.svg"
-  import CloseIcon from '@mui/icons-material/Close';
-  import DoneIcon from '@mui/icons-material/Done';
+  import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+
   function StaticView({
     filteredRooms,
     handleDialogTypeOpen,
@@ -29,7 +29,8 @@ import {
         <TableContainer
           style={{
             border: "1px solid #3D3F47",
-            height: "calc(100vh - 225px)",
+            height: "calc(100vh - 245px)",
+            maxHeight:"80vh"
           }}
         >
           <Table style={{ width: "inherit" }} size="small" stickyHeader>
@@ -84,7 +85,9 @@ import {
                       </IconButton>
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
-                      {room.is_taken === 1 ? <CloseIcon style={{color:"red"}}/> : < DoneIcon style={{color:"green"}}/>}
+                    <IconButton size={"small"} > 
+                     <EventAvailableIcon style={{color:"#FF9E54"}} onClick={() => handleDialogTypeOpen("showAvailableDates",room)}/>
+                     </IconButton>
                     </TableCell>
                     
                 

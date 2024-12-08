@@ -11,12 +11,22 @@ import { useStyles } from "./Vacation.style";
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import * as staticSlice from "../../../../../../store/slice/staticSlice"
-
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css"
+import "./Vacation.css"
 function VacationView({ submit, handleInputChange }) {
 
   const dispatch = useDispatch()
   const classes = useStyles();
   const form = useSelector((state) => state.staticSlice.form)
+  const userForm = useSelector((state) => state.userSlice.form)
+  
+  const [startDate, setDate] = React.useState(new Date)
+  const [rangeStart, setRangeStart] = React.useState(new Date)
+  const defaultEndDate = new Date()
+  defaultEndDate.setDate(defaultEndDate.getDate() + 7)
+  const [rangeEnd, setRangeEnd] = React.useState(defaultEndDate)
+  const today = new Date()
 
   return (
     <Grid container>
@@ -68,7 +78,18 @@ function VacationView({ submit, handleInputChange }) {
               <InputLabel className={classes.inputLabelStyle}>
                  מתאריך
               </InputLabel>
-     
+            {/* <DatePicker
+             name={`start_date_${index}`} 
+             value={form[`start_date_${index}`] || ''}
+              className="custom-datepicker"
+              dateFormat="dd/MM/yyyy"
+             selected={startDate}
+             onChange={(date) => handleInputChange(date, `start_date_${index}`)}
+             minDate={today}
+             todayButton={"Today"}
+            
+            
+             /> */}
               <TextField
                name={`start_date_${index}`} 
                 type="date"
@@ -82,7 +103,18 @@ function VacationView({ submit, handleInputChange }) {
               <InputLabel className={classes.inputLabelStyle}>
                עד תאריך
               </InputLabel>
-     
+              {/* <DatePicker
+              name={`end_date_${index}`} 
+              value={form[`end_date_${index}`] || ''}
+              className="custom-datepicker"
+              dateFormat="dd/MMyyyy"
+             selected={startDate}
+             onChange={(date) => handleInputChange(date, `end_date_${index}`)}
+             minDate={today}
+             todayButton={"Today"}
+            
+             */}
+             {/* /> */}
               <TextField
                name={`end_date_${index}`} 
                 type="date"

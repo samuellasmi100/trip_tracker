@@ -2,7 +2,12 @@ import { END_POINT } from "../utils/constants";
 import Api from "./baseApi";
 
 export default {
-  getAll(token,vacationId,startDate,endDate) {
+  getAll(token,vacationId) {
+    return Api.get(`/${END_POINT.ROOMS}/${vacationId}`, {
+      headers: { Authorization: token },
+    });
+  },
+  getRoomAvailable(token,vacationId,startDate,endDate) {
     return Api.get(`/${END_POINT.ROOMS}/${vacationId}/${startDate}/${endDate}`, {
       headers: { Authorization: token },
     });
@@ -22,8 +27,8 @@ export default {
       headers: { Authorization: token },
     });
   },
-  assignRoomToGroupOfUser(token,dataToSend) {
-    return Api.post(`${END_POINT.USER_ROOMS}/room/parent`,{dataToSend}, {
+  assignRoomToGroupOfUser(token,dataToSend,vacationId) {
+    return Api.post(`${END_POINT.USER_ROOMS}/room/parent/${vacationId}`,{dataToSend}, {
       headers: { Authorization: token },
     });
   },
@@ -32,8 +37,8 @@ export default {
       headers: { Authorization: token },
     });
   },
-  updateRoom(token,form) {
-    return Api.put(`${END_POINT.ROOMS}`,{token,form}, {
+  updateRoom(token,form,vacationId) {
+    return Api.put(`${END_POINT.ROOMS}/${vacationId}`,{token,form}, {
       headers: { Authorization: token },
     });
   },
@@ -42,8 +47,18 @@ export default {
       headers: { Authorization: token },
     });
   },
-  getUserRoom(token,userId) {
-    return Api.get(`/${END_POINT.USER_ROOMS}/room/${userId}`, {
+  getChosenRoom(token,userId,vacationId) {
+    return Api.get(`/${END_POINT.USER_ROOMS}/user/${userId}/${vacationId}`, {
+      headers: { Authorization: token },
+    });
+  },
+  getUsersChosenRoom(token,familyId,vacationId) {
+    return Api.get(`/${END_POINT.USER_ROOMS}/users/${familyId}/${vacationId}`, {
+      headers: { Authorization: token },
+    });
+  },
+  getUnAndAvailableDates(token,roomId,vacationId,startDate,endDate) {
+    return Api.get(`/${END_POINT.ROOMS}/room_available/${roomId}/${vacationId}/${startDate}/${endDate}`, {
       headers: { Authorization: token },
     });
   },

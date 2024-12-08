@@ -10,18 +10,23 @@ const dispatch = useDispatch()
  const form = useSelector((state) => state.staticSlice.form)
  const token = sessionStorage.getItem("token")
 
-   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+ const handleInputChange = (eventOrValue, fieldName) => {
+  if (typeof eventOrValue === 'object' && eventOrValue.target) {
+    const { name, value } = eventOrValue.target;
     dispatch(staticSlice.updateFormField({ field: name, value }));
+  } else {
 
-  };
+    dispatch(staticSlice.updateFormField({ field: fieldName, value: eventOrValue }));
+  }
+};
+
 
   const submit = async () => {
   try {
    const response = await ApiVacations.addVacation(token,form)
    dispatch(staticSlice.closeModal())
   } catch (error) {
-    console.log(error)
+
   }
   } 
   return <VacationView handleInputChange={handleInputChange} submit={submit}/>;

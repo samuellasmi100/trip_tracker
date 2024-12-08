@@ -3,17 +3,18 @@ import RoomView from "./Rooms.view"
 import ApiRooms from "../../../../../apis/roomsRequest"
 import { useDispatch, useSelector } from "react-redux";
 import * as roomsSlice from "../../../../../store/slice/roomsSlice"
-import * as staticSlice from "../../../../../store/slice/staticSlice"
-import axios from "axios";
+
+
 
 const Rooms = ({ searchTerm,handleDialogTypeOpen}) => {
+    const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
     const dispatch = useDispatch()
     const rooms = useSelector((state) => state.roomsSlice.rooms);
     const token = sessionStorage.getItem("token")
 
     const getAllRooms = async () => {
         try {
-            let response = await ApiRooms.getAllWithCount(token)
+            let response = await ApiRooms.getAll(token,vacationId)
             dispatch(roomsSlice.updateRoomsList(response.data))
         } catch (error) {
             console.log(error)
@@ -29,7 +30,7 @@ const Rooms = ({ searchTerm,handleDialogTypeOpen}) => {
     );
     
     useEffect(() => {
-        // getAllRooms()
+        getAllRooms()
     }, [])
 
     return (

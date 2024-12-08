@@ -35,7 +35,12 @@ const RoomsAssigner = ({
   const classes = useStyles();
   const dispatch = useDispatch();
   const selectedRooms = useSelector((state) => state.roomsSlice.selectedRooms);
-  
+
+const handleMouseLeave = () => {
+  setIsListOpen(false)
+  setSearchTerm("")
+}
+
   return (
     <>
       <Grid style={{ padding: "20px"}}>
@@ -49,14 +54,15 @@ const RoomsAssigner = ({
               className={classes.textField}
               onChange={(e) => setSearchTerm(e.target.value)}
               value={searchTerm}
-              // onMouseEnter={() => setIsListOpen(true)}
-              // onMouseLeave={() => setIsListOpen(false)}
+              onMouseEnter={() => setIsListOpen(true)}
+              onMouseLeave={handleMouseLeave}
             />
            
           </Grid>
           <Grid item xs={12} style={{position:'relative'}}> 
           <List 
-            // onMouseEnter={() => setIsListOpen(true)}
+            onMouseEnter={() => setIsListOpen(true)}
+            onMouseLeave={handleMouseLeave}
             style={{
             maxHeight:"260px",
             overflow:"auto", 
@@ -116,8 +122,8 @@ const RoomsAssigner = ({
                 display: "flex",
                 flexDirection: "row",
                 justifyContent: "space-between",
-                // filter: isListOpen ? "blur(5px)" : "none", 
-                // transition: "filter 0.3s ease" 
+                filter: isListOpen ? "blur(5px)" : "none", 
+                transition: "filter 0.3s ease" 
               }}>
              <Grid item>
 

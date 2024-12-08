@@ -1,6 +1,5 @@
 import React, { useEffect,useState } from "react";
 import RoomsView from "./RoomsAssigner.view"
-import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import * as roomsSlice from "../../../store/slice/roomsSlice"
 import * as snackbarSlice from "../../../store/slice/snackbarSlice"
@@ -25,9 +24,8 @@ const RoomsAssigner = () => {
         let startDate = form.arrival_date
         let endDate = form.departure_date
         let familyId = form.family_id
-        let dateChosen = form.date_chosen
-        let response = ApiRooms.assignRoom(token,selectedRooms,familyId,vacationId,startDate,endDate)  
-     
+        await ApiRooms.assignRoom(token,selectedRooms,familyId,vacationId,startDate,endDate)  
+        await getRoomAvailable()
         dispatch(
           snackBarSlice.setSnackBar({
             type: "success",
@@ -57,22 +55,11 @@ const RoomsAssigner = () => {
     }
   }
 
-   const getAllRooms = async () => {
-    let startDate = form.arrival_date
-    let endDate = form.departure_date
-    try {
-      let response = await ApiRooms.getAll(token,vacationId,startDate,endDate)
-      dispatch(roomsSlice.updateRoomsList(response.data))
-    } catch (error) {
-      console.log(error)
-    }
-   }
-
    const getRoomAvailable = async () => {
     let startDate = form.arrival_date
     let endDate = form.departure_date
     try {
-      let response = await ApiRooms.getAll(token,vacationId,startDate,endDate)
+      let response = await ApiRooms.getRoomAvailable(token,vacationId,startDate,endDate)
       dispatch(roomsSlice.updateRoomsList(response.data))
     } catch (error) {
       console.log(error)
@@ -83,11 +70,11 @@ const RoomsAssigner = () => {
     if(searchTerm !== ""){
       return room.rooms_id.includes(searchTerm)
     }
-  } 
+   } 
   );
 
   const handleRoomToggle = (room) => {
-    const isSelected = selectedRooms.some((r) => Number(r.rooms_d) === Number(room.rooms_id));
+    const isSelected = selectedRooms.some((r) => Number(r.rooms_id) === Number(room.rooms_id));
     if (isSelected) {
       dispatch(roomsSlice.removeRoomFromForm({ rooms_id: room.rooms_id }));
     } else {
@@ -100,6 +87,7 @@ const RoomsAssigner = () => {
           })
         )
       }else {
+        console.log("here")
         dispatch(roomsSlice.addRoomToForm(room));
       }
   
@@ -119,7 +107,6 @@ const RoomsAssigner = () => {
    }
 
    useEffect(() => {
-      // getAllRooms()
       getRoomAvailable()
    }, [])
    useEffect(() => {

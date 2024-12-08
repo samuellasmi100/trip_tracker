@@ -25,7 +25,6 @@ const RoomSelector = ({
   handleCloseClicked
 }) => {
   const classes = useStyles();
-  const dispatch = useDispatch();
   const selectedRooms = useSelector((state) => state.roomsSlice.selectedRooms);
   const userForm = useSelector((state) => state.userSlice.form);
   const expandedRoomId = useSelector(
@@ -41,7 +40,6 @@ const RoomSelector = ({
 
         <Grid item xs={12} style={{ position: "relative" }}>
           <List
-            // onMouseEnter={() => setIsListOpen(true)}
             style={{
               maxHeight: "260px",
               overflow: "auto",
@@ -85,8 +83,6 @@ const RoomSelector = ({
                   display: "flex",
                   flexDirection: "row",
                   justifyContent: "space-between",
-                  // filter: isListOpen ? "blur(5px)" : "none",
-                  // transition: "filter 0.3s ease"
                 }}
               >
                 <Grid item>
@@ -167,7 +163,6 @@ const RoomSelector = ({
 
                 <Grid
                   style={{
-
                     border: "1px solid #494C55",
                     marginTop: "10px",
                     marginBottom: "10px",
@@ -178,9 +173,7 @@ const RoomSelector = ({
                   }}
                 >
                   {userForm.user_type === "parent" ? <>
-                  
-                    {names.map((key, index) => (
-                   
+                    {names.map((key, index) => (                  
                       <Grid
                         key={index}
                         style={{
@@ -188,7 +181,6 @@ const RoomSelector = ({
                           height: "60px",
                         }}
                       >
-                           
                         <FormControlLabel
                           style={{ marginBottom: "21px", marginRight: "5px" }}
                           control={
@@ -201,12 +193,12 @@ const RoomSelector = ({
                               }}
                               checked={guestsRoomList.some(
                                 (item) =>
-                                  item.userId === key.userId &&
-                                  item.rooms_id === room.rooms_id && 
+                                  item.user_id === key.user_id &&
+                                  item.room_id === room.rooms_id && 
                                   item.family_id === key.family_id
                               )}
                               onChange={(e) =>
-                                handleUserCheckboxChange(e,key.userId, room.rooms_id, key.family_id)
+                                handleUserCheckboxChange(e,key.user_id, room.rooms_id, key.family_id)
                               }
                             />
                           }
@@ -214,12 +206,12 @@ const RoomSelector = ({
                         <Typography style={{ marginRight: "4px", marginTop: "6px", whiteSpace: 'nowrap', }}>{key.name}</Typography>
                       </Grid>
                     ))}
-                  </> : <Typography>
-                    חדר זה מכיל {room.base_occupancy} מיטות || מיטות פנויות:{" "}
-                    {room.base_occupancy - room.peopleCount}{" "}
-                  </Typography>}
-
-
+                  </> : <></>
+                  // <Typography>
+                  //   חדר זה מכיל {room.base_occupancy} מיטות || מיטות פנויות:{" "}
+                  //   {room.base_occupancy - room.peopleCount}{" "}
+                  // </Typography>
+                  }
                 </Grid>
               </Collapse>
             </>

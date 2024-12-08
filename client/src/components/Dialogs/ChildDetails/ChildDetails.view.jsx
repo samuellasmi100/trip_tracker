@@ -4,8 +4,8 @@ import {
     Typography,
 } from "@mui/material";
 import { useStyles } from "./ChildDetails.style";
-import jsPDF from "jspdf";
-import "jspdf-autotable";
+
+
 
 const ChildDetailsView = ({ userData }) => {
     // const handleDownloadPDF = (userDetails, flightDetails, roomsDetails, notesDetails, paymentsDetails) => {

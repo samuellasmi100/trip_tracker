@@ -43,7 +43,6 @@ const ReservationView = (props) => {;
               <InputLabel className={classes.inputLabelStyle}>
                בחר מסלול
               </InputLabel>
-              {console.log(form)}
                <Select
                 name="week_chosen"
                 value={form.week_chosen}

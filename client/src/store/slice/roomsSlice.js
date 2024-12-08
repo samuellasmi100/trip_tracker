@@ -10,8 +10,9 @@ export const roomsSlice = createSlice({
   },
   reducers: {
     addRoomToForm: (state, action) => {
+  
       const roomExists = state.selectedRooms.some(
-        (room) => room.roomId === action.payload.roomId
+        (room) => room.rooms_id === action.payload.rooms_id
       );
       if (!roomExists) {
         state.selectedRooms.push(action.payload);
@@ -26,13 +27,13 @@ export const roomsSlice = createSlice({
     },
     removeRoomFromForm: (state, action) => {
       state.selectedRooms = state.selectedRooms.filter(
-        (room) => room.roomId !== action.payload.roomId
+        (room) => room.rooms_id !== action.payload.rooms_id
       );
     },
     resetForm: (state) => {
       state.selectedRooms = []; 
     },
-    updateChossenRoom: (state, action) => {
+    updateChosenRoom: (state, action) => {
       state.selectedChildRoomId = action.payload;
       state.expandedRoomId = action.payload 
     },
@@ -49,7 +50,7 @@ export const roomsSlice = createSlice({
 });
 
 export const { addRoomToForm,removeRoomFromForm,resetForm,
-  updateRoomsList,updateSelectedRoomsList,updateChossenRoom,
+  updateRoomsList,updateSelectedRoomsList,updateChosenRoom,
   toggleExpandRoom ,resetChildRoom
 } = roomsSlice.actions;
 

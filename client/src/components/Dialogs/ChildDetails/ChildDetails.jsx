@@ -3,7 +3,6 @@ import ChildDetailsView from "./ChildDetails.view";
 import { useDispatch, useSelector } from "react-redux";
 import ApiUser from "../../../apis/userRequest"
 import axios from "axios";
-import jsPDF from "jspdf";
 
 const ChildDetails = () => {
 

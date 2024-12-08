@@ -1,0 +1,25 @@
+.custom-datepicker {
+    color: #FFFFFF;
+    font-size: 14;
+    width: 105px;
+    padding: 5px 18px;
+    height: 24px;
+    border-radius: 4px;
+    border: 1px solid #494C55;
+    background: none !important;
+  }
+  
+  /* .custom-calendar {
+    background-color: lightyellow;
+    border: 2px solid purple;
+  }
+  
+  .custom-calendar .react-datepicker__day--selected {
+    background-color: orange;
+    color: white;
+  }
+  
+  .custom-calendar .react-datepicker__day:hover {
+    background-color: lightblue;
+  } */
+  

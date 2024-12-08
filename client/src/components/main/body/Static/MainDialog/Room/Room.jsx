@@ -8,17 +8,17 @@ const Room = (props) => {
 const dispatch = useDispatch()
  const form = useSelector((state) => state.staticSlice.form)
 const token = sessionStorage.getItem("token")
+const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
 
    const handleInputChange = (e) => {
     const { name, value } = e.target;
-    console.log(name)
     dispatch(staticSlice.updateFormField({ field: name, value }));
 
   };
 
   const submit = async() => {
   try {
-    const response = await ApiRooms.updateRoom(token,form)
+    const response = await ApiRooms.updateRoom(token,form,vacationId)
  
     dispatch(roomsSlice.updateRoomsList(response.data))
     dispatch(staticSlice.resetState())
