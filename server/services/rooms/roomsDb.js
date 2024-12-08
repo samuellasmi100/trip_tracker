@@ -21,12 +21,12 @@ const getRoomDetailsWithCounts = async () => {
     console.log(error)
   }
 }
-const updateRoom = async (data) => {
+const updateRoom = async (data,vacationId) => {
   try {
     const roomsId = data.rooms_id
     delete data.number_of_people
     delete data.id
-    const sql = roomsQuery.updateRoom(data,roomsId)
+    const sql = roomsQuery.updateRoom(data,roomsId,vacationId)
     const parameters = Object.values(data)
     const response = await connection.executeWithParameters(sql,parameters)
     return response
@@ -35,6 +35,7 @@ const updateRoom = async (data) => {
     console.log(error)
   }
 }
+
 const getRoomAvailable = async (vacationId,startData,endDate) => {
   try {
      let sql = roomsQuery.getRoomAvailable(vacationId)
@@ -47,9 +48,22 @@ const getRoomAvailable = async (vacationId,startData,endDate) => {
   }
 }
 
+const getUnAvailableDates = async (vacationId,roomId) => {
+  console.log(roomId)
+  try {
+     let sql = roomsQuery.getUnAvailableDates(vacationId)
+     const parameters = [roomId]
+     const response = await connection.executeWithParameters(sql,parameters)
+    return response
+
+  } catch (error) { 
+    console.log(error)
+  }
+}
 module.exports = {
   getAll,
   updateRoom,
   getRoomDetailsWithCounts,
-  getRoomAvailable
+  getRoomAvailable,
+  getUnAvailableDates
 }

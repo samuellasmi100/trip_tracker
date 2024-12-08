@@ -25,7 +25,7 @@ const getUserDetails = async (id,familyId,isIngroup) => {
     const [userDetails, flightsDetails, roomsDetails, notesDetails,paymentsDetails] = await Promise.all([
         getParentFamilyMamber(id),
         flightsService.getFlightsDetails(id,familyId,isIngroup),
-        userRoomsService.getChossenRoom(id),
+        userRoomsService.getChosenRoom(id),
         notesService.getParentNote(id),
         paymentsService.getHistoryPayments(familyId)
       ])

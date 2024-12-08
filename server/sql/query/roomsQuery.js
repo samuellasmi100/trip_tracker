@@ -1,5 +1,5 @@
 const getAll = (vacationId) => {
-  return `SELECT rooms_id as roomId,type as roomType,size as roomSize,direction as roomDirection,floor as roomFloor FROM trip_tracker_${vacationId}.rooms WHERE is_taken = 0;`
+  return `SELECT rooms_id ,type,size,direction,floor,base_occupancy,max_occupancy FROM trip_tracker_${vacationId}.rooms;`
 }
 const getRoomDetailsWithCounts = () => {
 return `SELECT 
@@ -15,13 +15,14 @@ GROUP BY
     r.rooms_id;
 `
 }
-const updateRoom = (roomData,id) => {
+const updateRoom = (roomData,id,vacationId) => {
 
-  return `UPDATE rooms SET ${Object.keys(roomData)
+  return `UPDATE trip_tracker_${vacationId}.rooms SET ${Object.keys(roomData)
     .map(key => `${key}=?`)
     .join(',')}
   WHERE rooms_id = ${id}`
 }
+
 const getRoomAvailable = (vacationId) => {
   return `
     SELECT r.*
@@ -35,10 +36,16 @@ ON r.rooms_id = rt.room_id
 WHERE rt.room_id IS NULL; 
 `
   }
+
+const getUnAvailableDates = (vacationId) => {
+  return `SELECT start_date,end_date,room_id FROM trip_tracker_${vacationId}.room_taken where room_id = ?;`
+}
+
 module.exports = {
   getAll,
   getRoomDetailsWithCounts,
   updateRoom,
-  getRoomAvailable
+  getRoomAvailable,
+  getUnAvailableDates
 }
 

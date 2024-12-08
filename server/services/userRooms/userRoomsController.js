@@ -1,7 +1,5 @@
 const router = require("express").Router();
 const userRoomsService = require("./userRoomsService")
-const uuid = require("uuid").v4;
-
 
 
 
@@ -20,10 +18,23 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.get("/room/:id", async (req, res, next) => {
-  let userId = req.params.id
+router.get("/users/:id/:vacationId", async (req, res, next) => {
+  const vacationId = req.params.vacationId
+  const familyId = req.params.id
   try {
-    const response = await userRoomsService.getChossenRoom(userId)
+    const response = await userRoomsService.getUsersChosenRoom(familyId,vacationId)
+    res.send(response)
+
+  } catch (error) {
+    return next(error);
+  }
+});
+
+router.get("/user/:id/:vacationId", async (req, res, next) => {
+  const vacationId = req.params.vacationId
+  const userId = req.params.id
+  try {
+    const response = await userRoomsService.getChosenRoom(userId,vacationId)
     res.send(response)
 
   } catch (error) {
@@ -49,43 +60,10 @@ router.post("/room", async (req, res, next) => {
   const roomId = req.body.selectedChildRoomId
   const familyId = form.family_id
   const vacationId = req.body.vacationId
-  const status = form.status
 
   try {
-    await userRoomsService.assignRoom(userId,roomId,familyId,status,vacationId)
-    // const response = await userRoomsService.getChossenRoom(userId,vacationId)
-    // res.send(response)
-
-  } catch (error) {
-    return next(error);
-  }
-});
-
-router.post("/room/parent", async (req, res, next) => {
-  const form = req.body.dataToSend
-  let userId = form.userId
-  const roomId = form.roomId
-  const familyId = form.familyId
-  const status = form.status
-  try {
-    // await userRoomsService.assignRoom(userId,roomId,familyId,status)
-    // const response = await userRoomsService.getFamilyRoom(familyId)
-    // res.send(response)
-
-  } catch (error) {
-    return next(error);
-  }
-});
-
-router.put("/room", async (req, res, next) => {
-  const form = req.body.form
-  let userId = form.user_id
-  const roomId = req.body.selectedChildRoomId
-  const vacationId = req.body.vacationId
-
-  try {
-    await userRoomsService.updateAssignRoom(userId,roomId,vacationId)
-    const response = await userRoomsService.getChossenRoom(userId,vacationId)
+    await userRoomsService.assignRoom(userId,roomId,familyId,vacationId)
+    const response = await userRoomsService.getChosenRoom(userId,vacationId)
     res.send(response)
 
   } catch (error) {
@@ -94,5 +72,20 @@ router.put("/room", async (req, res, next) => {
 });
 
 
+router.post("/room/parent/:id", async (req, res, next) => {
+  const form = req.body.dataToSend
+  let userId = form.userId
+  const roomId = form.roomsId
+  const familyId = form.familyId
+  const status = form.status
+  const vacationId = req.params.id
+  try {
+    await userRoomsService.assignRoom(userId,roomId,familyId,vacationId,status)
+    const response = await userRoomsService.getFamilyRoom(familyId,vacationId)
+    res.send(response)
 
+  } catch (error) {
+    return next(error);
+  }
+});
 module.exports = router;

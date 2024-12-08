@@ -28,6 +28,21 @@ router.get("/:vacationId", async (req, res, next) => {
     return next(error);
   }
 });
+
+router.get("/room_available/:id/:vacationId/:startDate/:endDate", async (req, res, next) => {
+  const vacationId = req.params.vacationId
+  const roomId = req.params.id
+  const startDate = req.params.startDate
+  const endDate = req.params.endDate
+  try {
+    const response = await roomsService.getRoomAvailableDates(vacationId,roomId,startDate,endDate)
+    res.send(response)
+
+  } catch (error) {
+    return next(error);
+  }
+});
+
 router.get("/count", async (req, res, next) => {
   try {
     const response = await roomsService.getRoomDetailsWithCounts()
@@ -47,12 +62,12 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.put("/", async (req, res, next) => {
+router.put("/:id", async (req, res, next) => {
   const roomData = req.body.form
-
+  const vacationId = req.params.id
   try {
-   await roomsService.updateRoom(roomData)
-   let response = await roomsService.getRoomDetailsWithCounts()
+   await roomsService.updateRoom(roomData,vacationId)
+   const response = await roomsService.getAll(vacationId)
    res.send(response)
 
   } catch (error) {

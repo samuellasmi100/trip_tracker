@@ -13,40 +13,27 @@ const assignMainRoom = async (vacationId,familyId,roomId,startDate,endDate) => {
   }
 }
 
-const assignRoom = async (userId,roomId,familyId,status,vacationId) => {
-  console.log(userId,roomId,familyId,status,vacationId)
+const assignRoom = async (userId,roomId,familyId,vacationId) => {
+
   try {
-    let sql
-    let parameters;
-     let isGuestAlreadyChosenRoom = await getChossenRoom(userId,vacationId)
-     if(isGuestAlreadyChosenRoom.length > 0){
-      if(isGuestAlreadyChosenRoom[0].roomId === roomId && status === false){
-        sql = userRoomQuery.removeUserAssignRoom()
-        parameters = [userId]
-      }else {
-        sql = userRoomQuery.updateAssignRoom()
-        parameters = [roomId,userId]
-      }
-      
-     }else {
-       sql = userRoomQuery.assignRoom(vacationId)
-        parameters = [userId,roomId,familyId]
-     }
+    const sql = userRoomQuery.assignRoom(vacationId)
+     const parameters = [userId,roomId,familyId]
     await connection.executeWithParameters(sql,parameters) 
   } catch (error) { 
     console.log(error)
   }
 }
 
-const updateAssignRoom = async (userId,roomId) => {
+const updateAssignRoom = async (userId,roomId,vacationId) => {
   try {
-    let sql  = userRoomQuery.updateAssignRoom()
+    let sql  = userRoomQuery.updateAssignRoom(vacationId)
     const parameters = [roomId,userId]
     await connection.executeWithParameters(sql,parameters) 
   } catch (error) { 
     console.log(error)
   }
 }
+
 
 const updateMainRoom = async (roomDetails,userId) => {
  
@@ -86,30 +73,11 @@ const getFamilyRoom = async (id,vacationId) => {
   }
 }
 
-const unLockRoom = async (roomId) => {
-  try {
-    let sql = userRoomQuery.unLockRoom()
-     const parameters = [0,roomId]
-    await connection.executeWithParameters(sql,parameters)
-  } catch (error) { 
-    console.log(error)
-  }
-}
 
-const lockRoom = async (roomId) => {
-  try {
-    let sql = userRoomQuery.lockRoom()
-     const parameters = [1,roomId]
-    await connection.executeWithParameters(sql,parameters)
-  } catch (error) { 
-    console.log(error)
-  }
-}
-
-const getChossenRoom = async (userId,vacationId) => {
+const getChosenRoom = async (userId,vacationId) => {
 
   try {
-    let sql = userRoomQuery.getChossenRoom(vacationId)
+    let sql = userRoomQuery.getChosenRoom(vacationId)
      const parameters = [userId]
      const response = await connection.executeWithParameters(sql,parameters)
       return response
@@ -119,9 +87,9 @@ const getChossenRoom = async (userId,vacationId) => {
   }
 }
 
-const getAllUserRooms = async (familyId,vacationId) => {
+const getUsersChosenRoom = async (familyId,vacationId) => {
   try {
-    let sql = userRoomQuery.getAllUserRooms(vacationId)
+    let sql = userRoomQuery.getUsersChosenRoom(vacationId)
     const parameters = [familyId]
     const response = await connection.executeWithParameters(sql,parameters)
      return response
@@ -130,10 +98,10 @@ const getAllUserRooms = async (familyId,vacationId) => {
  }
 }
 
-const removeUserAssignMainRoom = async (familyId) => {
+const removeUserAssignMainRoom = async (userId,vacationId) => {
   try {
-     let sql = userRoomQuery.removeUserAssignMainRoom()
-     const parameters = [familyId]
+     let sql = userRoomQuery.removeUserAssignMainRoom(vacationId)
+     const parameters = [userId]
      const response = await connection.executeWithParameters(sql,parameters)
       return response
 
@@ -142,10 +110,10 @@ const removeUserAssignMainRoom = async (familyId) => {
   }
 }
 
-const removeAllUserAssignRoom = async (familyId,roomId) => {
+const removeAllUserAssignRoom = async (familyId,vacationId) => {
   try {
-     let sql = userRoomQuery.removeAllUserAssignRoom()
-     const parameters = [roomId,familyId]
+     let sql = userRoomQuery.removeAllUserAssignRoom(vacationId)
+     const parameters = [familyId]
      const response = await connection.executeWithParameters(sql,parameters)
       return response
 
@@ -162,13 +130,12 @@ module.exports = {
   getFamilyRoom,
   updateMainRoom,
   removeMainRoom,
-  unLockRoom,
-  lockRoom,
   assignRoom,
-  getChossenRoom,
+  getChosenRoom,
   updateAssignRoom,
   removeUserAssignMainRoom,
   removeAllUserAssignRoom,
-  getAllUserRooms,
+  getUsersChosenRoom,
+  getUsersChosenRoom
 
 }
