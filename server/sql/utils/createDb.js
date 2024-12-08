@@ -3,7 +3,6 @@ const mysql = require('mysql2/promise');
 const {
     dropTablesQueries,
     createFamilyTableQuery,
-    createFamilyRoomTableQuery,
     createFileTableQuery,
     createFightsTableQuery,
     createGuestTableQuery,
@@ -31,7 +30,6 @@ const {
 
     // Create table
     await connection.query(createFamilyTableQuery);
-    await connection.query(createFamilyRoomTableQuery);
     await connection.query(createFileTableQuery);
     await connection.query(createFightsTableQuery);
     await connection.query(createGuestTableQuery);

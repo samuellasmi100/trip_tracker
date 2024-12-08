@@ -22,14 +22,6 @@ const createFamilyTableQuery = `
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;`;
 
-const createFamilyRoomTableQuery = `
- CREATE TABLE family_room_details (
-  id int NOT NULL AUTO_INCREMENT,
-  family_id varchar(45) DEFAULT NULL,
-  room_id varchar(45) NOT NULL,
-  PRIMARY KEY (id)
-) ENGINE=InnoDB AUTO_INCREMENT=102 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-`;
 
 const createFileTableQuery = `
  CREATE TABLE files (
@@ -167,7 +159,6 @@ const createRoomTakenTable = `
 module.exports = { 
   dropTablesQueries,
   createFamilyTableQuery,
-  createFamilyRoomTableQuery,
   createFileTableQuery,
   createFightsTableQuery,
   createGuestTableQuery,
