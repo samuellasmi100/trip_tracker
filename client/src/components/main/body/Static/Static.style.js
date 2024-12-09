@@ -3,43 +3,38 @@ import { makeStyles } from "@mui/styles";
 import { Padding } from "@mui/icons-material";
 
 export const useStyles = makeStyles((theme) => ({
-   dataTableBody: {
-    "& tr:nth-of-type(odd)": {
-      backgroundColor: "#222222",
-    },
-    "& tr:nth-of-type(even)": {
-      backgroundColor: "#2d2d2d",
-    },
+  containerGrid: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "10px",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#2D2D2D !important",
   },
-  dataTableCell: {
-    fontSize:"14px !important",
-    color: "#ffffff !important",
-    textAlign: "center !important",
-    borderBottom: "none !important",
+
+  button: {
+    display: "flex", // Ensures proper alignment for the child
+    padding: "0", // Removes default padding
+    border: "none",
   },
-  headerTableRow: {
-    fontSize: "15px !important",
-    color: "#5a5c62 !important",
-    textAlign: "center !important",
-    borderBottom: "none!important",
-    fontWeight: "600 !important",
-    "&.MuiTableCell-stickyHeader": {
-      backgroundColor: "#2d2d2d !important",
-    },
-  },
-  navButton:{
-    color: "#757882 !important",
-    fontSize: "20px !important",
-    textTransform: "capitalize !important",
-    height: "52px",
-    width:"100px",
-     marginLeft:"30px !important",
-     marginRight:"30px !important",
+  dataGrid: {
+    minHeight: "20vh",
+    minWidth: "20vw",
+    border: "1px solid #494C55",
     borderRadius: "4px",
-    opacity: 1,
-    "&.active": {
-      borderBottom:"2px solid #757882",
-    },
+  },
+  header: {
+    color: "var(--Primary-text, #FFF)",
+    fontSize: "14px",
+    fontStyle: "normal",
+    fontWeight: "500",
+    paddingTop: "5px",
+  },
+  headerBox: {
+    background: "var(--Inputs-on-modal, #39393C)",
+    width: "100%",
+    height: "32px",
+    flexShrink: "0",
   },
   textField: {
     borderRadius: 4,

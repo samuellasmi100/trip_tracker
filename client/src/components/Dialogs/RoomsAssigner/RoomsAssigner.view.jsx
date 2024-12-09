@@ -54,8 +54,8 @@ const handleMouseLeave = () => {
               className={classes.textField}
               onChange={(e) => setSearchTerm(e.target.value)}
               value={searchTerm}
-              onMouseEnter={() => setIsListOpen(true)}
-              onMouseLeave={handleMouseLeave}
+              // onMouseEnter={() => setIsListOpen(true)}
+              // onMouseLeave={handleMouseLeave}
             />
            
           </Grid>

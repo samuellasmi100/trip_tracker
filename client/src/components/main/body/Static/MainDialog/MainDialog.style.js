@@ -5,8 +5,8 @@ import { BorderBottom } from "@mui/icons-material";
 
 export const useStyles = makeStyles((theme) => ({
   dialog: {
-    minWidth: "590px",
-    height: "580px", 
+    minWidth: "80vw",
+    height: "80vh", 
     color: "#FFFFFF !important",
     backgroundColor: "#2D2D2D !important",
   

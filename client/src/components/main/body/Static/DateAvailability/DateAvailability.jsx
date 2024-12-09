@@ -1,6 +1,6 @@
 import React, { useEffect,useState } from "react";
 import DateAvailabilityView from "./DateAvailability.view";
-import ApiRooms from "../../../../../../apis/roomsRequest";
+import ApiRooms from "../../../../../apis/roomsRequest";
 import { useSelector } from "react-redux";
 import { TrendingUp } from "@mui/icons-material";
 
@@ -43,7 +43,7 @@ const DateAvailability = () => {
    getUnAndAvailableDates();
   }, []);
 
-  return loading ? <DateAvailabilityView gaps={gaps}/> :<></>;
+  return <DateAvailabilityView gaps={gaps} /> 
 };
 
 export default DateAvailability;
