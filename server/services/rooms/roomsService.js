@@ -1,5 +1,6 @@
 const roomsDb = require("./roomsDb")
-const {getAvailableDates} = require("../../utils/getAvailableDates")
+const {getAvailableDatesByRoom} = require("../../utils/getAvailableDates")
+
 const getAll = async (vacationId) => {
     return await roomsDb.getAll(vacationId)
 }
@@ -12,13 +13,12 @@ const getRoomDetailsWithCounts = async () => {
 const updateRoom = async (data,vacationId) => {
     return await roomsDb.updateRoom(data,vacationId)
 }
-const getRoomAvailableDates = async (vacationId,roomId,startDate,endDate) => {
-   
-    let datesUnAvailable = await roomsDb.getUnAvailableDates(vacationId,roomId)
+const getRoomAvailableDates = async (vacationId,startDate,endDate) => {
+    let datesUnAvailable = await roomsDb.getUnAvailableDates(vacationId)
     if(datesUnAvailable.length === 0){
       return []
     }else {
-        const result = getAvailableDates(datesUnAvailable,startDate,endDate)
+        const result = getAvailableDatesByRoom(datesUnAvailable,startDate,endDate)
         return result
     }
  

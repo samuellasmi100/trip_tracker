@@ -33,7 +33,15 @@ const updateAssignRoom = async (userId,roomId,vacationId) => {
     console.log(error)
   }
 }
-
+const updateStartEndAndDate = async (vacationId,familyId,startDate,endDate) => {
+  try {
+    let sql  = userRoomQuery.updateStartEndAndDate(vacationId)
+    const parameters = [startDate,endDate,familyId]
+    await connection.executeWithParameters(sql,parameters) 
+  } catch (error) { 
+    console.log(error)
+  }
+}
 
 const updateMainRoom = async (roomDetails,userId) => {
  
@@ -136,6 +144,7 @@ module.exports = {
   removeUserAssignMainRoom,
   removeAllUserAssignRoom,
   getUsersChosenRoom,
-  getUsersChosenRoom
+  getUsersChosenRoom,
+  updateStartEndAndDate
 
 }

@@ -59,7 +59,7 @@ const assignRoom = (vacationId) => {
 
 const updateAssignRoom = (vacationId) => {
   return `UPDATE trip_tracker_${vacationId}.user_room_assignments
-      s SET room_id = ? where user_id = ?`;
+       SET room_id = ? where user_id = ?`;
 };
 
 const removeAllUserAssignRoom = (vacationId) => {
@@ -70,6 +70,10 @@ const removeUserAssignMainRoom = (vacationId) => {
   return `DELETE FROM trip_tracker_${vacationId}.user_room_assignments where user_id = ?`;
 };
 
+const updateStartEndAndDate = (vacationId) => {
+  return `UPDATE trip_tracker_${vacationId}.room_taken
+       SET start_date = ?, end_date = ? where family_id = ?`;
+};
 module.exports = {
   assignMainRoom,
   getFamilyRoom,
@@ -81,4 +85,5 @@ module.exports = {
   removeUserAssignMainRoom,
   removeAllUserAssignRoom,
   getUsersChosenRoom,
+  updateStartEndAndDate
 };

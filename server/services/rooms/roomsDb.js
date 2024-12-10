@@ -49,11 +49,12 @@ const getRoomAvailable = async (vacationId,startData,endDate) => {
 }
 
 const getUnAvailableDates = async (vacationId,roomId) => {
-  console.log(roomId)
+ 
   try {
      let sql = roomsQuery.getUnAvailableDates(vacationId)
-     const parameters = [roomId]
-     const response = await connection.executeWithParameters(sql,parameters)
+    
+     const response = await connection.execute(sql)
+     
     return response
 
   } catch (error) { 

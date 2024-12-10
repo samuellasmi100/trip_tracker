@@ -38,7 +38,7 @@ WHERE rt.room_id IS NULL;
   }
 
 const getUnAvailableDates = (vacationId) => {
-  return `SELECT start_date,end_date,room_id FROM trip_tracker_${vacationId}.room_taken where room_id = ?;`
+  return `SELECT start_date,end_date,room_id FROM trip_tracker_${vacationId}.room_taken;`
 }
 
 module.exports = {

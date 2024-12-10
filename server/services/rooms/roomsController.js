@@ -29,13 +29,12 @@ router.get("/:vacationId", async (req, res, next) => {
   }
 });
 
-router.get("/room_available/:id/:vacationId/:startDate/:endDate", async (req, res, next) => {
-  const vacationId = req.params.vacationId
-  const roomId = req.params.id
+router.get("/room_available/:id/:startDate/:endDate", async (req, res, next) => {
+  const vacationId = req.params.id
   const startDate = req.params.startDate
   const endDate = req.params.endDate
   try {
-    const response = await roomsService.getRoomAvailableDates(vacationId,roomId,startDate,endDate)
+    const response = await roomsService.getRoomAvailableDates(vacationId,startDate,endDate)
     res.send(response)
 
   } catch (error) {

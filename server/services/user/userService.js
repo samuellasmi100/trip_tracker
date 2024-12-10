@@ -3,16 +3,20 @@ const userRoomsService = require("../userRooms/userRoomsService")
 const notesService = require("../notes/notesService")
 const paymentsService = require("../payments/paymentsService")
 const userDb = require("./userDb")
+const userRoomService = require("../userRooms/userRoomsService")
 
 
 const addGuest = async (data,vacationId) => {
     return await userDb.addGuest(data,vacationId)
 }
-
 const getFamilyGuests = async (id,vacationId) => {
     return await userDb.getFamilyGuests(id,vacationId)
 }
 const updateGuest = async (data,vacationId) => {
+    const familyId = data.family_id
+    let startDate = data.arrival_date
+    let endDate = data.departure_date
+    await userRoomService.updateStartEndAndDate(vacationId,familyId,startDate,endDate)
     return await userDb.updateGuest(data,vacationId)
 }
 const getFamilyMamber = async (id,vacationId) => {

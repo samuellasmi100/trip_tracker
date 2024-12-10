@@ -61,8 +61,13 @@ const assignRoom = async (userId,roomId,familyId,vacationId,status) => {
 const getChosenRoom = async (id,vacationId) => {
     return await userRoomsDb.getChosenRoom(id,vacationId)
 }
+
 const getUsersChosenRoom = async (id,vacationId) => {
     return await userRoomsDb.getUsersChosenRoom(id,vacationId)
+}
+
+const updateStartEndAndDate = (vacationId,familyId,startDate,endDate) => {
+return userRoomsDb.updateStartEndAndDate(vacationId,familyId,startDate,endDate)
 }
 module.exports = {
     assignMainRoom,
@@ -70,5 +75,6 @@ module.exports = {
     assignRoom,
     getChosenRoom,
     assignGroupUserRoom,
-    getUsersChosenRoom
+    getUsersChosenRoom,
+    updateStartEndAndDate
 }
