@@ -84,12 +84,13 @@ const Rooms = ({ handleDialogTypeOpen }) => {
         dataToUpdate,
         vacationId
       );
+      console.log(response)
       setFilteredRooms2([]);
       setEditRowIndex(null);
       setActionStatus("");
       setEditRowData(defaultNewRow);
       dispatch(roomsSlice.updateRoomsList(response.data));
-      dispatch(staticSlice.resetState());
+      // dispatch(staticSlice.resetState());
     } catch (error) {
       console.log(error);
     }

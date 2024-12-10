@@ -28,6 +28,7 @@ const MainDialog = (props) => {
 
   
   const handleButtonClick = async (buttonName) => {
+    
     dispatch(dialogSlice.updateActiveButton(buttonName))
   }
   

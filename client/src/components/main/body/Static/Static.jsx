@@ -40,19 +40,6 @@ const Static = () => {
     }
   };
 
-  const handleNavButtonClicked = () => {
-    if (activeButton === "חדרים") {
-      return (
-        <Rooms
-          searchTerm={searchTerm}
-          handleDialogTypeOpen={handleDialogTypeOpen}
-        />
-      );
-    }
-    if (activeButton === "מלונות") {
-      // return <Rooms />
-    }
-  };
 
   const getVacations = async () => {
     try {
@@ -70,6 +57,7 @@ const Static = () => {
   useEffect(() => {
     getVacations();
   }, []);
+
  const handleWidgetClick = (name) => {
   dispatch(staticSlice.openModal());
   dispatch(staticSlice.updateDialogType(name));

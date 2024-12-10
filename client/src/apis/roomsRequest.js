@@ -57,8 +57,8 @@ export default {
       headers: { Authorization: token },
     });
   },
-  getUnAndAvailableDates(token,roomId,vacationId,startDate,endDate) {
-    return Api.get(`/${END_POINT.ROOMS}/room_available/${roomId}/${vacationId}/${startDate}/${endDate}`, {
+  getUnAndAvailableDates(token,vacationId,startDate,endDate) {
+    return Api.get(`/${END_POINT.ROOMS}/room_available/${vacationId}/${startDate}/${endDate}`, {
       headers: { Authorization: token },
     });
   },

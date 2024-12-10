@@ -61,8 +61,8 @@ const handleMouseLeave = () => {
           </Grid>
           <Grid item xs={12} style={{position:'relative'}}> 
           <List 
-            onMouseEnter={() => setIsListOpen(true)}
-            onMouseLeave={handleMouseLeave}
+            // onMouseEnter={() => setIsListOpen(true)}
+            // onMouseLeave={handleMouseLeave}
             style={{
             maxHeight:"260px",
             overflow:"auto", 

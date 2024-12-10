@@ -1,60 +1,91 @@
-import { Grid, Select, InputLabel, MenuItem, OutlinedInput } from "@mui/material";
+import {
+  TableContainer,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Paper,
+} from "@mui/material";
 import React from "react";
 import { useStyles } from "./DateAvailability.style"
 import { useSelector } from "react-redux";
 
 
+function DateAvailabilityView({dateRange,gaps}) {
+  const classes = useStyles();
+  const rooms = useSelector((state) => state.roomsSlice.rooms);
+
+  let roomsId = rooms.map((key) => {
+    return key.rooms_id
+  })
 
 
-const TableComponent = ({ roomIds, dateRange }) => {
-  return (
-    <table border="1">
-      <thead>
-        <tr>
-          <th>Room ID</th>
+  const reformatDate = (date) => {
+    const [day, month, weekday] = date.split(" ");
+    return `${day.padStart(2, '0')} ${month}`; 
+  };
+
+  const isDateAvailable = (date1,roomId) => {
+     
+     if(gaps[roomId] === undefined){
+        return true
+      }else {
+        const format = reformatDate(date1)
+        const [day, date] = format.split(" ");
+        const formattedCheckString = `${date} ${day}`;
+        if(gaps[roomId]?.includes(String(formattedCheckString))){
+          console.log(formattedCheckString,roomId)
+         return true
+        }else {
+          // console.log(formattedCheckString,roomId)
+          return false
+        }
+      }
+    };
+
+
+  return(
+    <TableContainer
+    style={{
+     width:"99.9%"
+    }}>
+    <Table stickyHeader style={{ width: "inherit" }} size="small">
+      <TableHead>
+        <TableRow>
+          <TableCell  className={classes.headerTableRow}>מספר חדר</TableCell>
           {dateRange.map((date, index) => (
-            <th key={index}>{date}</th>
+            <TableCell key={index}
+            className={classes.headerTableRow}
+            style={{ textAlign: "center" }}>
+              {date}
+            </TableCell>
           ))}
-        </tr>
-      </thead>
-      <tbody>
-        {roomIds.map((roomId, rowIndex) => (
-          <tr key={rowIndex}>
-            <td>{roomId}</td>
-            {dateRange.map((_, colIndex) => (
-              <td key={colIndex}></td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-};
-
-const generateDateRange = (startDate, endDate) => {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-  const dateRange = [];
-
-  while (start <= end) {
-    dateRange.push(new Date(start).toISOString().split('T')[0]); // Format: YYYY-MM-DD
-    start.setDate(start.getDate() + 1);
-  }
-
-  return dateRange;
-};
-
-function DateAvailabilityView({gaps}) {
-  console.log("fffffffffffffffff")
-  const roomIds = ["101", "102", "103"];
-  const startDate = "2025-04-10";
-  const endDate = "2025-04-21";
-  const dateRange = generateDateRange(startDate, endDate);
-
-
-  return <TableComponent roomIds={roomIds} dateRange={dateRange} />;
-   
-  
+        </TableRow>
+      </TableHead>
+      <TableBody className={classes.dataTableBody} >
+        {roomsId.map((roomId, rowIndex) => (
+          <TableRow key={rowIndex}>
+            <TableCell className={classes.dataTableCell}>{roomId}</TableCell>
+            {dateRange.map((date, index) => {
+                const isAvailable = isDateAvailable(date, roomId);
+                return (
+                  <TableCell
+                   className={classes.dataTableCell}
+                    key={index}
+                    style={{
+                      backgroundColor: isAvailable ? 'green' : 'red',
+                    }}
+                  >
+               </TableCell>
+                );
+              })}
+            </TableRow>
+          ))}
+      </TableBody>
+    </Table>
+  </TableContainer>
+  )
 }
 
 export default DateAvailabilityView;

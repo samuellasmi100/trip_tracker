@@ -37,7 +37,6 @@ export const staticSlice = createSlice({
     resetState: (state, action) => {
       state.type = "";
       state.form = {};
-      state.open = false;
     },
     
   },

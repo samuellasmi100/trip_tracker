@@ -98,7 +98,8 @@ const ReservationView = (props) => {;
 
            <Grid item xs={dialogType === "editParent" || dialogType === "addFamily" ? 5 : 8} style={{marginRight: "46px"}}>
           <Grid container spacing={2}>
-            {dialogType === "editChild" || dialogType === "addChild" ?  <Grid item>
+            {/* {dialogType === "editChild" || dialogType === "addChild" ? 
+             <Grid item>
               <InputLabel className={classes.inputLabelStyle}>
                בחר מסלול
               </InputLabel>
@@ -125,7 +126,7 @@ const ReservationView = (props) => {;
             </MenuItem>
           ))}
         </Select>
-            </Grid> : <></>}
+            </Grid> : <></>} */}
          
          {dialogType !== "editChild" && dialogType !== "addChild" ? <Grid item>
              <InputLabel className={classes.inputLabelStyle}>
