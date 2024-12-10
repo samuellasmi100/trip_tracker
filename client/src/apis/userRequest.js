@@ -38,12 +38,16 @@ export default {
       headers: { Authorization: token },
     });
   },
-  getUserDetails(token,userId,familyId,isIngroup) {
-    return Api.get(`${END_POINT.USER}/details/${userId}/${familyId}/${isIngroup}`, {
+  getUserDetails(token,userId,familyId,isIngroup,vacationId) {
+    return Api.get(`${END_POINT.USER}/details/${userId}/${familyId}/${isIngroup}/${vacationId}`, {
       headers: { Authorization: token },
     });
   },
-  
+  deleteGuests(token,userId,vacationId) {
+    return Api.delete(`${END_POINT.USER}/${userId}/${vacationId}`, {
+      headers: { Authorization: token },
+    });
+  },
 }
 
 

@@ -13,6 +13,7 @@ const form = useSelector((state) => state.flightsSlice.form)
 const userForm = useSelector((state) => state.userSlice.form)
 const token = sessionStorage.getItem("token")
 const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
+const userClassificationType = ["MR","MRS","BABY"]
 
   const handleInputChange = (e) => {
     let { name, value,checked } = e.target
@@ -72,7 +73,7 @@ const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
     try {
     let response 
     if(form.type === "edit"){
-      await ApiFlights.updateUserFligets(token,userForm.user_id,form,vacationId)
+      response = await ApiFlights.updateUserFligets(token,userForm.user_id,form,vacationId)
     }else {
       response = await ApiFlights.addUserFlights(token,form,vacationId)
     }
@@ -114,7 +115,7 @@ const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
   }, [])
   
   return (
-    <FlightsView handleInputChange={handleInputChange} submit={submit}  handleCloseClicked={handleCloseClicked}/>
+    <FlightsView handleInputChange={handleInputChange} submit={submit}  handleCloseClicked={handleCloseClicked} userClassificationType={userClassificationType}/>
   );
 };
 

@@ -12,11 +12,13 @@ const ChildDetails = () => {
   const [userData, setUserData] = useState({})
   const [response, setResponse] = useState(false)
   const token = sessionStorage.getItem("token")
+  const vacationId = useSelector((state) => state.vacationSlice.vacationId);
   
   const getGuestData = async () => {
 
     try {
-      let response = await ApiUser.getUserDetails(token,form.user_id,form.family_id,form.is_in_group)
+      let response = await ApiUser.getUserDetails(token,form.user_id,form.family_id,form.is_in_group,vacationId)
+
       if(response?.data?.userDetails !== undefined){
         setResponse(true)
         setUserData(response.data)

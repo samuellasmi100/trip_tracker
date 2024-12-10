@@ -8,7 +8,8 @@ export const END_POINT = {
   NOTES:'notes',
   PAYMENTS:'payments',
   USER_ROOMS:'user_rooms',
-  VACATIONS:"vacations"
+  VACATIONS:"vacations",
+  STATIC:"static"
 };
 
 // export function setAuthToken(token) {

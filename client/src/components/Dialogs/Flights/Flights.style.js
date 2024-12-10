@@ -131,7 +131,7 @@ export const useStyles = makeStyles((theme) => ({
     },
     selectOutline: {
         height: "35px",
-         width:"80px",
+         width:"180px",
         "&.MuiOutlinedInput-root": {
           color: "#ffffff !important",
           "& .MuiOutlinedInput-notchedOutline": {

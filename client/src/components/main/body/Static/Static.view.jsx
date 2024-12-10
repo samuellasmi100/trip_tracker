@@ -51,7 +51,7 @@ function StaticView({ handleWidgetClick}) {
         </Button>
       </Grid>
       <Grid className={classes.containerGrid}>
-        <Button className={classes.button}  onClick={() => handleWidgetClick("registers")}>
+        <Button className={classes.button}  onClick={() => handleWidgetClick("mainGuests")}>
           <Grid className={classes.dataGrid}>
           <Grid className={classes.headerBox}>
               <Typography className={classes.header}>נרשמים</Typography>
@@ -60,10 +60,11 @@ function StaticView({ handleWidgetClick}) {
         </Button>
       </Grid>
       <Grid className={classes.containerGrid}>
-        <Button className={classes.button}  onClick={() => handleWidgetClick("allGuests")}>
+        <Button className={classes.button}  onClick={() => handleWidgetClick("guests")}>
           <Grid className={classes.dataGrid}>
           <Grid className={classes.headerBox}>
               <Typography className={classes.header}>כלל האורחים</Typography>
+               
               </Grid>
           </Grid>
         </Button>

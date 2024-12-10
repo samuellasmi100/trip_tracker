@@ -10,13 +10,13 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  FormControl,
-  IconButton,
+  OutlinedInput,
+  ListItemText,
 } from "@mui/material";
 import { useStyles } from "./Flights.style";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import * as dialogSlice from "../../../store/slice/dialogSlice"
+
 
 import "./Flights.css"
 
@@ -175,13 +175,14 @@ const FlightsView = (props) => {
   const {
     handleInputChange,
     submit,
-    handleCloseClicked
+    handleCloseClicked,
+    userClassificationType
   } = props;
 
 
   return (
     <>
-      <Grid container style={{ minHeight: "380px", padding: "20px" }}>
+      <Grid container style={{ minHeight: "420px", padding: "20px" }}>
         <Grid item xs={6}>
           <Grid container spacing={1} justifyContent="center">
             <Grid item>
@@ -227,7 +228,51 @@ const FlightsView = (props) => {
                 className={classes.textField}
               />
             </Grid>
-            {userForm.flights_direction === "round_trip" ?
+            <Grid item>
+              <InputLabel className={classes.inputLabelStyle}>סיווג משתמש</InputLabel>
+              <Select
+                name="user_classification"
+                value={form.user_classification}
+                onChange={handleInputChange}
+                input={
+                  <OutlinedInput
+                    name="user_classification"
+                    value={form.user_classification}
+                    className={classes.selectOutline}
+                  />
+                }
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      color: "#ffffff !important",
+                      bgcolor: "#222222",
+                      paddinTop: "110px !important"
+                    },
+                  },
+                }}
+              >
+                {userClassificationType.map((type) => (
+                  <MenuItem
+                    key={type}
+                    value={type}
+                    className={classes.selectedMenuItem}>
+                    <ListItemText
+                      primaryTypographyProps={{ fontSize: "16" }}
+                      primary={type}
+                    />
+                  </MenuItem>
+                ))}
+              </Select>
+        </Grid>
+          
+          </Grid>
+
+        </Grid>
+
+        <Grid item xs={5}>
+       
+          <Grid container spacing={1} justifyContent="center">
+          {userForm.flights_direction === "round_trip" ?
               <Grid item>
                 <InputLabel className={classes.inputLabelStyle}>
                   תאריך טיסה הלוך
@@ -240,36 +285,33 @@ const FlightsView = (props) => {
                   onChange={handleInputChange}
                 />
               </Grid> : ""}
-          </Grid>
-        </Grid>
-        <Grid item xs={5}>
-          <Grid container spacing={1} justifyContent="center">
             {handleFligthsInputsView()}
           </Grid>
         </Grid>
-        <Grid item style={{marginRight:"20px",marginTop:"15px"}}>
-        <FormControlLabel
-                label={
-                  <Typography style={{ color: "##757882", fontSize: "15px" }}>
-                    משמש כמקור מידע
-                  </Typography>
-                }
-                      control={
-                  <Checkbox
-                    sx={{
-                      color: "#686B76",
-                      "&.Mui-checked": {
-                        color: "#54A9FF",
-                      },
-                    }}
-                    checked={(form?.is_source_user === 1 || form?.is_source_user === true) ? true : false}
-                    name="is_source_user"
-                    className={classes.checkbox}
-                    onChange={handleInputChange}
-      
-                  />
-                }
+        
+        <Grid item style={{ marginRight: "20px", marginTop: "20px" }}>
+          <FormControlLabel
+            label={
+              <Typography style={{ color: "##757882", fontSize: "15px" }}>
+                משמש כמקור מידע
+              </Typography>
+            }
+            control={
+              <Checkbox
+                sx={{
+                  color: "#686B76",
+                  "&.Mui-checked": {
+                    color: "#54A9FF",
+                  },
+                }}
+                checked={(form?.is_source_user === 1 || form?.is_source_user === true) ? true : false}
+                name="is_source_user"
+                className={classes.checkbox}
+                onChange={handleInputChange}
+
               />
+            }
+          />
         </Grid>
       </Grid>
 
@@ -277,7 +319,7 @@ const FlightsView = (props) => {
         item
         xs={12}
         container
-        style={{ marginTop: "30px" }}
+        style={{ marginTop: "50px" }}
         justifyContent="space-around">
         <Grid item>
           <Button

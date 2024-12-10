@@ -132,7 +132,7 @@ export const useStyles = makeStyles((theme) => ({
     },
     selectOutline: {
         height: "35px",
-         width:"80px",
+        width: "200px",
         "&.MuiOutlinedInput-root": {
           color: "#ffffff !important",
           "& .MuiOutlinedInput-notchedOutline": {
@@ -143,6 +143,7 @@ export const useStyles = makeStyles((theme) => ({
           color: "#54a9ff",
         },
       },
+     
       selectedMenuItem: {
         backgroundColor: "#2D2D2D !important",
         // padding:"0px !important",

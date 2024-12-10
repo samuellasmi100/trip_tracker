@@ -13,7 +13,7 @@ const Guest = () => {
   const dialogType = useSelector((state) => state.dialogSlice.type);
   const form = useSelector((state) => state.userSlice.form);
   const dispatch = useDispatch();
-  const areaCodes = ["052", "053", "054", "058"];
+  const areaCodes = ["052", "053", "054", "058","050","+44","+1081"];
   const familyDetails = useSelector((state) => state.userSlice.family)
   const token = sessionStorage.getItem("token")
   const vacationId =  useSelector((state) => state.vacationSlice.vacationId)

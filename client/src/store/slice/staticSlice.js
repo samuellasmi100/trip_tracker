@@ -9,11 +9,19 @@ export const staticSlice = createSlice({
     type: "",
     detailsModalType:"",
     form: {},
+    mainGuests:[],
+    guests:[]
   },
   reducers: {
     updateFormField: (state, action) => {
       const { field, value } = action.payload;
       state.form[field] = value;
+    },
+    updateGuests: (state, action) => {
+      state.guests = action.payload;
+    },
+    updateMainGuests: (state, action) => {
+      state.mainGuests = action.payload;
     },
     updateForm: (state, action) => {
       state.form = action.payload;
@@ -25,7 +33,7 @@ export const staticSlice = createSlice({
       state.activeButton = "פרטים אישיים";
     },
     openMainModal: (state, action) => {
-      console.log("first")
+
       state.mainModalOpen = true;
     },
     closeMainModal: (state, action) => {
@@ -66,7 +74,9 @@ export const {
   updateFormField,
   updateForm,
   resetState,
-  updateDetailsModalType
+  updateDetailsModalType,
+  updateGuests,
+ updateMainGuests
 } = staticSlice.actions;
 
 export default staticSlice.reducer;

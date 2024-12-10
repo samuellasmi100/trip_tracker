@@ -67,8 +67,6 @@ function Parent({areaCodes,handleInputChange }) {
                             onChange={handleInputChange}
                         />
                     </Grid>
-                   
-                 
                 </Grid>
             </Grid>
             <Grid item xs={5}>
