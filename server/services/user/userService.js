@@ -9,6 +9,12 @@ const userRoomService = require("../userRooms/userRoomsService")
 const addGuest = async (data,vacationId) => {
     return await userDb.addGuest(data,vacationId)
 }
+const deleteGuest = async (userId,vacationId) => {
+   await userDb.deleteGuest(userId,vacationId)
+   await userDb.deleteGuestFlights(userId,vacationId)
+   await userDb.deleteGuestRooms(userId,vacationId)
+   await userDb.deleteNotes(userId,vacationId)
+}
 const getFamilyGuests = async (id,vacationId) => {
     return await userDb.getFamilyGuests(id,vacationId)
 }
@@ -25,18 +31,18 @@ const getFamilyMamber = async (id,vacationId) => {
 const saveRegistrationForm = async (filename,fileType,filePath,id) => {
     return await userDb.saveRegistrationForm(filename,fileType,filePath,id)
 }
-const getUserDetails = async (id,familyId,isIngroup) => {
+const getUserDetails = async (id,familyId,isIngroup,vacationId) => {
+
     const [userDetails, flightsDetails, roomsDetails, notesDetails,paymentsDetails] = await Promise.all([
-        getParentFamilyMamber(id),
-        flightsService.getFlightsDetails(id,familyId,isIngroup),
-        userRoomsService.getChosenRoom(id),
-        notesService.getParentNote(id),
-        paymentsService.getHistoryPayments(familyId)
+        getFamilyMamber(id,vacationId),
+        flightsService.getFlightsDetails(id,familyId,isIngroup,vacationId),
+        userRoomsService.getChosenRoom(id,vacationId),
+        notesService.getUserNotes(id,vacationId),
+        paymentsService.getHistoryPayments(familyId,vacationId)
       ])
 let dataToReturn = {
     userDetails, flightsDetails, roomsDetails, notesDetails,paymentsDetails
 }
-
     return dataToReturn
 }
 
@@ -48,5 +54,6 @@ module.exports = {
     updateGuest,
     getFamilyMamber,
     saveRegistrationForm,
-    getUserDetails
+    getUserDetails,
+    deleteGuest
 }

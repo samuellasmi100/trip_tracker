@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const userService = require("./userService")
-const uuid = require("uuid").v4;
+const staticService = require("../static/staticService")
+
 
 router.post("/:id", async (req, res, next) => {
   const vacationId = req.params.id
@@ -49,12 +50,13 @@ router.put("/:id", async (req, res, next) => {
   }
 });
 
-router.get("/details/:id/:familyId/:isIngroup", async (req, res, next) => {
+router.get("/details/:id/:familyId/:isIngroup/:vacationId", async (req, res, next) => {
   const id = req.params.id
   const familyId= req.params.familyId
+  const vacationId= req.params.vacationId
   const isIngroup = req.params.isIngroup
   try {
-   const response = await userService.getUserDetails(id,familyId,isIngroup)
+   const response = await userService.getUserDetails(id,familyId,isIngroup,vacationId)
    res.send(response)
 
   } catch (error) {
@@ -62,7 +64,19 @@ router.get("/details/:id/:familyId/:isIngroup", async (req, res, next) => {
   }
 });
 
+router.delete("/:id/:vacationId", async (req, res, next) => {
 
+  const userId = req.params.id
+  const vacationId = req.params.vacationId
+
+  try {
+   await userService.deleteGuest(userId,vacationId)
+   const response = await staticService.getAllGuests(vacationId)
+   res.send(response)
+  } catch (error) {
+    return next(error);
+  }
+});
 
 
 

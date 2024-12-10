@@ -38,7 +38,13 @@ WHERE rt.room_id IS NULL;
   }
 
 const getUnAvailableDates = (vacationId) => {
-  return `SELECT start_date,end_date,room_id FROM trip_tracker_${vacationId}.room_taken;`
+  return `SELECT 
+    DATE_SUB(start_date, INTERVAL 1 DAY) AS start_date,
+    end_date,
+    room_id 
+FROM 
+trip_tracker_${vacationId}.room_taken;
+`
 }
 
 module.exports = {

@@ -1,4 +1,4 @@
-const addGuest = (userData,vacationId) =>{
+const addGuest = (userData, vacationId) => {
   return `
   INSERT INTO trip_tracker_${vacationId}.guest(${Object.keys(userData)}) VALUES(${Object.values(userData).map(() => '?')})`;
 }
@@ -57,23 +57,46 @@ FROM trip_tracker_${vacationId}.families fa join trip_tracker_${vacationId}.gues
 on fa.family_id = gu.family_id where gu.user_id= ?`
 }
 
-const updateGuest = (userData,id,vacationId) => {
+const updateGuest = (userData, id, vacationId) => {
   return `UPDATE trip_tracker_${vacationId}.guest SET ${Object.keys(userData)
     .map(key => `${key}=?`)
     .join(',')}
   WHERE user_id = '${id}'`
 }
 
-const saveRegistrationForm = (vacationId) =>{
+const saveRegistrationForm = (vacationId) => {
   return `INSERT INTO trip_tracker_${vacationId}.files (filename, fileType, filePath,family_id) VALUES (?, ?, ?,?)`;
 }
 
-module.exports ={
+const deleteGuest = (vacationId) => {
+  return `
+DELETE FROM trip_tracker_${vacationId}.guest WHERE user_id = ?;
+`
+}
+const deleteGuestFlights = (vacationId) => {
+  return `
+DELETE FROM trip_tracker_${vacationId}.flights WHERE user_id = ?;`
+}
+const deleteGuestRooms = (vacationId) => {
+  return `
+
+DELETE FROM trip_tracker_${vacationId}.user_room_assignments WHERE user_id = ?;`
+}
+const deleteNotes = (vacationId) => {
+  return `
+
+DELETE FROM trip_tracker_${vacationId}.notes WHERE user_id = ?;`
+}
+module.exports = {
   updateGuest,
   addGuest,
   getFamilyGuests,
   getFamilyMamber,
   getParentFamilyMamber,
-  saveRegistrationForm
+  saveRegistrationForm,
+  deleteGuest,
+  deleteGuestFlights,
+deleteGuestRooms,
+deleteNotes,
 }
 

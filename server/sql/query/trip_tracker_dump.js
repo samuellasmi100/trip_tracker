@@ -53,6 +53,7 @@ CREATE TABLE flights (
   return_airline varchar(45) DEFAULT NULL,
   is_source_user tinyint DEFAULT '0',
   user_id varchar(45) DEFAULT NULL,
+  user_classification VARCHAR(45) NULL DEFAULT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 `;
