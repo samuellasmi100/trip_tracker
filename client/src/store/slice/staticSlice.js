@@ -4,8 +4,10 @@ export const staticSlice = createSlice({
   name: "staticSlice",
   initialState: {
     activeButton: "חדרים",
-    open: false,
+    mainModalOpen: false,
+    detailsModalOpen: false,
     type: "",
+    detailsModalType:"",
     form: {},
   },
   reducers: {
@@ -22,14 +24,24 @@ export const staticSlice = createSlice({
     initialActiveButton: (state, action) => {
       state.activeButton = "פרטים אישיים";
     },
-    openModal: (state, action) => {
-      state.open = true;
+    openMainModal: (state, action) => {
+      console.log("first")
+      state.mainModalOpen = true;
     },
-    closeModal: (state, action) => {
-      state.open = false;
+    closeMainModal: (state, action) => {
+      state.mainModalOpen = false;
+    },
+    openDetailsModal: (state, action) => {
+      state.detailsModalOpen = true;
+    },
+    closeDetailsModal: (state, action) => {
+      state.detailsModalOpen = false;
     },
     updateDialogType: (state, action) => {
       state.type = action.payload;
+    },
+    updateDetailsModalType: (state, action) => {
+      state.detailsModalType = action.payload;
     },
     initialDialogType: (state, action) => {
       state.type = "";
@@ -45,13 +57,16 @@ export const staticSlice = createSlice({
 export const {
   updateActiveButton,
   initialActiveButton,
-  openModal,
-  closeModal,
+  openMainModal,
+  closeMainModal,
+  openDetailsModal,
+  closeDetailsModal,
   updateDialogType,
   initialDialogType,
   updateFormField,
   updateForm,
-  resetState
+  resetState,
+  updateDetailsModalType
 } = staticSlice.actions;
 
 export default staticSlice.reducer;

@@ -87,7 +87,6 @@ const RoomsAssigner = () => {
           })
         )
       }else {
-        console.log("here")
         dispatch(roomsSlice.addRoomToForm(room));
       }
   

@@ -8,7 +8,7 @@ import {
   Paper,
 } from "@mui/material";
 import React from "react";
-import { useStyles } from "./DateAvailability.style"
+import { useStyles } from "./RoomsStatus.style"
 import { useSelector } from "react-redux";
 
 
@@ -35,10 +35,8 @@ function DateAvailabilityView({dateRange,gaps}) {
         const [day, date] = format.split(" ");
         const formattedCheckString = `${date} ${day}`;
         if(gaps[roomId]?.includes(String(formattedCheckString))){
-          console.log(formattedCheckString,roomId)
          return true
         }else {
-          // console.log(formattedCheckString,roomId)
           return false
         }
       }
@@ -48,7 +46,8 @@ function DateAvailabilityView({dateRange,gaps}) {
   return(
     <TableContainer
     style={{
-     width:"99.9%"
+     width:"99.9%",
+     maxHeight: "80vh",
     }}>
     <Table stickyHeader style={{ width: "inherit" }} size="small">
       <TableHead>

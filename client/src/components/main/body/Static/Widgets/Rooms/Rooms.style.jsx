@@ -67,13 +67,8 @@ export const useStyles = makeStyles((theme) => ({
     borderRadius: 4,
     textAlign: "center !important",
     "& .MuiInputBase-input": {
-      // position: "relative",
       color: "#FFFFFF",
       fontSize: "14px",
-      // width: "100px",
-      // padding: "5px 18px",
-      // height: "30px",
-      // textAlign: "center !important",
     },
     "& .MuiFormLabel-root": {
       color: "#757882", // or black

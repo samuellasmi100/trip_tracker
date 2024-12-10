@@ -11,8 +11,8 @@ import { useSelector } from "react-redux";
 const MainDialogView = (props) => {
   const dialogType = useSelector((state) => state.userSlice.dialogType)
   const {
-    dialogOpen,
-    closeModal,
+    mainDialogOpen,
+    closeMainModal,
     handleDataView
   } = props;
 
@@ -21,9 +21,9 @@ const MainDialogView = (props) => {
 
   return (
     <Dialog
-      open={dialogOpen}
+      open={mainDialogOpen}
       classes={{ paper: classes.dialog }}
-      onClose={closeModal}>
+      onClose={closeMainModal}>
       <Grid>
        {handleDataView()}
       </Grid>

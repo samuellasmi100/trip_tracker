@@ -1,12 +1,12 @@
 import React, { useEffect,useState } from "react";
-import DateAvailabilityView from "./DateAvailability.view";
-import ApiRooms from "../../../../../apis/roomsRequest";
+import RoomStatusView from "./RoomsStatus.view";
+import ApiRooms from "../../../../../../apis/roomsRequest";
 import { useDispatch, useSelector } from "react-redux";
 import { TrendingUp } from "@mui/icons-material";
-import * as roomsSlice from "../../../.././../store/slice/roomsSlice"
+import * as roomsSlice from "../../../../../../store/slice/roomsSlice"
 
 
-const DateAvailability = () => {
+const RoomsStatus = () => {
   const dispatch = useDispatch()
   const vacationId = useSelector((state) => state.vacationSlice.vacationId);
   const form = useSelector((state) => state.staticSlice.form);
@@ -73,10 +73,8 @@ const DateAvailability = () => {
    getUnAndAvailableDates();
   }, []);
 
-  return <DateAvailabilityView 
-  gaps={gaps}
-  dateRange={dateRange}
+  return <RoomStatusView gaps={gaps} dateRange={dateRange}
   /> 
 };
 
-export default DateAvailability;
+export default RoomsStatus;

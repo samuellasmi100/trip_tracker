@@ -15,7 +15,7 @@ import {
 import React, { useState } from "react";
 import { useStyles } from "./Rooms.style";
 import { useSelector } from "react-redux";
-import { ReactComponent as EditIcon } from "../../../../../assets/icons/edit.svg";
+import { ReactComponent as EditIcon } from "../../../../../../assets/icons/edit.svg";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import SearchIcon from "@material-ui/icons/Search";

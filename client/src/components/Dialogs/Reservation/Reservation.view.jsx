@@ -46,7 +46,7 @@ const ReservationView = (props) => {;
                <Select
                 name="week_chosen"
                 value={form.week_chosen}
-               onChange={handleInputChange}     
+                onChange={handleInputChange}     
                 input={
                   <OutlinedInput
                     className={classes.selectOutline}

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import RoomView from "./Rooms.view";
-import ApiRooms from "../../../../../apis/roomsRequest";
+import ApiRooms from "../../../../../../apis/roomsRequest";
 import { useDispatch, useSelector } from "react-redux";
-import * as roomsSlice from "../../../../../store/slice/roomsSlice";
-import * as staticSlice from "../../../../../store/slice/staticSlice";
+import * as roomsSlice from "../../../../../../store/slice/roomsSlice";
+import * as staticSlice from "../../../../../../store/slice/staticSlice";
 
 const defaultNewRow = {
   rooms_id: "",
@@ -84,7 +84,6 @@ const Rooms = ({ handleDialogTypeOpen }) => {
         dataToUpdate,
         vacationId
       );
-      console.log(response)
       setFilteredRooms2([]);
       setEditRowIndex(null);
       setActionStatus("");

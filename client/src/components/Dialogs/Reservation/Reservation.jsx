@@ -7,6 +7,7 @@ import * as vacationSlice from "../../../store/slice/vacationSlice";
 import ApiUser from "../../../apis/userRequest";
 import * as snackBarSlice from "../../../store/slice/snackbarSlice";
 import ApiVacations  from "../../../apis/vacationRequest"
+import moment from "moment";
 
 const Reservation = () => {
   const dispatch = useDispatch();
@@ -35,11 +36,11 @@ const Reservation = () => {
       const findVacationDateDetails = vacationsDates?.find((key) =>{
         return key.name === value
       })
+  
       if(findVacationDateDetails.name !== "חריגים"){
         dispatch(userSlice.updateFormField({ field: "arrival_date", value: findVacationDateDetails.start_date }))
         dispatch(userSlice.updateFormField({ field: "departure_date", value: findVacationDateDetails.end_date }))
         dispatch(userSlice.updateFormField({ field: "date_chosen", value: `${findVacationDateDetails.end_date}/${findVacationDateDetails.start_date }` }))
-  
       }
       dispatch(userSlice.updateFormField({ field: name, value }));
     } else if (name === "flights_direction") {
@@ -69,6 +70,7 @@ const Reservation = () => {
 
   const submit = async () => {
     try {
+     
       let response = await ApiUser.updateUser(token,form,vacationId);
       await getGuests();
       dispatch(
