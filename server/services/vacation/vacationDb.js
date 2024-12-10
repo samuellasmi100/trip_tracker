@@ -27,6 +27,7 @@ const addVacationDates = async (vacationId,startData,endDate,name) => {
     console.log(error)
   }
 }
+
 const getVacations = async () => {
     try {
       const sql = vacationQuery.getVacations()
@@ -36,11 +37,21 @@ const getVacations = async () => {
       console.log(error)
     }
 }
+
 const getVacationDates = async (vacationId) => {
   try {
     const sql = vacationQuery.getVacationDates()
     const parameters = [vacationId]
     const response = await connection.executeWithParameters(sql,parameters)
+    return response
+  } catch (error) { 
+    console.log(error)
+  }
+}
+const getAllVacationDates = async () => {
+  try {
+    const sql = vacationQuery.getAllVacationDates()
+    const response = await connection.execute(sql)
     return response
   } catch (error) { 
     console.log(error)
@@ -52,5 +63,6 @@ module.exports = {
     addVacation,
     getVacations,
     addVacationDates,
-    getVacationDates
+    getVacationDates,
+    getAllVacationDates
 }

@@ -96,6 +96,7 @@ CREATE TABLE notes (
   child_id varchar(455) DEFAULT NULL,
   family_id varchar(45) DEFAULT NULL,
   category_name varchar(45) DEFAULT NULL,
+  user_id varchar(455) DEFAULT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 `;

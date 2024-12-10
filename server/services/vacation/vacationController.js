@@ -29,11 +29,13 @@ router.get("/:id", async (req, res, next) => {
   try {
    const vacations = await vacationService.getVacations()
    const vacationsDate = await vacationService.getVacationDates(vacationId)
-   res.send({vacations,vacationsDate})
+   const allVacationDates = await vacationService.getAllVacationDates()
+   res.send({vacations,vacationsDate,allVacationDates})
   } catch (error) {
     return next(error);
   }
 });
+
 
 
 

@@ -47,7 +47,6 @@ const updateGuest = async (data,vacationId) => {
       const userId = data.user_id
       delete data.family_name
       delete data.userType
-
       const sql = userQuery.updateGuest(data,userId,vacationId)
       const parameters = Object.values(data)
       const response = await connection.executeWithParameters(sql,parameters)
