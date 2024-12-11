@@ -15,19 +15,20 @@ import {
 } from "@mui/material";
 
 import { useStyles } from "./MainGuests.style";
-import React, { useState } from "react";
+import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import "./MainGuests.css"
 import SearchIcon from "@material-ui/icons/Search";
-import moment from "moment";
 import DeleteIcon from '@mui/icons-material/Delete'
+import { ReactComponent as DownloadIcon } from "../../../../../../assets/icons/download.svg";
 
 function MainGuestsView({ 
   filteredainGuests,
   searchTerm,
   setSearchTerm,
   headers,
-  handleDeleteClick
+  handleDeleteClick,
+  handleExportToExcel
 }) {
 
   const dispatch = useDispatch()
@@ -56,6 +57,9 @@ function MainGuestsView({
               }}
             />
           </FormControl>
+          <IconButton onClick={handleExportToExcel}>
+          <DownloadIcon style={{ color: "#54A9FF", fontSize: "30px",border:'1px solid #494C55',padding:"10px",marginTop:"-7",borderRadius:"4px" }} />
+        </IconButton>
         </Grid>
       </Grid>
       <TableContainer

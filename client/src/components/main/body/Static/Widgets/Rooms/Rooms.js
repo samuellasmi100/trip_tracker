@@ -4,7 +4,8 @@ import ApiRooms from "../../../../../../apis/roomsRequest";
 import { useDispatch, useSelector } from "react-redux";
 import * as roomsSlice from "../../../../../../store/slice/roomsSlice";
 import * as staticSlice from "../../../../../../store/slice/staticSlice";
-
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 const defaultNewRow = {
   rooms_id: "",
   type: "",
@@ -94,6 +95,39 @@ const Rooms = ({ handleDialogTypeOpen }) => {
       console.log(error);
     }
   };
+  const handleExportToExcel = () => {
+    const transformedData = filteredRooms.map((row) => {
+      return {
+        "מספר חדר": row.rooms_id,
+        "סוג חדר": row.type,
+        "קומה": row.floor,
+        "כיוון": row.direction,
+        "גודל": row.size,
+        "קיבולת החדר": row.base_occupancy,
+        "תפוסה מקסימלית": row.max_occupancy
+      };
+    });
+  
+    const hebrewHeaders = [
+      "מספר חדר",
+      "סוג חדר",
+      "קומה",
+      "כיוון",
+      "גודל",
+      "קיבולת החדר",
+      "תפוסה מקסימלית",
+    ];
+  
+    const ws = XLSX.utils.json_to_sheet(transformedData, { skipHeader: true });
+    XLSX.utils.sheet_add_aoa(ws, [hebrewHeaders], { origin: "A1" });
+    ws["!dir"] = "rtl";
+    ws["!cols"] = hebrewHeaders.map(() => ({ wch: 20 }));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "חדרים");
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const data = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(data, "חדרים.xlsx");
+  };
 
   useEffect(() => {
     getAllRooms();
@@ -116,6 +150,7 @@ const Rooms = ({ handleDialogTypeOpen }) => {
         actionStatus={actionStatus}
         editRowData={editRowData}
         headers={headers}
+        handleExportToExcel={handleExportToExcel}
       />
     </>
   );

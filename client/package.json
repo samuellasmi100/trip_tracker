@@ -18,6 +18,7 @@
     "clsx": "^1.2.1",
     "dotenv": "^16.0.3",
     "enigma-x-utilities": "^10.0.111",
+    "file-saver": "^2.0.5",
     "google-auth-library": "^8.8.0",
     "jspdf": "^2.5.2",
     "jspdf-autotable": "^3.8.4",
@@ -37,7 +38,8 @@
     "uuid": "^9.0.0",
     "web-vitals": "^2.1.4",
     "websocket": "^1.0.34",
-    "workerize-loader": "^2.0.2"
+    "workerize-loader": "^2.0.2",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "start": "react-scripts start",

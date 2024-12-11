@@ -43,8 +43,8 @@ export default {
       headers: { Authorization: token },
     });
   },
-  deleteGuests(token,userId,vacationId) {
-    return Api.delete(`${END_POINT.USER}/${userId}/${vacationId}`, {
+  deleteGuests(token,userId,vacationId,status) {
+    return Api.delete(`${END_POINT.USER}/${userId}/${vacationId}/${status}`, {
       headers: { Authorization: token },
     });
   },

@@ -12,12 +12,11 @@ import {
   TextField,
 } from "@mui/material";
 
-import React, { useState } from "react";
+import React from "react";
 import { useStyles } from "./Rooms.style";
-import { useSelector } from "react-redux";
 import { ReactComponent as EditIcon } from "../../../../../../assets/icons/edit.svg";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
-import AddBoxIcon from "@mui/icons-material/AddBox";
+import { ReactComponent as DownloadIcon } from "../../../../../../assets/icons/download.svg";
 import SearchIcon from "@material-ui/icons/Search";
 import SaveIcon from "@mui/icons-material/Save";
 
@@ -26,16 +25,13 @@ function StaticView({
   handleDialogTypeOpen,
   searchTerm,
   setSearchTerm,
-  submit,
   handleEditClick,
   handleSaveClick,
-  handleAddRow,
   handleInputChange,
-  filteredRooms2,
   editRowIndex,
-  actionStatus,
   editRowData,
   headers,
+  handleExportToExcel
 }) {
   const classes = useStyles();
 
@@ -58,9 +54,10 @@ function StaticView({
               }}
             />
           </FormControl>
+
         </Grid>
-        <IconButton onClick={handleAddRow}>
-          <AddBoxIcon style={{ color: "#54A9FF", fontSize: "30px" }} />
+          <IconButton onClick={handleExportToExcel}>
+          <DownloadIcon style={{ color: "#54A9FF", fontSize: "30px",border:'1px solid #494C55',padding:"10px",marginTop:"-2",borderRadius:"4px" }} />
         </IconButton>
       </Grid>
       <TableContainer

@@ -10,8 +10,12 @@ import {
   FormControl,
   InputAdornment,
   TextField,
-  Typography,
-  InputLabel
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button,
 } from "@mui/material";
 
 import { useStyles } from "./Guests.style";
@@ -19,24 +23,38 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import SearchIcon from "@material-ui/icons/Search";
 import DeleteIcon from '@mui/icons-material/Delete'
+import { ReactComponent as DownloadIcon } from "../../../../../../assets/icons/download.svg";
+import { useState } from "react";
 
 function GuestsView({ 
   filteredainGuests,
   searchTerm,
   setSearchTerm,
   headers,
+  handleDeleteButtonClick,
+  handleExportToExcel,
+  selectedUser,
+  handleClose,
+  open,
   handleDeleteClick
 }) {
+  console.log(open,"open")
+ const classes = useStyles();
+ const handleMessageString = () => {
+  if(selectedUser !== null){
+  if(selectedUser.is_main_user === 1){
+    return `הנך עומד למחוק את ${selectedUser?.hebrew_first_name} ${selectedUser?.hebrew_last_name}, אורח זה הוא אורח ראשי מחיקתו תוביל למחיקת כל האורחים שתחת שם זה האם הנך בטוח?    `
+  }else {
+   return `האם אתה בטוח שברצונך למחוק את ${selectedUser?.hebrew_first_name} ${selectedUser?.hebrew_last_name}?`
+  }
+ }
+}
 
-  const dispatch = useDispatch()
-  const classes = useStyles();
-  const form = useSelector((state) => state.staticSlice.form)
-  const userForm = useSelector((state) => state.userSlice.form)
-  
+
   return (
     <Grid style={{
       width:"99.9%",  maxHeight: "80vh",
-     }}> 
+     }}>
       <Grid style={{ display: "flex", justifyContent: "flex-end" }}>
         <Grid style={{ marginTop: "5px" }}>
           <FormControl>
@@ -54,6 +72,9 @@ function GuestsView({
               }}
             />
           </FormControl>
+          <IconButton onClick={handleExportToExcel}>
+          <DownloadIcon style={{ color: "#54A9FF", fontSize: "30px",border:'1px solid #494C55',padding:"10px",marginTop:"-7",borderRadius:"4px" }} />
+        </IconButton>
         </Grid>
       </Grid>
       <TableContainer
@@ -111,7 +132,7 @@ function GuestsView({
                       >
                         <IconButton size="small">
                           <DeleteIcon className={classes.delete}
-                            onClick={() => handleDeleteClick(user)}
+                            onClick={() => handleDeleteButtonClick(user)}
                           />
                         </IconButton>
                       </TableCell>
@@ -123,6 +144,26 @@ function GuestsView({
           </TableBody>
         </Table>
       </TableContainer>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        classes={{ paper: classes.dialog }}
+      >
+        <DialogTitle>אישור מחיקה</DialogTitle>
+        <DialogContent>
+          <DialogContentText style={{color: "#FFFFFF" }}>
+            {handleMessageString()}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} style={{color:"#FFFFFF",padding:"2px",border:'1px solid black',marginLeft:'3px',background:"#494C55"}}>
+            ביטול
+          </Button>
+          <Button onClick={handleDeleteClick} autoFocus style={{color:"#FFFFFF",padding:"2px",border:'1px solid black',background:"red"}}>
+            מחק
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Grid>
   );
 }
