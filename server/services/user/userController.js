@@ -64,15 +64,21 @@ router.get("/details/:id/:familyId/:isIngroup/:vacationId", async (req, res, nex
   }
 });
 
-router.delete("/:id/:vacationId", async (req, res, next) => {
-
+router.delete("/:id/:vacationId/:status", async (req, res, next) => {
+  const userStatus = req.params.status
   const userId = req.params.id
   const vacationId = req.params.vacationId
 
   try {
-   await userService.deleteGuest(userId,vacationId)
-   const response = await staticService.getAllGuests(vacationId)
-   res.send(response)
+    if(userStatus === false){
+      await userService.deleteGuest(userId,vacationId)
+      const response = await staticService.getAllGuests(vacationId)
+      res.send(response)
+    }else {
+      res.send( ""
+      )
+    }
+  
   } catch (error) {
     return next(error);
   }
