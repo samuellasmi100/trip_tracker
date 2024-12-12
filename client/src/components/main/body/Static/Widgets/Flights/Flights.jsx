@@ -58,7 +58,6 @@ const Flights = (props) => {
     try {
       const response = await ApiStatic.getFlightsDetails(token,vacationId)
       dispatch(staticSlice.updateMainData(response.data))
-      console.log(response)
     } catch (error) {
       console.log(error)
     }
