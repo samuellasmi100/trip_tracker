@@ -11,18 +11,21 @@ export const useStyles = makeStyles((theme) => ({
         },
       },
       dataTableCell: {
-        fontSize: "14px !important",
+        fontSize: "12px !important",
         color: "#ffffff !important",
         textAlign: "center !important",
         borderBottom: "none !important",
+        whiteSpace: "nowrap",
+          width:'10px'
       },
       headerTableRow: {
-        fontSize: "15px !important",
+        whiteSpace: "nowrap",
+        fontSize: "12px !important",
         color: "#5a5c62 !important",
-        textAlign: "center !important",
+        // textAlign: "center !important",
         borderBottom: "none!important",
         fontWeight: "600 !important",
-        width: "10px",
+        width: "5px !important",
         "&.MuiTableCell-stickyHeader": {
           backgroundColor: "#2d2d2d !important",
         },

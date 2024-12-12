@@ -24,6 +24,7 @@ export const useStyles = makeStyles((theme) => ({
     color: "#ffffff !important",
     textAlign: "center !important",
     borderBottom: "none !important",
+    whiteSpace: "nowrap"
   },
   headerTableRow: {
     fontSize: "15px !important",

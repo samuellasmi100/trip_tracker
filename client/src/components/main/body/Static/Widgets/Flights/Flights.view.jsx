@@ -27,13 +27,12 @@ function FlightsView({
   handleExportToExcel
 }) {
 
-console.log(filteredFlightDetails)
   const classes = useStyles();
 
   
   return (
     <Grid style={{
-      width:"99.9%",  maxHeight: "80vh",
+      width:"100%",maxHeight: "80vh"
      }}> 
       <Grid style={{ display: "flex", justifyContent: "flex-end" }}>
         <Grid style={{ marginTop: "5px" }}>
@@ -58,7 +57,7 @@ console.log(filteredFlightDetails)
         </IconButton>
       </Grid>
       <TableContainer
-      
+      style={{height:"74.7vh"}}
       >
         <Table stickyHeader style={{ width: "inherit" }} size="small">
           <TableHead>
