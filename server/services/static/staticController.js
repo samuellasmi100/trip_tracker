@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const staticService = require("./staticService")
 
-router.get("/:vacationId", async (req, res, next) => {
+router.get("/user/:vacationId", async (req, res, next) => {
   const vacationId = req.params.vacationId
   try {
     const response = await staticService.getAllGuests(vacationId)
@@ -12,7 +12,7 @@ router.get("/:vacationId", async (req, res, next) => {
   }
 });
 
-router.get("/main/:vacationId", async (req, res, next) => {
+router.get("/user/main/:vacationId", async (req, res, next) => {
     const vacationId = req.params.vacationId
     try {
       const response = await staticService.getMainGuests(vacationId)
@@ -23,4 +23,14 @@ router.get("/main/:vacationId", async (req, res, next) => {
     }
   });
 
+  router.get("/flights/:vacationId", async (req, res, next) => {
+    const vacationId = req.params.vacationId
+    try {
+      const response = await staticService.getFlightsDetails(vacationId)
+      res.send(response)
+  
+    } catch (error) {
+      return next(error);
+    }
+  });
 module.exports = router;

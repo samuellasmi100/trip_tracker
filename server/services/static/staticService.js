@@ -8,9 +8,13 @@ const getAllGuests = async (vacationId) => {
     return await staticDb.getAllGuests(vacationId)
 }
 
+const getFlightsDetails = async (vacationId) => {
+    return await staticDb.getFlightsDetails(vacationId)
+}
 
 module.exports = {
     getMainGuests,
-    getAllGuests
+    getAllGuests,
+    getFlightsDetails
     
 }

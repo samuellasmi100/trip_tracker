@@ -25,8 +25,8 @@ router.post("/:id", async (req, res, next) => {
     }
 });
 
-router.get("/:id/:vacationid", async (req, res, next) => {
-  const vacationId = req.params.vacationid
+router.get("/:id/:vacationId", async (req, res, next) => {
+  const vacationId = req.params.vacationId
   const familyId = req.params.id
   try {
     const response = await userService.getFamilyGuests(familyId,vacationId)
@@ -43,7 +43,7 @@ router.put("/:id", async (req, res, next) => {
   
   try {
    await userService.updateGuest(userData,vacationId)
-   const response = await userService.getFamilyMamber(userData.family_id,vacationId)
+   const response = await userService.getFamilyMember(userData.family_id,vacationId)
    res.send(response)
   } catch (error) {
     return next(error);
@@ -64,30 +64,33 @@ router.get("/details/:id/:familyId/:isIngroup/:vacationId", async (req, res, nex
   }
 });
 
-router.delete("/:id/:vacationId/:status", async (req, res, next) => {
-  const userStatus = req.params.status
+router.delete("/:id/:vacationId", async (req, res, next) => {
   const userId = req.params.id
   const vacationId = req.params.vacationId
-
   try {
-    if(userStatus === false){
       await userService.deleteGuest(userId,vacationId)
-      const response = await staticService.getAllGuests(vacationId)
-      res.send(response)
-    }else {
-      res.send( ""
-      )
-    }
-  
+      const allGuests = await staticService.getAllGuests(vacationId)
+      const mainGuests = await staticService.getMainGuests(vacationId)
+      res.send({allGuests,mainGuests})
   } catch (error) {
     return next(error);
   }
 });
 
+router.delete("/main/:id/:vacationId", async (req, res, next) => {
+  const familyId = req.params.id
+  const vacationId = req.params.vacationId
 
+  try {
+      await userService.deleteMainGuest(familyId,vacationId)
+      const allGuests = await staticService.getAllGuests(vacationId)
+      const mainGuests = await staticService.getMainGuests(vacationId)
+      res.send({allGuests,mainGuests})
 
-
-
+  } catch (error) {
+    return next(error);
+  }
+})
 
 
 module.exports = router;

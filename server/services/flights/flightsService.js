@@ -9,7 +9,7 @@ const updateFlightsDetails = async (paymentsData,vacationId) => {
 const getFlightsDetails = async (userId,familyId,isInGroup,vacationId) => {
 
     const result = await flightsDb.getFlightsDetails(userId,vacationId)
-    if(result.length === 0){
+    if(result.length === 0 || result[0].all_flight_data_null === 1){
         if(Number(isInGroup) === 1){
             const isSourceUserExist = await getFlightsByFamily(familyId,vacationId)
             if(isSourceUserExist.length > 0){

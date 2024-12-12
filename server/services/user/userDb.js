@@ -29,10 +29,10 @@ const getFamilyGuests = async (id, vacationId) => {
   }
 }
 
-const getFamilyMamber = async (id, vacationId) => {
+const getFamilyMember = async (id, vacationId) => {
 
   try {
-    const sql = userQuery.getFamilyMamber(vacationId)
+    const sql = userQuery.getFamilyMember(vacationId)
     const parameters = [id]
     const response = await connection.executeWithParameters(sql, parameters)
     return response
@@ -43,6 +43,7 @@ const getFamilyMamber = async (id, vacationId) => {
 
 
 const updateGuest = async (data, vacationId) => {
+  console.log(data)
   try {
     const userId = data.user_id
     delete data.family_name
@@ -129,14 +130,112 @@ const saveRegistrationForm = async (filename, fileType, filePath, id) => {
   }
 }
 
+const deleteFamilyGuests = async (userId, vacationId) => {
+  const sql = userQuery.deleteFamilyGuests(vacationId)
+
+  try {
+    const parameters = [userId]
+    const response = await connection.executeWithParameters(sql, parameters)
+    return response
+
+  } catch (error) {
+    console.log(error)
+    // throw new ErrorMessage(error.errorType,sql, error);
+  }
+}
+const deleteFamilyFlights = async (userId, vacationId) => {
+  const sql = userQuery.deleteFamilyFlights(vacationId)
+
+  try {
+    const parameters = [userId]
+    const response = await connection.executeWithParameters(sql, parameters)
+    return response
+
+  } catch (error) {
+    console.log(error)
+    // throw new ErrorMessage(error.errorType,sql, error);
+  }
+}
+const deleteFamilyRooms = async (userId, vacationId) => {
+  const sql = userQuery.deleteFamilyRooms(vacationId)
+
+  try {
+    const parameters = [userId]
+    const response = await connection.executeWithParameters(sql, parameters)
+    return response
+
+  } catch (error) {
+    console.log(error)
+    // throw new ErrorMessage(error.errorType,sql, error);
+  }
+}
+const deleteFamilyGuestRooms = async (userId, vacationId) => {
+  const sql = userQuery.deleteFamilyGuestRooms(vacationId)
+
+  try {
+    const parameters = [userId]
+    const response = await connection.executeWithParameters(sql, parameters)
+    return response
+
+  } catch (error) {
+    console.log(error)
+    // throw new ErrorMessage(error.errorType,sql, error);
+  }
+}
+const deleteFamilyNotes = async (userId, vacationId) => {
+  const sql = userQuery.deleteFamilyNotes(vacationId)
+
+  try {
+    const parameters = [userId]
+    const response = await connection.executeWithParameters(sql, parameters)
+    return response
+
+  } catch (error) {
+    console.log(error)
+    // throw new ErrorMessage(error.errorType,sql, error);
+  }
+}
+const deleteFamilyPayments = async (userId, vacationId) => {
+  const sql = userQuery.deleteFamilyPayments(vacationId)
+
+  try {
+    const parameters = [userId]
+    const response = await connection.executeWithParameters(sql, parameters)
+    return response
+
+  } catch (error) {
+    console.log(error)
+    // throw new ErrorMessage(error.errorType,sql, error);
+  }
+}
+const deleteFamily = async (userId, vacationId) => {
+  const sql = userQuery.deleteFamily(vacationId)
+
+  try {
+    const parameters = [userId]
+    const response = await connection.executeWithParameters(sql, parameters)
+    return response
+
+  } catch (error) {
+    console.log(error)
+    // throw new ErrorMessage(error.errorType,sql, error);
+  }
+}
 module.exports = {
   addGuest,
   getFamilyGuests,
   updateGuest,
-  getFamilyMamber,
+  getFamilyMember,
   saveRegistrationForm,
   deleteGuest,
   deleteGuestFlights,
-deleteGuestRooms,
+  deleteGuestRooms,
   deleteNotes,
+  deleteFamilyGuests,
+  deleteFamilyFlights,
+  deleteFamilyRooms,
+  deleteFamilyGuestRooms,
+  deleteFamilyNotes,
+  deleteFamilyPayments,
+  deleteFamily,
 }

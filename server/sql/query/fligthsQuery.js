@@ -10,9 +10,43 @@ const updateFlightsDetails = (flightsData,id,vacationId) => {
 }
 
 const getFlightsDetails = (vacationId) => {
-    return `SELECT validity_passport,passport_number ,birth_date ,
-   outbound_flight_date,return_flight_date ,
-   outbound_flight_number,return_flight_number,age,outbound_airline,return_airline,is_source_user,user_classification FROM trip_tracker_${vacationId}.flights where user_id = ?;`
+    return `SELECT 
+        f.validity_passport, 
+        f.passport_number, 
+        f.birth_date,
+        f.outbound_flight_date, 
+        f.return_flight_date,
+        f.outbound_flight_number, 
+        f.return_flight_number, 
+        f.outbound_airline, 
+        f.return_airline, 
+        f.is_source_user, 
+        f.user_classification, 
+        g.arrival_date, 
+        g.departure_date,
+        CASE 
+            WHEN f.validity_passport IS NULL 
+                AND f.passport_number IS NULL 
+                AND f.birth_date IS NULL 
+                AND f.outbound_flight_date IS NULL 
+                AND f.return_flight_date IS NULL 
+                AND f.outbound_flight_number IS NULL 
+                AND f.return_flight_number IS NULL 
+                AND f.outbound_airline IS NULL 
+                AND f.return_airline IS NULL 
+                AND f.is_source_user IS NULL 
+                AND f.user_classification IS NULL 
+            THEN true
+            ELSE false
+        END AS all_flight_data_null
+    FROM 
+        trip_tracker_${vacationId}.flights f
+    RIGHT JOIN 
+        trip_tracker_${vacationId}.guest g
+    ON 
+        f.user_id = g.user_id
+    WHERE 
+        g.user_id = ?;`
 }
 
 const getFlightsByFamily = (vacationId) => {

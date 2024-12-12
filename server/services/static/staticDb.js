@@ -26,10 +26,20 @@ const getAllGuests = async (vacationId) => {
     }
   }
 
+const getFlightsDetails = async (vacationId) => {
 
+    try {
+      const sql = staticQuery.getFlightsDetails(vacationId)
+      const response = await connection.execute(sql)
+      return response
+    } catch (error) { 
+      console.log(error)
+    }
+  }
 
 module.exports = {
     getMainGuests,
-    getAllGuests
+    getAllGuests,
+    getFlightsDetails
     
 }
