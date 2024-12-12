@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import ApiUser from "../../../apis/userRequest";
 import GuestView from "./Guest.view";
-import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import * as snackBarSlice from "../../../store/slice/snackbarSlice";
 import * as userSlice from "../../../store/slice/userSlice";
-import * as paymentsSlice from "../../../store/slice/paymentsSlice";
 import * as dialogSlice from "../../../store/slice/dialogSlice";
 import { v4 as uuidv4 } from 'uuid';
+import calculateAge  from "../../../utils/HelperFunction/calculateAge"
 
 const Guest = () => {
   const dialogType = useSelector((state) => state.dialogSlice.type);
@@ -42,6 +41,11 @@ const Guest = () => {
     }
     else if(name === "flights_direction"){
       dispatch(userSlice.updateFormField({ field: "flights_direction", value:checked ? e.target.value : "" }))
+    }
+    else if (name === "birth_date") {
+      const age = calculateAge(value);
+      dispatch(userSlice.updateFormField({ field: "age", value: age }));
+      dispatch(userSlice.updateFormField({ field: name, value }))
     }
     else if(name === "flights" || name === "flying_with_us" || name === "is_in_group"){
     value = checked

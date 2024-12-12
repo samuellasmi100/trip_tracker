@@ -2,6 +2,11 @@ import React from "react";
 import { makeStyles } from "@mui/styles";
 
 export const useStyles = makeStyles((theme) => ({
+  dialog: {
+    color: "#FFFFFF !important",
+    backgroundColor: "#2D2D2D  !important",
+
+  },
   delete:{
     cursor: 'pointer',
     color:"red"

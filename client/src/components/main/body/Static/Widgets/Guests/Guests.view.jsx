@@ -17,17 +17,14 @@ import {
   DialogTitle,
   Button,
 } from "@mui/material";
-
 import { useStyles } from "./Guests.style";
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
 import SearchIcon from "@material-ui/icons/Search";
 import DeleteIcon from '@mui/icons-material/Delete'
 import { ReactComponent as DownloadIcon } from "../../../../../../assets/icons/download.svg";
-import { useState } from "react";
 
 function GuestsView({ 
-  filteredainGuests,
+  filteredGuests,
   searchTerm,
   setSearchTerm,
   headers,
@@ -38,7 +35,7 @@ function GuestsView({
   open,
   handleDeleteClick
 }) {
-  console.log(open,"open")
+
  const classes = useStyles();
  const handleMessageString = () => {
   if(selectedUser !== null){
@@ -97,11 +94,14 @@ function GuestsView({
             </TableRow>
           </TableHead>
           <TableBody className={classes.dataTableBody}>
-            {filteredainGuests?.map((user, index) => {
+            {filteredGuests?.map((user, index) => {
               return (
                 <TableRow key={index}>
                  
                  <>
+                 <TableCell className={classes.dataTableCell}>
+                        {index+1}
+                      </TableCell>
                       <TableCell className={classes.dataTableCell}>
                         {user?.hebrew_first_name}
                       </TableCell>
@@ -113,6 +113,9 @@ function GuestsView({
                       </TableCell>
                       <TableCell className={classes.dataTableCell}>
                         {user?.english_last_name}
+                      </TableCell>
+                      <TableCell className={classes.dataTableCell}>
+                        {user?.age}
                       </TableCell>
                       <TableCell className={classes.dataTableCell}>
                         {user?.identity_id}

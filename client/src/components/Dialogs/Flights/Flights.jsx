@@ -69,13 +69,14 @@ const userClassificationType = ["MR","MRS","BABY"]
   };
 
   const submit = async () => {
-
+    let response
     try {
-    let response 
     if(form.type === "edit"){
       response = await ApiFlights.updateUserFligets(token,userForm.user_id,form,vacationId)
+      dispatch(flightsSlice.updateFormField({ field: "type", value:"edit"}));
     }else {
       response = await ApiFlights.addUserFlights(token,form,vacationId)
+      dispatch(flightsSlice.updateFormField({ field: "type", value:"edit"}));
     }
      dispatch(
       snackBarSlice.setSnackBar({
@@ -97,10 +98,18 @@ const userClassificationType = ["MR","MRS","BABY"]
     let isInGroup = userForm.is_in_group
     try {
       let response = await ApiFlights.getUserFlightData(token,userId,familyId,isInGroup,vacationId)
-      if(response.data.length > 0){
-        response.data[0].type = "edit"
+      if(response.data[0].all_flight_data_null === 1){
+        dispatch(flightsSlice.updateFormField({ field: "type", value:"add"}));
+        dispatch(flightsSlice.updateFormField({ field: "outbound_flight_date", value:response.data[0].arrival_date}));
+        dispatch(flightsSlice.updateFormField({ field: "return_flight_date", value:response.data[0].departure_date}));
+      }else {
         dispatch(flightsSlice.updateForm(response.data[0]))
+        dispatch(flightsSlice.updateFormField({ field: "type", value:"edit"}));
+
       }
+      dispatch(flightsSlice.updateFormField({ field: "family_id",value:userForm.family_id }))
+      dispatch(flightsSlice.updateFormField({ field: "user_id",value:userForm.user_id}))
+
     } catch (error) {
       console.log(error)
     }

@@ -14,28 +14,22 @@ import {
   InputLabel
 } from "@mui/material";
 
-import { useStyles } from "./Vacation.style";
-import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import "./Vacation.css"
-import { ReactComponent as EditIcon } from "../../../../../../assets/icons/edit.svg";
-import AddBoxIcon from "@mui/icons-material/AddBox";
+import { useStyles } from "./Flights.style";
+import React  from "react";
+import { ReactComponent as DownloadIcon } from "../../../../../../assets/icons/download.svg";
 import SearchIcon from "@material-ui/icons/Search";
-import moment from "moment";
 
-function VacationView({ 
-  filteredVacations,
+function FlightsView({ 
+  filteredFlightDetails,
   searchTerm,
   setSearchTerm,
   headers,
-  handleEditClick,
-  handleAddRow
+  handleExportToExcel
 }) {
 
-  const dispatch = useDispatch()
+
   const classes = useStyles();
-  const form = useSelector((state) => state.staticSlice.form)
-  const userForm = useSelector((state) => state.userSlice.form)
+
   
   return (
     <Grid style={{
@@ -59,8 +53,8 @@ function VacationView({
             />
           </FormControl>
         </Grid>
-        <IconButton onClick={handleAddRow}>
-          <AddBoxIcon style={{ color: "#54A9FF", fontSize: "30px" }} />
+        <IconButton onClick={handleExportToExcel}>
+          <DownloadIcon style={{ color: "#54A9FF", fontSize: "30px",border:'1px solid #494C55',padding:"10px",marginTop:"-7",borderRadius:"4px" }} />
         </IconButton>
       </Grid>
       <TableContainer
@@ -83,49 +77,68 @@ function VacationView({
             </TableRow>
           </TableHead>
           <TableBody className={classes.dataTableBody}>
-            {filteredVacations?.map((vac, index) => {
+            {filteredFlightDetails?.map((flight, index) => {
               return (
                 <TableRow key={index}>
-                 
-                 <>
-                      <TableCell className={classes.dataTableCell}>
-                        {vac.name}
-                      </TableCell>
-                      <TableCell className={classes.dataTableCell}>
-                        {vac.details.length}
-                      </TableCell>
-                      <TableCell className={classes.dataTableCell}>
-                        {vac.details.map((key) => {
-                           const formattedStartDate = key.start_date
-                           ? moment(key.start_date).format("D-M-YYYY")
-                           : "";
-                           
-                         const formattedEndDate = key.end_date
-                           ? moment(key.end_date).format("D-M-YYYY")
-                           : "";
-                           return (
-                            <Typography key={index}>
-                              {key.name !== "חריגים"
-                                ? `${key.name}: ${formattedEndDate} / ${formattedStartDate} `
-                                : key.name}
-                            </Typography>
-                          );
-                      
-                    
-                        })}
-                      </TableCell>
-                      <TableCell
-                        className={classes.dataTableCell}
-                        style={{ maxWidth: "1px" }}
-                      >
-                        <IconButton size="small">
-                          <EditIcon
-                            onClick={() => handleEditClick(index, vac)}
-                          />
-                        </IconButton>
-                      </TableCell>
-                      
-                    </>
+                 <TableCell className={classes.dataTableCell}>
+                 {flight?.hebrew_first_name}
+                 </TableCell>
+                 <TableCell className={classes.dataTableCell}>
+                 {flight?.hebrew_last_name}
+                 </TableCell>
+                 <TableCell className={classes.dataTableCell}>
+                 {flight?.english_first_name}
+                 </TableCell>
+                 <TableCell className={classes.dataTableCell}>
+                 {flight?.english_first_name}
+                 </TableCell>
+                 <TableCell className={classes.dataTableCell}>
+                 {flight?.hebrew_first_name + " " + flight.hebrew_last_name}
+                 </TableCell>
+                 <TableCell className={classes.dataTableCell}>
+                 {flight?.birth_date}
+                 </TableCell>
+                 <TableCell className={classes.dataTableCell}>
+                 {flight?.age === null ? flight.default_age : flight.age}
+                 </TableCell>
+                 <TableCell className={classes.dataTableCell}>
+                 {flight?.user_classification}
+                 </TableCell>
+                 <TableCell className={classes.dataTableCell}>
+                 {flight?.flights === "1" ? 'כן': "לא"}
+                 </TableCell>
+                 <TableCell className={classes.dataTableCell}>
+                 {flight?.flying_with_us === 1 ? 'כן': "לא"}
+                 </TableCell>
+                 <TableCell className={classes.dataTableCell}>
+                 {flight?.flights_direction === "round_trip" ? "הלוך חזור":flight.flights_direction === "one_way_outbound" ? "הלוך בלבד" : flight.flights_direction === "one_way_return" ? "חזור בלבד" : ""}
+                 </TableCell>
+                 <TableCell className={classes.dataTableCell}>
+                 {flight?.passport_number}
+                 </TableCell>
+                 <TableCell className={classes.dataTableCell}>
+                 {flight?.validity_passport}
+                 </TableCell>
+                 <TableCell className={classes.dataTableCell}>
+                 {flight?.outbound_flight_date}
+                 </TableCell>
+                 <TableCell className={classes.dataTableCell}>
+                 {flight?.return_flight_date}
+                 </TableCell>
+                 <TableCell className={classes.dataTableCell}>
+                 {flight?.outbound_flight_number}
+                 </TableCell>
+                 <TableCell className={classes.dataTableCell}>
+                 {flight?.return_flight_number}
+                 </TableCell>
+                 <TableCell className={classes.dataTableCell}>
+                 {flight?.outbound_airline}
+                 </TableCell>
+                 <TableCell className={classes.dataTableCell}>
+                 {flight?.return_airline}
+                 </TableCell>
+                
+           
                 </TableRow>
               );
             })}
@@ -136,4 +149,4 @@ function VacationView({
   );
 }
 
-export default VacationView;
+export default FlightsView;

@@ -8,7 +8,6 @@ export default {
     });
   },
   addUser(token,form,newFamilyId,newUserId,vacationId) {
-    console.log(token,form,newFamilyId,newUserId,vacationId)
     return Api.post(`${END_POINT.USER}/${vacationId}`, {form,newFamilyId,newUserId}, {
       headers: { Authorization: token },
     });
@@ -43,11 +42,17 @@ export default {
       headers: { Authorization: token },
     });
   },
-  deleteGuests(token,userId,vacationId,status) {
-    return Api.delete(`${END_POINT.USER}/${userId}/${vacationId}/${status}`, {
+  deleteGuests(token,userId,vacationId) {
+    return Api.delete(`${END_POINT.USER}/${userId}/${vacationId}`, {
       headers: { Authorization: token },
     });
   },
+  deleteMainGuests(token,userId,vacationId) {
+    return Api.delete(`${END_POINT.USER}/main/${userId}/${vacationId}`, {
+      headers: { Authorization: token },
+    });
+  },
+  
 }
 
 

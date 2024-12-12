@@ -10,8 +10,12 @@ import {
   FormControl,
   InputAdornment,
   TextField,
-  Typography,
-  InputLabel
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button,
 } from "@mui/material";
 
 import { useStyles } from "./MainGuests.style";
@@ -23,19 +27,27 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import { ReactComponent as DownloadIcon } from "../../../../../../assets/icons/download.svg";
 
 function MainGuestsView({ 
-  filteredainGuests,
+  filteredGuests,
   searchTerm,
   setSearchTerm,
   headers,
-  handleDeleteClick,
-  handleExportToExcel
+  handleExportToExcel,
+  handleDeleteButtonClick,
+  selectedUser,
+  handleClose,
+  open,
+  handleDeleteClick
 }) {
 
-  const dispatch = useDispatch()
   const classes = useStyles();
-  const form = useSelector((state) => state.staticSlice.form)
-  const userForm = useSelector((state) => state.userSlice.form)
-  
+  const handleMessageString = () => {
+    if(selectedUser !== null){
+      if(selectedUser.is_main_user === 1){
+      return `הנך עומד למחוק את ${selectedUser?.hebrew_first_name} ${selectedUser?.hebrew_last_name}, אורח זה הוא אורח ראשי מחיקתו תוביל למחיקת כל האורחים שתחת שם זה האם הנך בטוח?    `
+      }
+   }
+  }
+
   return (
     <Grid style={{
       width:"99.9%",  maxHeight: "80vh",
@@ -82,11 +94,14 @@ function MainGuestsView({
             </TableRow>
           </TableHead>
           <TableBody className={classes.dataTableBody}>
-            {filteredainGuests?.map((user, index) => {
+            {filteredGuests?.map((user, index) => {
               return (
                 <TableRow key={index}>
                  
                  <>
+                 <TableCell className={classes.dataTableCell}>
+                        {index+1}
+                      </TableCell>
                       <TableCell className={classes.dataTableCell}>
                         {user?.hebrew_first_name}
                       </TableCell>
@@ -98,6 +113,9 @@ function MainGuestsView({
                       </TableCell>
                       <TableCell className={classes.dataTableCell}>
                         {user?.english_last_name}
+                      </TableCell>
+                      <TableCell className={classes.dataTableCell}>
+                        {user?.age}
                       </TableCell>
                       <TableCell className={classes.dataTableCell}>
                         {user?.identity_id}
@@ -115,7 +133,7 @@ function MainGuestsView({
                       >
                         <IconButton size="small">
                           <DeleteIcon className={classes.delete}
-                            onClick={() => handleDeleteClick(index)}
+                            onClick={() => handleDeleteButtonClick(user)}
                           />
                         </IconButton>
                       </TableCell>
@@ -127,6 +145,26 @@ function MainGuestsView({
           </TableBody>
         </Table>
       </TableContainer>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        classes={{ paper: classes.dialog }}
+      >
+        <DialogTitle>אישור מחיקה</DialogTitle>
+        <DialogContent>
+          <DialogContentText style={{color: "#FFFFFF" }}>
+            {handleMessageString()}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} style={{color:"#FFFFFF",padding:"2px",border:'1px solid black',marginLeft:'3px',background:"#494C55"}}>
+            ביטול
+          </Button>
+          <Button onClick={handleDeleteClick} autoFocus style={{color:"#FFFFFF",padding:"2px",border:'1px solid black',background:"red"}}>
+            מחק
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Grid>
   );
 }

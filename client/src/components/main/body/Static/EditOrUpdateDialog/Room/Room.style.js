@@ -97,39 +97,7 @@ export const useStyles = makeStyles((theme) => ({
         borderRadius: "4px",
         opacity: 1,
     },
-    basePhonetextFieldPhone: {
-        borderRadius: 4,
-        "& .MuiInputBase-input": {
-            position: "relative",
-            color: "#FFFFFF",
-            fontSize: 16,
-            width: "25px",
-            padding: "5px 18px",
-            height: "24px",
-        },
-        "& .MuiFormLabel-root": {
-            color: "#757882",
-            fontSize: "14px",
-        },
-        "& label.Mui-focused": {
-            color: "#54A9FF",
-            top: "0px",
-        },
-        "& .MuiInput-underline:after": {
-            borderBottomColor: "#54A9FF",
-        },
-        "& .MuiOutlinedInput-root": {
-            "& fieldset": {
-                borderColor: "#494C55",
-            },
-            "&:hover fieldset": {
-                borderColor: "#494C55",
-            },
-            "&.Mui-focused fieldset": {
-                borderColor: "#54A9FF",
-            },
-        },
-    },
+  
     selectOutline: {
         height: "35px",
          width:"80px",

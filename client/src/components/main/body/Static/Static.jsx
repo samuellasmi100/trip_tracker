@@ -18,7 +18,6 @@ const Static = () => {
     dispatch(staticSlice.closeMainModal());
   };
 
-
   const getVacations = async () => {
     try {
       const response = await ApiVacations.getVacations(token, vacationId);
@@ -41,7 +40,7 @@ const Static = () => {
   dispatch(staticSlice.updateDialogType(name));
  }
 
- 
+
   return (
     <>
      <StaticView handleWidgetClick={handleWidgetClick}/>

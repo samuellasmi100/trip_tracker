@@ -41,7 +41,7 @@ function FamilyListView(props) {
     setSearchTerm,
     handleSelectInputChange
   } = props;
-  const headers = ["שם משפחה", "הוסף קובץ רישום", "היתרה לתשלום", "מסלול"];
+  const headers = ["","שם משפחה", "הוסף קובץ רישום", "היתרה לתשלום", "מסלול"];
   const vacationList = useSelector((state) => state.vacationSlice.vacations)
  const vacationName = useSelector((state) => state.vacationSlice.vacationName)
   return (
@@ -150,11 +150,15 @@ function FamilyListView(props) {
               {filteredFamilyList?.map((user, index) => {
                 return (
                   <TableRow key={index}>
+                     <TableCell className={classes.dataTableCell}>
+                        {index+1}
+                      </TableCell>
                     <Button onClick={() => handleNameClick(user)}>
                       <TableCell className={classes.dataTableCell}>
                         {user.family_name}
                       </TableCell>
                     </Button>
+                    
                     <TableCell
                       className={classes.dataTableCell}
                       style={{ maxWidth: "1px" }}

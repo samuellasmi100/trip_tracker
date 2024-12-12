@@ -15,7 +15,7 @@ const Guests = (props) => {
   const token = sessionStorage.getItem("token");
   const [searchTerm, setSearchTerm] = useState("");
   const vacationId = useSelector((state) => state.vacationSlice.vacationId);
-  const mainGuests = useSelector((state) => state.staticSlice.mainGuests);
+  const mainGuests = useSelector((state) => state.staticSlice.mainData);
   const detailsDialogOpen = useSelector((state) => state.staticSlice.detailsModalOpen);
   const [open, setOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -30,10 +30,12 @@ const Guests = (props) => {
   };
 
   const headers = [
+    "",
     "שם פרטי בעברית",
     "שם משפחה בעברית",
     "שם פרטי באנגלית",
     "שם משפחה באנגלית",
+    "גיל",
     "מספר זהות",
     "מספר טלפון",
     "אימייל",
@@ -41,7 +43,7 @@ const Guests = (props) => {
     "מחק"
   ];
 
-  const filteredainGuests = mainGuests?.filter((user) => {
+  const filteredGuests = mainGuests?.filter((user) => {
     if (searchTerm !== "") {
       return user.hebrew_first_name.includes(searchTerm) || user.hebrew_last_name.includes(searchTerm) || user.identity_id.includes(searchTerm) ;
     } else {
@@ -54,45 +56,46 @@ const handleDeleteClick = async () => {
 
   try {
   if(selectedUser.is_main_user === 1){
-    const response = await ApiUser.deleteGuests(token,selectedUser.family_id,vacationId,true)
-    // dispatch(staticSlice.updateMainGuests(response.data))
+    const response = await ApiUser.deleteMainGuests(token,selectedUser.family_id,vacationId)
+    dispatch(staticSlice.updateMainData(response.data.mainGuests))
+    dispatch(staticSlice.updateMainData(response.data.allGuests))
     setOpen(false); 
   }else {
-    const response = await ApiUser.deleteGuests(token,selectedUser.user_id,vacationId,false)
-    dispatch(staticSlice.updateMainGuests(response.data))
+    const response = await ApiUser.deleteGuests(token,selectedUser.user_id,vacationId)
+    dispatch(staticSlice.updateMainData(response.data.mainGuests))
+    dispatch(staticSlice.updateMainData(response.data.allGuests))
     setOpen(false); 
   }
 
-
-  // dispatch(
-  //   snackBarSlice.setSnackBar({
-  //     type: "success",
-  //     message: `${user.hebrew_first_name + " " + user.hebrew_last_name} נמחק בהצלחה`,
-  //     timeout: 3000,
-  //   })
-  // )
+  dispatch(
+    snackBarSlice.setSnackBar({
+      type: "success",
+      message: `${selectedUser.hebrew_first_name + " " + selectedUser.hebrew_last_name} נמחק בהצלחה`,
+      timeout: 3000,
+    })
+  )
   } catch (error) {
     console.log(error)
   }
 }
 
   const getMainGuests = async () => {
-
     try {
         const response = await ApiStatic.getGuests(token,vacationId)
-        dispatch(staticSlice.updateMainGuests(response.data))
+        dispatch(staticSlice.updateMainData(response.data))
     } catch (error) {
       console.log(error)
     }
   }
  
   const handleExportToExcel = () => {
-    const transformedData = filteredainGuests.map((row) => {
+    const transformedData = filteredGuests.map((row) => {
       return {
         "שם פרטי בעברית": row.hebrew_first_name,
         "שם משפחה בעברית": row.hebrew_last_name,
         "שם פרטי באנגלית": row.english_first_name,
         "שם משפחה באנגלית": row.english_last_name,
+        "גיל": row.age !== null ? row.age : "",
         "מספר זהות": row.identity_id,
         "מספר טלפון": row.phone_a !== null && row.phone_b !== null ? row.phone_a + row.phone_b : "",
         "אימייל": row.email
@@ -104,12 +107,13 @@ const handleDeleteClick = async () => {
       "שם משפחה בעברית",
       "שם פרטי באנגלית",
       "שם משפחה באנגלית",
+      "גיל",
       "מספר זהות",
       "מספר טלפון",
       "אימייל"
     ];
   
-    const ws = XLSX.utils.json_to_sheet(transformedData, { skipHeader: true });
+    const ws = XLSX.utils.json_to_sheet(transformedData);
     XLSX.utils.sheet_add_aoa(ws, [hebrewHeaders], { origin: "A1" });
     ws["!dir"] = "rtl";
     ws["!cols"] = hebrewHeaders.map(() => ({ wch: 20 }));
@@ -124,13 +128,14 @@ const handleDeleteClick = async () => {
     setSelectedUser(user);
     setOpen(true); 
   };
+  
   useEffect(() => {
     getMainGuests()
   }, [])
   return (
   <>
   <GuestsView
-  filteredainGuests={filteredainGuests}
+  filteredGuests={filteredGuests}
   searchTerm={searchTerm}
   setSearchTerm={setSearchTerm}
   headers={headers}

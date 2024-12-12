@@ -48,16 +48,13 @@ const GuestView = (props) => {
         <Child areaCodes={areaCodes} handleInputChange={handleInputChange} />
       );
     }
-    // else if(dialogType === "addFamily"){
-    //   return <CreateFamily handleInputChange={handleInputChange}/>
-    // }
   };
 
   return (
     <>
       <Grid container style={{ minHeight: "350px" }}>
         {dialogType === "addChild" ? (
-          <Grid item xs={12} style={{marginRight:"30px",marginTop:"-20px"}}>
+          <Grid item xs={12} style={{marginTop:"-30px",textAlign:"center"}}>
             <Typography>הוסף בן משפחה</Typography>
           </Grid>
         ) : (
@@ -65,7 +62,7 @@ const GuestView = (props) => {
         )}
         {handleDataInputsView()}
       </Grid>
-      <Grid style={{marginRight:"11px",marginBottom:"12px"}}>
+      <Grid style={{marginRight:"11px",marginBottom:"12px",marginTop:"50px"}}>
         <FormControlLabel
           control={
             <Checkbox

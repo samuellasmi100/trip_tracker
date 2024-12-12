@@ -9,19 +9,15 @@ export const staticSlice = createSlice({
     type: "",
     detailsModalType:"",
     form: {},
-    mainGuests:[],
-    guests:[]
+    mainData:[],
   },
   reducers: {
     updateFormField: (state, action) => {
       const { field, value } = action.payload;
       state.form[field] = value;
     },
-    updateGuests: (state, action) => {
-      state.guests = action.payload;
-    },
-    updateMainGuests: (state, action) => {
-      state.mainGuests = action.payload;
+    updateMainData: (state, action) => {
+      state.mainData = action.payload;
     },
     updateForm: (state, action) => {
       state.form = action.payload;
@@ -75,7 +71,7 @@ export const {
   updateForm,
   resetState,
   updateDetailsModalType,
-  updateGuests,
+  updateMainData,
  updateMainGuests
 } = staticSlice.actions;
 

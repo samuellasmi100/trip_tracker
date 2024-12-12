@@ -66,11 +66,32 @@ function Child({areaCodes,handleInputChange }) {
                             onChange={handleInputChange}
                         />
                     </Grid>
-                   
+                    <Grid item>
+              <InputLabel className={classes.inputLabelStyle}>
+                תאריך לידה
+              </InputLabel>
+              <TextField
+                type="date"
+                name="birth_date"
+                value={form.birth_date}
+                className={classes.dateTextField}
+                onChange={handleInputChange}
+              />
+            </Grid>
                 </Grid>
             </Grid>
             <Grid item xs={5}>
-                <Grid container spacing={2} justifyContent="center">
+            <Grid container spacing={2} justifyContent="center">
+            <Grid item>
+              <InputLabel className={classes.inputLabelStyle}>גיל</InputLabel>
+              <TextField
+                name="age"
+                value={form.age}
+                className={classes.textField}
+                onChange={handleInputChange}
+              />
+            </Grid>
+                    
                 <Grid item>
                         <InputLabel className={classes.inputLabelStyle}>
                             מספר זהות
@@ -122,7 +143,6 @@ function Child({areaCodes,handleInputChange }) {
                                             sx: {
                                                 color: "#ffffff !important",
                                                 bgcolor: "#222222",
-                                                paddinTop: "110px !important"
                                             },
                                         },
                                     }}
