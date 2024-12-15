@@ -28,7 +28,7 @@ const assignMainRoom = (vacationId) => {
 };
 
 const getChosenRoom = (vacationId) => {
-  return `SELECT r.rooms_id,r.type,r.size,r.direction,r.floor,base_occupancy 
+  return `SELECT r.rooms_id,r.type,r.size,r.direction,r.floor,r.base_occupancy,r.max_occupancy
     FROM trip_tracker_${vacationId}.rooms r 
     join trip_tracker_${vacationId}.user_room_assignments ur
     on ur.room_id = r.rooms_id
@@ -36,7 +36,19 @@ const getChosenRoom = (vacationId) => {
 };
 
 const getUsersChosenRoom = (vacationId) => {
-  return `SELECT room_id ,family_id,user_id FROM trip_tracker_${vacationId}.user_room_assignments where family_id = ?`;
+  return `SELECT 
+    ura.room_id,
+    ura.family_id,
+    ura.user_id,
+    r.base_occupancy,
+    r.max_occupancy,
+    COUNT(ura.user_id) OVER (PARTITION BY ura.room_id) AS people_count
+FROM trip_tracker_${vacationId}.user_room_assignments ura
+JOIN trip_tracker_${vacationId}.rooms r 
+    ON r.rooms_id = ura.room_id
+WHERE family_id = ?;
+;`
+
 };
 
 const updateMainRoom = () => {

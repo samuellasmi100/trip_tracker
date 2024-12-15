@@ -1,6 +1,6 @@
 const addPayments = (vacationId) => {
     return `INSERT INTO trip_tracker_${vacationId}.payments (payment_date,amount,form_of_payment,
-    remains_to_be_paid,payment_currency,amount_received,family_id) values (?,?,?,?,?,?,?)`
+    remains_to_be_paid,payment_currency,amount_received,family_id,user_id) values (?,?,?,?,?,?,?,?)`
 }
 const getPayments = (vacationId) => {
     return `SELECT family_id as familyId,payment_date as paymentDate ,amount,form_of_payment as formOfPayment,

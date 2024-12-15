@@ -115,6 +115,7 @@ const createPaymentsTableQuery = `
    amount_received varchar(45) DEFAULT NULL,
    family_id varchar(45) DEFAULT NULL,
    created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+   user_id varchar(45) DEFAULT NULL,
    PRIMARY KEY (id)
  ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 `;
