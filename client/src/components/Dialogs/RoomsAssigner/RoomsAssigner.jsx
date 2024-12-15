@@ -33,6 +33,8 @@ const RoomsAssigner = () => {
             timeout: 3000,
           })
         )
+      dispatch(dialogSlice.updateActiveButton("בחירת חדרים"))
+
       } catch (error) {
         dispatch(
           snackbarSlice.setSnackBar({

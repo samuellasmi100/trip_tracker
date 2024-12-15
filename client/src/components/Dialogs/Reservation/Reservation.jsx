@@ -80,6 +80,8 @@ const Reservation = () => {
           timeout: 3000,
         })
       )
+      dispatch(dialogSlice.updateActiveButton("הקצאת חדרים"))
+
     } catch (error) {
       console.log(error);
     }

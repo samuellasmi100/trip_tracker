@@ -8,6 +8,7 @@ const Vacation = () => {
   const dispatch = useDispatch()
   const token = sessionStorage.getItem("token")
   const form = useSelector((state) => state.staticSlice.form)
+  
  const handleInputChange = (eventOrValue, fieldName) => {
 
     if (typeof eventOrValue === "object" && eventOrValue.target) {

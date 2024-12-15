@@ -11,12 +11,10 @@ import EditOrUpdateDialog from "../../EditOrUpdateDialog/MainDialog/EditOrUpdate
 const Vacation = (props) => {
 
   const dispatch = useDispatch();
-  const form = useSelector((state) => state.staticSlice.form);
   const token = sessionStorage.getItem("token");
   const [searchTerm, setSearchTerm] = useState("");
   const vacationId = useSelector((state) => state.vacationSlice.vacationId);
   const vacationDetails = useSelector((state) => state.vacationSlice.vacationDetails);
-  
   const detailsDialogOpen = useSelector((state) => state.staticSlice.detailsModalOpen);
 
   const closeDetailsModal = () => {

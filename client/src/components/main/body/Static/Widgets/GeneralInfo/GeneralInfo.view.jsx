@@ -31,7 +31,7 @@ function GeneralInfoView({
   setSelectedFilter,
   selectedFilter
 }) {
-
+  const vacationName = sessionStorage.getItem("vacName") 
   const classes = useStyles();
   const selectOption = ["טסים איתנו", "גיל"]
   return (
@@ -129,6 +129,18 @@ function GeneralInfoView({
                 <TableRow key={index}>
                   <TableCell className={classes.dataTableCell}>
                     {index + 1}
+                  </TableCell>
+                  <TableCell className={classes.dataTableCell}>
+                    {vacationName}
+                  </TableCell>
+                  <TableCell className={classes.dataTableCell}>
+                    {flight?.week_chosen}
+                  </TableCell>
+                  <TableCell className={classes.dataTableCell}>
+                    {flight?.date_chosen}
+                  </TableCell>
+                  <TableCell className={classes.dataTableCell}>
+                    {flight?.room_id}
                   </TableCell>
                   <TableCell className={classes.dataTableCell}>
                     {flight?.hebrew_first_name + " " + flight.hebrew_last_name}

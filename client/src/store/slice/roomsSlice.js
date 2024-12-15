@@ -10,7 +10,6 @@ export const roomsSlice = createSlice({
   },
   reducers: {
     addRoomToForm: (state, action) => {
-  
       const roomExists = state.selectedRooms.some(
         (room) => room.rooms_id === action.payload.rooms_id
       );
@@ -18,7 +17,6 @@ export const roomsSlice = createSlice({
         state.selectedRooms.push(action.payload);
       }
     },
-  
     updateRoomsList: (state, action) => {
       state.rooms = action.payload;
     },

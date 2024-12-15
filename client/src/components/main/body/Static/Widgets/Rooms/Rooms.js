@@ -6,26 +6,21 @@ import * as roomsSlice from "../../../../../../store/slice/roomsSlice";
 import * as staticSlice from "../../../../../../store/slice/staticSlice";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-const defaultNewRow = {
-  rooms_id: "",
-  type: "",
-  floor: "",
-  direction: "",
-  size: "",
-  base_occupancy: "",
-  max_occupancy: "",
-  number_of_people: "",
-};
+import EditOrUpdateDialog from "../../EditOrUpdateDialog/MainDialog/EditOrUpdateDialog";
+
+
 const Rooms = ({ handleDialogTypeOpen }) => {
   const vacationId = useSelector((state) => state.vacationSlice.vacationId);
   const dispatch = useDispatch();
   const rooms = useSelector((state) => state.roomsSlice.rooms);
   const token = sessionStorage.getItem("token");
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredRooms2, setFilteredRooms2] = useState([]);
-  const [editRowIndex, setEditRowIndex] = useState(null);
-  const [actionStatus, setActionStatus] = useState("");
-  const [editRowData, setEditRowData] = useState(defaultNewRow);
+  const detailsDialogOpen = useSelector((state) => state.staticSlice.detailsModalOpen);
+
+  const closeDetailsModal = () => {
+    dispatch(staticSlice.closeDetailsModal());
+  };
+
   const headers = [
     "מספר חדר",
     "סוג חדר",
@@ -35,9 +30,10 @@ const Rooms = ({ handleDialogTypeOpen }) => {
     "קיבולת החדר",
     "תפוסה מקסימלית",
     "מספר אנשים בחדר ",
-    editRowIndex === null ? "ערוך" : "שמור",
+    "ערוך",
     "זמינות",
   ];
+
   const getAllRooms = async () => {
     try {
       let response = await ApiRooms.getAll(token, vacationId);
@@ -55,46 +51,13 @@ const Rooms = ({ handleDialogTypeOpen }) => {
     }
   });
 
-  const handleEditClick = (index, room) => {
-    setActionStatus("edit");
-    setEditRowIndex(index);
-    setEditRowData(room);
+  const handleEditClick = (index,room) => {
+  dispatch(staticSlice.updateDetailsModalType("editRoom"))
+   dispatch(staticSlice.openDetailsModal())
+   dispatch(staticSlice.updateForm(room))
   };
 
-  const handleSaveClick = () => {
-    if (actionStatus === "edit") {
-      submit(editRowData);
-    }
-  };
 
-  const handleAddRow = () => {
-    setActionStatus("add");
-    setFilteredRooms2((prevRooms) => [...prevRooms, { ...defaultNewRow }]);
-    setEditRowIndex(filteredRooms2.length);
-    setEditRowData({ ...defaultNewRow });
-  };
-
-  const handleInputChange = (field, value) => {
-    setEditRowData((prevData) => ({ ...prevData, [field]: value }));
-  };
-
-  const submit = async (dataToUpdate) => {
-    try {
-      const response = await ApiRooms.updateRoom(
-        token,
-        dataToUpdate,
-        vacationId
-      );
-      setFilteredRooms2([]);
-      setEditRowIndex(null);
-      setActionStatus("");
-      setEditRowData(defaultNewRow);
-      dispatch(roomsSlice.updateRoomsList(response.data));
-      // dispatch(staticSlice.resetState());
-    } catch (error) {
-      console.log(error);
-    }
-  };
   const handleExportToExcel = () => {
     const transformedData = filteredRooms.map((row) => {
       return {
@@ -140,18 +103,12 @@ const Rooms = ({ handleDialogTypeOpen }) => {
         handleDialogTypeOpen={handleDialogTypeOpen}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
-        submit={submit}
         handleEditClick={handleEditClick}
-        handleSaveClick={handleSaveClick}
-        handleAddRow={handleAddRow}
-        handleInputChange={handleInputChange}
-        filteredRooms2={filteredRooms2}
-        editRowIndex={editRowIndex}
-        actionStatus={actionStatus}
-        editRowData={editRowData}
         headers={headers}
         handleExportToExcel={handleExportToExcel}
+
       />
+       <EditOrUpdateDialog detailsDialogOpen={detailsDialogOpen} closeDetailsModal={closeDetailsModal} />
     </>
   );
 };

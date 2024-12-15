@@ -93,4 +93,18 @@ export const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  greenText: {
+    color: "green !important",
+    fontSize: "15px !important",
+    textAlign: "center !important",
+    borderBottom: "none !important",
+    fontWeight: "900 !important",
+  },
+  redText: {
+    color: "red !important",
+    fontSize: "14px !important",
+    textAlign: "center !important",
+    borderBottom: "none !important",
+    fontWeight: "900 !important",
+  },
 }));

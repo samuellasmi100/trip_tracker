@@ -95,6 +95,8 @@ const RoomSelector = () => {
           timeout: 3000,
         })
       );
+      dispatch(dialogSlice.updateActiveButton("טיסות"))
+
     } catch (error) {
       dispatch(
         snackBarSlice.setSnackBar({

@@ -130,6 +130,7 @@ const Guest = () => {
           timeout: 3000,
         })
       )
+      dispatch(dialogSlice.updateActiveButton("פרטי הזמנה"))
     } catch (error) {
       console.log(error);
     }

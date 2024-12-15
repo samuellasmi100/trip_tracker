@@ -85,6 +85,7 @@ const userClassificationType = ["MR","MRS","BABY"]
         timeout: 3000,
       })
     )
+
     } catch (error) {
       console.log(error)
     }
@@ -114,11 +115,13 @@ const userClassificationType = ["MR","MRS","BABY"]
       console.log(error)
     }
   }
+
   const handleCloseClicked = () => {
     dispatch(flightsSlice.resetForm())
    dispatch(dialogSlice.resetState())
    dispatch(userSlice.resetForm())
    }
+
   useEffect(() => {
     getFlightData()
   }, [])

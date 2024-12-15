@@ -29,7 +29,6 @@ export const staticSlice = createSlice({
       state.activeButton = "פרטים אישיים";
     },
     openMainModal: (state, action) => {
-
       state.mainModalOpen = true;
     },
     closeMainModal: (state, action) => {
@@ -51,7 +50,6 @@ export const staticSlice = createSlice({
       state.type = "";
     },
     resetState: (state, action) => {
-      state.type = "";
       state.form = {};
     },
     

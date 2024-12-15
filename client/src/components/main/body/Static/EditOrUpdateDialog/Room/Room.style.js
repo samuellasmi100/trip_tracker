@@ -5,15 +5,14 @@ export const useStyles = makeStyles((theme) => ({
     inputLabelStyle: {
         color: "#757882 !important",
         fontSize: "15px",
-        marginBottom:"8px"
     },
     textField: {
         borderRadius: 4,
         "& .MuiInputBase-input": {
             position: "relative",
             color: "#FFFFFF",
-            fontSize: 16,
-            width: "auto",
+            fontSize: 14,
+            width: "145px",
             padding: "5px 18px",
             height: "24px",
         },
@@ -98,37 +97,4 @@ export const useStyles = makeStyles((theme) => ({
         opacity: 1,
     },
   
-    selectOutline: {
-        height: "35px",
-         width:"80px",
-        "&.MuiOutlinedInput-root": {
-          color: "#ffffff !important",
-          "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#494c55",
-          },
-        },
-        "& .MuiSvgIcon-root": {
-          color: "#54a9ff",
-        },
-      },
-      selectedMenuItem: {
-        backgroundColor: "#2D2D2D !important",
-        // padding:"0px !important",
-        
-    
-        
-        "& Mui=Menu-list" :{
-            padding:"0pz !important"
-        },
-        "&.Mui-selected": {
-          backgroundColor: "transparent",
-          "&:hover": {
-            backgroundColor: "#3C3E43",
-          },
-        },
-        "&:hover": {
-          backgroundColor: "#3C3E43",
-        },
-        
-      },
 }));

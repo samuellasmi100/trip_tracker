@@ -18,7 +18,6 @@ import { ReactComponent as EditIcon } from "../../../../../../assets/icons/edit.
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import { ReactComponent as DownloadIcon } from "../../../../../../assets/icons/download.svg";
 import SearchIcon from "@material-ui/icons/Search";
-import SaveIcon from "@mui/icons-material/Save";
 
 function StaticView({
   filteredRooms,
@@ -26,12 +25,8 @@ function StaticView({
   searchTerm,
   setSearchTerm,
   handleEditClick,
-  handleSaveClick,
-  handleInputChange,
-  editRowIndex,
-  editRowData,
   headers,
-  handleExportToExcel
+  handleExportToExcel,
 }) {
   const classes = useStyles();
 
@@ -56,8 +51,8 @@ function StaticView({
           </FormControl>
 
         </Grid>
-          <IconButton onClick={handleExportToExcel}>
-          <DownloadIcon style={{ color: "#54A9FF", fontSize: "30px",border:'1px solid #494C55',padding:"10px",marginTop:"-2",borderRadius:"4px" }} />
+        <IconButton onClick={handleExportToExcel}>
+          <DownloadIcon style={{ color: "#54A9FF", fontSize: "30px", border: '1px solid #494C55', padding: "10px", marginTop: "-2", borderRadius: "4px" }} />
         </IconButton>
       </Grid>
       <TableContainer
@@ -87,145 +82,56 @@ function StaticView({
             {filteredRooms?.map((room, index) => {
               return (
                 <TableRow key={index}>
-                  {editRowIndex === index ? (
-                    <>
-                      <TableCell className={classes.dataTableCell}>
-                        <TextField
-                          className={classes.tableTextField}
-                          value={editRowData.rooms_id}
-                          onChange={(e) =>
-                            handleInputChange("rooms_id", e.target.value)
-                          }
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell className={classes.dataTableCell}>
-                        <TextField
-                          className={classes.tableTextField}
-                          value={editRowData.type}
-                          onChange={(e) =>
-                            handleInputChange("type", e.target.value)
-                          }
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell className={classes.dataTableCell}>
-                        <TextField
-                          className={classes.tableTextField}
-                          value={editRowData.floor}
-                          onChange={(e) =>
-                            handleInputChange("floor", e.target.value)
-                          }
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell className={classes.dataTableCell}>
-                        <TextField
-                          className={classes.tableTextField}
-                          value={editRowData.direction}
-                          onChange={(e) =>
-                            handleInputChange("direction", e.target.value)
-                          }
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell className={classes.dataTableCell}>
-                        <TextField
-                          className={classes.tableTextField}
-                          value={editRowData.size}
-                          onChange={(e) =>
-                            handleInputChange("size", e.target.value)
-                          }
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell className={classes.dataTableCell}>
-                        <TextField
-                          className={classes.tableTextField}
-                          value={editRowData.base_occupancy}
-                          onChange={(e) =>
-                            handleInputChange("base_occupancy", e.target.value)
-                          }
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell className={classes.dataTableCell}>
-                        <TextField
-                          className={classes.tableTextField}
-                          value={editRowData.max_occupancy}
-                          onChange={(e) =>
-                            handleInputChange("max_occupancy", e.target.value)
-                          }
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell className={classes.dataTableCell}>
-                        <TextField
-                          className={classes.tableTextField}
-                          value={editRowData.number_of_people}
-                          onChange={(e) =>
-                            handleInputChange(
-                              "number_of_people",
-                              e.target.value
-                            )
-                          }
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell className={classes.dataTableCell}>
-                        <IconButton size="small" onClick={handleSaveClick}>
-                          <SaveIcon style={{ color: "#FF9E54" }} />
-                        </IconButton>
-                      </TableCell>
-                    </>
-                  ) : (
-                    <>
-                      <TableCell className={classes.dataTableCell}>
-                        {room.rooms_id}
-                      </TableCell>
-                      <TableCell className={classes.dataTableCell}>
-                        {room.type}
-                      </TableCell>
-                      <TableCell className={classes.dataTableCell}>
-                        {room.floor}
-                      </TableCell>
-                      <TableCell className={classes.dataTableCell}>
-                        {room.direction}
-                      </TableCell>
-                      <TableCell className={classes.dataTableCell}>
-                        {room.size}
-                      </TableCell>
-                      <TableCell className={classes.dataTableCell}>
-                        {room.base_occupancy}
-                      </TableCell>
-                      <TableCell className={classes.dataTableCell}>
-                        {room.max_occupancy}
-                      </TableCell>
-                      <TableCell className={classes.dataTableCell}>
-                        {room.number_of_people}
-                      </TableCell>
-                      <TableCell
-                        className={classes.dataTableCell}
-                        style={{ maxWidth: "1px" }}
-                      >
-                        <IconButton size="small">
-                          <EditIcon
-                            onClick={() => handleEditClick(index, room)}
-                          />
-                        </IconButton>
-                      </TableCell>
-                      <TableCell className={classes.dataTableCell}>
-                        <IconButton size="small">
-                          <EventAvailableIcon
-                            style={{ color: "#FF9E54" }}
-                            onClick={() =>
-                              handleDialogTypeOpen("showAvailableDates", room)
-                            }
-                          />
-                        </IconButton>
-                      </TableCell>
-                    </>
-                  )}
+
+                  <TableCell className={classes.dataTableCell}>
+                    {room.rooms_id}
+                  </TableCell>
+                  <TableCell className={classes.dataTableCell}>
+                    {room.type}
+                  </TableCell>
+                  <TableCell className={classes.dataTableCell}>
+                    {room.floor}
+                  </TableCell>
+                  <TableCell className={classes.dataTableCell}>
+                    {room.direction}
+                  </TableCell>
+                  <TableCell className={classes.dataTableCell}>
+                    {room.size}
+                  </TableCell>
+                  <TableCell className={classes.dataTableCell}>
+                    {room.base_occupancy}
+                  </TableCell>
+                  <TableCell className={classes.dataTableCell}>
+                    {room.max_occupancy}
+                  </TableCell>
+                  <TableCell
+                    className={`${classes.dataTableCell} ${Number(room.number_of_people) === 0 ? classes.greenText : classes.redText
+                      }`}
+                  >
+                    {room.number_of_people}
+                  </TableCell>
+                  <TableCell
+                    className={classes.dataTableCell}
+                    style={{ maxWidth: "1px" }}
+                  >
+                    <IconButton size="small">
+                      <EditIcon
+                        onClick={() => handleEditClick(index, room)}
+                      />
+                    </IconButton>
+                  </TableCell>
+                  <TableCell className={classes.dataTableCell}>
+                    <IconButton size="small">
+                      <EventAvailableIcon
+                        style={{ color: "#FF9E54" }}
+                        onClick={() =>
+                          handleDialogTypeOpen("showAvailableDates", room)
+                        }
+                      />
+                    </IconButton>
+                  </TableCell>
+
+
                 </TableRow>
               );
             })}
