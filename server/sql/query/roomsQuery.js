@@ -1,5 +1,17 @@
 const getAll = (vacationId) => {
-  return `SELECT rooms_id ,type,size,direction,floor,base_occupancy,max_occupancy FROM trip_tracker_${vacationId}.rooms;`
+return `
+SELECT 
+    r.*,
+    COUNT(ura.user_id) AS number_of_people
+FROM 
+    trip_tracker_${vacationId}.rooms r
+LEFT JOIN 
+    trip_tracker_${vacationId}.user_room_assignments ura
+ON 
+    r.rooms_id = ura.room_id
+GROUP BY 
+    r.rooms_id`
+  // return `SELECT rooms_id ,type,size,direction,floor,base_occupancy,max_occupancy FROM trip_tracker_${vacationId}.rooms;`
 }
 const getRoomDetailsWithCounts = () => {
 return `SELECT 

@@ -64,6 +64,12 @@ const getVacationDetails = (vacationId) => {
     g.flights_direction,
     g.age as default_age,
     g.number_of_guests,g.number_of_rooms,g.total_amount,
+    ura.room_id,g.week_chosen,
+    CONCAT(
+       DATE_FORMAT(STR_TO_DATE(SUBSTRING_INDEX(g.date_chosen, '/', 1), '%Y-%m-%d'), '%d/%m/%Y'),
+        ' - ',
+      DATE_FORMAT(STR_TO_DATE(SUBSTRING_INDEX(g.date_chosen, '/', -1), '%Y-%m-%d'), '%d/%m/%Y')
+    ) AS date_chosen,
     DATE_FORMAT(g.birth_date, '%d/%m/%Y') AS defaule_birth_date,
     g.phone_a,g.phone_b,g.email,g.identity_id,ura.room_id,
     p.form_of_payment,p.remains_to_be_paid,p.payment_currency

@@ -41,9 +41,7 @@ const getFamilyMember = async (id, vacationId) => {
   }
 }
 
-
 const updateGuest = async (data, vacationId) => {
-  console.log(data)
   try {
     const userId = data.user_id
     delete data.family_name
