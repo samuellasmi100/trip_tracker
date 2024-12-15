@@ -10,7 +10,7 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 
 const GeneralInfo = (props) => {
-
+  const vacationName = sessionStorage.getItem("vacName") 
   const dispatch = useDispatch();
   const form = useSelector((state) => state.staticSlice.form);
   const token = sessionStorage.getItem("token");
@@ -80,6 +80,10 @@ const GeneralInfo = (props) => {
     }
   }
 
+  const sanitizeSheetName = (name) => {
+    return name.replace(/[\\/:*?[\\]]/g, "_"); // Replaces forbidden characters with "_"
+  }
+
   const handleExportToExcel = () => {
     const transformedData = vacationDetails.map((row) => {
       return {
@@ -146,10 +150,11 @@ const GeneralInfo = (props) => {
     ws["!dir"] = "rtl";
     ws["!cols"] = hebrewHeaders.map(() => ({ wch: 20 }));
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "טיסות");
+    const sanitizedVacationName = sanitizeSheetName(vacationName);
+    XLSX.utils.book_append_sheet(wb, ws, `מידע כולל ${sanitizedVacationName}`);
     const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
     const data = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(data, "טיסות.xlsx");
+    saveAs(data, `מידע כולל ${sanitizedVacationName}.xlsx`);
   };
 
   const handleSelectedChange = () => {
