@@ -47,6 +47,7 @@ const addPayments = async (paymentDetails,vacationId) => {
       paymentDetails.familyId,
       paymentDetails.userId,
     ]
+    console.log(sql,parameters)
      await connection.executeWithParameters(sql,parameters)
   } catch (error) { 
     console.log(error)
