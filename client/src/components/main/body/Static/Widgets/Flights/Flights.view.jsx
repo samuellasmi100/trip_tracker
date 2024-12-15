@@ -79,6 +79,9 @@ function FlightsView({
             {filteredFlightDetails?.map((flight, index) => {
               return (
                 <TableRow key={index}>
+                   <TableCell className={classes.dataTableCell}>
+                 {index + 1}
+                 </TableCell>
                  <TableCell className={classes.dataTableCell}>
                  {flight?.hebrew_first_name}
                  </TableCell>

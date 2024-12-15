@@ -33,6 +33,7 @@ const handleInputChange = (e) => {
     }
   }
   dispatch(paymentsSlice.updateFormField({ field: "familyId", value: userForm.family_id }));
+  dispatch(paymentsSlice.updateFormField({ field: "userId", value: userForm.user_id }));
 };
 
 const submit = async () => {
@@ -41,7 +42,7 @@ const submit = async () => {
     dispatch(
       snackBarSlice.setSnackBar({
         type: "success",
-        message: "נתוני טיסה עודכנו בהצלחה",
+        message: "נתוני תשלום עודכנו בהצלחה",
         timeout: 3000,
       })
     )

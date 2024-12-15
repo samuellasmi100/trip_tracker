@@ -24,6 +24,7 @@ const Vacation = (props) => {
   };
 
   const headers = [
+    "",
     "שם חופשה",
     "מספר מסלולים",
     "מסלולים",

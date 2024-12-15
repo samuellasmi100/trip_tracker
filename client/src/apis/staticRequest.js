@@ -18,4 +18,9 @@ export default {
       headers: { Authorization: token },
     });
   },
+  getVacationDetails(token,vacationId) {
+    return Api.get(`/${END_POINT.STATIC}/vacation/${vacationId}`, {
+      headers: { Authorization: token },
+    });
+  },
 };

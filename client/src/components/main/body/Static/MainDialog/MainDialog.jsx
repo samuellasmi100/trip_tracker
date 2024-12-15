@@ -7,6 +7,7 @@ import MainGuests from "../Widgets/MainGuests/MainGuests"
 import Guests from "../Widgets/Guests/Guests"
 import Flights from "../Widgets/Flights/Flights"
 import RoomsStatus from "../Widgets/RoomsStatus/RoomsStatus";
+import GeneralInfo from "../Widgets/GeneralInfo/GeneralInfo";
 
 
 const MainDialog = (props) => {
@@ -25,6 +26,8 @@ const MainDialog = (props) => {
       return <Guests />;
     }else if (dialogType === "flights") {
       return <Flights />;
+    }else if(dialogType === "generalInformation"){
+      return <GeneralInfo />;
     }
   };
 

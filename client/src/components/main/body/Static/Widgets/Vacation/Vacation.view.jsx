@@ -86,8 +86,9 @@ function VacationView({
             {filteredVacations?.map((vac, index) => {
               return (
                 <TableRow key={index}>
-                 
-                 <>
+                  <TableCell className={classes.dataTableCell}>
+                        {index + 1}
+                      </TableCell>
                       <TableCell className={classes.dataTableCell}>
                         {vac.name}
                       </TableCell>
@@ -125,7 +126,6 @@ function VacationView({
                         </IconButton>
                       </TableCell>
                       
-                    </>
                 </TableRow>
               );
             })}

@@ -6,9 +6,7 @@ import { useSelector } from "react-redux";
 
 function StaticView({ handleWidgetClick}) {
   const classes = useStyles();
-
-  const headers = ["חדרים", "מלונות","אורחים","תשלומים","חופשות"];
-  const activeButton = useSelector((state) => state.staticSlice.activeButton)
+  const vacationName = sessionStorage.getItem("vacName") 
 
    return (
     <Grid
@@ -97,7 +95,15 @@ function StaticView({ handleWidgetClick}) {
         </Button>
       </Grid>
 
-  
+      <Grid className={classes.containerGrid}>
+        <Button className={classes.button} onClick={() => handleWidgetClick("generalInformation")}>
+          <Grid className={classes.dataGrid}>
+          <Grid className={classes.headerBox}>
+              <Typography className={classes.header}>מידע כולל {vacationName} </Typography>
+              </Grid>
+          </Grid>
+        </Button>
+      </Grid>
     </Grid>
    );
 }

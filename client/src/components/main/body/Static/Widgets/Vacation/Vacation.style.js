@@ -17,7 +17,7 @@ export const useStyles = makeStyles((theme) => ({
         borderBottom: "none !important",
       },
       headerTableRow: {
-        fontSize: "15px !important",
+        fontSize: "14px !important",
         color: "#5a5c62 !important",
         textAlign: "center !important",
         borderBottom: "none!important",

@@ -40,6 +40,7 @@ const Guests = (props) => {
     "מספר טלפון",
     "אימייל",
     "משתמש ראשי",
+    "משויך לחדר",
     "מחק"
   ];
 
@@ -98,7 +99,9 @@ const handleDeleteClick = async () => {
         "גיל": row.age !== null ? row.age : "",
         "מספר זהות": row.identity_id,
         "מספר טלפון": row.phone_a !== null && row.phone_b !== null ? row.phone_a + row.phone_b : "",
-        "אימייל": row.email
+        "אימייל": row.email,
+        "משויך לחדר":row.room_id,
+
       };
     });
   
@@ -110,7 +113,8 @@ const handleDeleteClick = async () => {
       "גיל",
       "מספר זהות",
       "מספר טלפון",
-      "אימייל"
+      "אימייל",
+      "משויך לחדר",
     ];
   
     const ws = XLSX.utils.json_to_sheet(transformedData);

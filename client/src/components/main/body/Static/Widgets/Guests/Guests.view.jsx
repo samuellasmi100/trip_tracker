@@ -129,6 +129,9 @@ function GuestsView({
                       <TableCell className={classes.dataTableCell}>
                         {user.is_main_user === 1 ? "כן" : "לא"}
                       </TableCell>
+                      <TableCell className={classes.dataTableCell}>
+                        {user.room_id}
+                      </TableCell>
                       <TableCell
                         className={classes.dataTableCell}
                         style={{ maxWidth: "1px" }}

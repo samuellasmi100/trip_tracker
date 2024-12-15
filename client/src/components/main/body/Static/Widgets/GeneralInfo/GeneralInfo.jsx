@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from "react";
-import FlightsView from "./Flights.view";
+import GeneralInfoView from "./GeneralInfo.view";
 import * as staticSlice from "../../../../../../store/slice/staticSlice";
 import { useSelector, useDispatch } from "react-redux";
 import ApiStatic from "../../../../../../apis/staticRequest";
@@ -9,15 +9,16 @@ import EditOrUpdateDialog from "../../EditOrUpdateDialog/MainDialog/EditOrUpdate
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 
-const Flights = (props) => {
+const GeneralInfo = (props) => {
 
   const dispatch = useDispatch();
   const form = useSelector((state) => state.staticSlice.form);
   const token = sessionStorage.getItem("token");
   const [searchTerm, setSearchTerm] = useState("");
   const vacationId = useSelector((state) => state.vacationSlice.vacationId);
-  const flightDetails = useSelector((state) => state.staticSlice.mainData);
+  const vacationDetails = useSelector((state) => state.staticSlice.mainData);
   const detailsDialogOpen = useSelector((state) => state.staticSlice.detailsModalOpen);
+  const [selectedFilter, setSelectedFilter] = useState();
 
   const closeDetailsModal = () => {
     dispatch(staticSlice.closeDetailsModal());
@@ -25,12 +26,16 @@ const Flights = (props) => {
 
   const headers = [
     "",
+    "קבוצה",
+    "משתמש ראשי",
     "שם פרטי בעברית",
     "שם משפחה בעברית",
     "שם פרטי באנגלית",
     "שם משפחה באנגלית",
-    "קבוצה",
     "תאריך לידה",
+    "מספר זהות",
+    "מספר טלפון",
+    "אימייל",
     "גיל",
     "תואר",
     "כולל טיסות",
@@ -44,27 +49,39 @@ const Flights = (props) => {
     "מספר טיסה חזור",
     "חברת תעופה הלוך",
     "חברת תעופה חזור",
+    "עלות חופשה",
+    "סכום הנשאר לתשלום",
+    "מטבע תשלום",
+    "צורת תשלום",
   ];
 
-  const filteredFlightDetails = flightDetails?.filter((flight) => {
-    if (searchTerm !== "") {
-      return flight.hebrew_first_name.includes(searchTerm);
-    } else {
-      return flight;
-    }
+  const filteredVacationDetails = vacationDetails?.filter((flight) => {
+    const matchesSearchTerm = searchTerm 
+      ? flight.hebrew_first_name?.includes(searchTerm) 
+      : true;
+    const matchesSelectedFilter = selectedFilter === "טסים איתנו"
+      ? flight.flights === "1"
+      : selectedFilter === "גיל"
+      ? flight.default_age > 3
+      : true; 
+
+    return matchesSearchTerm && matchesSelectedFilter;
   });
+  
 
 
-  const getFlightsDetails = async () => {
+  const getVacationDetails = async () => {
     try {
-      const response = await ApiStatic.getFlightsDetails(token,vacationId)
+      const response = await ApiStatic.getVacationDetails(token,vacationId)
+      console.log(response)
       dispatch(staticSlice.updateMainData(response.data))
     } catch (error) {
       console.log(error)
     }
   }
+
   const handleExportToExcel = () => {
-    const transformedData = flightDetails.map((row) => {
+    const transformedData = vacationDetails.map((row) => {
       return {
      "שם פרטי בעברית":row.hebrew_first_name,
       "שם משפחה בעברית":row.hebrew_last_name,
@@ -121,22 +138,29 @@ const Flights = (props) => {
     saveAs(data, "טיסות.xlsx");
   };
 
+  const handleSelectedChange = () => {
+
+  }
 
   useEffect(() => {
-    getFlightsDetails()
+    getVacationDetails()
   }, [])
   return (
   <>
-  <FlightsView
-  filteredFlightDetails={filteredFlightDetails}
+  <GeneralInfoView
+  filteredVacationDetails={filteredVacationDetails}
   searchTerm={searchTerm}
   setSearchTerm={setSearchTerm}
   headers={headers}
   handleExportToExcel={handleExportToExcel}
+  handleSelectedChange={handleSelectedChange}
+  setSelectedFilter={setSelectedFilter}
+  selectedFilter={selectedFilter}
+  
    />
   <EditOrUpdateDialog detailsDialogOpen={detailsDialogOpen} closeDetailsModal={closeDetailsModal} />
    </>
   )
 };
 
-export default Flights;
+export default GeneralInfo;
