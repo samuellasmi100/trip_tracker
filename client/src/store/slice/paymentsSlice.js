@@ -9,7 +9,8 @@ export const paymentsSlice = createSlice({
       formOfPayment:"",
       paymentCurrency:"",
       paymentDate:"",
-      remainsToBePaid:""
+      remainsToBePaid:"",
+      invoice:false
     }
   },
   reducers: {

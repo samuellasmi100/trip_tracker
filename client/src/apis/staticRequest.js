@@ -23,4 +23,9 @@ export default {
       headers: { Authorization: token },
     });
   },
+  getPaymentsDetails(token,vacationId) {
+    return Api.get(`/${END_POINT.STATIC}/payments/${vacationId}`, {
+      headers: { Authorization: token },
+    });
+  },
 };

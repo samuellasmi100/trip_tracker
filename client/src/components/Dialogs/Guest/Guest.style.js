@@ -1,4 +1,3 @@
-import React from "react";
 import { makeStyles } from "@mui/styles";
 
 export const useStyles = makeStyles((theme) => ({
@@ -79,7 +78,7 @@ export const useStyles = makeStyles((theme) => ({
             position: "relative",
             color: "#FFFFFF",
             fontSize: 16,
-            width: "115px",
+            width: "110px",
             padding: "5px 18px",
             height: "24px",
         },

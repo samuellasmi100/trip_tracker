@@ -17,8 +17,6 @@ import { useStyles } from "./FamilyMember.style";
 import { ReactComponent as EditIcon } from "../../../../../assets/icons/edit.svg";
 import DescriptionIcon from "@mui/icons-material/Description";
 import { useSelector } from "react-redux";
-import { ReactComponent as DownloadIcon } from "../../../../../assets/icons/download.svg";
-import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import SearchIcon from "@material-ui/icons/Search";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';

@@ -72,8 +72,6 @@ const GeneralInfo = (props) => {
     return matchesSearchTerm && matchesSelectedFilter;
   });
 
-
-
   const getVacationDetails = async () => {
     try {
       const response = await ApiStatic.getVacationDetails(token, vacationId)

@@ -1,24 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Button,
-  Checkbox,
-  Dialog,
-  FormControlLabel,
   Grid,
-  Typography,
   TextField,
   InputLabel,
   Select,
   MenuItem,
-  FormControl,
-  IconButton,
   OutlinedInput,
 } from "@mui/material";
 import { useStyles } from "./Reservation.style";
 import "./Reservation.css";
-import { useDispatch, useSelector } from "react-redux";
-import * as dialogSlice from "../../../store/slice/dialogSlice";
-import moment from 'moment';
+import { useSelector } from "react-redux"
 import Flights from "./Flights/Flights"
 
 const ReservationView = (props) => {;
@@ -98,36 +90,7 @@ const ReservationView = (props) => {;
 
            <Grid item xs={dialogType === "editParent" || dialogType === "addFamily" ? 5 : 8} style={{marginRight: "46px"}}>
           <Grid container spacing={2}>
-            {/* {dialogType === "editChild" || dialogType === "addChild" ? 
-             <Grid item>
-              <InputLabel className={classes.inputLabelStyle}>
-               בחר מסלול
-              </InputLabel>
-               <Select
-               name="week_chosen"
-               value={form.week_chosen}
-               onChange={handleInputChange}     
-                input={
-                  <OutlinedInput
-                    className={classes.selectOutline}
-                  />
-                }
-                MenuProps={{
-                  PaperProps: {
-                    sx: {
-                      color: "#ffffff !important",
-                      bgcolor: "#222222",
-                    },
-                  },
-              }}>
-          {vacationsDates?.map((type) => (
-            <MenuItem key={type} value={type.name} className={classes.selectedMenuItem}>
-              {type.name}
-            </MenuItem>
-          ))}
-        </Select>
-            </Grid> : <></>} */}
-         
+
          {dialogType !== "editChild" && dialogType !== "addChild" ? <Grid item>
              <InputLabel className={classes.inputLabelStyle}>
                סכום עסקה

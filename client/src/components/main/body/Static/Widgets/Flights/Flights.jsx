@@ -9,10 +9,8 @@ import EditOrUpdateDialog from "../../EditOrUpdateDialog/MainDialog/EditOrUpdate
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 
-const Flights = (props) => {
-
+const Flights = () => {
   const dispatch = useDispatch();
-  const form = useSelector((state) => state.staticSlice.form);
   const token = sessionStorage.getItem("token");
   const [searchTerm, setSearchTerm] = useState("");
   const vacationId = useSelector((state) => state.vacationSlice.vacationId);
@@ -63,6 +61,7 @@ const Flights = (props) => {
       console.log(error)
     }
   }
+
   const handleExportToExcel = () => {
     const transformedData = flightDetails.map((row) => {
       return {
@@ -120,7 +119,6 @@ const Flights = (props) => {
     const data = new Blob([excelBuffer], { type: "application/octet-stream" });
     saveAs(data, "טיסות.xlsx");
   };
-
 
   useEffect(() => {
     getFlightsDetails()

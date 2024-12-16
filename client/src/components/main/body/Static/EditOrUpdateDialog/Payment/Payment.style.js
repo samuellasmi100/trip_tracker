@@ -1,3 +1,4 @@
+import React from "react";
 import { makeStyles } from "@mui/styles";
 
 export const useStyles = makeStyles((theme) => ({
@@ -11,7 +12,7 @@ export const useStyles = makeStyles((theme) => ({
             position: "relative",
             color: "#FFFFFF",
             fontSize: 14,
-            width: "145px",
+            width: "105px",
             padding: "5px 18px",
             height: "24px",
         },
@@ -96,35 +97,4 @@ export const useStyles = makeStyles((theme) => ({
         opacity: 1,
     },
   
-    selectOutline: {
-        height: "35px",
-         width:"180px",
-        "&.MuiOutlinedInput-root": {
-          color: "#ffffff !important",
-          "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#494c55",
-          },
-        },
-        "& .MuiSvgIcon-root": {
-          color: "#54a9ff",
-        },
-      },
-      selectedMenuItem: {
-        backgroundColor: "#2D2D2D !important",
-        // padding:"0px !important",
-        
-        "& Mui=Menu-list" :{
-            padding:"0pz !important"
-        },
-        "&.Mui-selected": {
-          backgroundColor: "transparent",
-          "&:hover": {
-            backgroundColor: "#3C3E43",
-          },
-        },
-        "&:hover": {
-          backgroundColor: "#3C3E43",
-        },
-        
-      },
 }));

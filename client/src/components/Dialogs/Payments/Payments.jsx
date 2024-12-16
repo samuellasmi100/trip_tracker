@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import PaymentsView from "./Payments.view"
 import { useDispatch, useSelector } from "react-redux";
 import * as paymentsSlice from "../../../store/slice/paymentsSlice"
@@ -15,28 +15,28 @@ const token = sessionStorage.getItem("token")
 const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
 
 const handleInputChange = (e) => {
-  const { name, value } = e.target;
-  const numericValue = value.replace(/[^0-9.]/g, "");
-  const formattedValue = new Intl.NumberFormat().format(numericValue);
+  const { name, value,checked } = e.target;
 
-  if (name === "amount") {
-    dispatch(paymentsSlice.updateFormField({ field: "amount", value: formattedValue }));
-  } else {
     if(name === "amountReceived"){
       const rawValue = value.toString().replace(/,/g, "");
       const formattedValue = rawValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      console.log(formattedValue)
       dispatch(paymentsSlice.updateFormField({ field: "amountReceived", value:formattedValue}))
      
+    }else if(name === "invoice"){
+      let value = checked
+      dispatch(paymentsSlice.updateFormField({ field: "invoice", value: value}));
     }else {
+      
     dispatch(paymentsSlice.updateFormField({ field: name, value }));
-
     }
-  }
+  
   dispatch(paymentsSlice.updateFormField({ field: "familyId", value: userForm.family_id }));
   dispatch(paymentsSlice.updateFormField({ field: "userId", value: userForm.user_id }));
 };
 
 const submit = async () => {
+  console.log(form)
   try {
     await ApiPayments.addPayments(token,form,vacationId)
     dispatch(
@@ -46,6 +46,9 @@ const submit = async () => {
         timeout: 3000,
       })
     )
+    dispatch(paymentsSlice.resetForm())
+  dispatch(dialogSlice.updateActiveButton("הערות"))
+    
   } catch (error) {
     console.log(error)
   }
@@ -55,12 +58,15 @@ const getPayments = async () => {
 try {
   const familyId = userForm.family_id;
   let response = await ApiPayments.getPayments(token,familyId,vacationId)
+  console.log(response.data)
   if(response.data.length > 0){
-    response.data[0].mainRemainsToBePaid = response.data[0].remains_to_be_paid
-    dispatch(paymentsSlice.updateForm(response.data[0]));
+    dispatch(paymentsSlice.updateFormField({ field: "remainsToBePaid", value: response.data[0].remainsToBePaid }));
+    dispatch(paymentsSlice.updateFormField({ field: "invoice", value: response?.data[0].invoice }));
+  }else {
+    dispatch(paymentsSlice.updateFormField({ field: "invoice", value: false}));
+    dispatch(paymentsSlice.updateFormField({ field: "remainsToBePaid", value: userForm.total_amount }));
   }
   dispatch(paymentsSlice.updateFormField({ field: "amount", value: userForm.total_amount }));
-  dispatch(paymentsSlice.updateFormField({ field: "amountReceived", value: "" }));
 } catch (error) {
   console.log(error)
 }
@@ -73,7 +79,9 @@ const handleCloseClicked = () => {
 useEffect(() => {
   getPayments()
 }, [])
-
+useEffect(() => {
+console.log(form)
+}, [form])
   return (
     <PaymentsView handleInputChange={handleInputChange} submit={submit}  handleCloseClicked={handleCloseClicked}/>
   );

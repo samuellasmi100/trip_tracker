@@ -94,6 +94,8 @@ const Guest = () => {
           await ApiUser.addFamily(token,form,newFamilyId,vacationId)
           dispatch(userSlice.updateFormField({ field: "family_id",value:newFamilyId }))
           dispatch(userSlice.updateFormField({ field: "user_id",value:newUserId }))
+          dispatch(dialogSlice.updateActiveButton("פרטי הזמנה"))
+
         }
       }else {
         const newUserId = uuidv4();
@@ -116,10 +118,12 @@ const Guest = () => {
           }else {
             response = await ApiUser.updateUser(token,form,vacationId)
             await getUsers()
+            dispatch(dialogSlice.updateActiveButton("פרטי הזמנה"))
           }
         }else {
           response = await ApiUser.updateUser(token,form,vacationId)
           await getUsers()
+          dispatch(dialogSlice.updateActiveButton("פרטי הזמנה"))
         }
        
       }
@@ -130,7 +134,6 @@ const Guest = () => {
           timeout: 3000,
         })
       )
-      dispatch(dialogSlice.updateActiveButton("פרטי הזמנה"))
     } catch (error) {
       console.log(error);
     }

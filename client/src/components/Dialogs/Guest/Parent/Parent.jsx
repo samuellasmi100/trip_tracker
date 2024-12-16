@@ -1,123 +1,80 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
-    Button,
-    Checkbox,
-    FormControlLabel,
-    Grid,
-    Typography,
-    TextField,
-    InputLabel,
-    Select,
-    MenuItem,
-    ListItemText,
-    OutlinedInput
+  Grid,
+  TextField,
+  InputLabel,
+  Select,
+  MenuItem,
+  ListItemText,
+  OutlinedInput
 } from "@mui/material";
 import { useStyles } from "../Guest.style";
 import { useSelector } from "react-redux";
 
-function Parent({areaCodes,handleInputChange }) {
-    const classes = useStyles();
-    const form = useSelector((state) => state.userSlice.form)
-    const dialogType = useSelector((state) => state.dialogSlice.type)
-    return (
-      <>
+function Parent({ areaCodes, handleInputChange }) {
+  const inputRefs = useRef([]);
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const nextInput = inputRefs.current[index + 1];
+      if (nextInput) {
+        nextInput.focus();
+      }
+    }
+  };
+
+  const classes = useStyles();
+  const form = useSelector((state) => state.userSlice.form)
+  
+  return (
+    <>
+      <Grid container>
         <Grid item xs={6}>
           <Grid container spacing={2} justifyContent="center">
-            <Grid item>
-              <InputLabel className={classes.inputLabelStyle}>
-                שם פרטי בעברית
-              </InputLabel>
-              <TextField
-                name="hebrew_first_name"
-                value={form.hebrew_first_name}
-                className={classes.textField}
-                onChange={handleInputChange}
-              />
-            </Grid>
-            <Grid item>
-              <InputLabel className={classes.inputLabelStyle}>
-                שם משפחה בעברית
-              </InputLabel>
-              <TextField
-                name="hebrew_last_name"
-                value={form.hebrew_last_name}
-                className={classes.textField}
-                onChange={handleInputChange}
-              />
-            </Grid>
-            <Grid item>
-              <InputLabel className={classes.inputLabelStyle}>
-                שם פרטי באנגלית
-              </InputLabel>
-              <TextField
-                name="english_first_name"
-                value={form.english_first_name}
-                className={classes.textField}
-                onChange={handleInputChange}
-              />
-            </Grid>
-            <Grid item>
-              <InputLabel className={classes.inputLabelStyle}>
-                שם משפחה באנגלית
-              </InputLabel>
-              <TextField
-                name="english_last_name"
-                value={form.english_last_name}
-                className={classes.textField}
-                onChange={handleInputChange}
-              />
-            </Grid>
-            <Grid item>
-              <InputLabel className={classes.inputLabelStyle}>
-                תאריך לידה
-              </InputLabel>
-              <TextField
-                type="date"
-                name="birth_date"
-                value={form.birth_date}
-                className={classes.dateTextField}
-                onChange={handleInputChange}
-              />
-            </Grid>
+            {[
+              { label: "שם פרטי בעברית", name: "hebrew_first_name" },
+              { label: "שם משפחה בעברית", name: "hebrew_last_name" },
+              { label: "שם פרטי באנגלית", name: "english_first_name" },
+              { label: "שם משפחה באנגלית", name: "english_last_name" },
+              { label: "תאריך לידה", name: "birth_date", type: "date" },
+            ].map((field, index) => (
+              <Grid item key={field.name}>
+                <InputLabel className={classes.inputLabelStyle}>{field.label}</InputLabel>
+                <TextField
+                  name={field.name}
+                  value={form[field.name]}
+                  type={field.type || "text"}
+                  className={field.label !== "תאריך לידה" ? classes.textField : classes.dateTextField}
+                  onChange={handleInputChange}
+                  inputRef={(el) => (inputRefs.current[index] = el)}
+                  onKeyDown={(e) => handleKeyDown(e, index)}
+                />
+              </Grid>
+            ))}
           </Grid>
         </Grid>
         <Grid item xs={5}>
           <Grid container spacing={2} justifyContent="center">
+            {[
+              { label: "גיל", name: "age" },
+              { label: "מספר זהות", name: "identity_id" },
+              { label: "אימייל", name: "email" },
+              { label: "כתובת מלאה", name: "address" },
+            ].map((field, index) => (
+              <Grid item key={field.name}>
+                <InputLabel className={classes.inputLabelStyle}>{field.label}</InputLabel>
+                <TextField
+                  name={field.name}
+                  value={form[field.name]}
+                  className={classes.textField}
+                  onChange={handleInputChange}
+                  inputRef={(el) => (inputRefs.current[index + 5] = el)} // Offset index by 5 for the second column
+                  onKeyDown={(e) => handleKeyDown(e, index + 5)}
+                />
+              </Grid>
+            ))}
             <Grid item>
-              <InputLabel className={classes.inputLabelStyle}>גיל</InputLabel>
-              <TextField
-                name="age"
-                value={form.age}
-                className={classes.textField}
-                onChange={handleInputChange}
-              />
-            </Grid>
-            <Grid item>
-              <InputLabel className={classes.inputLabelStyle}>
-                מספר זהות
-              </InputLabel>
-              <TextField
-                name="identity_id"
-                value={form.identity_id}
-                className={classes.textField}
-                onChange={handleInputChange}
-              />
-            </Grid>
-            <Grid item>
-              <InputLabel className={classes.inputLabelStyle}>
-                אימייל
-              </InputLabel>
-              <TextField
-                name="email"
-                value={form.email}
-                className={classes.textField}
-                onChange={handleInputChange}
-              />
-            </Grid>
-            <Grid item>
-              <InputLabel className={classes.inputLabelStyle}>
-                מספר טלפון
-              </InputLabel>
+              <InputLabel className={classes.inputLabelStyle}>מספר טלפון</InputLabel>
               <Grid container>
                 <Grid style={{ paddingLeft: "10px" }}>
                   <TextField
@@ -125,6 +82,8 @@ function Parent({areaCodes,handleInputChange }) {
                     value={form.phone_b}
                     className={classes.textFieldPhone}
                     onChange={handleInputChange}
+                    inputRef={(el) => (inputRefs.current[9] = el)}
+                    onKeyDown={(e) => handleKeyDown(e, 9)}
                   />
                 </Grid>
                 <Grid>
@@ -149,37 +108,19 @@ function Parent({areaCodes,handleInputChange }) {
                     }}
                   >
                     {areaCodes.map((region) => (
-                      <MenuItem
-                        key={region}
-                        value={region}
-                        className={classes.selectedMenuItem}
-                      >
-                        <ListItemText
-                          primaryTypographyProps={{ fontSize: "16" }}
-                          primary={region}
-                        />
+                      <MenuItem key={region} value={region} className={classes.selectedMenuItem}>
+                        <ListItemText primaryTypographyProps={{ fontSize: "16" }} primary={region} />
                       </MenuItem>
                     ))}
                   </Select>
                 </Grid>
               </Grid>
             </Grid>
-
-            <Grid item>
-              <InputLabel className={classes.inputLabelStyle}>
-                כתובת מלאה
-              </InputLabel>
-              <TextField
-                name="address"
-                value={form.address}
-                className={classes.textField}
-                onChange={handleInputChange}
-              />
-            </Grid>
           </Grid>
         </Grid>
-      </>
-    );
+      </Grid>
+    </>
+  );
 }
 
 export default Parent;
