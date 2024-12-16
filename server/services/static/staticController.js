@@ -33,10 +33,22 @@ router.get("/user/main/:vacationId", async (req, res, next) => {
       return next(error);
     }
   });
+
   router.get("/vacation/:vacationId", async (req, res, next) => {
     const vacationId = req.params.vacationId
     try {
       const response = await staticService.getVacationDetails(vacationId)
+      res.send(response)
+  
+    } catch (error) {
+      return next(error);
+    }
+  });
+
+  router.get("/payments/:vacationId", async (req, res, next) => {
+    const vacationId = req.params.vacationId
+    try {
+      const response = await staticService.getPaymentsDetails(vacationId)
       res.send(response)
   
     } catch (error) {

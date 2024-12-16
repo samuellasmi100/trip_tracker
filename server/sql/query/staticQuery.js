@@ -153,9 +153,47 @@ GROUP BY
     g.user_id
 `
 }
+const getPaymentsDetails = (vacationId) => {
+    return `WITH LatestPayments AS (
+    SELECT 
+        family_id,
+        MAX(created_at) AS latest_created_at
+    FROM 
+        trip_tracker_${vacationId}.payments
+    GROUP BY 
+        family_id
+)
+SELECT 
+    p.family_id AS familyId,
+    p.payment_date AS paymentDate,
+    p.amount,
+    p.form_of_payment AS formOfPayment,
+    p.remains_to_be_paid AS remainsToBePaid,
+    p.payment_currency AS paymentCurrency,
+    p.amount_received AS amountReceived,
+    p.invoice,
+    p.created_at,
+    g.hebrew_first_name ,
+    g.hebrew_last_name
+FROM 
+    trip_tracker_${vacationId}.payments p
+JOIN 
+    LatestPayments l
+ON 
+    p.family_id = l.family_id AND p.created_at = l.latest_created_at
+JOIN 
+    trip_tracker_${vacationId}.guest g
+ON 
+    p.user_id = g.user_id
+ORDER BY 
+    p.family_id;
+
+`
+}
 module.exports = {
     getMainGuests,
     getAllGuests,
     getFlightsDetails,
-    getVacationDetails
+    getVacationDetails,
+    getPaymentsDetails
 }

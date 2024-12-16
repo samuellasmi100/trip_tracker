@@ -12,6 +12,7 @@ const getPayments = async (id,vacationId) => {
       console.log(error)
     }
 }
+
 const getHistoryPayments = async (id,vacationId) => {
   try {
     const sql = paymentsQuery.getHistoryPayments(vacationId)
@@ -24,12 +25,12 @@ const getHistoryPayments = async (id,vacationId) => {
   }
 }
 
+
 const numericAmount = (val) => {
   return  parseFloat(val.replace(/,/g, ""));
  }
 
 const addPayments = async (paymentDetails,vacationId) => {
-
   const remainsToBePaid = numericAmount(paymentDetails.remainsToBePaid)
   const amountReceived = numericAmount(paymentDetails.amountReceived)
   const result = remainsToBePaid - amountReceived
@@ -46,9 +47,15 @@ const addPayments = async (paymentDetails,vacationId) => {
       paymentDetails.amountReceived,
       paymentDetails.familyId,
       paymentDetails.userId,
+      paymentDetails.invoice,
     ]
-    console.log(sql,parameters)
+    if(paymentDetails.remainsToBePaid === "0" || paymentDetails.amountReceived === ""){
+      const sql = paymentsQuery.updatePayments(vacationId)
+      const parameters = [paymentDetails.invoice,paymentDetails.familyId,]
+      await connection.executeWithParameters(sql,parameters)
+    }else {
      await connection.executeWithParameters(sql,parameters)
+    }
   } catch (error) { 
     console.log(error)
   }

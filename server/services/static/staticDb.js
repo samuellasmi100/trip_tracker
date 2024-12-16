@@ -46,9 +46,19 @@ const getFlightsDetails = async (vacationId) => {
     }
   }
 
+  const getPaymentsDetails = async (vacationId) => {
+    try {
+      const sql = staticQuery.getPaymentsDetails(vacationId)
+      const response = await connection.execute(sql)
+      return response
+    } catch (error) { 
+      console.log(error)
+    }
+  }
 module.exports = {
     getMainGuests,
     getAllGuests,
     getFlightsDetails,
-    getVacationDetails
+    getVacationDetails,
+    getPaymentsDetails
 }
