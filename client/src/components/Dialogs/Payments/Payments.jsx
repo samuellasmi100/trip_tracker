@@ -20,7 +20,6 @@ const handleInputChange = (e) => {
     if(name === "amountReceived"){
       const rawValue = value.toString().replace(/,/g, "");
       const formattedValue = rawValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      console.log(formattedValue)
       dispatch(paymentsSlice.updateFormField({ field: "amountReceived", value:formattedValue}))
      
     }else if(name === "invoice"){
@@ -58,7 +57,6 @@ const getPayments = async () => {
 try {
   const familyId = userForm.family_id;
   let response = await ApiPayments.getPayments(token,familyId,vacationId)
-  console.log(response.data)
   if(response.data.length > 0){
     dispatch(paymentsSlice.updateFormField({ field: "remainsToBePaid", value: response.data[0].remainsToBePaid }));
     dispatch(paymentsSlice.updateFormField({ field: "invoice", value: response?.data[0].invoice }));

@@ -74,7 +74,7 @@ function PaymentsView({
             </TableRow>
           </TableHead>
           <TableBody className={classes.dataTableBody}>
-            {filteredPayments?.map((user, index) => {
+            {filteredPayments?.map((payment, index) => {
               return (
                 <TableRow key={index}>
 
@@ -83,13 +83,13 @@ function PaymentsView({
                       {index + 1}
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
-                      {user?.hebrew_first_name + " " + user?.hebrew_last_name}
+                      {payment?.hebrew_first_name + " " + payment?.hebrew_last_name}
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
-                      {user?.amount}
+                      {payment?.amount}
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
-                      {user?.remainsToBePaid}
+                      {payment?.remainsToBePaid}
                     </TableCell>
                     <TableCell
                       className={classes.dataTableCell}
@@ -97,7 +97,7 @@ function PaymentsView({
                     >
                       <IconButton
                         size={"small"}
-                      onClick={() => handleEditClick()}
+                      onClick={() => handleEditClick(payment)}
                       >
                         <DescriptionIcon style={{ color: "rgb(255, 158, 84)" }} />
                       </IconButton>

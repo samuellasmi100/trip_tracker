@@ -11,20 +11,12 @@ import { saveAs } from "file-saver";
 
 const Payments = () => {
   const dispatch = useDispatch();
-  const form = useSelector((state) => state.staticSlice.form);
   const token = sessionStorage.getItem("token");
   const [searchTerm, setSearchTerm] = useState("");
   const vacationId = useSelector((state) => state.vacationSlice.vacationId);
   const payments = useSelector((state) => state.staticSlice.mainData);
   const detailsDialogOpen = useSelector((state) => state.staticSlice.detailsModalOpen);
-  const [open, setOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
-
-
-  const handleClose = () => {
-    setOpen(false); 
-  };
-
+  
   const closeDetailsModal = () => {
     dispatch(staticSlice.closeDetailsModal());
   };
@@ -46,15 +38,15 @@ const Payments = () => {
   });
 
 
-  const handleEditClick = () => {
+  const handleEditClick = (payment) => {
     dispatch(staticSlice.updateDetailsModalType("editPayments"))
     dispatch(staticSlice.openDetailsModal())
+    dispatch(staticSlice.updateForm(payment))
   };
 
   const getPayments = async () => {
     try {
         const response = await ApiStatic.getPaymentsDetails(token,vacationId)
-        console.log(response)
         dispatch(staticSlice.updateMainData(response.data))
     } catch (error) {
       console.log(error)

@@ -11,7 +11,8 @@ export const paymentsSlice = createSlice({
       paymentDate:"",
       remainsToBePaid:"",
       invoice:false
-    }
+    },
+    userPayments:[]
   },
   reducers: {
     updateFormField: (state, action) => {
@@ -20,6 +21,9 @@ export const paymentsSlice = createSlice({
     },
     updateForm: (state, action) => {
       state.form = action.payload;
+    },
+    updateUserPayments: (state, action) => {
+      state.userPayments = action.payload;
     },
     resetForm: (state, action) => {
       state.form = {
@@ -34,7 +38,7 @@ export const paymentsSlice = createSlice({
   },
 });
 
-export const { updateFormField,updateForm,resetForm } = paymentsSlice.actions;
+export const { updateFormField,updateForm,resetForm,updateUserPayments } = paymentsSlice.actions;
 
 
 

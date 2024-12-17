@@ -13,5 +13,9 @@ export default {
       headers: { Authorization: token },
     });
   },
- 
+  getUserPayments(token,userId,vacationId) {
+    return Api.get(`/${END_POINT.PAYMENTS}/user/${userId}/${vacationId}`, {
+      headers: { Authorization: token },
+    });
+  },
 };
