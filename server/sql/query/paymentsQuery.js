@@ -7,8 +7,9 @@ const getPayments = (vacationId) => {
     remains_to_be_paid as remainsToBePaid,payment_currency as paymentCurrency,amount_received as amountReceived,invoice from trip_tracker_${vacationId}.payments WHERE family_id = ? ORDER BY id DESC limit 1`
 }
 const getHistoryPayments = (vacationId) => {
-    return `SELECT family_id as familyId,payment_date as paymentDate ,amount,form_of_payment as formOfPayment,
-    remains_to_be_paid as remainsToBePaid,payment_currency as paymentCurrency,amount_received as amountReceived,invoice from trip_tracker_${vacationId}.payments WHERE family_id = ?`
+    return `SELECT family_id as familyId,
+     DATE_FORMAT(payment_date, '%d/%m/%Y') AS paymentDate,amount,form_of_payment as formOfPayment,
+    remains_to_be_paid as remainsToBePaid,payment_currency as paymentCurrency,amount_received as amountReceived,invoice from trip_tracker_${vacationId}.payments WHERE user_id = ?`
 }
 const updatePayments = (vacationId) => {
     return `UPDATE trip_tracker_${vacationId}.payments SET invoice = ? WHERE family_id = ?`

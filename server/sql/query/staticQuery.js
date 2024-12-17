@@ -164,6 +164,7 @@ const getPaymentsDetails = (vacationId) => {
         family_id
 )
 SELECT 
+    p.id,p.user_id,
     p.family_id AS familyId,
     p.payment_date AS paymentDate,
     p.amount,

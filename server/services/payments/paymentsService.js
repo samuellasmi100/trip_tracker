@@ -3,7 +3,6 @@ const paymentsDb = require("./paymentsDb")
 const getPayments = async (id,vacationId) => {
     return await paymentsDb.getPayments(id,vacationId)
 }
-
 const getHistoryPayments = async (id,vacationId) => {
     return await paymentsDb.getHistoryPayments(id,vacationId)
 }

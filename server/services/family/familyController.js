@@ -6,11 +6,11 @@ const uuid = require("uuid").v4;
 
 router.post("/:id", async (req, res, next) => {
      const vacationId = req.params.id
-    const familydata = req.body.form
-    familydata.familyId = req.body.newFamilyId
-    familydata.familyName = familydata.hebrew_first_name + " " + familydata.hebrew_last_name
+    const familyData = req.body.form
+    familyData.familyId = req.body.newFamilyId
+    familyData.familyName = familyData.hebrew_first_name + " " + familyData.hebrew_last_name
     try {
-      const response = familyService.addFamily(familydata,vacationId)
+      const response = familyService.addFamily(familyData,vacationId)
       res.send("ההוספה עברה בהצלחה")
   
     } catch (error) {
@@ -69,6 +69,7 @@ router.post("/:id", async (req, res, next) => {
   
     try {
      const response = await familyService.getUserDetails(id,familyId)
+
      res.send(response)
   
     } catch (error) {

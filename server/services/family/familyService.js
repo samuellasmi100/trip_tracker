@@ -21,6 +21,7 @@ const getUserDetails = async (id,familyId) => {
         notesService.getParentNote(id),
         paymentsService.getHistoryPayments(familyId)
       ])
+
 let dataToReturn = {
     userDetails, flightsDetails, roomsDetails, notesDetails,paymentsDetails
 }

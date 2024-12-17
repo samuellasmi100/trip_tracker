@@ -55,4 +55,15 @@ router.get("/user/main/:vacationId", async (req, res, next) => {
       return next(error);
     }
   });
+  router.get("/payments/:vacationId/:userId", async (req, res, next) => {
+    const vacationId = req.params.vacationId
+    const userId = req.params.userId
+    try {
+      const response = await staticService.getUserPayments(vacationId,userId)
+      res.send(response)
+  
+    } catch (error) {
+      return next(error);
+    }
+  });
 module.exports = router;
