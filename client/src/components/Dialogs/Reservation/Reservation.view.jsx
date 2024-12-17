@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from 'react';
 import {
   Button,
   Grid,
@@ -16,19 +16,29 @@ import Flights from "./Flights/Flights"
 const ReservationView = (props) => {;
   const form = useSelector((state) => state.userSlice.form);
 
-  const classes = useStyles();
-  const { handleInputChange, submit,handleCloseClicked } = props;
-  const dialogType = useSelector((state) => state.dialogSlice.type)
+const classes = useStyles();
+const { handleInputChange, submit,handleCloseClicked } = props;
+ const dialogType = useSelector((state) => state.dialogSlice.type)
  const vacationsDates = useSelector((state) => state.vacationSlice.vacationsDates)
- 
+ const inputRefs = useRef([]); // Create a ref to track all input fields
+ inputRefs.current = []; // Initialize the refs array
+
+ // Function to handle Enter key press and move focus
+ const handleKeyDown = (e, index) => {
+   if (e.key === 'Enter') {
+     e.preventDefault(); // Prevent form submission on Enter
+     const nextInput = inputRefs.current[index + 1]; // Get the next input
+     if (nextInput) {
+       nextInput.focus(); // Move focus to the next input
+     }
+   }
+ };
   const handleFlightsCheckbox = () => {
       return <Flights handleInputChange={handleInputChange}/>
   }
   return (
     <>
       <Grid container style={{height: "400px", padding: "20px" }}>
-      {dialogType === "editParent" || dialogType === "addFamily"? 
-      
         <Grid item xs={6}>
            <Grid container spacing={2} justifyContent="center">
            <Grid item>
@@ -59,6 +69,8 @@ const ReservationView = (props) => {;
           ))}
         </Select>
             </Grid>
+          {dialogType === "editParent" || dialogType === "addFamily"? 
+          <>
            <Grid item>
              <InputLabel className={classes.inputLabelStyle}>
                כמות נופשים
@@ -82,12 +94,10 @@ const ReservationView = (props) => {;
                onChange={handleInputChange}
              />
            </Grid>
+           </>
+           :<></>}
          </Grid> 
-          
-         
         </Grid>
-        :<></>}
-
            <Grid item xs={dialogType === "editParent" || dialogType === "addFamily" ? 5 : 8} style={{marginRight: "46px"}}>
           <Grid container spacing={2}>
 
