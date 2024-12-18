@@ -53,31 +53,34 @@ const Payments = () => {
     }
   }
  
-  const handleExportToExcel = () => {
-    const transformedData = payments.map((row) => {
-      return {
-        "שם": row.hebrew_first_name + " " + row.hebrew_last_name,
-        "סכום עסקה": row.amount,
-        "נותר לתשלום": row.remainsToBePaid,
-      };
-    });
+  function exportToCSV() {
+    const headers = ["שם", "סכום עסקה", "נותר לתשלום"];
+    const rows = payments.map(item => [
+      `"${item.hebrew_first_name}"`, 
+      `"${item.amount}"`,
+      `"${item.remainsToBePaid}"`
+    ]);
   
-    const hebrewHeaders = [
-      "שם",
-      "סכום עסקה",
-      "נותר לתשלום",
-    ];
+    const csvContent = [
+      headers.join(","), 
+      ...rows.map(row => row.join(","))
+    ].join("\n");
+    
+    const csvWithBOM = "\uFEFF" + csvContent;
+
+    const blob = new Blob([csvWithBOM], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "payments.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   
-    const ws = XLSX.utils.json_to_sheet(transformedData);
-    XLSX.utils.sheet_add_aoa(ws, [hebrewHeaders], { origin: "A1" });
-    ws["!dir"] = "rtl";
-    ws["!cols"] = hebrewHeaders.map(() => ({ wch: 20 }));
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "כלל האורחים");
-    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-    const data = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(data, "כלל האורחים.xlsx");
-  };
+  
+  
   
   useEffect(() => {
     getPayments()
@@ -89,7 +92,7 @@ const Payments = () => {
   searchTerm={searchTerm}
   setSearchTerm={setSearchTerm}
   headers={headers}
-  handleExportToExcel={handleExportToExcel}
+  handleExportToExcel={exportToCSV}
   handleEditClick={handleEditClick}
   />
   <EditOrUpdateDialog detailsDialogOpen={detailsDialogOpen} closeDetailsModal={closeDetailsModal} />
