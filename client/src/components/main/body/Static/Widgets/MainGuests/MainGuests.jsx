@@ -45,7 +45,6 @@ const MainGuests = () => {
       return user;
     }
   });
-console.log(mainGuests)
   const getMainGuests = async () => {
     try {
       const response = await ApiStatic.getMainGuests(token,vacationId)

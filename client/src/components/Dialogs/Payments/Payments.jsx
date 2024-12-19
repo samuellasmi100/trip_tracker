@@ -71,9 +71,8 @@ const handleCloseClicked = () => {
 useEffect(() => {
   getPayments()
 }, [])
-useEffect(() => {
-console.log(form)
-}, [form])
+
+
   return (
     <PaymentsView handleInputChange={handleInputChange} submit={submit}  handleCloseClicked={handleCloseClicked}/>
   );
