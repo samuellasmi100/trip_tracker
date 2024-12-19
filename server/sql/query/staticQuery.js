@@ -32,6 +32,7 @@ const getAllGuests = (vacationId) => {
     on gu.user_id = ura.user_id;
 ;`
 }
+
 const getFlightsDetails = (vacationId) => {
     return `SELECT 
     f.passport_number, 
@@ -180,12 +181,22 @@ GROUP BY
 const getPaymentsDetails = (vacationId) => {
     return `WITH LatestPayments AS (
     SELECT 
-        family_id,
+        user_id,
         MAX(created_at) AS latest_created_at
     FROM 
         trip_tracker_${vacationId}.payments
     GROUP BY 
-        family_id
+        user_id
+),
+FilteredPayments AS (
+    SELECT 
+        p.*
+    FROM 
+        trip_tracker_${vacationId}.payments p
+    JOIN 
+        LatestPayments lp 
+    ON 
+        p.user_id = lp.user_id AND p.created_at = lp.latest_created_at
 )
 SELECT 
     p.id,
@@ -205,17 +216,14 @@ SELECT
 FROM 
     trip_tracker_${vacationId}.guest g
 LEFT JOIN 
-    trip_tracker_${vacationId}.payments p
+    FilteredPayments p
 ON 
-    g.family_id = p.family_id
-LEFT JOIN 
-    LatestPayments l
-ON 
-    p.family_id = l.family_id AND p.created_at = l.latest_created_at
+    g.user_id = p.user_id
 WHERE 
     g.is_main_user = 1
 ORDER BY 
     g.family_id;
+;
 `
    
 }
