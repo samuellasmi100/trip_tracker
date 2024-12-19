@@ -77,9 +77,7 @@ function FamilyMemberView({ handleDialogTypeOpen, handleSearchChange }) {
             <Grid item style={{ marginRight: "-100px", marginTop: "10px" }}>
               <Typography style={{ color: "white" }}> כלל האורחים משפחה /קבוצה {family.family_name} </Typography>
             </Grid>
-
             <Grid>
-              {console.log(family)}
               {Number(family?.user_in_system_count) < Number(family?.number_of_guests) ?
               <IconButton
               onClick={() =>

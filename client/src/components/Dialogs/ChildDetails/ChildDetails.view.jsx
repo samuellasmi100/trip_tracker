@@ -4,6 +4,7 @@ import {
     Typography,
 } from "@mui/material";
 import { useStyles } from "./ChildDetails.style";
+import { use } from "react";
 
 
 
@@ -182,7 +183,7 @@ const ChildDetailsView = ({ userData }) => {
                     </Grid>
                     <Grid style={{ display: 'flex', gap: "5px" }}>
                         <Typography className={classes.inputLabelStyle}>סכום מקורי :</Typography>
-                        <Typography className={classes.inputLabelStyle}> {userData?.total_amount}</Typography>
+                        <Typography className={classes.inputLabelStyle}> {paymentsDetails[paymentsDetails?.length-1]?.amount}</Typography>
                     </Grid>
                     <Grid style={{ display: 'flex', gap: "5px" }}>
                         <Typography className={classes.inputLabelStyle}>היתרה לתשלום  :</Typography>
