@@ -1,0 +1,7 @@
+{
+  message: "Error: Function:getPaymentsDetails :, You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.guest g\n" +
+    'LEFT JOIN \n' +
+    "    trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f..payme' at line 26",
+  level: 'error',
+  timestamp: '2024-12-19T17:41:20.862Z'
+}

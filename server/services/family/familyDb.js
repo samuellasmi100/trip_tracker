@@ -1,6 +1,6 @@
 const connection = require("../../db/connection-wrapper");
 const familyQuery = require("../../sql/query/familyQuery")
-
+const logger = require("../../utils/logger");
 
 const addFamily = async (data,vacationId) => {
   try {
@@ -9,19 +9,22 @@ const addFamily = async (data,vacationId) => {
 
     await connection.executeWithParameters(sql,parameters)
   } catch (error) { 
-    console.log(error)
+    logger.error(
+      `Error: Function:addFamily :, ${error.sqlMessage}`,
+    );
   }
 }
 
 
 const getFamilies = async (vacationId) => {
-
   try {
     const sql = familyQuery.getFamilies(vacationId)
     const response = await connection.execute(sql)
     return response
   } catch (error) { 
-    console.log(error)
+    logger.error(
+      `Error: Function:getFamilies :, ${error.sqlMessage}`,
+    );
   }
 }
 

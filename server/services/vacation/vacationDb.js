@@ -13,7 +13,9 @@ const addVacation = async (vacationDetails,vacationId) => {
      await createDatabaseAndTable(sanitizedVacationId)
     
   } catch (error) { 
-    console.log(error)
+  logger.error(
+      `Error: Function:addVacation :, ${error.sqlMessage}`,
+    );
   }
 }
 
@@ -24,7 +26,9 @@ const addVacationDates = async (vacationId,startData,endDate,name) => {
     let parameters = [sanitizedVacationId,startData,endDate,name]
     await connection.executeWithParameters(sql,parameters)
   } catch (error) {
-    console.log(error)
+  logger.error(
+      `Error: Function:addVacationDates :, ${error.sqlMessage}`,
+    );
   }
 }
 
@@ -34,7 +38,9 @@ const getVacations = async () => {
       const response = await connection.execute(sql)
       return response
     } catch (error) { 
-      console.log(error)
+    logger.error(
+      `Error: Function:getVacations :, ${error.sqlMessage}`,
+    );
     }
 }
 
@@ -45,7 +51,9 @@ const getVacationDates = async (vacationId) => {
     const response = await connection.executeWithParameters(sql,parameters)
     return response
   } catch (error) { 
-    console.log(error)
+  logger.error(
+      `Error: Function:getVacationDates :, ${error.sqlMessage}`,
+    );
   }
 }
 const getAllVacationDates = async () => {
@@ -54,7 +62,9 @@ const getAllVacationDates = async () => {
     const response = await connection.execute(sql)
     return response
   } catch (error) { 
-    console.log(error)
+  logger.error(
+      `Error: Function:getAllVacationDates :, ${error.sqlMessage}`,
+    );
   }
 }
 

@@ -1,9 +1,6 @@
 const connection = require("../../db/connection-wrapper");
 const staticQuery = require("../../sql/query/staticQuery")
-const ErrorType = require("../../serverLogs/errorType");
-const ErrorMessage = require("../../serverLogs/errorMessage");
-
-
+const logger = require("../../utils/logger");
 
 const getMainGuests = async (vacationId) => {
 
@@ -12,7 +9,9 @@ const getMainGuests = async (vacationId) => {
     const response = await connection.execute(sql)
     return response
   } catch (error) { 
-    console.log(error)
+    logger.error(
+      `Error: Function:getMainGuests :, ${error.sqlMessage}`,
+    );
   }
 }
 const getAllGuests = async (vacationId) => {
@@ -22,7 +21,9 @@ const getAllGuests = async (vacationId) => {
       const response = await connection.execute(sql)
       return response
     } catch (error) { 
-      console.log(error)
+      logger.error(
+        `Error: Function:getAllGuests :, ${error.sqlMessage}`,
+      );
     }
   }
 
@@ -33,7 +34,9 @@ const getFlightsDetails = async (vacationId) => {
       const response = await connection.execute(sql)
       return response
     } catch (error) { 
-      console.log(error)
+      logger.error(
+        `Error: Function:getFlightsDetails :, ${error.sqlMessage}`,
+      );
     }
   }
   const getVacationDetails = async (vacationId) => {
@@ -42,7 +45,9 @@ const getFlightsDetails = async (vacationId) => {
       const response = await connection.execute(sql)
       return response
     } catch (error) { 
-      console.log(error)
+      logger.error(
+        `Error: Function:getVacationDetails :, ${error.sqlMessage}`,
+      );
     }
   }
 
@@ -52,7 +57,9 @@ const getFlightsDetails = async (vacationId) => {
       const response = await connection.execute(sql)
       return response
     } catch (error) { 
-      console.log(error)
+      logger.error(
+        `Error: Function:getPaymentsDetails :, ${error.sqlMessage}`,
+      );
     }
   }
 module.exports = {

@@ -1,7 +1,6 @@
 const connection = require("../../db/connection-wrapper");
 const userQuery = require("../../sql/query/userQuery")
-const ErrorType = require("../../serverLogs/errorType");
-const ErrorMessage = require("../../serverLogs/errorMessage");
+const logger = require("../../utils/logger");
 
 const addGuest = async (data, vacationId) => {
   delete data.userType
@@ -10,13 +9,11 @@ const addGuest = async (data, vacationId) => {
   try {
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
-    throw new ErrorMessage(ErrorType.SQL_GENERAL_ERROR,
-      { sql: sql, parameters: parameters, time: new Date() },
-      error
+    logger.error(
+      `Error: Function:addGuest :, ${error.sqlMessage}`,
     );
   }
 }
-
 
 const getFamilyGuests = async (id, vacationId) => {
   try {
@@ -25,7 +22,9 @@ const getFamilyGuests = async (id, vacationId) => {
     const response = await connection.executeWithParameters(sql, parameters)
     return response
   } catch (error) {
-    console.log(error)
+    logger.error(
+      `Error: Function:getFamilyGuests :, ${error.sqlMessage}`,
+    );
   }
 }
 
@@ -37,7 +36,9 @@ const getFamilyMember = async (id, vacationId) => {
     const response = await connection.executeWithParameters(sql, parameters)
     return response
   } catch (error) {
-    console.log(error)
+    logger.error(
+      `Error: Function:getFamilyMember :, ${error.sqlMessage}`,
+    );
   }
 }
 
@@ -52,8 +53,9 @@ const updateGuest = async (data, vacationId) => {
     return response
 
   } catch (error) {
-    console.log(error)
-    throw new ErrorMessage(error.errorType, sql, error);
+    logger.error(
+      `Error: Function:updateGuest :, ${error.sqlMessage}`,
+    );
   }
 }
 
@@ -66,8 +68,9 @@ const deleteGuest = async (userId, vacationId) => {
     return response
 
   } catch (error) {
-    console.log(error)
-    // throw new ErrorMessage(error.errorType,sql, error);
+    logger.error(
+      `Error: Function:deleteGuest :, ${error.sqlMessage}`,
+    );
   }
 }
 
@@ -81,8 +84,9 @@ const deleteGuestFlights = async (userId, vacationId) => {
     return response
 
   } catch (error) {
-    console.log(error)
-    // throw new ErrorMessage(error.errorType,sql, error);
+    logger.error(
+      `Error: Function:deleteGuestFlights :, ${error.sqlMessage}`,
+    );
   }
 }
 
@@ -96,8 +100,9 @@ const deleteGuestRooms = async (userId, vacationId) => {
     return response
 
   } catch (error) {
-    console.log(error)
-    // throw new ErrorMessage(error.errorType,sql, error);
+    logger.error(
+      `Error: Function:deleteGuestRooms :, ${error.sqlMessage}`,
+    );
   }
 }
 
@@ -110,8 +115,9 @@ const deleteNotes = async (userId, vacationId) => {
     return response
 
   } catch (error) {
-    console.log(error)
-    // throw new ErrorMessage(error.errorType,sql, error);
+    logger.error(
+      `Error: Function:deleteNotes :, ${error.sqlMessage}`,
+    );
   }
 }
 
@@ -124,7 +130,9 @@ const saveRegistrationForm = async (filename, fileType, filePath, id) => {
     return response
 
   } catch (error) {
-    console.log(error)
+    logger.error(
+      `Error: Function:saveRegistrationForm :, ${error.sqlMessage}`,
+    );
   }
 }
 
@@ -137,8 +145,9 @@ const deleteFamilyGuests = async (userId, vacationId) => {
     return response
 
   } catch (error) {
-    console.log(error)
-    // throw new ErrorMessage(error.errorType,sql, error);
+    logger.error(
+      `Error: Function:deleteFamilyGuests :, ${error.sqlMessage}`,
+    );
   }
 }
 const deleteFamilyFlights = async (userId, vacationId) => {
@@ -150,8 +159,9 @@ const deleteFamilyFlights = async (userId, vacationId) => {
     return response
 
   } catch (error) {
-    console.log(error)
-    // throw new ErrorMessage(error.errorType,sql, error);
+    logger.error(
+      `Error: Function:deleteFamilyFlights :, ${error.sqlMessage}`,
+    );
   }
 }
 const deleteFamilyRooms = async (userId, vacationId) => {
@@ -163,8 +173,9 @@ const deleteFamilyRooms = async (userId, vacationId) => {
     return response
 
   } catch (error) {
-    console.log(error)
-    // throw new ErrorMessage(error.errorType,sql, error);
+    logger.error(
+      `Error: Function:deleteFamilyRooms :, ${error.sqlMessage}`,
+    );
   }
 }
 const deleteFamilyGuestRooms = async (userId, vacationId) => {
@@ -176,8 +187,9 @@ const deleteFamilyGuestRooms = async (userId, vacationId) => {
     return response
 
   } catch (error) {
-    console.log(error)
-    // throw new ErrorMessage(error.errorType,sql, error);
+    logger.error(
+      `Error: Function:deleteFamilyGuestRooms :, ${error.sqlMessage}`,
+    );
   }
 }
 const deleteFamilyNotes = async (userId, vacationId) => {
@@ -189,8 +201,9 @@ const deleteFamilyNotes = async (userId, vacationId) => {
     return response
 
   } catch (error) {
-    console.log(error)
-    // throw new ErrorMessage(error.errorType,sql, error);
+    logger.error(
+      `Error: Function:deleteFamilyNotes :, ${error.sqlMessage}`,
+    );
   }
 }
 const deleteFamilyPayments = async (userId, vacationId) => {
@@ -202,8 +215,9 @@ const deleteFamilyPayments = async (userId, vacationId) => {
     return response
 
   } catch (error) {
-    console.log(error)
-    // throw new ErrorMessage(error.errorType,sql, error);
+    logger.error(
+      `Error: Function:deleteFamilyPayments :, ${error.sqlMessage}`,
+    );
   }
 }
 const deleteFamily = async (userId, vacationId) => {
@@ -215,8 +229,9 @@ const deleteFamily = async (userId, vacationId) => {
     return response
 
   } catch (error) {
-    console.log(error)
-    // throw new ErrorMessage(error.errorType,sql, error);
+    logger.error(
+      `Error: Function:deleteFamily :, ${error.sqlMessage}`,
+    );
   }
 }
 module.exports = {

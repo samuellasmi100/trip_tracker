@@ -1,7 +1,29 @@
 const getMainGuests = (vacationId) => {
-    return `SELECT hebrew_first_name,hebrew_last_name,english_first_name,english_last_name,is_main_user,user_id,family_id,age,birth_date,
-    phone_a,phone_b,email,identity_id FROM trip_tracker_${vacationId}.guest where is_main_user = 1;`
+    return `SELECT 
+    g.hebrew_first_name,
+    g.hebrew_last_name,
+    g.english_first_name,
+    g.english_last_name,
+    g.is_main_user,
+    g.user_id,
+    g.family_id,
+    g.age,
+    g.birth_date,
+    g.number_of_guests,
+    g.phone_a,
+    g.phone_b,
+    g.email,
+    g.identity_id,
+    (SELECT COUNT(*) 
+     FROM trip_tracker_${vacationId}.guest 
+     WHERE family_id = g.family_id) AS user_in_system_count
+FROM 
+    trip_tracker_${vacationId}.guest g
+WHERE 
+    g.is_main_user = 1;
+;`
 }
+
 const getAllGuests = (vacationId) => {
     return `SELECT gu.hebrew_first_name,gu.hebrew_last_name,gu.english_first_name,gu.english_last_name,gu.is_main_user,gu.user_id,gu.family_id,age,
     gu.birth_date,gu.phone_a,gu.phone_b,gu.email,gu.identity_id,ura.room_id
@@ -42,6 +64,7 @@ ON
     f.user_id = g.user_id
 `
 }
+
 const getVacationDetails = (vacationId) => {
 //     return `
 //  SELECT g.hebrew_first_name,g.hebrew_last_name,g.english_first_name,g.english_last_name,g.is_main_user,g.user_id,g.family_id, 
@@ -153,6 +176,7 @@ GROUP BY
     g.user_id
 `
 }
+
 const getPaymentsDetails = (vacationId) => {
     return `WITH LatestPayments AS (
     SELECT 
@@ -164,8 +188,9 @@ const getPaymentsDetails = (vacationId) => {
         family_id
 )
 SELECT 
-    p.id,p.user_id,
-    p.family_id AS familyId,
+    p.id,
+    g.user_id,
+    g.family_id AS familyId,
     p.payment_date AS paymentDate,
     p.amount,
     p.form_of_payment AS formOfPayment,
@@ -174,22 +199,25 @@ SELECT
     p.amount_received AS amountReceived,
     p.invoice,
     p.created_at,
-    g.hebrew_first_name ,
-    g.hebrew_last_name
+    g.hebrew_first_name,
+    g.hebrew_last_name,
+    g.total_amount AS default_amount
 FROM 
+    trip_tracker_${vacationId}.guest g
+LEFT JOIN 
     trip_tracker_${vacationId}.payments p
-JOIN 
+ON 
+    g.family_id = p.family_id
+LEFT JOIN 
     LatestPayments l
 ON 
     p.family_id = l.family_id AND p.created_at = l.latest_created_at
-JOIN 
-    trip_tracker_${vacationId}.guest g
-ON 
-    p.user_id = g.user_id
+WHERE 
+    g.is_main_user = 1
 ORDER BY 
-    p.family_id;
-
+    g.family_id;
 `
+   
 }
 module.exports = {
     getMainGuests,

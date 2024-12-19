@@ -1,6 +1,6 @@
 const connection = require("../../db/connection-wrapper");
 const notesQuery = require("../../sql/query/notesQuery")
-
+const logger = require("../../utils/logger");
 
 
 const addNotes = async (noteDetails,vacationId) => {
@@ -9,7 +9,9 @@ const addNotes = async (noteDetails,vacationId) => {
     const parameters = [noteDetails.note,noteDetails.user_id,noteDetails.family_id,noteDetails.categoryName]
      await connection.executeWithParameters(sql,parameters)   
   } catch (error) { 
-    console.log(error)
+    logger.error(
+      `Error: Function:addNotes :, ${error.sqlMessage}`,
+    );
   }
 }
 const getUserNotes = async (userId,vacationId) => {
@@ -18,7 +20,9 @@ const getUserNotes = async (userId,vacationId) => {
     const parameters = [userId]
      await connection.executeWithParameters(sql,parameters)   
   } catch (error) { 
-    console.log(error)
+    logger.error(
+      `Error: Function:getUserNotes :, ${error.sqlMessage}`,
+    );
   }
 }
 

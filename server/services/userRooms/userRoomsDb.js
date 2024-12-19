@@ -1,6 +1,6 @@
 const connection = require("../../db/connection-wrapper");
 const userRoomQuery = require("../../sql/query/userRoomQuery")
-
+const logger = require("../../utils/logger");
 
 const assignMainRoom = async (vacationId,familyId,roomId,startDate,endDate) => {
  
@@ -9,7 +9,9 @@ const assignMainRoom = async (vacationId,familyId,roomId,startDate,endDate) => {
     const parameters = [familyId,roomId,startDate,endDate]
      await connection.executeWithParameters(sql,parameters) 
   } catch (error) { 
-    console.log(error)
+  logger.error(
+      `Error: Function:assignMainRoom :, ${error.sqlMessage}`,
+    );
   }
 }
 
@@ -20,7 +22,9 @@ const assignRoom = async (userId,roomId,familyId,vacationId) => {
      const parameters = [userId,roomId,familyId]
     await connection.executeWithParameters(sql,parameters) 
   } catch (error) { 
-    console.log(error)
+  logger.error(
+      `Error: Function:assignRoom :, ${error.sqlMessage}`,
+    );
   }
 }
 
@@ -30,7 +34,9 @@ const updateAssignRoom = async (userId,roomId,vacationId) => {
     const parameters = [roomId,userId]
     await connection.executeWithParameters(sql,parameters) 
   } catch (error) { 
-    console.log(error)
+  logger.error(
+      `Error: Function:updateAssignRoom :, ${error.sqlMessage}`,
+    );
   }
 }
 const updateStartEndAndDate = async (vacationId,familyId,startDate,endDate) => {
@@ -39,7 +45,9 @@ const updateStartEndAndDate = async (vacationId,familyId,startDate,endDate) => {
     const parameters = [startDate,endDate,familyId]
     await connection.executeWithParameters(sql,parameters) 
   } catch (error) { 
-    console.log(error)
+  logger.error(
+      `Error: Function:updateStartEndAndDate :, ${error.sqlMessage}`,
+    );
   }
 }
 
@@ -54,7 +62,9 @@ const updateMainRoom = async (roomDetails,userId) => {
     await connection.executeWithParameters(sql,parameters)
 
   } catch (error) { 
-    console.log(error)
+  logger.error(
+      `Error: Function:updateMainRoom :, ${error.sqlMessage}`,
+    );
   }
 }
 
@@ -64,7 +74,9 @@ const removeMainRoom = async (familyId,vacationId) => {
     const parameters = [familyId]
     await connection.executeWithParameters(sql,parameters)
   } catch (error) { 
-    console.log(error)
+  logger.error(
+      `Error: Function:removeMainRoom :, ${error.sqlMessage}`,
+    );
   }
 }
 
@@ -77,7 +89,9 @@ const getFamilyRoom = async (id,vacationId) => {
      
    
   } catch (error) { 
-    console.log(error)
+  logger.error(
+      `Error: Function:getFamilyRoom :, ${error.sqlMessage}`,
+    );
   }
 }
 
@@ -91,7 +105,9 @@ const getChosenRoom = async (userId,vacationId) => {
       return response
 
   } catch (error) { 
-    console.log(error)
+  logger.error(
+      `Error: Function:getChosenRoom :, ${error.sqlMessage}`,
+    );
   }
 }
 
@@ -102,7 +118,9 @@ const getUsersChosenRoom = async (familyId,vacationId) => {
     const response = await connection.executeWithParameters(sql,parameters)
      return response
  } catch (error) { 
-   console.log(error)
+ logger.error(
+      `Error: Function:getUsersChosenRoom :, ${error.sqlMessage}`,
+    );
  }
 }
 
@@ -114,7 +132,9 @@ const removeUserAssignMainRoom = async (userId,vacationId) => {
       return response
 
   } catch (error) { 
-    console.log(error)
+  logger.error(
+      `Error: Function:removeUserAssignMainRoom :, ${error.sqlMessage}`,
+    );
   }
 }
 
@@ -126,7 +146,9 @@ const removeAllUserAssignRoom = async (familyId,vacationId) => {
       return response
 
   } catch (error) { 
-    console.log(error)
+  logger.error(
+      `Error: Function:removeAllUserAssignRoom :, ${error.sqlMessage}`,
+    );
   }
 }
 

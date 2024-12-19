@@ -1,5 +1,6 @@
 const connection = require("../../db/connection-wrapper");
 const paymentsQuery = require("../../sql/query/paymentsQuery")
+const logger = require("../../utils/logger");
 
 const getPayments = async (id,vacationId) => {
     try {
@@ -9,7 +10,9 @@ const getPayments = async (id,vacationId) => {
       return response
      
     } catch (error) { 
-      console.log(error)
+      logger.error(
+        `Error: Function:getPayments :, ${error.sqlMessage}`,
+      );
     }
 }
 
@@ -21,7 +24,9 @@ const getHistoryPayments = async (id,vacationId) => {
     return response
    
   } catch (error) { 
-    console.log(error)
+    logger.error(
+      `Error: Function:getHistoryPayments :, ${error.sqlMessage}`,
+    );
   }
 }
 
@@ -33,16 +38,15 @@ const numericAmount = (val) => {
 const addPayments = async (paymentDetails,vacationId) => {
   const remainsToBePaid = numericAmount(paymentDetails.remainsToBePaid)
   const amountReceived = numericAmount(paymentDetails.amountReceived)
-  const result = remainsToBePaid - amountReceived
-  const rawValue = result.toString().replace(/,/g, "");
-  const formattedValue = rawValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const result = Number(remainsToBePaid) - Number(amountReceived)
+
   try {
     const sql = paymentsQuery.addPayments(vacationId)
     const parameters = [
       paymentDetails.paymentDate,
       paymentDetails.amount,
       paymentDetails.formOfPayment,
-      paymentDetails.remainsToBePaid === "" ? numericAmount(paymentDetails.amount) - numericAmount(paymentDetails.amountReceived) : formattedValue,
+      result,
       paymentDetails.paymentCurrency,
       paymentDetails.amountReceived,
       paymentDetails.familyId,
@@ -57,7 +61,9 @@ const addPayments = async (paymentDetails,vacationId) => {
      await connection.executeWithParameters(sql,parameters)
     }
   } catch (error) { 
-    console.log(error)
+    logger.error(
+      `Error: Function:addPayments :, ${error.sqlMessage}`,
+    );
   }
 }
 

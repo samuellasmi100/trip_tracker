@@ -1,5 +1,6 @@
 const connection = require("../../db/connection-wrapper");
 const roomsQuery = require("../../sql/query/roomsQuery")
+const logger = require("../../utils/logger");
 
 const getAll = async (vacationId) => {
     try {
@@ -8,7 +9,9 @@ const getAll = async (vacationId) => {
       return response
      
     } catch (error) { 
-      console.log(error)
+      logger.error(
+        `Error: Function:getAll :, ${error.sqlMessage}`,
+      );
     }
 }
 const getRoomDetailsWithCounts = async () => {
@@ -18,7 +21,9 @@ const getRoomDetailsWithCounts = async () => {
     return response
    
   } catch (error) { 
-    console.log(error)
+    logger.error(
+      `Error: Function:getRoomDetailsWithCounts :, ${error.sqlMessage}`,
+    );
   }
 }
 const updateRoom = async (data,vacationId) => {
@@ -32,7 +37,9 @@ const updateRoom = async (data,vacationId) => {
     return response
    
   } catch (error) { 
-    console.log(error)
+    logger.error(
+      `Error: Function:updateRoom :, ${error.sqlMessage}`,
+    );
   }
 }
 
@@ -44,7 +51,9 @@ const getRoomAvailable = async (vacationId,startData,endDate) => {
     return response
 
   } catch (error) { 
-    console.log(error)
+    logger.error(
+      `Error: Function:getRoomAvailable :, ${error.sqlMessage}`,
+    );
   }
 }
 
@@ -58,7 +67,9 @@ const getUnAvailableDates = async (vacationId,roomId) => {
     return response
 
   } catch (error) { 
-    console.log(error)
+    logger.error(
+      `Error: Function:getUnAvailableDates :, ${error.sqlMessage}`,
+    );
   }
 }
 module.exports = {
