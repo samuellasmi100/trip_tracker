@@ -46,7 +46,7 @@ const Guests = (props) => {
 
   const filteredGuests = mainGuests?.filter((user) => {
     if (searchTerm !== "") {
-      return user.hebrew_first_name.includes(searchTerm) || user.hebrew_last_name.includes(searchTerm) || user.identity_id.includes(searchTerm) ;
+      return user.hebrew_first_name?.includes(searchTerm) || user.hebrew_last_name?.includes(searchTerm) || user.identity_id?.includes(searchTerm) ;
     } else {
       return user;
     }

@@ -16,7 +16,7 @@ const GeneralInfo = (props) => {
   const token = sessionStorage.getItem("token");
   const [searchTerm, setSearchTerm] = useState("");
   const vacationId = useSelector((state) => state.vacationSlice.vacationId);
-  const vacationDetails = useSelector((state) => state.staticSlice.mainData);
+  const generalInfoDetails = useSelector((state) => state.staticSlice.mainData);
   const detailsDialogOpen = useSelector((state) => state.staticSlice.detailsModalOpen);
   const [selectedFilter, setSelectedFilter] = useState();
 
@@ -59,16 +59,16 @@ const GeneralInfo = (props) => {
     "צורת תשלום",
   ];
 
-  const filteredVacationDetails = vacationDetails?.filter((flight) => {
+  const filteredGeneralInfoDetailsDetails = generalInfoDetails?.filter((user) => {
+
     const matchesSearchTerm = searchTerm
-      ? flight.hebrew_first_name?.includes(searchTerm)
+      ? user.hebrew_first_name?.includes(searchTerm) || user.hebrew_last_name?.includes(searchTerm) || user.identity_id?.includes(searchTerm)
       : true;
     const matchesSelectedFilter = selectedFilter === "טסים איתנו"
-      ? flight.flights === "1"
+      ? user.flights === "1"
       : selectedFilter === "גיל"
-        ? (flight.age ? flight.age > 3 : flight.default_age && flight.default_age > 3)
+        ? (user.age ? user.age > 3 : user.default_age && user.default_age > 3)
         : true;
-
     return matchesSearchTerm && matchesSelectedFilter;
   });
 
@@ -86,7 +86,7 @@ const GeneralInfo = (props) => {
   }
 
   const handleExportToExcel = () => {
-    const transformedData = vacationDetails.map((row) => {
+    const transformedData = generalInfoDetails.map((row) => {
       return {
         "חופשה":vacationName,
         "מסלול": row.week_chosen,
@@ -176,7 +176,7 @@ const GeneralInfo = (props) => {
   return (
     <>
       <GeneralInfoView
-        filteredVacationDetails={filteredVacationDetails}
+        filteredGeneralInfoDetailsDetails={filteredGeneralInfoDetailsDetails}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         headers={headers}

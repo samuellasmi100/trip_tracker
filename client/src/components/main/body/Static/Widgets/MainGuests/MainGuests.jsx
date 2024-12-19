@@ -9,7 +9,7 @@ import { saveAs } from "file-saver"
 import ApiUser from "../../../../../../apis/userRequest"
 import * as snackBarSlice from "../../../../../../store/slice/snackbarSlice"
 
-const MainGuests = (props) => {
+const MainGuests = () => {
   const dispatch = useDispatch();
   const token = sessionStorage.getItem("token");
   const [searchTerm, setSearchTerm] = useState("");
@@ -33,17 +33,19 @@ const MainGuests = (props) => {
     "מספר זהות",
     "מספר טלפון",
     "אימייל",
+    "כמות נרשמים",
+    "חסרים במערכת",
     "מחק"
   ];
 
   const filteredGuests = mainGuests?.filter((user) => {
     if (searchTerm !== "") {
-      return user.hebrew_first_name.includes(searchTerm) || user.hebrew_last_name.includes(searchTerm) || user.identity_id.includes(searchTerm) ;
+      return user.hebrew_first_name?.includes(searchTerm) || user.hebrew_last_name?.includes(searchTerm) || user.identity_id?.includes(searchTerm) ;
     } else {
       return user;
     }
   });
-
+console.log(mainGuests)
   const getMainGuests = async () => {
     try {
       const response = await ApiStatic.getMainGuests(token,vacationId)

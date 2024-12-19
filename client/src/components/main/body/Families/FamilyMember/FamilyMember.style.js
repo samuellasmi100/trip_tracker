@@ -2,7 +2,7 @@ import React from "react";
 import { makeStyles } from "@mui/styles";
 
 export const useStyles = makeStyles((theme) => ({
-   dataTableBody: {
+  dataTableBody: {
     "& tr:nth-of-type(odd)": {
       backgroundColor: "#222222",
     },
@@ -11,7 +11,7 @@ export const useStyles = makeStyles((theme) => ({
     },
   },
   dataTableCell: {
-    fontSize:"14px !important",
+    fontSize: "14px !important",
     color: "#ffffff !important",
     textAlign: "center !important",
     borderBottom: "none !important",
@@ -50,36 +50,37 @@ export const useStyles = makeStyles((theme) => ({
   },
   searchField: {
     borderRadius: 4,
-  
+
     "& .MuiInputBase-input": {
-        position: "relative",
-        color: "#FFFFFF",
-        fontSize: 16,
-        width: "120px",
-        padding: "5px 18px",
-        height: "25px",
+      position: "relative",
+      color: "#FFFFFF",
+      fontSize: 16,
+      width: "120px",
+      padding: "5px 18px",
+      height: "25px",
     },
     "& .MuiFormLabel-root": {
-        color: "#757882", // or black
-        fontSize: "14px",
+      color: "#757882", // or black
+      fontSize: "14px",
     },
     "& label.Mui-focused": {
-        color: "#54A9FF",
-        top: "0px",
+      color: "#54A9FF",
+      top: "0px",
     },
     "& .MuiInput-underline:after": {
-        borderBottomColor: "#54A9FF",
+      borderBottomColor: "#54A9FF",
     },
     "& .MuiOutlinedInput-root": {
-        "& fieldset": {
-            borderColor: "#494C55",
-        },
-        "&:hover fieldset": {
-            borderColor: "#494C55",
-        },
-        "&.Mui-focused fieldset": {
-            borderColor: "#54A9FF",
-        },
+      "& fieldset": {
+        borderColor: "#494C55",
+      },
+      "&:hover fieldset": {
+        borderColor: "#494C55",
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: "#54A9FF",
+      },
     },
   },
+  
 }));

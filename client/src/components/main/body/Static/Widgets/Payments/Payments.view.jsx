@@ -86,10 +86,10 @@ function PaymentsView({
                       {payment?.hebrew_first_name + " " + payment?.hebrew_last_name}
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
-                      {payment?.amount}
+                      {payment?.default_amount}
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
-                      {payment?.remainsToBePaid}
+                      {payment?.remainsToBePaid === null ? payment?.default_amount : payment?.remainsToBePaid}
                     </TableCell>
                     <TableCell
                       className={classes.dataTableCell}

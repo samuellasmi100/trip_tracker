@@ -20,16 +20,15 @@ const classes = useStyles();
 const { handleInputChange, submit,handleCloseClicked } = props;
  const dialogType = useSelector((state) => state.dialogSlice.type)
  const vacationsDates = useSelector((state) => state.vacationSlice.vacationsDates)
- const inputRefs = useRef([]); // Create a ref to track all input fields
- inputRefs.current = []; // Initialize the refs array
+ const inputRefs = useRef([]); 
+ inputRefs.current = []; 
 
- // Function to handle Enter key press and move focus
  const handleKeyDown = (e, index) => {
    if (e.key === 'Enter') {
-     e.preventDefault(); // Prevent form submission on Enter
-     const nextInput = inputRefs.current[index + 1]; // Get the next input
+     e.preventDefault(); 
+     const nextInput = inputRefs.current[index + 1]; 
      if (nextInput) {
-       nextInput.focus(); // Move focus to the next input
+       nextInput.focus(); 
      }
    }
  };

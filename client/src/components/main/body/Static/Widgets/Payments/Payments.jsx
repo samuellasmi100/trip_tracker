@@ -56,9 +56,9 @@ const Payments = () => {
   function exportToCSV() {
     const headers = ["שם", "סכום עסקה", "נותר לתשלום"];
     const rows = payments.map(item => [
-      `"${item.hebrew_first_name}"`, 
-      `"${item.amount}"`,
-      `"${item.remainsToBePaid}"`
+      `"${item?.hebrew_first_name}"`, 
+      `"${item?.amount}"`,
+      `"${item?.remainsToBePaid === null ? item?.default_amount : item?.remainsToBePaid}"`
     ]);
   
     const csvContent = [
@@ -72,7 +72,7 @@ const Payments = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", "payments.csv");
+    link.setAttribute("download", "תשלומים.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

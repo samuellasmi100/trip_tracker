@@ -41,15 +41,15 @@ function FamilyListView(props) {
     setSearchTerm,
     handleSelectInputChange
   } = props;
-  const headers = ["","שם משפחה", "הוסף קובץ רישום", "היתרה לתשלום", "מסלול"];
+  const headers = ["", "שם משפחה / קבוצה", "הוסף קובץ רישום", "היתרה לתשלום", "כמות נרשמים", "חסרים במערכת", "מסלול"];
   const vacationList = useSelector((state) => state.vacationSlice.vacations)
- const vacationName = useSelector((state) => state.vacationSlice.vacationName)
+  const vacationName = useSelector((state) => state.vacationSlice.vacationName)
   return (
     <Grid
       container
       style={{
         background: "#2d2d2d",
-        width: "40vw",
+        width: "45vw",
         border: "1px solid rgb(61, 63, 71)",
         marginLeft: "10px",
       }}
@@ -63,30 +63,30 @@ function FamilyListView(props) {
           borderRadius: "4px",
         }}
       >
-      <Grid style={{marginRight: "5px", marginTop: "5px" }}>
-      <Select
-        value={vacationName}
-        onChange={handleSelectInputChange}  
-        input={
-          <OutlinedInput
-            className={classes.selectOutline}
-          />
-        }
-        MenuProps={{
-          PaperProps: {
-            sx: {
-              color: "#ffffff !important",
-              bgcolor: "#222222",
-            },
-          },
-        }}>
-        {vacationList?.map((vacation) => (
-          <MenuItem key={vacation.name} value={vacation.name} className={classes.selectedMenuItem}>
-            {vacation.name}
-          </MenuItem>
-        ))}
-      </Select>
-      </Grid>
+        <Grid style={{ marginRight: "5px", marginTop: "5px" }}>
+          <Select
+            value={vacationName}
+            onChange={handleSelectInputChange}
+            input={
+              <OutlinedInput
+                className={classes.selectOutline}
+              />
+            }
+            MenuProps={{
+              PaperProps: {
+                sx: {
+                  color: "#ffffff !important",
+                  bgcolor: "#222222",
+                },
+              },
+            }}>
+            {vacationList?.map((vacation) => (
+              <MenuItem key={vacation.name} value={vacation.name} className={classes.selectedMenuItem}>
+                {vacation.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </Grid>
         <Grid item></Grid>
         <Grid item style={{ marginRight: "-100px", marginTop: "10px" }}>
           <Typography style={{ color: "white" }}> נרשמים </Typography>
@@ -104,8 +104,8 @@ function FamilyListView(props) {
                     endAdornment: (
                       <InputAdornment
                         position="end"
-                        // style={{ display: showClearIcon }}
-                        // onClick={handleClick}
+                      // style={{ display: showClearIcon }}
+                      // onClick={handleClick}
                       >
                         <SearchIcon style={{ color: "rgb(84, 169, 255)" }} />
                       </InputAdornment>
@@ -150,15 +150,15 @@ function FamilyListView(props) {
               {filteredFamilyList?.map((user, index) => {
                 return (
                   <TableRow key={index}>
-                     <TableCell className={classes.dataTableCell}>
-                        {index+1}
-                      </TableCell>
+                    <TableCell className={classes.dataTableCell}>
+                      {index + 1}
+                    </TableCell>
                     <Button onClick={() => handleNameClick(user)}>
                       <TableCell className={classes.dataTableCell}>
                         {user.family_name}
                       </TableCell>
                     </Button>
-                    
+
                     <TableCell
                       className={classes.dataTableCell}
                       style={{ maxWidth: "1px" }}
@@ -181,6 +181,10 @@ function FamilyListView(props) {
                       {user.remains_to_be_paid === null
                         ? user.total_amount
                         : user.remains_to_be_paid}
+                    </TableCell>
+                    <TableCell className={classes.dataTableCell}>{user.number_of_guests}</TableCell>
+                    <TableCell className={`${classes.dataTableCell} ${classes.redText}`}>
+                      {Number(user?.number_of_guests) - Number(user?.user_in_system_count) > 0 ? Number(user?.number_of_guests) - Number(user?.user_in_system_count) : ""}
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>{vacationName}</TableCell>
                   </TableRow>

@@ -34,12 +34,8 @@ const Guest = () => {
   const handleInputChange = (e) => {
     let { name, value,checked } = e.target
     let family_id = familyDetails.family_id
-    if(name === "total_amount"){
-      const rawValue = value.replace(/,/g, "");
-      const formattedValue = rawValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      dispatch(userSlice.updateFormField({ field: "total_amount",value:formattedValue }))
-    }
-    else if(name === "flights_direction"){
+
+    if(name === "flights_direction"){
       dispatch(userSlice.updateFormField({ field: "flights_direction", value:checked ? e.target.value : "" }))
     }
     else if (name === "birth_date") {

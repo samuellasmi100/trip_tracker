@@ -17,12 +17,7 @@ const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
 const handleInputChange = (e) => {
   const { name, value,checked } = e.target;
 
-    if(name === "amountReceived"){
-      const rawValue = value.toString().replace(/,/g, "");
-      const formattedValue = rawValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      dispatch(paymentsSlice.updateFormField({ field: "amountReceived", value:formattedValue}))
-     
-    }else if(name === "invoice"){
+   if(name === "invoice"){
       let value = checked
       dispatch(paymentsSlice.updateFormField({ field: "invoice", value: value}));
     }else {
@@ -35,7 +30,6 @@ const handleInputChange = (e) => {
 };
 
 const submit = async () => {
-  console.log(form)
   try {
     await ApiPayments.addPayments(token,form,vacationId)
     dispatch(

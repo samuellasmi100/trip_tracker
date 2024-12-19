@@ -22,7 +22,7 @@ import { ReactComponent as DownloadIcon } from "../../../../../../assets/icons/d
 import SearchIcon from "@material-ui/icons/Search";
 import RefreshIcon from '@mui/icons-material/Refresh';
 function GeneralInfoView({
-  filteredVacationDetails,
+  filteredGeneralInfoDetailsDetails,
   searchTerm,
   setSearchTerm,
   headers,
@@ -124,7 +124,7 @@ function GeneralInfoView({
             </TableRow>
           </TableHead>
           <TableBody className={classes.dataTableBody}>
-            {filteredVacationDetails?.map((flight, index) => {
+            {filteredGeneralInfoDetailsDetails?.map((flight, index) => {
               return (
                 <TableRow key={index}>
                   <TableCell className={classes.dataTableCell}>

@@ -126,8 +126,13 @@ function MainGuestsView({
                       <TableCell className={classes.dataTableCell}>
                         {user.email}
                       </TableCell>
-                      
-                      <TableCell
+                      <TableCell className={classes.dataTableCell}>
+                        {user?.number_of_guests}
+                      </TableCell>
+                      <TableCell className={`${classes.dataTableCell} ${classes.redText}`}>
+                        {Number(user?.number_of_guests) - Number(user?.user_in_system_count) > 0 ?Number(user?.number_of_guests) - Number(user?.user_in_system_count) : "" }
+                      </TableCell>                     
+                       <TableCell
                         className={classes.dataTableCell}
                         style={{ maxWidth: "1px" }}
                       >

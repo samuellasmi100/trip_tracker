@@ -37,7 +37,7 @@ function FamilyMemberView({ handleDialogTypeOpen, handleSearchChange }) {
       style={{
         border: "1px solid rgb(61, 63, 71)",
         background: "rgb(45, 45, 45)",
-        width: "40vw",
+        width: "45vw",
       }}
     >
 
@@ -79,13 +79,15 @@ function FamilyMemberView({ handleDialogTypeOpen, handleSearchChange }) {
             </Grid>
 
             <Grid>
+              {console.log(family)}
+              {Number(family?.user_in_system_count) < Number(family?.number_of_guests) ?
               <IconButton
-                onClick={() =>
-                  handleDialogTypeOpen(isParentIdExist ? "addChild" : "addParent")
-                }
-              >
-                <AddBoxIcon style={{ color: "#54A9FF", fontSize: "30px" }} />
-              </IconButton>
+              onClick={() =>
+                handleDialogTypeOpen(isParentIdExist ? "addChild" : "addParent")
+              } >
+              <AddBoxIcon style={{ color: "#54A9FF", fontSize: "30px" }} />
+            </IconButton>
+              :""}
             </Grid>
           </>
         ) : (

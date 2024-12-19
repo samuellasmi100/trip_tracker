@@ -22,16 +22,8 @@ const Reservation = () => {
   const handleInputChange = (e) => {
     let { name, value, checked } = e.target;
     let family_id = form.family_id;
-    if (name === "total_amount") {
-      const rawValue = value.replace(/,/g, "");
-      const formattedValue = rawValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      dispatch(
-        userSlice.updateFormField({
-          field: "total_amount",
-          value: formattedValue,
-        })
-      );
-    } else if (name === "week_chosen") {
+
+      if (name === "week_chosen") {
     
       const findVacationDateDetails = vacationsDates?.find((key) =>{
         return key.name === value
@@ -40,9 +32,14 @@ const Reservation = () => {
       if(findVacationDateDetails.name !== "חריגים"){
         dispatch(userSlice.updateFormField({ field: "arrival_date", value: findVacationDateDetails.start_date }))
         dispatch(userSlice.updateFormField({ field: "departure_date", value: findVacationDateDetails.end_date }))
+        dispatch(userSlice.updateFormField({ field: "week_chosen", value: value}))
         dispatch(userSlice.updateFormField({ field: "date_chosen", value: `${findVacationDateDetails.end_date}/${findVacationDateDetails.start_date }` }))
+      }else {
+        dispatch(userSlice.updateFormField({ field: "week_chosen", value: value}))
+        dispatch(userSlice.updateFormField({ field: "arrival_date", value: ""}))
+        dispatch(userSlice.updateFormField({ field: "departure_date", value: ""}))
+        dispatch(userSlice.updateFormField({ field: "date_chosen", value: "" }))
       }
-      dispatch(userSlice.updateFormField({ field: name, value }));
     } else if (name === "flights_direction") {
       dispatch(
         userSlice.updateFormField({
@@ -50,6 +47,9 @@ const Reservation = () => {
           value: checked ? e.target.value : "",
         })
       );
+    } else if (name === "departure_date") {
+      dispatch(userSlice.updateFormField({ field: "departure_date", value:value }))
+      dispatch(userSlice.updateFormField({ field: "date_chosen", value: `${value}/${form.arrival_date }` }))
     } else if (
       name === "flights" ||
       name === "flying_with_us" ||
@@ -70,7 +70,7 @@ const Reservation = () => {
 
   const submit = async () => {
     try {
-     
+
       let response = await ApiUser.updateUser(token,form,vacationId);
       await getGuests();
       dispatch(
