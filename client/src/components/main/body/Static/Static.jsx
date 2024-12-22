@@ -1,4 +1,4 @@
-import React, {  useEffect } from "react";
+import React, { useEffect,useState } from "react";
 import StaticView from "./Static.view";
 import { useDispatch, useSelector } from "react-redux";
 import * as staticSlice from "../../../../store/slice/staticSlice";
@@ -6,6 +6,8 @@ import * as vacationSlice from "../../../../store/slice/vacationSlice";
 import MainDialog from "./MainDialog/MainDialog";
 import ApiVacations from "../../../../apis/vacationRequest";
 import "./Static.css";
+import { Grid } from "@mui/material";
+
 
 const Static = () => {
   const mainDialogOpen = useSelector((state) => state.staticSlice.mainModalOpen);
@@ -31,22 +33,23 @@ const Static = () => {
     }
   };
 
+
   useEffect(() => {
     getVacations();
   }, []);
 
- const handleWidgetClick = (name) => {
-  dispatch(staticSlice.openMainModal());
-  dispatch(staticSlice.updateDialogType(name));
- }
+  const handleWidgetClick = (name) => {
+    dispatch(staticSlice.openMainModal());
+    dispatch(staticSlice.updateDialogType(name));
+  }
 
 
   return (
-    <>
-     <StaticView handleWidgetClick={handleWidgetClick}/>
+    <Grid>
+      <Grid style={{ height: "10vh"}}> </Grid>
+      <StaticView handleWidgetClick={handleWidgetClick} />
       <MainDialog mainDialogOpen={mainDialogOpen} closeMainModal={closeMainModal} />
-  
-    </>
+    </Grid>
   );
 };
 

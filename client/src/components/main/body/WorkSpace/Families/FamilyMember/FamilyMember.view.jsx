@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import React from "react";
 import { useStyles } from "./FamilyMember.style";
-import { ReactComponent as EditIcon } from "../../../../../assets/icons/edit.svg";
+import { ReactComponent as EditIcon } from "../../../../../../assets/icons/edit.svg";
 import DescriptionIcon from "@mui/icons-material/Description";
 import { useSelector } from "react-redux";
 import AddBoxIcon from "@mui/icons-material/AddBox";

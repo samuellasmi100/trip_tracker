@@ -16,6 +16,7 @@ const Guest = () => {
   const familyDetails = useSelector((state) => state.userSlice.family)
   const token = sessionStorage.getItem("token")
   const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
+  const guests = useSelector((state) => state.userSlice.guests);
 
   const handleButtonString = () => {
     if (dialogType === "addParent") {
@@ -54,8 +55,9 @@ const Guest = () => {
   };
   
   const submit = async () => {
+    let response
+
     try {
-      let response
       if (dialogType === "addParent" || dialogType === "addChild" || dialogType === "addFamily") {     
       if(dialogType === "addParent"){
         if(form.identity_id === undefined){
@@ -94,11 +96,27 @@ const Guest = () => {
 
         }
       }else {
+        const checkIfUserAlreadyExist = guests.some((user) => {
+          return user.identity_id === form.identity_id
+        })
+        if(checkIfUserAlreadyExist){
+          dispatch(
+            snackBarSlice.setSnackBar({
+              type: "error",
+              message: "מספר תעודת זהות זה כבר נמצא במערכת",
+              timeout: 3000,
+            })
+          )
+          return 
+        }else {
         const newUserId = uuidv4();
         response = await ApiUser.addUser(token,form,form.family_id,newUserId,vacationId)
         dispatch(userSlice.updateFormField({ field: "family_id",value:form.family_id }))
         dispatch(userSlice.updateFormField({ field: "user_id",value:newUserId }))
         await getUsers()
+        }
+  
+     
       }
       } else if (dialogType === "editChild" || dialogType === "editParent") {
         if(dialogType === "editParent"){

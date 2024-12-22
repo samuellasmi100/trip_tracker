@@ -5,7 +5,8 @@ import { styled } from '@mui/material/styles';
 
 export const useStyles = makeStyles((theme) => ({
   sideBarIcons: {
-    padding: "20px",
+    paddingBottom: "20px",
+    paddingTop: "20px",
     borderRadius: "0 4px 4px 0",
   },
   sideBarSx: {
@@ -21,6 +22,7 @@ export const useStyles = makeStyles((theme) => ({
   },
   tooltip: {
     fontSize: "20px",
+    
   },
 }));
 
@@ -28,7 +30,7 @@ export const StyledTooltip = styled(({ className, ...props }) => (
   <Tooltip {...props} classes={{ popper: className }} />
 ))(({ theme }) => ({
   [`& .${tooltipClasses.tooltip}`]: {
-    color: 'rgba(0, 0, 0, 0.87)',
+    color: 'white',
     maxWidth: 220,
     height : 20,
     fontSize: theme.typography.pxToRem(20),

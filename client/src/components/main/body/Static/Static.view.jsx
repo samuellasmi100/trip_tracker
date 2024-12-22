@@ -94,7 +94,6 @@ function StaticView({ handleWidgetClick}) {
           </Grid>
         </Button>
       </Grid>
-
       <Grid className={classes.containerGrid}>
         <Button className={classes.button} onClick={() => handleWidgetClick("generalInformation")}>
           <Grid className={classes.dataGrid}>

@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from "react";
-import MainDialog from "../../../../Dialogs/MainDialog/MainDialog";
-import axios from "axios";
+import MainDialog from "../../../../../Dialogs/MainDialog/MainDialog";
 import { useDispatch, useSelector } from "react-redux";
-import ApiUser from "../../../../../apis/userRequest"
-import ApiVacations from "../../../../../apis/vacationRequest"
+import ApiUser from "../../../../../../apis/userRequest"
+import ApiVacations from "../../../../../../apis/vacationRequest"
 import FamilyMember from "../FamilyMember/FamilyMember";
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import FamilyListView from "./FamilyList.view";
-import * as userSlice from "../../../../../store/slice/userSlice";
-import * as dialogSlice from "../../../../../store/slice/dialogSlice";
-import * as flightsSlice from "../../../../../store/slice/flightsSlice";
-import * as roomsSlice from "../../../../../store/slice/roomsSlice";
-import * as notesSlice from "../../../../../store/slice/notesSlice";
-import * as vacationSlice from "../../../../../store/slice/vacationSlice";
-import * as paymentsSlice from "../../../../../store/slice/paymentsSlice";
+import * as userSlice from "../../../../../../store/slice/userSlice";
+import * as dialogSlice from "../../../../../../store/slice/dialogSlice";
+import * as flightsSlice from "../../../../../../store/slice/flightsSlice";
+import * as roomsSlice from "../../../../../../store/slice/roomsSlice";
+import * as notesSlice from "../../../../../../store/slice/notesSlice";
+import * as vacationSlice from "../../../../../../store/slice/vacationSlice";
+import * as paymentsSlice from "../../../../../../store/slice/paymentsSlice";
 
 const FamilyList = () => {
-  const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
+  const vacationId = useSelector((state) => state.vacationSlice.vacationId)
   const [usersData, setUsersData] = useState([]);
   const dispatch = useDispatch();
   const dialogOpen = useSelector((state) => state.dialogSlice.open)
@@ -40,7 +39,6 @@ const FamilyList = () => {
     dispatch(roomsSlice.resetForm())
     dispatch(notesSlice.resetForm())
     dispatch(paymentsSlice.resetForm())
-    // dispatch(userSlice.updateFamily({}))
   }
 
   const handleDialogTypeOpen = (type, userData) => {
@@ -66,10 +64,10 @@ const FamilyList = () => {
       dispatch(dialogSlice.openModal())
     } else if (type === "addFamily") {
       dispatch(dialogSlice.openModal())
-    }else if(type === "childDetails"){
+    } else if (type === "childDetails") {
       dispatch(dialogSlice.openModal())
       dispatch(userSlice.updateForm(userData))
-    }else if(type === "parentDetails"){
+    } else if (type === "parentDetails") {
       dispatch(dialogSlice.openModal())
       dispatch(userSlice.updateForm(userData))
     }
@@ -78,12 +76,12 @@ const FamilyList = () => {
 
   const getFamilies = async () => {
     try {
-      if(vacationId !== ""){
-        let response = await ApiUser.getFamilyList(token,vacationId)
+      if (vacationId !== "") {
+        let response = await ApiUser.getFamilyList(token, vacationId)
         dispatch(userSlice.updateFamiliesList(response.data))
         setUsersData(response.data)
       }
-     
+
     } catch (error) {
       console.log(error)
     }
@@ -93,10 +91,10 @@ const FamilyList = () => {
     dispatch(userSlice.updateFamily(user))
     let family_id = user.family_id
     try {
-      let response = await ApiUser.getUserFamilyList(token,family_id,vacationId)
-      if(response.data.length > 0){
+      let response = await ApiUser.getUserFamilyList(token, family_id, vacationId)
+      if (response.data.length > 0) {
         dispatch(userSlice.updateGuets(response.data))
-      }else {
+      } else {
         dispatch(userSlice.updateGuets([]))
 
       }
@@ -105,7 +103,7 @@ const FamilyList = () => {
     }
   }
 
-  const handleUpload = async (name,familyId) => {
+  const handleUpload = async (name, familyId) => {
     if (!file) {
       alert("Please select a file first.");
       return;
@@ -123,7 +121,7 @@ const FamilyList = () => {
     }
   };
 
-const handleFileChange = (e) => {
+  const handleFileChange = (e) => {
     // const selectedFile = e.target.files[0];
     // setFile(selectedFile);
     // const reader = new FileReader();
@@ -131,67 +129,73 @@ const handleFileChange = (e) => {
     //   setBase64(reader.result.split(",")[1]);
     // };
     // reader.readAsDataURL(selectedFile);
-};
+  };
 
-const filteredFamilyList = usersData?.filter((user) => {
-  if (searchTerm !== "") {
-    return user.family_name.includes(searchTerm)
-  }else {
-    return user
-  }}
-);
-
-const getVacations = async () => {
-  try {
-    const response = await ApiVacations.getVacations(token)
-    if(response?.data?.vacations?.length > 0){
-      dispatch(vacationSlice.updateVacationList(response?.data?.vacations))
+  const filteredFamilyList = usersData?.filter((user) => {
+    if (searchTerm !== "") {
+      return user.family_name.includes(searchTerm)
+    } else {
+      return user
     }
-  } catch (error) {
-    console.log(error)
   }
-}
+  );
+
+  const getVacations = async () => {
+    try {
+      const response = await ApiVacations.getVacations(token)
+      if (response?.data?.vacations?.length > 0) {
+        dispatch(vacationSlice.updateVacationList(response?.data?.vacations))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
 
-const handleSelectInputChange =  async (e) => {
-  closeModal()
-  clearModalForms()
-  dispatch(userSlice.updateFamiliesList([]))
-  dispatch(userSlice.updateGuets([]))
-  const getVacationId = vacationList?.find((key) => {
-    return key.name === e.target.value
-  }) 
-  dispatch(vacationSlice.updateChosenVacation(getVacationId.vacation_id))
-  dispatch(vacationSlice.updateVacationName(getVacationId.name))
-  sessionStorage.setItem("vacId",getVacationId.vacation_id)
-  sessionStorage.setItem("vacName",getVacationId.name)
-   try {
-   } catch (error) {
-    console.log(error)
-   }
- }
+  const handleSelectInputChange = async (e) => {
+    closeModal()
+    clearModalForms()
+    dispatch(userSlice.updateFamiliesList([]))
+    dispatch(userSlice.updateGuets([]))
+    const getVacationId = vacationList?.find((key) => {
+      return key.name === e.target.value
+    })
+    dispatch(vacationSlice.updateChosenVacation(getVacationId.vacation_id))
+    dispatch(vacationSlice.updateVacationName(getVacationId.name))
+    sessionStorage.setItem("vacId", getVacationId.vacation_id)
+    sessionStorage.setItem("vacName", getVacationId.name)
+    try {
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   useEffect(() => {
     getFamilies()
-  }, [dialogOpen,vacationId])
+  }, [dialogOpen, vacationId])
 
   useEffect(() => {
     getVacations()
-    }, [])
+  }, [])
   return (
-    <Grid style={{ display: "flex",justifyContent:"center" }}>
-      <FamilyListView
-        handleDialogTypeOpen={handleDialogTypeOpen}
-        handleNameClick={handleNameClick}
-        handleUpload={handleUpload}
-        handleFileChange={handleFileChange}
-        filteredFamilyList={filteredFamilyList}
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        handleSelectInputChange={handleSelectInputChange}
-      />
+    <Grid style={{ display: "flex", flexDirection: "column" }}>
+      <Grid style={{ height: "10vh" }}>
+      </Grid>
+      <Grid style={{ display: "flex", justifyContent: "center" }}>
+        <FamilyListView
+          handleDialogTypeOpen={handleDialogTypeOpen}
+          handleNameClick={handleNameClick}
+          handleUpload={handleUpload}
+          handleFileChange={handleFileChange}
+          filteredFamilyList={filteredFamilyList}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          handleSelectInputChange={handleSelectInputChange}
+        />
 
-     <FamilyMember handleDialogTypeOpen={handleDialogTypeOpen} />
+        <FamilyMember handleDialogTypeOpen={handleDialogTypeOpen} />
+      </Grid>
+
 
       <MainDialog
         dialogType={dialogType}

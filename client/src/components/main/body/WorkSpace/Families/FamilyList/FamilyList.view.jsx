@@ -19,14 +19,9 @@ import {
 } from "@mui/material";
 import React from "react";
 import { useStyles } from "./FamilyList.style";
-import SearchInput from "../../../../ReusableComps/SearchInput/SearchInput";
-import { ReactComponent as DownloadIcon } from "../../../../../assets/icons/download.svg";
-import { ReactComponent as EditIcon } from "../../../../../assets/icons/edit.svg";
-import DescriptionIcon from "@mui/icons-material/Description";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import { useSelector } from "react-redux";
 import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
-import FamilyList from "./FamilyList.css";
 import SearchIcon from "@material-ui/icons/Search";
 
 function FamilyListView(props) {
@@ -54,6 +49,7 @@ function FamilyListView(props) {
         marginLeft: "10px",
       }}
     >
+    
       <Grid
         item
         xs={12}

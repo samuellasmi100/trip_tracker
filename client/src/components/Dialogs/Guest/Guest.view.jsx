@@ -1,31 +1,23 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Button,
   Checkbox,
   FormControlLabel,
   Grid,
   Typography,
-  TextField,
-  InputLabel,
-  Select,
-  MenuItem,
-  ListItemText,
-  OutlinedInput,
+
 } from "@mui/material";
 import { useStyles } from "./Guest.style";
 import { useDispatch, useSelector } from "react-redux";
 import "./Guest.css";
-import * as dialogSlice from "../../../store/slice/dialogSlice";
 import Parent from "./Parent/Parent";
 import Child from "./Child/Child";
-import CreateFamily from "./CreateFamily/CreateFamily";
 
 const GuestView = (props) => {
-  const dispatch = useDispatch();
   const dialogType = useSelector((state) => state.dialogSlice.type);
   const classes = useStyles();
-  const guests = useSelector((state) => state.userSlice.guests);
   const form = useSelector((state) => state.userSlice.form);
+
   const {
     submit,
     areaCodes,

@@ -10,7 +10,8 @@ import {
 import { StyledTooltip, useStyles } from "./Sidebar.style";
 import { ReactComponent as Database } from "../../../assets/icons/database.svg";
 import { ReactComponent as ClientInfo } from "../../../assets/icons/client-info.svg";
-import { ReactComponent as Statis } from "../../../assets/icons/static_select.svg";
+import { ReactComponent as Static } from "../../../assets/icons/static_select.svg";
+
 import { Link, useLocation } from "react-router-dom";
 
 import clsx from "clsx";
@@ -47,7 +48,7 @@ function SidebarView({
         >
           <Grid item className={classes.sideBarIcons}>
             <Link to="workspace">
-              <StyledTooltip title="Workspace" placement="bottom-end" arrow>
+              <StyledTooltip title="סביבת עבודה" placement="bottom-end" arrow>
                 <Database
                   fill={clsx({
                     ["#ffffff"]: pathname.includes("/workspace"),
@@ -59,26 +60,26 @@ function SidebarView({
           </Grid>
           <Grid item className={classes.sideBarIcons}>
             <Link to="static">
-              <StyledTooltip title="Static" placement="bottom-end" arrow>
-                <Statis
+              <StyledTooltip title="מידע כולל" placement="bottom-end" arrow>
+                <Static
                   style={{
-                    fill: pathname.includes("/static") ? "#ffffff" : "#828282",
+                    fill: pathname.includes("/static") ? "#ffffff" : "#828282"
                   }}
                 />
               </StyledTooltip>
             </Link>
           </Grid>
-          {/* <Grid item className={classes.sideBarIcons}>
-            <Link to="analytics">
-              <StyledTooltip title="Analytics" placement="bottom-end" arrow>
+          <Grid item className={classes.sideBarIcons}>
+            <Link to="budgets">
+              <StyledTooltip title="תקציב" placement="bottom-end" arrow>
                 <AnalyticsIcon
                   style={{
-                    fill: pathname.includes("/analytics") ? "#ffffff" : "#828282",
+                    fill: pathname.includes("/budgets") ? "#ffffff" : "#828282",width:"28px",height:"30px" 
                   }}
                 />
               </StyledTooltip>
             </Link>
-          </Grid> */}
+          </Grid>
         </Grid>
         {/* // * bottom icons */}
         <Grid
