@@ -223,7 +223,6 @@ WHERE
     g.is_main_user = 1
 ORDER BY 
     g.family_id;
-;
 `
    
 }

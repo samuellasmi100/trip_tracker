@@ -3,30 +3,39 @@ const addFamily = (vacationId) =>{
   }
   
   const getFamilies = (vacationId) =>{
- return `SELECT 
+ return `WITH LatestPayments AS (
+    SELECT 
+        p.family_id,
+        p.user_id,
+        p.remains_to_be_paid,
+        ROW_NUMBER() OVER (PARTITION BY p.user_id ORDER BY p.created_at DESC) AS row_num
+    FROM 
+        trip_tracker_${vacationId}.payments p
+)
+SELECT 
     fa.family_id,
     fa.family_name,
     gu.hebrew_first_name,
     gu.hebrew_last_name,
     gu.number_of_guests,
     gu.total_amount,
-    p.remains_to_be_paid,
+    lp.remains_to_be_paid,
     (SELECT COUNT(*) 
      FROM trip_tracker_${vacationId}.guest 
      WHERE family_id = fa.family_id) AS user_in_system_count
 FROM 
     trip_tracker_${vacationId}.families fa
 JOIN 
-   trip_tracker_${vacationId}.guest gu
+    trip_tracker_${vacationId}.guest gu
 ON 
     fa.family_id = gu.family_id
 LEFT JOIN 
-   trip_tracker_${vacationId}.payments p 
+    LatestPayments lp 
 ON 
-    fa.family_id = p.family_id
+    gu.family_id = lp.family_id AND gu.user_id = lp.user_id AND lp.row_num = 1
 WHERE 
     gu.is_main_user = 1;
-;`
+`
 
 
 //    return `SELECT 
