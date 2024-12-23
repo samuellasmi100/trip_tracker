@@ -158,7 +158,7 @@ function GeneralInfoView({
                     {flight?.english_first_name}
                   </TableCell>
                   <TableCell className={classes.dataTableCell}>
-                    {flight?.english_first_name}
+                    {flight?.english_last_name}
                   </TableCell>
                   <TableCell className={classes.dataTableCell}>
                     {flight?.birth_date === null ? flight?.defaule_birth_date : flight?.birth_date}

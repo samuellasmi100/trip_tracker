@@ -99,11 +99,13 @@ const userClassificationType = ["MR","MRS","BABY"]
     let isInGroup = userForm.is_in_group
     try {
       let response = await ApiFlights.getUserFlightData(token,userId,familyId,isInGroup,vacationId)
+
       if(response.data[0].all_flight_data_null === 1){
         dispatch(flightsSlice.updateFormField({ field: "type", value:"add"}));
         dispatch(flightsSlice.updateFormField({ field: "outbound_flight_date", value:response.data[0].arrival_date}));
         dispatch(flightsSlice.updateFormField({ field: "return_flight_date", value:response.data[0].departure_date}));
       }else {
+        console.log(response)
         dispatch(flightsSlice.updateForm(response.data[0]))
         dispatch(flightsSlice.updateFormField({ field: "type", value:"edit"}));
 

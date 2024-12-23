@@ -15,7 +15,6 @@ const Budgets = () => {
   };
 
 
-
   return (
 
     <Grid style={{ display: "flex", flexDirection: "column" }}>
@@ -51,12 +50,12 @@ const Budgets = () => {
         <Expence />
       </Grid>
 
-
-      {/* <MainDialog
+{/* 
+      {<MainDialog
         dialogType={dialogType}
         dialogOpen={dialogOpen}
         closeModal={closeModal}
-      /> */}
+      /> } */}
     </Grid>
   )
 };

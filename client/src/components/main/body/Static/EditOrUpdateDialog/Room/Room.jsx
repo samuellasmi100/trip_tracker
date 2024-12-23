@@ -13,7 +13,11 @@ const Room = () => {
   const vacationId = useSelector((state) => state.vacationSlice.vacationId);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    dispatch(staticSlice.updateFormField({ field: name, value }));
+    if(name === "max_occupancy"){
+      dispatch(staticSlice.updateFormField({ field: name, value }));
+    }else {
+      return
+    }
   };
 
   const submit = async () => {
