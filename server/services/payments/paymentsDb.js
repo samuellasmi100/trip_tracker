@@ -30,14 +30,9 @@ const getHistoryPayments = async (id,vacationId) => {
   }
 }
 
-
-const numericAmount = (val) => {
-  return  parseFloat(val.replace(/,/g, ""));
- }
-
 const addPayments = async (paymentDetails,vacationId) => {
-  const remainsToBePaid = numericAmount(paymentDetails.remainsToBePaid)
-  const amountReceived = numericAmount(paymentDetails.amountReceived)
+  const remainsToBePaid = Number(paymentDetails.remainsToBePaid)
+  const amountReceived = Number(paymentDetails.amountReceived)
   const result = Number(remainsToBePaid) - Number(amountReceived)
 
   try {

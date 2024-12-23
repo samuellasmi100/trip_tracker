@@ -182,6 +182,39 @@ module.exports = {
 
 
 
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('מלון');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('טיסות');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('טיסות ארקיע');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('העברות');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('טיולים אוטובוסים');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('טיולים כניסות');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('קונטיינר');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('בשר');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('עופות ');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('דגים');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('שלומוביץ חלבי');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('הובלות קונטיינר');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('הובלות אירופה');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('משאית קירור ');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('רכב');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('אומנים מקומיים');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('אומנים');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('הגברה');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('שוק מקומי');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('מטבח רכוש');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('צוות מטבח');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('שף');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('מחסנאי');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('קונדיטור');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('משגיח');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('טיסות צוות');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('מדריך');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('מארחת');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('תהילה');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('כשרות');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('פרסום');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('משרד');
+// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('משכורות');
 
 
 

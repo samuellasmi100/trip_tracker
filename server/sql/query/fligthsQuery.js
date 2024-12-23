@@ -14,6 +14,7 @@ const getFlightsDetails = (vacationId) => {
         f.validity_passport, 
         f.passport_number, 
         f.birth_date,
+        f.age,
         f.outbound_flight_date, 
         f.return_flight_date,
         f.outbound_flight_number, 
