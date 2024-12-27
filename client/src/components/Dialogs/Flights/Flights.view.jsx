@@ -11,7 +11,6 @@ import {
   MenuItem,
   OutlinedInput,
   ListItemText,
-  Autocomplete
 } from "@mui/material";
 import { useStyles } from "./Flights.style";
 import { useSelector } from "react-redux";
@@ -93,44 +92,31 @@ const FlightsView = (props) => {
               ))}
             </Select>
           </Grid>
-          <Grid item>
+             <Grid item>
             <InputLabel className={classes.inputLabelStyle}>חברת תעופה חזור</InputLabel>
-            <Autocomplete
-        freeSolo // Allows the user to type a value not in the list
-        options={flightsCompany} // List of predefined options
-        value={form?.outbound_airline || ""}
-        onChange={handleInputChange}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            inputRef={(el) => (inputRefs.current[8] = el)}
-            onKeyDown={(e) => handleKeyDown(e, 8)}
-            className={classes.textField}
-            variant="outlined"
-            InputProps={{
-              ...params.InputProps,
-              className: classes.selectOutline,
-              style: {
-                color: "#ffffff",
-                backgroundColor: "#222222",
-              },
-            }}
-          />
-        )}
-        sx={{
-          "& .MuiAutocomplete-paper": {
-            bgcolor: "#222222",
-            color: "#ffffff",
-            "&::-webkit-scrollbar": {
-              width: "4px",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              background: "#707079",
-              borderRadius: "4px",
-            },
-          },
-        }}
-      />
+            <Select
+             name="return_airline"
+             value={form?.return_airline}
+             className={classes.textField}
+             onChange={handleInputChange}
+             inputRef={(el) => (inputRefs.current[10] = el)}
+             onKeyDown={(e) => handleKeyDown(e, 10)}
+              input={<OutlinedInput className={classes.selectOutline} />}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    color: "#ffffff !important",
+                    bgcolor: "#222222",
+                  },
+                },
+              }}
+            >
+              {flightsCompany?.map((type) => (
+                <MenuItem key={type} value={type} className={classes.selectedMenuItem}>
+                  {type}
+                </MenuItem>
+              ))}
+            </Select>
           </Grid>
         </>
       );
