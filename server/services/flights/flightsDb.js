@@ -19,7 +19,6 @@ const addFlightsDetails = async (flightsData,vacationId) => {
 }
 
 const updateFlightsDetails = async (flightsData,vacationId) => {
-  console.log(flightsData)
  const userId = flightsData.user_id
  delete flightsData.type
  delete flightsData.arrival_date

@@ -1,26 +1,30 @@
 
 const mysql = require('mysql2/promise');
 const {
-    dropTablesQueries,
-    createFamilyTableQuery,
-    createFileTableQuery,
-    createFightsTableQuery,
-    createGuestTableQuery,
-    createNotesTableQuery,
-    createPaymentsTableQuery,
-    createRoomsTableQuery,
-    createUserRoomAssignmentsTableQuery,
-    insertRoomsDataQuery,
-    createRoomTakenTable
-  } = require("../query/trip_tracker_dump")
-  
- const createDatabaseAndTable = async (vacationId) => {
+  dropTablesQueries,
+  createFamilyTableQuery,
+  createFileTableQuery,
+  createFightsTableQuery,
+  createGuestTableQuery,
+  createNotesTableQuery,
+  createPaymentsTableQuery,
+  createRoomsTableQuery,
+  createUserRoomAssignmentsTableQuery,
+  insertRoomsDataQuery,
+  createRoomTakenTable,
+  createExpensesCategoryTable,
+  insertExpensesCategoryQuery,
+  createExpensesSubCategoryTable,
+  insertExpensesSubCategoryQuery,
+} = require("../query/trip_tracker_dump")
+
+const createDatabaseAndTable = async (vacationId) => {
   const connection = await mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
   });
- 
+
   try {
 
     await connection.query(`CREATE SCHEMA \`trip_tracker_${vacationId}\``);
@@ -39,6 +43,10 @@ const {
     await connection.query(createUserRoomAssignmentsTableQuery);
     await connection.query(insertRoomsDataQuery);
     await connection.query(createRoomTakenTable);
+    await connection.query(createExpensesCategoryTable);
+    await connection.query(insertExpensesCategoryQuery);
+    await connection.query(createExpensesSubCategoryTable);
+    await connection.query(insertExpensesSubCategoryQuery);
 
     console.log('Database and table created successfully');
   } catch (error) {

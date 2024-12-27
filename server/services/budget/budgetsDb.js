@@ -6,7 +6,8 @@ const logger = require("../../utils/logger");
 const getCategory = async (vacationId) => {
   try {
     const sql = budgetQuery.getCategory(vacationId)
-    await connection.execute(sql,parameters)
+    const response = await connection.execute(sql)
+    return response
   } catch (error) { 
     logger.error(
       `Error: Function:getCategory :, ${error.sqlMessage}`,

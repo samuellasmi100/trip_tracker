@@ -10,3 +10,68 @@
   level: 'error',
   timestamp: '2024-12-19T21:16:33.155Z'
 }
+{
+  message: 'Error: Function:getCategory :, undefined',
+  level: 'error',
+  timestamp: '2024-12-24T21:09:12.511Z'
+}
+{
+  message: 'Error: Function:getCategory :, undefined',
+  level: 'error',
+  timestamp: '2024-12-24T21:09:40.415Z'
+}
+{
+  message: 'Error: Function:getCategory :, undefined',
+  level: 'error',
+  timestamp: '2024-12-24T21:10:48.735Z'
+}
+{
+  message: 'Error: Function:updateStartEndAndDate :, undefined',
+  level: 'error',
+  timestamp: '2024-12-25T11:39:30.299Z'
+}
+{
+  message: 'Error: Function:updateStartEndAndDate :, undefined',
+  level: 'error',
+  timestamp: '2024-12-25T11:43:29.535Z'
+}
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2024-12-26T08:11:23.375Z'
+}
+{
+  message: "Error: Function:addFlightsDetails :, Unknown column 'arrival_date' in 'field list'",
+  level: 'error',
+  timestamp: '2024-12-26T08:11:45.569Z'
+}
+{
+  message: "Error: Function:addFlightsDetails :, Unknown column 'arrival_date' in 'field list'",
+  level: 'error',
+  timestamp: '2024-12-26T08:11:53.207Z'
+}
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2024-12-26T08:27:33.845Z'
+}
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2024-12-26T08:28:06.531Z'
+}
+{
+  message: "Error: Function:removeAllUserAssignRoom :, You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'WHERE room_id = ? And family_id = ?' at line 1",
+  level: 'error',
+  timestamp: '2024-12-26T09:37:07.369Z'
+}
+{
+  message: "Error: Function:assignMainRoom :, Unknown column 'week_chosen' in 'field list'",
+  level: 'error',
+  timestamp: '2024-12-26T12:07:58.444Z'
+}
+{
+  message: "Error: Function:assignMainRoom :, Unknown column 'week_chosen' in 'field list'",
+  level: 'error',
+  timestamp: '2024-12-26T12:07:58.450Z'
+}

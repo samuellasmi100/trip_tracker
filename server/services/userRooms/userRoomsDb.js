@@ -2,11 +2,11 @@ const connection = require("../../db/connection-wrapper");
 const userRoomQuery = require("../../sql/query/userRoomQuery")
 const logger = require("../../utils/logger");
 
-const assignMainRoom = async (vacationId,familyId,roomId,startDate,endDate) => {
+const assignMainRoom = async (vacationId,familyId,roomId,startDate,endDate,weekChosen) => {
  
   try {
     const sql = userRoomQuery.assignMainRoom(vacationId)
-    const parameters = [familyId,roomId,startDate,endDate]
+    const parameters = [familyId,roomId,startDate,endDate,weekChosen]
      await connection.executeWithParameters(sql,parameters) 
   } catch (error) { 
   logger.error(
@@ -80,6 +80,17 @@ const removeMainRoom = async (familyId,vacationId) => {
   }
 }
 
+const removeMainRoomByRoomId = async (familyId,vacationId,roomId) => {
+  try {
+    const sql = userRoomQuery.removeMainRoomByRoomId(vacationId)
+    const parameters = [roomId,familyId]
+    await connection.executeWithParameters(sql,parameters)
+  } catch (error) { 
+  logger.error(
+      `Error: Function:removeMainRoom :, ${error.sqlMessage}`,
+    );
+  }
+}
 const getFamilyRoom = async (id,vacationId) => {
   try {
     const sql = userRoomQuery.getFamilyRoom(vacationId)
@@ -104,6 +115,18 @@ const getChosenRoom = async (userId,vacationId) => {
      const response = await connection.executeWithParameters(sql,parameters)
       return response
 
+  } catch (error) { 
+  logger.error(
+      `Error: Function:getChosenRoom :, ${error.sqlMessage}`,
+    );
+  }
+}
+const getAllChosenRoom = async (vacationId) => {
+
+  try {
+    let sql = userRoomQuery.getAllChosenRoom(vacationId)
+     const response = await connection.execute(sql)
+      return response
   } catch (error) { 
   logger.error(
       `Error: Function:getChosenRoom :, ${error.sqlMessage}`,
@@ -151,6 +174,20 @@ const removeAllUserAssignRoom = async (familyId,vacationId) => {
     );
   }
 }
+const removeAllUserAssignFromRoomId = async (familyId,vacationId,roomId) => {
+  try {
+     let sql = userRoomQuery.removeAllUserAssignFromRoomId(vacationId)
+     const parameters = [roomId,familyId]
+     const response = await connection.executeWithParameters(sql,parameters)
+      return response
+
+  } catch (error) { 
+  logger.error(
+      `Error: Function:removeAllUserAssignRoom :, ${error.sqlMessage}`,
+    );
+  }
+}
+
 
 
 
@@ -167,6 +204,8 @@ module.exports = {
   removeAllUserAssignRoom,
   getUsersChosenRoom,
   getUsersChosenRoom,
-  updateStartEndAndDate
-
+  updateStartEndAndDate,
+  removeMainRoomByRoomId,
+  removeAllUserAssignFromRoomId,
+  getAllChosenRoom
 }

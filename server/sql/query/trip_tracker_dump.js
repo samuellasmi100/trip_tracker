@@ -156,11 +156,35 @@ const createRoomTakenTable = `
   start_date varchar(45) NOT NULL,
   end_date varchar(45) NOT NULL,
   room_id varchar(45) NOT NULL,
+  week_chosen VARCHAR(45) NULL
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 `
 
+const createExpensesCategoryTable = `
+ CREATE TABLE expenses_category (
+  id int NOT NULL AUTO_INCREMENT,
+  name varchar(45) NOT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+`
 
+const insertExpensesCategoryQuery = `
+  INSERT INTO expenses_category VALUES (1,'אירוח'),(2,'טיסות והעברות'),(3,'משרד כללי'),(4,'רכוש קבוע'),(5,'משכורות');
+`
+
+const createExpensesSubCategoryTable = `
+ CREATE TABLE expenses_sub_category (
+  id int NOT NULL AUTO_INCREMENT,
+  expenses_category_id varchar(45) DEFAULT NULL,
+  name varchar(45) NOT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+`
+
+const insertExpensesSubCategoryQuery = `
+INSERT INTO expenses_sub_category VALUES (1,'1','מלון'),(2,'2','טיסות'),(3,'2','טיסות ארקיע'),(4,'2','העברות'),(5,'2','טיולים אוטובוסים'),(6,'2','טיולים כניסות'),(7,'1','קונטיינר'),(8,'1','בשר'),(9,'1','עופות '),(10,'1','דגים'),(11,'1','שלומוביץ חלבי'),(12,'2','הובלות קונטיינר'),(13,'2','הובלות אירופה'),(14,'2','משאית קירור '),(15,'2','רכב'),(16,'1','אומנים מקומיים'),(17,'1','אומנים'),(18,'1','הגברה'),(19,'1','שוק מקומי'),(20,'1','מטבח רכוש'),(21,'1','צוות מטבח'),(22,'1','שף'),(23,'1','מחסנאי'),(24,'1','קונדיטור'),(25,'1','משגיח'),(26,'2','טיסות צוות'),(27,'1','מדריך'),(28,'1','מארחת'),(29,'3','תהילה'),(30,'1','כשרות'),(31,'3','פרסום'),(32,'3','משרד'),(33,'5','משכורות');
+`
 module.exports = { 
   dropTablesQueries,
   createFamilyTableQuery,
@@ -172,7 +196,11 @@ module.exports = {
   createRoomsTableQuery,
   createUserRoomAssignmentsTableQuery,
   insertRoomsDataQuery,
-  createRoomTakenTable
+  createRoomTakenTable,
+  createExpensesCategoryTable,
+insertExpensesCategoryQuery,
+createExpensesSubCategoryTable,
+insertExpensesSubCategoryQuery,
 }
 
 

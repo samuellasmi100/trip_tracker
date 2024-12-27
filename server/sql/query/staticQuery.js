@@ -226,6 +226,7 @@ ORDER BY
 `
    
 }
+
 module.exports = {
     getMainGuests,
     getAllGuests,

@@ -3,7 +3,7 @@ const budgetsService = require("./budgetsService")
 const uuid = require("uuid").v4;
 
 
-router.post("/category/:id", async (req, res, next) => {
+router.get("/category/:id", async (req, res, next) => {
   const vacationId = req.params.id
   try {
     const response = await budgetsService.getCategory(vacationId)
@@ -14,7 +14,7 @@ router.post("/category/:id", async (req, res, next) => {
   }
 });
 
-router.post("sub_category/:id/:category_id", async (req, res, next) => {
+router.get("/sub_category/:id/:category_id", async (req, res, next) => {
     const vacationId = req.params.id
     const categoryId = req.params.category_id
     try {

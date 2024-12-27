@@ -16,6 +16,7 @@ const familyController = require("./services/family/familyController");
 const userRoomsController = require("./services/userRooms/userRoomsController");
 const vacationsController = require("./services/vacation/vacationController");
 const staticController = require("./services/static/staticController");
+const budgetController = require("./services/budget/budgetsController");
 
 
 app.use(cors());
@@ -34,7 +35,7 @@ app.use("/payments",paymentsController)
 app.use("/notes",notesController)
 app.use("/vacations",vacationsController)
 app.use("/static",staticController)
-
+app.use("/budget",budgetController)
 
 
 app.use(errorHandler);
