@@ -1,12 +1,11 @@
 import React from "react";
-
 import { makeStyles } from "@mui/styles";
-import { BorderBottom } from "@mui/icons-material";
+
 
 export const useStyles = makeStyles((theme) => ({
   dialog: {
-    minWidth: "90vw",
-    height: "80vh", 
+    minWidth: "25vw",
+    height: "40vh", 
     color: "#FFFFFF !important",
     backgroundColor: "#2D2D2D !important",
   

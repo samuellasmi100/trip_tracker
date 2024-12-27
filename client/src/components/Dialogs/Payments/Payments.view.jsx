@@ -166,7 +166,7 @@ const PaymentsView = (props) => {
                 name="invoice"
                 className={classes.checkbox}
                 onClick={handleInputChange}
-                checked={form?.invoice}
+                checked={!!Number(form?.invoice)} 
               />
             }
             label={

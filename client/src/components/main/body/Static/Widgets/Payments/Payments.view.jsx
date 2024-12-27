@@ -91,6 +91,9 @@ function PaymentsView({
                     <TableCell className={classes.dataTableCell}>
                       {payment?.remainsToBePaid === null ? payment?.default_amount : payment?.remainsToBePaid}
                     </TableCell>
+                    <TableCell className={classes.dataTableCell}>
+                      {payment?.invoice === null || payment?.invoice === 0 ? "לא" : "כן"}
+                    </TableCell>
                     <TableCell
                       className={classes.dataTableCell}
                       style={{ maxWidth: "1px" }}

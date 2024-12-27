@@ -80,7 +80,12 @@ const Reservation = () => {
           timeout: 3000,
         })
       )
-      dispatch(dialogSlice.updateActiveButton("הקצאת חדרים"))
+      if(userForm.user_type === "client"){
+      dispatch(dialogSlice.updateActiveButton("בחירת חדרים"))
+      }else {
+        dispatch(dialogSlice.updateActiveButton("הקצאת חדרים"))
+
+      }
 
     } catch (error) {
       console.log(error);

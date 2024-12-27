@@ -78,9 +78,9 @@ const RoomSelector = () => {
   };
 
   const submit = async () => {
+    console.log(form)
     try {
-      if (form.user_type === "") {
-      } else {
+      if (form.user_type !== "parent") { 
         let response = ApiRoom.assignUserToRoom(
           token,
           selectedChildRoomId,
@@ -95,8 +95,12 @@ const RoomSelector = () => {
           timeout: 3000,
         })
       );
-      dispatch(dialogSlice.updateActiveButton("טיסות"))
-
+      if(form.flights === null){
+        dispatch(dialogSlice.updateActiveButton("הערות"))
+      }else {
+        dispatch(dialogSlice.updateActiveButton("טיסות"))
+      }
+    
     } catch (error) {
       dispatch(
         snackBarSlice.setSnackBar({
@@ -136,7 +140,6 @@ const RoomSelector = () => {
         form.user_id,
         vacationId
       );
-
       if (response.data.length > 0) {
         setRoomChosenType(true);
         dispatch(roomsSlice.updateChosenRoom(response.data[0].rooms_id));
@@ -154,7 +157,7 @@ const RoomSelector = () => {
         form.family_id,
         vacationId
       );
- 
+
       if(response.data.length > 0){
         setGuestsRoomList(response.data);
       }else {

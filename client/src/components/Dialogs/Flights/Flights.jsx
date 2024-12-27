@@ -17,6 +17,7 @@ const userClassificationType = ["MR","MRS","BABY"]
 
   const handleInputChange = (e) => {
     let { name, value,checked } = e.target
+
     if (name === "birth_date") {
       const age = calculateAge(value);
       dispatch(flightsSlice.updateFormField({ field: "age", value: age }));
@@ -85,7 +86,13 @@ const userClassificationType = ["MR","MRS","BABY"]
         timeout: 3000,
       })
     )
+    if(userForm.user_type === "parent"){
+      dispatch(dialogSlice.updateActiveButton("תשלום"))
 
+    }else {
+      dispatch(dialogSlice.updateActiveButton("הערות"))
+
+    }
     } catch (error) {
       console.log(error)
     }
@@ -105,7 +112,6 @@ const userClassificationType = ["MR","MRS","BABY"]
         dispatch(flightsSlice.updateFormField({ field: "outbound_flight_date", value:response.data[0].arrival_date}));
         dispatch(flightsSlice.updateFormField({ field: "return_flight_date", value:response.data[0].departure_date}));
       }else {
-        console.log(response)
         dispatch(flightsSlice.updateForm(response.data[0]))
         dispatch(flightsSlice.updateFormField({ field: "type", value:"edit"}));
 

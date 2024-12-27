@@ -19,7 +19,8 @@ const NotesView = (props) => {
     {categoryName:"קולינרי",id:2},
     {categoryName:"טיסות",id:3},
     {categoryName:"חדר אוכל",id:4},
-    {categoryName:"כללי",id:4},
+    {categoryName:"כללי",id:5},
+    {categoryName:"נגישות",id:6},
   ]
   const {
     handleInputChange,

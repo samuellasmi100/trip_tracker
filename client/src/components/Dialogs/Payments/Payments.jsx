@@ -16,31 +16,47 @@ const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
 
 const handleInputChange = (e) => {
   const { name, value,checked } = e.target;
-
-   if(name === "invoice"){
+  if(name !== "amount" && name !== "remainsToBePaid"){
+    if(name === "invoice"){
       let value = checked
       dispatch(paymentsSlice.updateFormField({ field: "invoice", value: value}));
     }else {
-      
-    dispatch(paymentsSlice.updateFormField({ field: name, value }));
+      if(name === "paymentDate"){
+        const selectedDate = new Date(value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+    
+        if (selectedDate < today) {
+          dispatch(
+            snackBarSlice.setSnackBar({
+              type: "warn",
+              message: "תאריך התשלום שבחרת הוא תאריך שעבר",
+              timeout: 3000,
+            })
+          )
+        }
+      }
+      dispatch(paymentsSlice.updateFormField({ field: name, value }));
     }
-  
+  }
+    
   dispatch(paymentsSlice.updateFormField({ field: "familyId", value: userForm.family_id }));
   dispatch(paymentsSlice.updateFormField({ field: "userId", value: userForm.user_id }));
 };
 
 const submit = async () => {
   try {
-    await ApiPayments.addPayments(token,form,vacationId)
-    dispatch(
-      snackBarSlice.setSnackBar({
-        type: "success",
-        message: "נתוני תשלום עודכנו בהצלחה",
-        timeout: 3000,
-      })
-    )
-    dispatch(paymentsSlice.resetForm())
-  dispatch(dialogSlice.updateActiveButton("הערות"))
+
+      await ApiPayments.addPayments(token,form,vacationId)
+      dispatch(
+        snackBarSlice.setSnackBar({
+          type: "success",
+          message: "נתוני תשלום עודכנו בהצלחה",
+          timeout: 3000,
+        })
+      )
+      dispatch(paymentsSlice.resetForm())
+      dispatch(dialogSlice.updateActiveButton("הערות"))
     
   } catch (error) {
     console.log(error)

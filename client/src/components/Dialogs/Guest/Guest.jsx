@@ -74,6 +74,8 @@ const Guest = () => {
           await getUsers()
           dispatch(userSlice.resetForm())
           dispatch(dialogSlice.resetState())
+          dispatch(dialogSlice.updateDialogType("editParent"))
+          dispatch(dialogSlice.updateActiveButton("פרטי הזמנה"))
         }
       }else if(dialogType === "addFamily"){
         if(form.identity_id === undefined || form.identity_id === ""){
@@ -93,6 +95,7 @@ const Guest = () => {
           dispatch(userSlice.updateFormField({ field: "family_id",value:newFamilyId }))
           dispatch(userSlice.updateFormField({ field: "user_id",value:newUserId }))
           dispatch(dialogSlice.updateActiveButton("פרטי הזמנה"))
+          dispatch(dialogSlice.updateDialogType("editParent"))
 
         }
       }else {
@@ -113,6 +116,8 @@ const Guest = () => {
         response = await ApiUser.addUser(token,form,form.family_id,newUserId,vacationId)
         dispatch(userSlice.updateFormField({ field: "family_id",value:form.family_id }))
         dispatch(userSlice.updateFormField({ field: "user_id",value:newUserId }))
+        dispatch(dialogSlice.updateDialogType("editChild"))
+        dispatch(dialogSlice.updateActiveButton("פרטי הזמנה"))
         await getUsers()
         }
   
@@ -137,7 +142,7 @@ const Guest = () => {
         }else {
           response = await ApiUser.updateUser(token,form,vacationId)
           await getUsers()
-          dispatch(dialogSlice.updateActiveButton("פרטי הזמנה"))
+          dispatch(dialogSlice.updateActiveButton("פרטי נסיעה"))
         }
        
       }

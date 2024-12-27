@@ -26,6 +26,7 @@ const Payments = () => {
     "שם",
     "סכום עסקה",
     "נותר לתשלום",
+    "נשלחה חשבונית",
     "פרטי תשלום"
   ];
 
@@ -54,10 +55,11 @@ const Payments = () => {
   }
  
   function exportToCSV() {
-    const headers = ["שם", "סכום עסקה", "נותר לתשלום"];
+    const headers = ["שם", "סכום עסקה","נשלחה חשבונית","נותר לתשלום"];
     const rows = payments.map(item => [
       `"${item?.hebrew_first_name}"`, 
       `"${item?.amount}"`,
+      `"${item?.invoice === null || item?.invoice === 0 ? 'לא' : 'כן'}"`,
       `"${item?.remainsToBePaid === null ? item?.default_amount : item?.remainsToBePaid}"`
     ]);
   

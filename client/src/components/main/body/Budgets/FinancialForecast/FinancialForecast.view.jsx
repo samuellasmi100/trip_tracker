@@ -22,11 +22,11 @@ import { useSelector } from "react-redux";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import SearchIcon from "@material-ui/icons/Search";
 
-function FinancialForecastView() {
+function FinancialForecastView({handleDialogTypeOpen}) {
 const classes = useStyles();
  const vacationList = useSelector((state) => state.vacationSlice.vacations)
 const vacationName = useSelector((state) => state.vacationSlice.vacationName)
-const isExpense = useSelector((state) => state.budgetSlice.incomeOrExpense)
+const isExpense = useSelector((state) => state.budgetSlice.isExpense)
 
   return (
       <Grid
@@ -99,8 +99,8 @@ const isExpense = useSelector((state) => state.budgetSlice.incomeOrExpense)
               </FormControl>
             </Grid>
             <Grid>
-              <IconButton>
-               {/* onClick={() => handleDialogTypeOpen("addFamily")} */}
+              <IconButton
+                 onClick={() => handleDialogTypeOpen("FinancialForecast")}>
                 <AddBoxIcon style={{ color: "#54A9FF", fontSize: "30px" }} />
               </IconButton>
             </Grid>

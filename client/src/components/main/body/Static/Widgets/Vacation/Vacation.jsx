@@ -62,7 +62,6 @@ const Vacation = (props) => {
           details
         };
       });
-
         dispatch(vacationSlice.updateVacationDetails(arrangeVacation))
     } catch (error) {
       console.log(error)

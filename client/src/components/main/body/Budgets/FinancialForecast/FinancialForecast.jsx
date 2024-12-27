@@ -3,9 +3,9 @@ import FinancialForecastView from "./FinancialForecast.view";
 
 
 
-const FinancialForecast = () => {
+const FinancialForecast = ({handleDialogTypeOpen}) => {
 
-  return <FinancialForecastView  />;
+  return <FinancialForecastView  handleDialogTypeOpen={handleDialogTypeOpen} />;
 };
 
 export default FinancialForecast;

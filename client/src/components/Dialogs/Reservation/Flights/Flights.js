@@ -30,7 +30,7 @@ function Flights({areaCodes,handleInputChange }) {
                     name="flights"
                     className={classes.checkbox}
                     onClick={handleInputChange}
-                    checked={form.flights}
+                    checked={Number(form.flights)}
                   />
                 }
                 label={
@@ -75,7 +75,7 @@ function Flights({areaCodes,handleInputChange }) {
                     value="flying_with_us"
                     className={classes.checkbox}
                     onClick={handleInputChange}
-                    checked={form.flying_with_us}
+                    checked={Number(form.flying_with_us)}
                   />
                 }
                 label={
