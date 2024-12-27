@@ -75,3 +75,13 @@
   level: 'error',
   timestamp: '2024-12-26T12:07:58.450Z'
 }
+{
+  message: "Error: Function:assignMainRoom :, Field 'week_chosen' doesn't have a default value",
+  level: 'error',
+  timestamp: '2024-12-27T09:16:44.738Z'
+}
+{
+  message: "Error: Function:assignMainRoom :, Field 'week_chosen' doesn't have a default value",
+  level: 'error',
+  timestamp: '2024-12-27T09:16:44.744Z'
+}
