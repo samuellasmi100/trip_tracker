@@ -24,7 +24,7 @@ const getFamilyRoom = (vacationId) => {
 
 const assignMainRoom = (vacationId) => {
   return `
-    INSERT INTO trip_tracker_${vacationId}.room_taken(family_id,room_id,start_date,end_date,week_chosen) VALUES(?,?,?,?,?)`;
+    INSERT INTO trip_tracker_${vacationId}.room_taken(family_id,room_id,start_date,end_date) VALUES(?,?,?,?)`;
 };
 
 const getAllChosenRoom = (vacationId) => {

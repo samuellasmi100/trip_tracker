@@ -156,7 +156,6 @@ const createRoomTakenTable = `
   start_date varchar(45) NOT NULL,
   end_date varchar(45) NOT NULL,
   room_id varchar(45) NOT NULL,
-  week_chosen VARCHAR(45) NULL
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 `

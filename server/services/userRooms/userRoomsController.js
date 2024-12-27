@@ -9,9 +9,9 @@ router.post("/", async (req, res, next) => {
   const startDate = req.body.startDate
   const endDate = req.body.endDate
   const vacationId = req.body.vacationId
-  const weekChosen = req.body.weekChosen
+
   try {
-    const response = await userRoomsService.assignMainRoom(roomDetails,familyId,vacationId,startDate,endDate,weekChosen)
+    const response = await userRoomsService.assignMainRoom(roomDetails,familyId,vacationId,startDate,endDate)
     res.send("שיוך החדרים עבר בהצלחה")
 
   } catch (error) {

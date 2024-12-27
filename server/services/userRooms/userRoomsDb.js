@@ -2,11 +2,11 @@ const connection = require("../../db/connection-wrapper");
 const userRoomQuery = require("../../sql/query/userRoomQuery")
 const logger = require("../../utils/logger");
 
-const assignMainRoom = async (vacationId,familyId,roomId,startDate,endDate,weekChosen) => {
+const assignMainRoom = async (vacationId,familyId,roomId,startDate,endDate) => {
  
   try {
     const sql = userRoomQuery.assignMainRoom(vacationId)
-    const parameters = [familyId,roomId,startDate,endDate,weekChosen]
+    const parameters = [familyId,roomId,startDate,endDate]
      await connection.executeWithParameters(sql,parameters) 
   } catch (error) { 
   logger.error(

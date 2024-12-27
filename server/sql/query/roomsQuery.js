@@ -3,7 +3,7 @@ const getAll = (vacationId) => {
 return `
 
 SELECT 
-    r.*,rt.week_chosen,
+    r.*,
     COUNT(ura.user_id) AS number_of_people
 FROM 
     trip_tracker_${vacationId}.rooms r
@@ -11,10 +11,6 @@ LEFT JOIN
     trip_tracker_${vacationId}.user_room_assignments ura
 ON 
     r.rooms_id = ura.room_id
-  LEFT JOIN 
-    trip_tracker_${vacationId}.room_taken rt
-ON 
-    r.rooms_id = rt.room_id  
 GROUP BY 
     r.rooms_id`
   // return `SELECT rooms_id ,type,size,direction,floor,base_occupancy,max_occupancy FROM trip_tracker_${vacationId}.rooms;`

@@ -1,7 +1,7 @@
 const userRoomsDb = require("./userRoomsDb")
 
 
-const assignMainRoom = async (roomDetails, familyId, vacationId, startDate, endDate,weekChosen) => {
+const assignMainRoom = async (roomDetails, familyId, vacationId, startDate, endDate) => {
     const checkIfUserAlreadyAssign = await userRoomsDb.getFamilyRoom(familyId, vacationId)
     if (roomDetails.length === 0) {
         if (checkIfUserAlreadyAssign.length > 0) {
@@ -10,7 +10,7 @@ const assignMainRoom = async (roomDetails, familyId, vacationId, startDate, endD
         }
     } else {
         if (checkIfUserAlreadyAssign.length === 0) {
-            await Promise.all(roomDetails.map((room) => userRoomsDb.assignMainRoom(vacationId, familyId, room.rooms_id, startDate, endDate,weekChosen)));
+            await Promise.all(roomDetails.map((room) => userRoomsDb.assignMainRoom(vacationId, familyId, room.rooms_id, startDate, endDate)));
         } else {
             const roomsToRemove = checkIfUserAlreadyAssign
             .filter(room => !roomDetails.some(detail => detail.rooms_id === room.rooms_id))
@@ -26,7 +26,7 @@ const assignMainRoom = async (roomDetails, familyId, vacationId, startDate, endD
           }
           
           if (roomsToAdd.length > 0) {
-            await Promise.all(roomsToAdd.map((room) => userRoomsDb.assignMainRoom(vacationId, familyId, roomsToAdd[0], startDate, endDate,weekChosen)));
+            await Promise.all(roomsToAdd.map((room) => userRoomsDb.assignMainRoom(vacationId, familyId, roomsToAdd[0], startDate, endDate)));
           } else {
           }
         }
