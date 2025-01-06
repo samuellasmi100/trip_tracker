@@ -14,7 +14,7 @@ import {
 import { useStyles } from "./Payments.style";
 import "./Payments.css"
 import { useSelector } from "react-redux";
-
+import DescriptionIcon from "@mui/icons-material/Description";
 
 const PaymentsView = (props) => {
   const formOfPayment = ["מזומן", "העברה בנקאית", "כרטיס אשראי", "המחאות"]
@@ -153,28 +153,40 @@ const PaymentsView = (props) => {
             </Grid>
           </Grid>
         </Grid>
-        <Grid style={{ marginRight: "20px" }}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                sx={{
-                  color: "#686B76",
-                  "&.Mui-checked": {
-                    color: "#54A9FF",
-                  },
-                }}
-                name="invoice"
-                className={classes.checkbox}
-                onClick={handleInputChange}
-                checked={!!Number(form?.invoice)} 
-              />
-            }
-            label={
-              <Typography style={{ color: "##757882", fontSize: "15px" }}>
-                חשבונית
+        <Grid>
+          <Grid style={{ marginRight: "20px" }}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  sx={{
+                    color: "#686B76",
+                    "&.Mui-checked": {
+                      color: "#54A9FF",
+                    },
+                  }}
+                  name="invoice"
+                  className={classes.checkbox}
+                  onClick={handleInputChange}
+                  checked={!!Number(form?.invoice)}
+                />
+              }
+              label={
+                <Typography style={{ color: "##757882", fontSize: "15px" }}>
+                  חשבונית
+                </Typography>
+              }
+            />
+          </Grid>
+          <Grid container style={{ marginRight: "42px",marginTop:"5px", alignItems: "center" }} spacing={1}>
+            <Grid item>
+              <DescriptionIcon style={{ color: "rgb(255, 158, 84)" }} />
+            </Grid>
+            <Grid item>
+              <Typography variant="body1" style={{ color: "white", fontSize: "15px" }}>
+                היסטוריית תשלומים
               </Typography>
-            }
-          />
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
       <Grid
