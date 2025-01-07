@@ -15,7 +15,6 @@ const getCategory = async (vacationId) => {
   }
 }
 
-
 const getSubCategory = async (vacationId,categoryId) => {
   try {
     const sql = budgetQuery.getSubCategory(vacationId)
@@ -29,9 +28,43 @@ const getSubCategory = async (vacationId,categoryId) => {
   }
 }
 
+const addFutureExpenses = async (vacationId,payment) => {
+  try {
+    const sql = budgetQuery.addFutureExpenses(vacationId)
+    const parameters = [
+      payment.categoryId,
+      payment.subCategoryId,
+      payment.expectedExpenditure,
+      payment.expectedExpenditureILS,
+      payment.paymentDate,
+      payment.paymentCurrency,
+    ]
+ 
+    const response = await connection.executeWithParameters(sql,parameters)
+    // return response
+  } catch (error) { 
+    logger.error(
+      `Error: Function:addFutureExpenses :, ${error.sqlMessage}`,
+    );
+  }
+}
 
-
+const getExchangeRates = async (vacationId,currency) => {
+  try {
+    const sql = budgetQuery.getExchangeRates(vacationId)
+    const parameters = [currency]
+    const response = await connection.executeWithParameters(sql,parameters)
+    return response[0].amount
+  } catch (error) { 
+    logger.error(
+      `Error: Function:addFutureExpenses :, ${error.sqlMessage}`,
+    );
+  }
+}
+//
 module.exports = {
     getCategory,
-    getSubCategory
+    getSubCategory,
+    getExchangeRates,
+  addFutureExpenses
 }

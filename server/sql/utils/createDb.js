@@ -16,6 +16,7 @@ const {
   insertExpensesCategoryQuery,
   createExpensesSubCategoryTable,
   insertExpensesSubCategoryQuery,
+  createExspanseTable
 } = require("../query/trip_tracker_dump")
 
 const createDatabaseAndTable = async (vacationId) => {
@@ -47,7 +48,7 @@ const createDatabaseAndTable = async (vacationId) => {
     await connection.query(insertExpensesCategoryQuery);
     await connection.query(createExpensesSubCategoryTable);
     await connection.query(insertExpensesSubCategoryQuery);
-
+    await connection.query(createExspanseTable)
     console.log('Database and table created successfully');
   } catch (error) {
     console.error('Error creating database or table:', error);

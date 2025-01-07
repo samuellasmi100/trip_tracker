@@ -85,3 +85,48 @@
   level: 'error',
   timestamp: '2024-12-27T09:16:44.744Z'
 }
+{
+  message: 'Error: Function:addFutureExpenses :, Malformed communication packet.',
+  level: 'error',
+  timestamp: '2025-01-07T20:57:23.520Z'
+}
+{
+  message: 'Error: Function:addFutureExpenses :, Malformed communication packet.',
+  level: 'error',
+  timestamp: '2025-01-07T20:57:46.715Z'
+}
+{
+  message: 'Error: Function:addFutureExpenses :, Malformed communication packet.',
+  level: 'error',
+  timestamp: '2025-01-07T20:57:46.723Z'
+}
+{
+  message: 'Error: Function:addFutureExpenses :, Malformed communication packet.',
+  level: 'error',
+  timestamp: '2025-01-07T20:57:46.728Z'
+}
+{
+  message: 'Error: Function:addFutureExpenses :, Malformed communication packet.',
+  level: 'error',
+  timestamp: '2025-01-07T20:57:46.731Z'
+}
+{
+  message: 'Error: Function:addFutureExpenses :, undefined',
+  level: 'error',
+  timestamp: '2025-01-07T21:05:06.848Z'
+}
+{
+  message: 'Error: Function:addFutureExpenses :, undefined',
+  level: 'error',
+  timestamp: '2025-01-07T21:05:06.855Z'
+}
+{
+  message: "Error: Function:addFutureExpenses :, Unknown column 'expectedExpenditure_ils' in 'field list'",
+  level: 'error',
+  timestamp: '2025-01-07T21:08:58.533Z'
+}
+{
+  message: "Error: Function:addFutureExpenses :, Unknown column 'expectedExpenditure_ils' in 'field list'",
+  level: 'error',
+  timestamp: '2025-01-07T21:08:58.540Z'
+}
