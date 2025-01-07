@@ -13,19 +13,14 @@ export default {
       headers: { Authorization: token },
     });
   },
-  getFlightsDetails(token,vacationId) {
-    return Api.get(`/${END_POINT.STATIC}/flights/${vacationId}`, {
-      headers: { Authorization: token },
-    });
-  },
-  getVacationDetails(token,vacationId) {
-    return Api.get(`/${END_POINT.STATIC}/vacation/${vacationId}`, {
-      headers: { Authorization: token },
-    });
-  },
-  getPaymentsDetails(token,vacationId) {
-    return Api.get(`/${END_POINT.STATIC}/payments/${vacationId}`, {
-      headers: { Authorization: token },
-    });
+ 
+  addFutureExpenses(token, form,vacationId) {
+    return Api.post(
+      `/${END_POINT.BUDGET}/future_expenses/${vacationId}`,form,{
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
   },
 };

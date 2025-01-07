@@ -28,7 +28,7 @@ const MainDialog = (props) => {
 
   const handleButtonHeader = () => {
         return(
-          ["צפי תקציב",isExpense ? "הוסף הוצאה עתידית" : "הוסף הכנסה עתידית"]
+          [isExpense ? "הוסף הוצאה עתידית" : "הוסף הכנסה עתידית"]
           .map((label) => (
             <Button
               key={label}

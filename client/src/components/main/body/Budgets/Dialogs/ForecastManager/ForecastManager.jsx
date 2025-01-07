@@ -11,12 +11,20 @@ const ForecastManager = () => {
   const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
 
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    if(name === "categories"){
-      getSubCategories(value)
+  const handleInputChange = (eventOrValue, fieldName) => {
+
+   
+    if (typeof eventOrValue === "object" && eventOrValue.target) {
+      const { name, value } = eventOrValue.target;
+      if(name === "categories"){
+        getSubCategories(value)
+      }
+      dispatch(budgetSlice.updateFormField({ field: name, value }));
+    } else {
+      dispatch(
+        budgetSlice.updateFormField({ field: fieldName, value: eventOrValue })
+      );
     }
-   dispatch(budgetSlice.updateFormField({ field: name, value }));
 
   };
   const getCategories = async () => {
@@ -38,8 +46,9 @@ const getSubCategories = async (categoryId) => {
 }
 
   const submit = async () => {
+    console.log(form)
     try {
-      //  await ApiBudgets.addNotes(token,form,vacationId)
+       await ApiBudgets.addFutureExpenses(token,form,vacationId)
       //  dispatch(
       //   snackBarSlice.setSnackBar({
       //     type: "success",

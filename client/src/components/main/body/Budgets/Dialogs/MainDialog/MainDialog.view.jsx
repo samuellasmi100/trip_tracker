@@ -30,14 +30,10 @@ const MainDialogView = (props) => {
            container
            xs={12}
            style={{ marginTop: "30px"}}
-           
            alignContent="center"
            justifyContent="space-between"
            
          >
-           <Grid item xs={12} container style={{marginRight:"65px", marginBottom: "30px" }} >
-          { handleButtonHeader()}
-           </Grid>
          </Grid>
  
        </Grid>

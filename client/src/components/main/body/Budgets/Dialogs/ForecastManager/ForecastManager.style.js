@@ -11,9 +11,9 @@ export const useStyles = makeStyles((theme) => ({
             position: "relative",
             color: "#FFFFFF",
             fontSize: 14,
-            width: "145px",
+            width: "155px",
             padding: "5px 18px",
-            height: "24px",
+            height: "20px",
         },
         "& .MuiFormLabel-root": {
             color: "#757882", // or black
@@ -38,7 +38,39 @@ export const useStyles = makeStyles((theme) => ({
             },
         },
     },
-
+    shortTextField: {
+        borderRadius: 4,
+        "& .MuiInputBase-input": {
+            position: "relative",
+            color: "#FFFFFF",
+            fontSize: 14,
+            width: "70px",
+            padding: "5px 18px",
+            height: "20px",
+        },
+        "& .MuiFormLabel-root": {
+            color: "#757882", // or black
+            fontSize: "14px",
+        },
+        "& label.Mui-focused": {
+            color: "#54A9FF",
+            top: "0px",
+        },
+        "& .MuiInput-underline:after": {
+            borderBottomColor: "#54A9FF",
+        },
+        "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+                borderColor: "#494C55",
+            },
+            "&:hover fieldset": {
+                borderColor: "#494C55",
+            },
+            "&.Mui-focused fieldset": {
+                borderColor: "#54A9FF",
+            },
+        },
+    },
     submitButton: {
         color: "#000000 !important",
         fontSize: "1.125rem",
@@ -52,7 +84,6 @@ export const useStyles = makeStyles((theme) => ({
             backgroundColor: "#2692ff !important",
         },
     },
-
     cancelButton: {
         color: "#ffffff !important",
         fontSize: "1.125rem",
@@ -63,10 +94,9 @@ export const useStyles = makeStyles((theme) => ({
         borderRadius: "4px",
         opacity: 1,
     },
-  
     selectOutline: {
         height: "30px",
-            width: "191px",
+        width: "191px",
         "&.MuiOutlinedInput-root": {
           color: "#ffffff !important",
           "& .MuiOutlinedInput-notchedOutline": {
