@@ -5,6 +5,7 @@ import * as notesSlice from "../../../store/slice/notesSlice";
 import * as dialogSlice from "../../../store/slice/dialogSlice";
 import * as userSlice from "../../../store/slice/userSlice";
 import * as snackBarSlice from "../../../store/slice/snackbarSlice";
+import * as flightsSlice from "../../../store/slice/flightsSlice";
 
 import ApiNotes from "../../../apis/notesRequest"
 
@@ -43,6 +44,7 @@ const handleCloseClicked = () => {
   dispatch(userSlice.resetForm())
   dispatch(notesSlice.resetForm())
  dispatch(dialogSlice.resetState())
+ dispatch(flightsSlice.resetForm())
  }
   return <NotesView handleInputChange={handleInputChange} submit={submit}  handleCloseClicked={handleCloseClicked}/>;
 };
