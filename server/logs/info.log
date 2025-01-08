@@ -130,3 +130,28 @@
   level: 'error',
   timestamp: '2025-01-07T21:08:58.540Z'
 }
+{
+  message: "Error: Function:addFutureExpenses :, Unknown database 'trip_tracker_undefined'",
+  level: 'error',
+  timestamp: '2025-01-08T08:32:06.282Z'
+}
+{
+  message: "Error: Function:addFutureExpenses :, Unknown database 'trip_tracker_undefined'",
+  level: 'error',
+  timestamp: '2025-01-08T08:32:11.281Z'
+}
+{
+  message: "Error: Function:addFutureExpenses :, Unknown database 'trip_tracker_undefined'",
+  level: 'error',
+  timestamp: '2025-01-08T08:33:19.688Z'
+}
+{
+  message: "Error: Function:addFutureExpenses :, Unknown column 'fe.expenditure' in 'field list'",
+  level: 'error',
+  timestamp: '2025-01-08T09:38:07.813Z'
+}
+{
+  message: "Error: Function:getFutureExpenses :, Unknown column 'fe.expenditure' in 'field list'",
+  level: 'error',
+  timestamp: '2025-01-08T09:38:51.527Z'
+}

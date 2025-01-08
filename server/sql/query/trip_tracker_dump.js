@@ -1,17 +1,14 @@
-
-
-
 const dropTablesQueries = [
-  'DROP TABLE IF EXISTS `families`',
-  'DROP TABLE IF EXISTS `family_room_details`;',
-  'DROP TABLE IF EXISTS `files`;',
-  'DROP TABLE IF EXISTS `flights`;',
-  'DROP TABLE IF EXISTS `guest`;',
-  'DROP TABLE IF EXISTS `notes`',
-  'DROP TABLE IF EXISTS `payments`;',
-  'DROP TABLE IF EXISTS `rooms`;',
-  'DROP TABLE IF EXISTS `user`;',
-  'DROP TABLE IF EXISTS `user_room_assignments`;'
+  "DROP TABLE IF EXISTS `families`",
+  "DROP TABLE IF EXISTS `family_room_details`;",
+  "DROP TABLE IF EXISTS `files`;",
+  "DROP TABLE IF EXISTS `flights`;",
+  "DROP TABLE IF EXISTS `guest`;",
+  "DROP TABLE IF EXISTS `notes`",
+  "DROP TABLE IF EXISTS `payments`;",
+  "DROP TABLE IF EXISTS `rooms`;",
+  "DROP TABLE IF EXISTS `user`;",
+  "DROP TABLE IF EXISTS `user_room_assignments`;",
 ];
 
 const createFamilyTableQuery = `
@@ -21,7 +18,6 @@ const createFamilyTableQuery = `
   family_name varchar(45) NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;`;
-
 
 const createFileTableQuery = `
  CREATE TABLE files (
@@ -158,7 +154,7 @@ const createRoomTakenTable = `
   room_id varchar(45) NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-`
+`;
 
 const createExpensesCategoryTable = `
  CREATE TABLE expenses_category (
@@ -166,11 +162,11 @@ const createExpensesCategoryTable = `
   name varchar(45) NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-`
+`;
 
 const insertExpensesCategoryQuery = `
-  INSERT INTO expenses_category VALUES (1,'אירוח'),(2,'טיסות והעברות'),(3,'משרד כללי'),(4,'רכוש קבוע'),(5,'משכורות');
-`
+INSERT INTO expenses_category VALUES (1,'אירוח'),(2,'טיסות והעברות'),(3,'משרד כללי'),(4,'רכוש קבוע'),(5,'משכורות'),(6,'טיולים');
+`;
 
 const createExpensesSubCategoryTable = `
  CREATE TABLE expenses_sub_category (
@@ -179,23 +175,51 @@ const createExpensesSubCategoryTable = `
   name varchar(45) NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-`
+`;
 
 const insertExpensesSubCategoryQuery = `
-INSERT INTO expenses_sub_category VALUES (1,'1','מלון'),(2,'2','טיסות'),(3,'2','טיסות ארקיע'),(4,'2','העברות'),(5,'2','טיולים אוטובוסים'),(6,'2','טיולים כניסות'),(7,'1','קונטיינר'),(8,'1','בשר'),(9,'1','עופות '),(10,'1','דגים'),(11,'1','שלומוביץ חלבי'),(12,'2','הובלות קונטיינר'),(13,'2','הובלות אירופה'),(14,'2','משאית קירור '),(15,'2','רכב'),(16,'1','אומנים מקומיים'),(17,'1','אומנים'),(18,'1','הגברה'),(19,'1','שוק מקומי'),(20,'1','מטבח רכוש'),(21,'1','צוות מטבח'),(22,'1','שף'),(23,'1','מחסנאי'),(24,'1','קונדיטור'),(25,'1','משגיח'),(26,'2','טיסות צוות'),(27,'1','מדריך'),(28,'1','מארחת'),(29,'3','תהילה'),(30,'1','כשרות'),(31,'3','פרסום'),(32,'3','משרד'),(33,'5','משכורות');
-`
-const createExspanseTable = `
+INSERT INTO expenses_sub_category VALUES (1,'1','מלון'),(2,'2','טיסות כללי'),(3,'2','טיסות קבוצה אל על '),(4,'2','העברות'),(5,'6','אוטובוסים'),(6,'6','טיולים כניסות'),(7,'1','קונטיינר'),(8,'1','בשר'),(9,'1','עופות '),(10,'1','דגים'),(11,'1','שלומוביץ חלבי'),(12,'2','הובלות קונטיינר'),(13,'1','הובלות אירופה'),(14,'1','משאית קירור '),(15,'3','רכב'),(16,'1','אומנים מקומיים'),(17,'1','אומנים'),(18,'1','הגברה'),(19,'1','שוק מקומי'),(20,'1','מטבח רכוש'),(21,'1','צוות מטבח'),(22,'1','שף'),(23,'1','מחסנאי'),(24,'1','קונדיטור'),(25,'1','משגיח'),(26,'2','טיסות צוות'),(27,'6','מדריך'),(28,'1','מארחת'),(29,'3','תהילה'),(30,'1','כשרות'),(31,'3','פרסום'),(32,'3','משרד'),(33,'5','משכורות'),(34,'2','טיסות קבוצה hisky'),(35,'2','העברות פרטיות'),(36,'6','חניות');
+
+`;
+const createFutureExpensesTable = `
 CREATE TABLE future_expenses (
-  INT NOT NULL AUTO_INCREMENT,
-  expected_expenditure VARCHAR(45) NULL,
-  payment_currency VARCHAR(45) NULL,
-  expenses_category_id VARCHAR(45) NULL,
-  expenses_sub_category_id VARCHAR(45) NULL,
-  payment_date VARCHAR(45) NULL,
-  expected_expenditure_ils VARCHAR(45) NULL ,
-  PRIMARY KEY (id));
-`
-module.exports = { 
+  id int NOT NULL AUTO_INCREMENT,
+  expenditure varchar(45) DEFAULT NULL,
+  payment_currency varchar(45) DEFAULT NULL,
+  expenses_category_id varchar(45) DEFAULT NULL,
+  expenses_sub_category_id varchar(45) DEFAULT NULL,
+  payment_date varchar(45) DEFAULT NULL,
+  expenditure_ils varchar(45) DEFAULT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+`;
+
+const createExpensesTable = `
+CREATE TABLE expenses (
+  id int NOT NULL AUTO_INCREMENT,
+  expenditure varchar(45) DEFAULT NULL,
+  payment_currency varchar(45) DEFAULT NULL,
+  expenses_category_id varchar(45) DEFAULT NULL,
+  expenses_sub_category_id varchar(45) DEFAULT NULL,
+  payment_date varchar(45) DEFAULT NULL,
+  expenditure_ils varchar(45) DEFAULT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+`;
+
+
+const createExchangeRatesTable = `
+CREATE TABLE exchange_rates (
+  id int NOT NULL AUTO_INCREMENT,
+  ccy varchar(45) DEFAULT NULL,
+  amount varchar(45) DEFAULT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+`;
+
+
+
+module.exports = {
   dropTablesQueries,
   createFamilyTableQuery,
   createFileTableQuery,
@@ -208,53 +232,10 @@ module.exports = {
   insertRoomsDataQuery,
   createRoomTakenTable,
   createExpensesCategoryTable,
-insertExpensesCategoryQuery,
-createExpensesSubCategoryTable,
-insertExpensesSubCategoryQuery,
-createExspanseTable
-}
-
-
-
-
-
-
-
-
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('מלון');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('טיסות');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('טיסות ארקיע');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('העברות');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('טיולים אוטובוסים');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('טיולים כניסות');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('קונטיינר');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('בשר');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('עופות ');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('דגים');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('שלומוביץ חלבי');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('הובלות קונטיינר');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('הובלות אירופה');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('משאית קירור ');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('רכב');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('אומנים מקומיים');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('אומנים');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('הגברה');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('שוק מקומי');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('מטבח רכוש');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('צוות מטבח');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('שף');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('מחסנאי');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('קונדיטור');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('משגיח');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('טיסות צוות');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('מדריך');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('מארחת');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('תהילה');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('כשרות');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('פרסום');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('משרד');
-// INSERT INTO `trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f`.`expenses_sub_category` (`name`) VALUES ('משכורות');
-
-
-
-
+  insertExpensesCategoryQuery,
+  createExpensesSubCategoryTable,
+  insertExpensesSubCategoryQuery,
+  createFutureExpensesTable,
+  createExpensesTable,
+  createExchangeRatesTable,
+};
