@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import BudgetsView from "./Budgets.view";
 import { Grid, Switch, FormControlLabel, Typography } from "@mui/material";
-import Expence from "./ExpensesAndIncome/ExpensesAndIncome";
+import Expense from "./ExpensesAndIncome/ExpensesAndIncome";
 import FinancialForecast from "./FinancialForecast/FinancialForecast"
 import * as budgetSlice from "../../../../store/slice/budgetSlice"
 import { useDispatch, useSelector } from "react-redux";
@@ -16,7 +16,7 @@ const Budgets = () => {
 
 
   const handleToggle = (event) => {
-    dispatch(budgetSlice.upadteIncomeOrExpense(event.target.checked))
+    dispatch(budgetSlice.updateIncomeOrExpense(event.target.checked))
   };
 
   const closeModal = () => {
@@ -24,7 +24,10 @@ const Budgets = () => {
   };
   
   const handleDialogTypeOpen = (type) => {
+    dispatch(budgetSlice.updateDialogType(type))
     if (isExpense && type === "FinancialForecast") {
+      dispatch(budgetSlice.openModal())
+    } else if (isExpense && type === "ExpensesAndIncomeView") {
       dispatch(budgetSlice.openModal())
     }
 
@@ -60,7 +63,7 @@ const Budgets = () => {
       </Grid>
       <Grid style={{ display: "flex", justifyContent: "center" }}>
         <FinancialForecast handleDialogTypeOpen={handleDialogTypeOpen} />
-        <Expence handleDialogTypeOpen={handleDialogTypeOpen} />
+        <Expense handleDialogTypeOpen={handleDialogTypeOpen} />
       </Grid>
 
 

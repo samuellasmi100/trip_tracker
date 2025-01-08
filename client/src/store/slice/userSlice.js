@@ -36,7 +36,7 @@ export const userSlice = createSlice({
     updateChildren: (state, action) => {
       state.children = action.payload;
     },
-    updateGuets: (state, action) => {
+    updateGuest: (state, action) => {
       state.guests = action.payload;
     },
     resetForm: (state, action) => {
@@ -68,7 +68,7 @@ export const {
   resetForm,
   updateFamiliesList,
   updateFamily,
-  updateGuets
+  updateGuest
 } = userSlice.actions;
 
 export default userSlice.reducer;

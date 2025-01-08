@@ -22,11 +22,13 @@ import { useSelector } from "react-redux";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import SearchIcon from "@material-ui/icons/Search";
 
-function FinancialForecastView({handleDialogTypeOpen}) {
+function FinancialForecastView({handleDialogTypeOpen,handleSelectInputChange}) {
 const classes = useStyles();
  const vacationList = useSelector((state) => state.vacationSlice.vacations)
 const vacationName = useSelector((state) => state.vacationSlice.vacationName)
 const isExpense = useSelector((state) => state.budgetSlice.isExpense)
+const expectedExpensesAndIncome = useSelector((state) => state.budgetSlice.expectedExpensesAndIncome)
+const headers = [" ","קטגוריה","תת קטגוריה","מטבע תשלום","צפי הוצאה בשקלים","צפי הוצאה במטבע זר","תאריך תשלום"]
 
   return (
       <Grid
@@ -50,7 +52,7 @@ const isExpense = useSelector((state) => state.budgetSlice.isExpense)
         <Grid style={{ marginRight: "5px", marginTop: "5px" }}>
           <Select
             value={vacationName}
-            // onChange={handleSelectInputChange}
+            onChange={handleSelectInputChange}
             input={
               <OutlinedInput
                 className={classes.selectOutline}
@@ -118,7 +120,7 @@ const isExpense = useSelector((state) => state.budgetSlice.isExpense)
           <Table style={{ width: "inherit" }} size="small" stickyHeader>
             <TableHead>
               <TableRow>
-                {/* {headers?.map((header, index) => {
+                {headers?.map((header, index) => {
                   return (
                     <TableCell
                       key={index}
@@ -128,35 +130,26 @@ const isExpense = useSelector((state) => state.budgetSlice.isExpense)
                       {header}
                     </TableCell>
                   );
-                })} */}
+                })}
               </TableRow>
             </TableHead>
-            {/* <TableBody className={classes.dataTableBody}>
-              {filteredFamilyList?.map((user, index) => {
+            <TableBody className={classes.dataTableBody}>
+              {expectedExpensesAndIncome?.map((key, index) => {
                 return (
                   <TableRow key={index}>
                     <TableCell className={classes.dataTableCell}>
                       {index + 1}
                     </TableCell>
-                    <Button onClick={() => handleNameClick(user)}>
-                      <TableCell className={classes.dataTableCell}>
-                        {user.family_name}
-                      </TableCell>
-                    </Button>
-                    <TableCell className={classes.dataTableCell}>
-                      {user.remains_to_be_paid === null
-                        ? user.total_amount
-                        : user.remains_to_be_paid}
-                    </TableCell>
-                    <TableCell className={classes.dataTableCell}>{user.number_of_guests}</TableCell>
-                    <TableCell className={`${classes.dataTableCell} ${classes.redText}`}>
-                      {Number(user?.number_of_guests) - Number(user?.user_in_system_count) > 0 ? Number(user?.number_of_guests) - Number(user?.user_in_system_count) : ""}
-                    </TableCell>
-                    <TableCell className={classes.dataTableCell}>{vacationName}</TableCell>
+                    <TableCell className={classes.dataTableCell}>{key.categoryName}</TableCell>
+                    <TableCell className={classes.dataTableCell}>{key.subCategoryName}</TableCell>
+                    <TableCell className={classes.dataTableCell}>{key.payment_currency}</TableCell>
+                    <TableCell className={classes.dataTableCell}>{key.expenditure_ils}</TableCell>
+                    <TableCell className={classes.dataTableCell}>{key.expenditure}</TableCell>
+                    <TableCell className={classes.dataTableCell}>{key.payment_date}</TableCell>
                   </TableRow>
                 );
               })}
-            </TableBody> */}
+            </TableBody>
           </Table>
         </TableContainer>
       </Grid>

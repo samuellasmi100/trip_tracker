@@ -17,9 +17,20 @@ const ForecastManagerView = (props) => {
   const form = useSelector((state) => state.budgetSlice.form)
   const categories = useSelector((state) => state.budgetSlice.categories)
   const subCategories = useSelector((state) => state.budgetSlice.subCategories)
-
+  const dialogType = useSelector((state) => state.budgetSlice.type);
+  const isExpense = useSelector((state) => state.budgetSlice.isExpense);
   const classes = useStyles();
-
+  
+  const handleButtonString = () => {
+    if(isExpense){
+      if (dialogType === "FinancialForecast") {
+        return "הוסף צפי הוצאה"
+      } else {
+        return "הוסף הוצאה"
+        
+      }
+    }
+  }
   const {
     handleInputChange,
     submit,
@@ -145,8 +156,8 @@ const ForecastManagerView = (props) => {
                 <Grid item>
                   <InputLabel className={classes.inputLabelStyle}>צפי הוצאה </InputLabel>
                   <TextField
-                    name={`expectedExpenditure${index}`}
-                    value={form[`expectedExpenditure${index}`] || ''}
+                    name={`expenditure${index}`}
+                    value={form[`expenditure${index}`] || ''}
                     className={classes.textField}
                     onChange={handleInputChange}
                   />
@@ -203,7 +214,7 @@ const ForecastManagerView = (props) => {
             <Button
               onClick={submit}
               className={classes.submitButton}
-            > הוסף צפי הוצאה
+            > {handleButtonString()}
             </Button>
           </Grid>
           <Grid item>

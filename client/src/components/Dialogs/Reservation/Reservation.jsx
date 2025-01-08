@@ -98,9 +98,9 @@ const Reservation = () => {
     try {
       let response = await ApiUser.getUserFamilyList(token,family_id,vacationId)
       if(response.data.length > 0){
-        dispatch(userSlice.updateGuets(response.data))
+        dispatch(userSlice.updateGuest(response.data))
       }else {
-        dispatch(userSlice.updateGuets([]))
+        dispatch(userSlice.updateGuest([]))
 
       }
     } catch (error) {

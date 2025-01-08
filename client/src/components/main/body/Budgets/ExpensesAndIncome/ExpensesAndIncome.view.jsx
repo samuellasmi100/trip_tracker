@@ -16,29 +16,42 @@ import {
   Select,
   MenuItem,
   OutlinedInput,
-} from "@mui/material";import React from "react";
-import { useStyles } from "./ExpensesAndIncome.style"
+} from "@mui/material";
+import React from "react";
+import { useStyles } from "./ExpensesAndIncome.style";
 import { useSelector } from "react-redux";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import SearchIcon from "@material-ui/icons/Search";
 
-function ExpensesAndIncomeView({handleDialogTypeOpen}) {
+function ExpensesAndIncomeView({ handleDialogTypeOpen }) {
   const classes = useStyles();
- const vacationList = useSelector((state) => state.vacationSlice.vacations)
-  const vacationName = useSelector((state) => state.vacationSlice.vacationName)
-  const isExpense = useSelector((state) => state.budgetSlice.isExpense)
+  const vacationList = useSelector((state) => state.vacationSlice.vacations);
+  const vacationName = useSelector((state) => state.vacationSlice.vacationName);
+  const isExpense = useSelector((state) => state.budgetSlice.isExpense);
+  const headers = [
+    " ",
+    "קטגוריה",
+    "תת קטגוריה",
+    "מטבע תשלום",
+    "הוצאה בשקלים",
+    "הוצאה במטבע זר",
+    "תאריך תשלום",
+  ];
+  const expensesAndIncome = useSelector(
+    (state) => state.budgetSlice.expensesAndIncome
+  );
 
   return (
+    <Grid
+      container
+      style={{
+        background: "#2d2d2d",
+        width: "45vw",
+        border: "1px solid rgb(61, 63, 71)",
+        marginLeft: "10px",
+      }}
+    >
       <Grid
-         container
-         style={{
-           background: "#2d2d2d",
-           width: "45vw",
-           border: "1px solid rgb(61, 63, 71)",
-           marginLeft: "10px",
-         }}
-       >
-     <Grid
         item
         xs={12}
         style={{
@@ -48,32 +61,13 @@ function ExpensesAndIncomeView({handleDialogTypeOpen}) {
         }}
       >
         <Grid style={{ marginRight: "5px", marginTop: "5px" }}>
-          <Select
-            value={vacationName}
-            // onChange={handleSelectInputChange}
-            input={
-              <OutlinedInput
-                className={classes.selectOutline}
-              />
-            }
-            MenuProps={{
-              PaperProps: {
-                sx: {
-                  color: "#ffffff !important",
-                  bgcolor: "#222222",
-                },
-              },
-            }}>
-            {vacationList?.map((vacation) => (
-              <MenuItem key={vacation.name} value={vacation.name} className={classes.selectedMenuItem}>
-                {vacation.name}
-              </MenuItem>
-            ))}
-          </Select>
         </Grid>
         <Grid item></Grid>
         <Grid item style={{ marginRight: "-100px", marginTop: "10px" }}>
-                <Typography style={{ color: "white" }}> {isExpense ? " הוצאות " : " הכנסות"}</Typography>
+          <Typography style={{ color: "white" }}>
+            {" "}
+            {isExpense ? " הוצאות " : " הכנסות"}
+          </Typography>
         </Grid>
         <Grid>
           <Grid style={{ display: "flex" }}>
@@ -88,8 +82,8 @@ function ExpensesAndIncomeView({handleDialogTypeOpen}) {
                     endAdornment: (
                       <InputAdornment
                         position="end"
-                      // style={{ display: showClearIcon }}
-                      // onClick={handleClick}
+                        // style={{ display: showClearIcon }}
+                        // onClick={handleClick}
                       >
                         <SearchIcon style={{ color: "rgb(84, 169, 255)" }} />
                       </InputAdornment>
@@ -100,7 +94,8 @@ function ExpensesAndIncomeView({handleDialogTypeOpen}) {
             </Grid>
             <Grid>
               <IconButton
-               onClick={() => handleDialogTypeOpen("ExpensesAndIncomeView")}>
+                onClick={() => handleDialogTypeOpen("ExpensesAndIncomeView")}
+              >
                 <AddBoxIcon style={{ color: "#54A9FF", fontSize: "30px" }} />
               </IconButton>
             </Grid>
@@ -118,7 +113,7 @@ function ExpensesAndIncomeView({handleDialogTypeOpen}) {
           <Table style={{ width: "inherit" }} size="small" stickyHeader>
             <TableHead>
               <TableRow>
-                {/* {headers?.map((header, index) => {
+                {headers?.map((header, index) => {
                   return (
                     <TableCell
                       key={index}
@@ -128,40 +123,43 @@ function ExpensesAndIncomeView({handleDialogTypeOpen}) {
                       {header}
                     </TableCell>
                   );
-                })} */}
+                })}
               </TableRow>
             </TableHead>
-            {/* <TableBody className={classes.dataTableBody}>
-              {filteredFamilyList?.map((user, index) => {
+            <TableBody className={classes.dataTableBody}>
+              {expensesAndIncome?.map((key, index) => {
                 return (
                   <TableRow key={index}>
                     <TableCell className={classes.dataTableCell}>
                       {index + 1}
                     </TableCell>
-                    <Button onClick={() => handleNameClick(user)}>
-                      <TableCell className={classes.dataTableCell}>
-                        {user.family_name}
-                      </TableCell>
-                    </Button>
                     <TableCell className={classes.dataTableCell}>
-                      {user.remains_to_be_paid === null
-                        ? user.total_amount
-                        : user.remains_to_be_paid}
+                      {key.categoryName}
                     </TableCell>
-                    <TableCell className={classes.dataTableCell}>{user.number_of_guests}</TableCell>
-                    <TableCell className={`${classes.dataTableCell} ${classes.redText}`}>
-                      {Number(user?.number_of_guests) - Number(user?.user_in_system_count) > 0 ? Number(user?.number_of_guests) - Number(user?.user_in_system_count) : ""}
+                    <TableCell className={classes.dataTableCell}>
+                      {key.subCategoryName}
                     </TableCell>
-                    <TableCell className={classes.dataTableCell}>{vacationName}</TableCell>
+                    <TableCell className={classes.dataTableCell}>
+                      {key.payment_currency}
+                    </TableCell>
+                    <TableCell className={classes.dataTableCell}>
+                      {key.expenditure_ils}
+                    </TableCell>
+                    <TableCell className={classes.dataTableCell}>
+                      {key.expenditure}
+                    </TableCell>
+                    <TableCell className={classes.dataTableCell}>
+                      {key.payment_date}
+                    </TableCell>
                   </TableRow>
                 );
               })}
-            </TableBody> */}
+            </TableBody>
           </Table>
         </TableContainer>
       </Grid>
     </Grid>
-  )
+  );
 }
 
 export default ExpensesAndIncomeView;

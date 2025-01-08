@@ -13,7 +13,9 @@ export const budgetSlice = createSlice({
     type: "",
     activeButton: "הוסף הוצאה עתידית",
     categories: [],
-    subCategories: []
+    subCategories: [],
+    expensesAndIncome:[],
+    expectedExpensesAndIncome:[]
   },
   reducers: {
     updateFormField: (state, action) => {
@@ -30,6 +32,12 @@ export const budgetSlice = createSlice({
     updateForm: (state, action) => {
       state.form = action.payload;
     },
+    updateExpensesAndIncome: (state, action) => {
+      state.expensesAndIncome = action.payload;
+    },
+    updateExpectedExpensesAndIncome: (state, action) => {
+      state.expectedExpensesAndIncome = action.payload;
+    },
     resetForm: (state, action) => {
       state.form = {};
     },
@@ -39,7 +47,7 @@ export const budgetSlice = createSlice({
     updateSubCategories: (state, action) => {
       state.subCategories = action.payload;
     },
-    upadteIncomeOrExpense: (state, action) => {
+    updateIncomeOrExpense: (state, action) => {
       state.isExpense = action.payload;
     },
     openModal: (state, action) => {
@@ -60,7 +68,8 @@ export const budgetSlice = createSlice({
   },
 });
 
-export const { upadteIncomeOrExpense, openModal,
+export const { 
+  updateIncomeOrExpense, openModal,
   closeModal,
   updateDialogType,
   initialDialogType,
@@ -69,7 +78,9 @@ export const { upadteIncomeOrExpense, openModal,
   updateForm,
   resetForm,
   updateCategories,
-  updateSubCategories
+  updateSubCategories,
+  updateExpensesAndIncome,
+updateExpectedExpensesAndIncome
 } = budgetSlice.actions;
 
 export default budgetSlice.reducer;
