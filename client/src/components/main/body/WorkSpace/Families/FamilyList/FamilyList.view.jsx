@@ -168,7 +168,8 @@ function FamilyListView(props) {
                         <DriveFolderUploadIcon
                           style={{ color: "#54A9FF", fontSize: "27px" }}
                           onClick={() =>
-                            handleUpload(user.family_name, user.family_id)
+                            // handleUpload(user.family_name, user.family_id)
+                            handleDialogTypeOpen("uploadFile",user)
                           }
                         />
                       </IconButton>

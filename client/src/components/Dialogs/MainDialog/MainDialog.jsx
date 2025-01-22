@@ -13,6 +13,7 @@ import { useStyles } from "./MainDialog.style";
 import * as dialogSlice from "../../../store/slice/dialogSlice"
 import { useDispatch, useSelector } from "react-redux";
 import ChildDetails from "../ChildDetails/ChildDetails"
+import UploadFile from "../UploadFile/UploadFile";
 
 const MainDialog = (props) => {
   const form = useSelector((state) => state.userSlice.form)
@@ -35,7 +36,9 @@ const MainDialog = (props) => {
   const handleDataView = () => {
     if(dialogType === "childDetails" || dialogType === "parentDetails"){
       return <ChildDetails />
-    }else {
+    }else if(dialogType === "uploadFile"){
+      return <UploadFile />
+    } else{
        if (activeButton === "פרטים אישיים") {
         return <Guest />
       } else if (activeButton === "פרטי הזמנה" || activeButton === "פרטי נסיעה" ) {
@@ -56,7 +59,8 @@ const MainDialog = (props) => {
   }
 
   const handleButtonHeader = () => {
-    if(dialogType === "childDetails" || dialogType === "parentDetails" || dialogType === "addChild" || dialogType === "addParent"){
+    console.log(dialogType)
+    if(dialogType === "childDetails" || dialogType === "parentDetails" || dialogType === "addChild" || dialogType === "addParent" || dialogType === "uploadFile"){
     }else {
         if(form.user_type === "client"){
           return (Number(form.flights) === 1

@@ -70,6 +70,9 @@ const FamilyList = () => {
     } else if (type === "parentDetails") {
       dispatch(dialogSlice.openModal())
       dispatch(userSlice.updateForm(userData))
+    }else if (type === "uploadFile") {
+      dispatch(dialogSlice.openModal())
+      dispatch(userSlice.updateForm(userData))
     }
 
   };
@@ -103,33 +106,6 @@ const FamilyList = () => {
     }
   }
 
-  const handleUpload = async (name, familyId) => {
-    if (!file) {
-      alert("Please select a file first.");
-      return;
-    }
-    try {
-      // const response = await axios.post("http://localhost:5000/user/families/upload", {
-      //   filename: name,
-      //   fileType: file.type,
-      //   data: base64,
-      //   id:familyId
-      // });
-    } catch (error) {
-      console.error("Error uploading file:", error);
-
-    }
-  };
-
-  const handleFileChange = (e) => {
-    // const selectedFile = e.target.files[0];
-    // setFile(selectedFile);
-    // const reader = new FileReader();
-    // reader.onload = () => {
-    //   setBase64(reader.result.split(",")[1]);
-    // };
-    // reader.readAsDataURL(selectedFile);
-  };
 
   const filteredFamilyList = usersData?.filter((user) => {
     if (searchTerm !== "") {
@@ -185,8 +161,6 @@ const FamilyList = () => {
         <FamilyListView
           handleDialogTypeOpen={handleDialogTypeOpen}
           handleNameClick={handleNameClick}
-          handleUpload={handleUpload}
-          handleFileChange={handleFileChange}
           filteredFamilyList={filteredFamilyList}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}

@@ -118,7 +118,7 @@ function SidebarView({
                 onClose={handleMenuClose}
                 style={{ position: "absolute", top: "-30px", left: "25px" }}
               >
-                <MenuItem onClick={logoutButtonFunction}>Logout</MenuItem>
+                <MenuItem onClick={logoutButtonFunction}>התנתקות</MenuItem>
               </Menu>
             </div>
           </ClickAwayListener>
