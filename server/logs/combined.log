@@ -155,3 +155,28 @@
   level: 'error',
   timestamp: '2025-01-08T09:38:51.527Z'
 }
+{
+  message: 'Error: Function:updateStartEndAndDate :, undefined',
+  level: 'error',
+  timestamp: '2025-01-08T11:55:24.856Z'
+}
+{
+  message: "Error: Function:addPayments :, Data too long for column 'remains_to_be_paid' at row 1",
+  level: 'error',
+  timestamp: '2025-01-08T11:56:32.547Z'
+}
+{
+  message: 'Error: Function:addNotes :, undefined',
+  level: 'error',
+  timestamp: '2025-01-08T11:56:34.803Z'
+}
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2025-01-08T11:57:28.369Z'
+}
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2025-01-08T11:59:06.922Z'
+}
