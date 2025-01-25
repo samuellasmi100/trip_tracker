@@ -78,7 +78,6 @@ const RoomSelector = () => {
   };
 
   const submit = async () => {
-    console.log(form)
     try {
       if (form.user_type !== "parent") { 
         let response = ApiRoom.assignUserToRoom(
