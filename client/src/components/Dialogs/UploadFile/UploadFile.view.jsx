@@ -13,7 +13,7 @@ import { useSelector, useDispatch } from "react-redux";
 import * as dialogSlice from "../../../store/slice/dialogSlice";
 
 const UploadFileView = (props) => {
-  const dispatch = useDispatch();
+ 
   const classes = useStyles();
 
   const {
@@ -25,21 +25,12 @@ const UploadFileView = (props) => {
      filePreview,
     setFilePreview,
     newFileName,
-    setNewFileName,} = props;
-  // Handle file upload
-  const handleFileChange = (event) => {
-    const uploadedFile = event.target.files[0];
-    if (uploadedFile) {
-      setFile(uploadedFile);
-      setFilePreview(URL.createObjectURL(uploadedFile));
-      setNewFileName(uploadedFile.name.split(".").slice(0, -1).join(".")); // Default name without extension
-    }
-  };
+    setNewFileName,
+    handleFileChange,
+    handleNameChange
+  } = props;
 
-  // Handle name change
-  const handleNameChange = (event) => {
-    setNewFileName(event.target.value);
-  };
+
 
   return (
     <>
@@ -54,7 +45,7 @@ const UploadFileView = (props) => {
                 type="text"
                 value={newFileName}
                 onChange={handleNameChange}
-                placeholder="Enter new file name"
+                placeholder="הוסף שם קובץ"
               />
             </Grid>
             <input

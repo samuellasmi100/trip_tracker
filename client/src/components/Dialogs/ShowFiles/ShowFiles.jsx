@@ -3,22 +3,18 @@ import { useSelector, useDispatch } from "react-redux";
 import ShowFilesView from "./ShowFiles.view";
 import * as notesSlice from "../../../store/slice/notesSlice";
 import * as dialogSlice from "../../../store/slice/dialogSlice";
-import * as userSlice from "../../../store/slice/userSlice";
-import * as snackBarSlice from "../../../store/slice/snackbarSlice";
-import * as flightsSlice from "../../../store/slice/flightsSlice";
+import ApiFile from "../../../apis/uploadFileRequest"
+import { END_POINT } from "../../../utils/constants";
 
-import axios from "axios";
+
 
 const ShowFiles = () => {
   const dispatch = useDispatch();
-  const form = useSelector((state) => state.notesSlice.form);
   const userForm = useSelector((state) => state.userSlice.form);
   const token = sessionStorage.getItem("token")
   const [file, setFile] = useState(null);
-  const [filePreview, setFilePreview] = useState(null);
-  const [newFileName, setNewFileName] = useState("");
   const [files, setFiles] = useState([]);
-
+  const vacationId = useSelector((state) => state.vacationSlice.vacationId);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     dispatch(notesSlice.updateFormField({ field: name, value }));
@@ -32,13 +28,9 @@ const ShowFiles = () => {
   }
 
   const getFamilyFiles =  async () => {
-    const lowercaseValue = userForm?.english_last_name?.toLowerCase();
+    const familyName = userForm?.english_last_name?.toLowerCase();
     try {
-      const response = await axios.get(`http://localhost:5000/uploads/files/${lowercaseValue}`, {
-        headers: {
-          Authorization: token,
-        },
-      });
+      const response = await ApiFile.getFamilyFiles(token,familyName,vacationId)
       setFiles(response.data)
     } catch (error) {
       console.log(error)
@@ -48,12 +40,11 @@ const ShowFiles = () => {
 const handleDownload = async (file) => {
   const lowercaseValue = userForm?.english_last_name?.toLowerCase();
   try {
-    const fileUrl = `http://localhost:5000/uploads/${lowercaseValue}/${file}`; // Update the URL as per your backend setup
-     // Replace with how you store your token
+    const fileUrl = `${END_POINT.UPLOADS}/${vacationId}/${lowercaseValue}/${file}`; // Update the URL as per your backend setup
     const response = await fetch(fileUrl, {
       method: 'GET',
       headers: {
-        Authorization: token, // Add the token here
+        Authorization: token,
       },
     });
     if (!response.ok) {
