@@ -71,6 +71,7 @@ const FamilyList = () => {
       dispatch(dialogSlice.openModal())
       dispatch(userSlice.updateForm(userData))
     }else if (type === "uploadFile") {
+      dispatch(dialogSlice.updateActiveButton("העלה קובץ"))
       dispatch(dialogSlice.openModal())
       dispatch(userSlice.updateForm(userData))
     }

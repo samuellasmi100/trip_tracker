@@ -16,7 +16,8 @@ const UploadFileView = (props) => {
   const dispatch = useDispatch();
   const classes = useStyles();
 
-  const { handleInputChange, 
+  const {
+    handleInputChange, 
     submit,
      handleCloseClicked,
      setFile,
@@ -42,11 +43,10 @@ const UploadFileView = (props) => {
 
   return (
     <>
-      <Grid container style={{ minHeight: "510px", padding: "20px" }}>
-        |
-        <Grid style={{ maxHeight: "450px", overflow: "auto" }}>
+      <Grid container style={{ minHeight: "510px", padding: "20px",marginTop:"-50px" }}>
+        <Grid style={{ maxHeight: "500px", overflow: "auto",width:"100%" }}>
           <Grid>
-            <h2>File Uploader</h2>
+            <h2>העלאת קבצים</h2>
           </Grid>
           <Grid>
             <Grid>
@@ -98,7 +98,7 @@ const UploadFileView = (props) => {
         item
         xs={12}
         container
-        style={{ marginTop: "0px" }}
+        style={{ marginTop: "20px" }}
         justifyContent="space-around"
       >
         <Grid item>

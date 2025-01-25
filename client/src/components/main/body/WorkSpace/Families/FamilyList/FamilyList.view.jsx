@@ -36,7 +36,7 @@ function FamilyListView(props) {
     setSearchTerm,
     handleSelectInputChange
   } = props;
-  const headers = ["", "שם משפחה / קבוצה", "הוסף קובץ רישום", "היתרה לתשלום", "כמות נרשמים", "חסרים במערכת", "מסלול"];
+  const headers = ["", "שם משפחה / קבוצה", "הוסף / הצג קובצי רישום", "היתרה לתשלום", "כמות נרשמים", "חסרים במערכת", "מסלול"];
   const vacationList = useSelector((state) => state.vacationSlice.vacations)
   const vacationName = useSelector((state) => state.vacationSlice.vacationName)
   return (

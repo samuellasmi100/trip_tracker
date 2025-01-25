@@ -81,8 +81,8 @@ try {
 }
 const handleCloseClicked = () => {
   dispatch(paymentsSlice.resetForm())
- dispatch(dialogSlice.resetState())
- dispatch(userSlice.resetForm())
+  dispatch(dialogSlice.resetState())
+  dispatch(userSlice.resetForm())
  }
 useEffect(() => {
   getPayments()

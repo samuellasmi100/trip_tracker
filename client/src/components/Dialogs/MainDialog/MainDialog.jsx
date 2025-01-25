@@ -14,6 +14,7 @@ import * as dialogSlice from "../../../store/slice/dialogSlice"
 import { useDispatch, useSelector } from "react-redux";
 import ChildDetails from "../ChildDetails/ChildDetails"
 import UploadFile from "../UploadFile/UploadFile";
+import ShowFiles from "../ShowFiles/ShowFiles";
 
 const MainDialog = (props) => {
   const form = useSelector((state) => state.userSlice.form)
@@ -37,7 +38,13 @@ const MainDialog = (props) => {
     if(dialogType === "childDetails" || dialogType === "parentDetails"){
       return <ChildDetails />
     }else if(dialogType === "uploadFile"){
-      return <UploadFile />
+      if( activeButton === "העלה קובץ"){
+        return <UploadFile />
+      }else {
+        return <ShowFiles />
+      }
+
+   
     } else{
        if (activeButton === "פרטים אישיים") {
         return <Guest />
@@ -59,9 +66,19 @@ const MainDialog = (props) => {
   }
 
   const handleButtonHeader = () => {
-    console.log(dialogType)
-    if(dialogType === "childDetails" || dialogType === "parentDetails" || dialogType === "addChild" || dialogType === "addParent" || dialogType === "uploadFile"){
-    }else {
+    if(dialogType === "childDetails" || dialogType === "parentDetails" || dialogType === "addChild" || dialogType === "addParent"){
+    }if(dialogType === "uploadFile"){
+      return ["העלה קובץ","הצג קבצים שהועלו",]
+      .map((label) => (
+        <Button
+          key={label}
+          className={`${classes.navButton} ${activeButton === label ? "active" : ""}`}
+          onClick={() => handleButtonClick(label)}>
+          {label}
+        </Button>
+       ))
+    }
+    else {
         if(form.user_type === "client"){
           return (Number(form.flights) === 1
           ?  ["פרטים אישיים","פרטי נסיעה", "בחירת חדרים", "טיסות", "הערות"] 

@@ -45,6 +45,7 @@ const FinancialForecast = ({ handleDialogTypeOpen }) => {
   };
 
   const getFutureExpenses = async () => {
+    console.log("11111111111111")
     if(isExpense){
       const response = await ApiBudget.getFutureExpenses(token, vacationId);
       dispatch(budgetSlice.updateExpectedExpensesAndIncome(response.data));

@@ -26,7 +26,6 @@ export const useStyles = makeStyles((theme) => ({
       backgroundColor: "#2d2d2d !important",
     },
   },
-
   textField: {
     borderRadius: 4,
     "& .MuiInputBase-input": {

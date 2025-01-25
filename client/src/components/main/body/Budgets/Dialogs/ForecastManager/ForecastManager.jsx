@@ -59,7 +59,6 @@ const ForecastManager = () => {
           await ApiBudgets.addExpenses(token, form, vacationId);
           dispatch(budgetSlice.resetForm());
           await getExpenses()
-          console.log("else")
         }
       }
     } catch (error) {

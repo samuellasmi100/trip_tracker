@@ -8,7 +8,7 @@ import { useStyles } from "./MainDialog.style";
 import { useSelector } from "react-redux";
 
 const MainDialogView = (props) => {
-  const dialogType = useSelector((state) => state.userSlice.dialogType)
+  const dialogType = useSelector((state) => state.dialogSlice.type);
   const {
     dialogOpen,
     closeModal,
@@ -23,30 +23,21 @@ const MainDialogView = (props) => {
     <Dialog
       open={dialogOpen}
       classes={{ paper: classes.dialog }}
-      onClose={closeModal}
-      
-    >
-      <Grid 
-        >
+      onClose={closeModal}>
+      <Grid>
         <Grid
           item
           container
           xs={12}
           style={{ marginTop: "30px", marginLeft: "30px"}}
-          
           alignContent="center"
-          justifyContent="space-between"
-          
-        >
-          <Grid item xs={12} container justifyContent="center" style={{ marginTop: "20px", marginBottom: "30px" }} >
+          justifyContent="space-between">
+          <Grid item xs={12} container justifyContent={dialogType !== "uploadFile" ? "center" : ""} style={{ marginTop: "20px", marginBottom: "30px",marginRight:dialogType !== "uploadFile" ? "" : "10px" }} >
          { handleButtonHeader()}
           </Grid>
         </Grid>
-
       </Grid>
       {handleDataView()}
-
-
     </Dialog>
   );
 };

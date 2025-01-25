@@ -28,6 +28,7 @@ const classes = useStyles();
 const vacationName = useSelector((state) => state.vacationSlice.vacationName)
 const isExpense = useSelector((state) => state.budgetSlice.isExpense)
 const expectedExpensesAndIncome = useSelector((state) => state.budgetSlice.expectedExpensesAndIncome)
+console.log(expectedExpensesAndIncome)
 const headers = [" ","קטגוריה","תת קטגוריה","מטבע תשלום","צפי הוצאה בשקלים","צפי הוצאה במטבע זר","תאריך תשלום"]
 
   return (
