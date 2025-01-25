@@ -3,11 +3,9 @@ import { useSelector, useDispatch } from "react-redux";
 import UploadFileView from "./UploadFile.view";
 import * as notesSlice from "../../../store/slice/notesSlice";
 import * as dialogSlice from "../../../store/slice/dialogSlice";
-import * as userSlice from "../../../store/slice/userSlice";
 import * as snackBarSlice from "../../../store/slice/snackbarSlice";
-import * as flightsSlice from "../../../store/slice/flightsSlice";
-import ApiNotes from "../../../apis/notesRequest"
-import axios from "axios";
+import ApiFile from "../../../apis/uploadFileRequest"
+
 
 const UploadFile = () => {
   const dispatch = useDispatch();
@@ -17,7 +15,7 @@ const UploadFile = () => {
   const [file, setFile] = useState(null);
   const [filePreview, setFilePreview] = useState(null);
   const [newFileName, setNewFileName] = useState("");
-
+  const vacationId = useSelector((state) => state.vacationSlice.vacationId);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -25,6 +23,19 @@ const UploadFile = () => {
     dispatch(notesSlice.updateFormField({ field: "family_id", value: userForm.family_id }))
     dispatch(notesSlice.updateFormField({ field: "user_id", value: userForm.user_id }))
 
+  };
+  const handleFileChange = (event) => {
+    const uploadedFile = event.target.files[0];
+    if (uploadedFile) {
+      setFile(uploadedFile);
+      setFilePreview(URL.createObjectURL(uploadedFile));
+      setNewFileName(uploadedFile.name.split(".").slice(0, -1).join(".")); // Default name without extension
+    }
+  };
+
+
+  const handleNameChange = (event) => {
+    setNewFileName(event.target.value);
   };
 
   const submit = async () => {
@@ -40,12 +51,7 @@ const UploadFile = () => {
     const formData = new FormData();
     formData.append('file', renamedFile);
     try {
-      const response = await axios.post('http://localhost:5000/uploads', formData, {
-        headers: {
-          Authorization: token,
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      ApiFile.addFile(token,vacationId,formData)
 
       dispatch(
         snackBarSlice.setSnackBar({
@@ -54,7 +60,6 @@ const UploadFile = () => {
           timeout: 3000,
         })
       )
-
        dispatch(dialogSlice.resetState())
     } catch (error) {
       console.error('Error uploading file:', error);
@@ -74,7 +79,8 @@ const UploadFile = () => {
     setFilePreview={setFilePreview}
     newFileName={newFileName}
     setNewFileName={setNewFileName}
-  />;
+    handleFileChange={handleFileChange}
+    handleNameChange={handleNameChange}  />;
 };
 
 export default UploadFile;

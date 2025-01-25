@@ -10,7 +10,8 @@ export const END_POINT = {
   USER_ROOMS:'user_rooms',
   VACATIONS:"vacations",
   STATIC:"static",
-  BUDGET:'budget'
+  BUDGET:'budget',
+  UPLOADS:"uploads"
 };
 
 // export function setAuthToken(token) {
