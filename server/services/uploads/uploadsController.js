@@ -10,8 +10,15 @@ if (!fs.existsSync(uploadsFolder)) {
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
+    const vacationId = req.params.vacationId;
+    const vacationFolderPath = path.join(uploadsFolder, vacationId);
+
+    if (!fs.existsSync(vacationFolderPath)) {
+      fs.mkdirSync(vacationFolderPath, { recursive: true });
+    }
     const folderName = file.originalname.split('_')[0];
-    const folderPath = path.join(uploadsFolder, folderName);
+
+    const folderPath = path.join(vacationFolderPath, folderName);
     if (!fs.existsSync(folderPath)) {
       fs.mkdirSync(folderPath, { recursive: true });
     }
@@ -24,42 +31,44 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.post("/", upload.single('file'),async (req, res, next) => {
+router.post("/:vacationId", upload.single('file'), async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).send('No file uploaded.');
+    }
 
-try {
-  if (!req.file) {
-    return res.status(400).send('No file uploaded.');
-  }
-  res.status(200).json({
-    message: 'File uploaded successfully!',
-    file: req.file
-  });
-
+    res.status(200).json({
+      message: 'File uploaded successfully!',
+      file: req.file,
+    });
   } catch (error) {
     return next(error);
   }
 });
 
-router.get('/files/:clientName', (req, res) => {
-  const { clientName } = req.params;
-  const clientFolderPath = path.join(uploadsFolder, clientName);
+router.get('/files/:clientName/:vacationId', (req, res) => {
+  const { clientName, vacationId } = req.params;
+  const vacationFolderPath = path.join(uploadsFolder,vacationId, clientName);
 
-  if (!fs.existsSync(clientFolderPath)) {
-    return res.status(404).json({ message: 'Client folder not found.' });
+  if (!fs.existsSync(vacationFolderPath)) {
+    return res.status(404).json({ message: 'Vacation folder not found.' });
   }
 
   try {
-    const files = fs.readdirSync(clientFolderPath);
+    const files = fs.readdirSync(vacationFolderPath);
 
+    if (files.length === 0) {
+      return res.status(404).json({ message: 'No files found in the folder.' });
+    }
     res.status(200).json({
       message: 'Files retrieved successfully!',
       files: files,
     });
   } catch (error) {
-    console.error('Error reading client folder:', error);
     res.status(500).json({ message: 'Failed to retrieve files.' });
   }
 });
+
 
 
 module.exports = router;
