@@ -50,6 +50,7 @@ router.get('/files/:clientName/:vacationId', (req, res) => {
   const { clientName, vacationId } = req.params;
   const vacationFolderPath = path.join(uploadsFolder,vacationId, clientName);
 
+  
   if (!fs.existsSync(vacationFolderPath)) {
     return res.status(404).json({ message: 'Vacation folder not found.' });
   }
