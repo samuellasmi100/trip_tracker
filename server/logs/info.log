@@ -180,3 +180,43 @@
   level: 'error',
   timestamp: '2025-01-08T11:59:06.922Z'
 }
+{
+  message: "Error: Function:getFutureExpenses :, Unknown column 'fe.expenditure' in 'field list'",
+  level: 'error',
+  timestamp: '2025-01-23T20:45:28.089Z'
+}
+{
+  message: "Error: Function:getExpenses :, Table 'trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f.expenses' doesn't exist",
+  level: 'error',
+  timestamp: '2025-01-23T20:45:28.144Z'
+}
+{
+  message: "Error: Function:getFamilies :, Unknown database 'trip_tracker_lasmi'",
+  level: 'error',
+  timestamp: '2025-01-23T21:10:03.772Z'
+}
+{
+  message: "Error: Function:getFutureExpenses :, Unknown column 'fe.expenditure' in 'field list'",
+  level: 'error',
+  timestamp: '2025-01-25T18:15:35.860Z'
+}
+{
+  message: "Error: Function:getExpenses :, Table 'trip_tracker_63dfd70c_6454_4d44_ae28_5d2a12235c3f.expenses' doesn't exist",
+  level: 'error',
+  timestamp: '2025-01-25T18:15:35.872Z'
+}
+{
+  message: "Error: Function:getFutureExpenses :, Unknown column 'fe.expenditure' in 'field list'",
+  level: 'error',
+  timestamp: '2025-01-25T18:18:02.504Z'
+}
+{
+  message: "Error: Function:getFutureExpenses :, Table 'trip_tracker_7ede9a79_2fe8_4ac1_b0a7_978647f1cf94.expenses_category' doesn't exist",
+  level: 'error',
+  timestamp: '2025-01-25T18:25:18.733Z'
+}
+{
+  message: "Error: Function:getExpenses :, Table 'trip_tracker_7ede9a79_2fe8_4ac1_b0a7_978647f1cf94.expenses_category' doesn't exist",
+  level: 'error',
+  timestamp: '2025-01-25T18:25:18.741Z'
+}

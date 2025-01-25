@@ -75,7 +75,6 @@ const getFutureExpenses = async (vacationId) => {
 }
 
 const addExpenses = async (vacationId,payment) => {
-  console.log("fffffffff")
   try {
     const sql = budgetQuery.addExpenses(vacationId)
     const parameters = [

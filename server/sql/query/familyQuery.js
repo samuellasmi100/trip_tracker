@@ -3,6 +3,7 @@ const addFamily = (vacationId) =>{
   }
   
   const getFamilies = (vacationId) =>{
+
  return `WITH LatestPayments AS (
     SELECT 
         p.family_id,
@@ -17,6 +18,7 @@ SELECT
     fa.family_name,
     gu.hebrew_first_name,
     gu.hebrew_last_name,
+    gu.english_last_name,
     gu.number_of_guests,
     gu.total_amount,
     lp.remains_to_be_paid,
