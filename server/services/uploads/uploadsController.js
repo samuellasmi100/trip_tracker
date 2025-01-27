@@ -25,7 +25,8 @@ const storage = multer.diskStorage({
     cb(null, folderPath);
   },
   filename: (req, file, cb) => {
-    cb(null, file.originalname);
+    const decodedName = Buffer.from(file.originalname, 'latin1').toString('utf8');
+    cb(null, decodedName);
   },
 });
 
@@ -46,20 +47,19 @@ router.post("/:vacationId", upload.single('file'), async (req, res, next) => {
   }
 });
 
-router.get('/files/:clientName/:vacationId', (req, res) => {
-  const { clientName, vacationId } = req.params;
-  const vacationFolderPath = path.join(uploadsFolder,vacationId, clientName);
-
+router.get('/files/:familyName/:vacationId', (req, res) => {
+  const { familyName, vacationId } = req.params;
+  const vacationFolderPath = path.join(uploadsFolder,vacationId, familyName);
   
   if (!fs.existsSync(vacationFolderPath)) {
-    return res.status(404).json({ message: 'Vacation folder not found.' });
+    return res.json({ message: 'Vacation folder not found.' });
   }
-
   try {
     const files = fs.readdirSync(vacationFolderPath);
 
     if (files.length === 0) {
-      return res.status(404).json({ message: 'No files found in the folder.' });
+   
+      return res.json({ message: 'No files found in the folder.' });
     }
     res.status(200).json({
       message: 'Files retrieved successfully!',
@@ -70,6 +70,20 @@ router.get('/files/:clientName/:vacationId', (req, res) => {
   }
 });
 
+router.delete('/files/:familyName/:vacationId/:file', (req, res) => {
+  const { vacationId, familyName, file } = req.params;
+  const filePath = path.join(uploadsFolder, vacationId, familyName, file);
+
+  if (!fs.existsSync(filePath)) {
+    return res.json({ message: 'File not found' });
+  }
+
+  try {
+    fs.unlinkSync(filePath);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to delete file', error: error.message });
+  }
+});
 
 
 module.exports = router;
