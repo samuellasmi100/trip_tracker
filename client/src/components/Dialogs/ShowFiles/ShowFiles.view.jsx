@@ -11,11 +11,10 @@ import {
   IconButton
 } from "@mui/material";
 import { useStyles } from "./ShowFiles.style";
-import { useSelector, useDispatch } from "react-redux";
-import * as dialogSlice from "../../../store/slice/dialogSlice";
-import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload"
+import {  useDispatch } from "react-redux";
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
+
 const ShowFilesView = (props) => {
   const dispatch = useDispatch();
   const classes = useStyles();
@@ -25,7 +24,8 @@ const ShowFilesView = (props) => {
     handleCloseClicked,
     setFile,
     files,
-    handleDownload
+    handleDownload,
+    handleDelete
   } = props;
   const headers = [" ", "שם קובץ", "הורדה", "מחיקה"]
 
@@ -84,6 +84,7 @@ const ShowFilesView = (props) => {
                         </TableCell>
                         <TableCell
                           className={classes.dataTableCell}
+                          onClick={() => handleDelete(file)}
                           style={{ maxWidth: "1px" }}>
                           <IconButton size={"small"}>
                             <DeleteIcon style={{ color: "red", fontSize: "27px" }} />

@@ -30,7 +30,6 @@ const UploadFile = () => {
     if (uploadedFile) {
       setFile(uploadedFile);
       setFilePreview(URL.createObjectURL(uploadedFile));
-      // setNewFileName(uploadedFile.name.split(".").slice(0, -1).join(".")); 
     }
   };
 

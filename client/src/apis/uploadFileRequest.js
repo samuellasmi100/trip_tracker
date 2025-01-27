@@ -17,4 +17,11 @@ export default {
     });
   },
 
+  deleteFamilyFiles(token,familyName,vacationId,file) {
+    return Api.delete(`/${END_POINT.UPLOADS}/files/${familyName}/${vacationId}/${file}`, {
+      headers: { Authorization: token },
+    });
+  },
+
+
 };

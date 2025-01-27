@@ -5,6 +5,7 @@ import * as notesSlice from "../../../store/slice/notesSlice";
 import * as dialogSlice from "../../../store/slice/dialogSlice";
 import ApiFile from "../../../apis/uploadFileRequest"
 import { END_POINT } from "../../../utils/constants";
+import axios from "axios";
 
 
 
@@ -31,16 +32,32 @@ const ShowFiles = () => {
     const familyName = userForm?.english_last_name?.toLowerCase();
     try {
       const response = await ApiFile.getFamilyFiles(token,familyName,vacationId)
-      setFiles(response.data)
+      if(response.data.message === "No files found in the folder."){
+        setFiles([])
+      }else {
+        setFiles(response.data)
+      }
+    
     } catch (error) {
       console.log(error)
     }
   }
 
+  const handleDelete = async (file) => {
+
+    const lowercaseValue = userForm?.english_last_name?.toLowerCase();
+    try {
+       ApiFile.deleteFamilyFiles(token,lowercaseValue,vacationId,file)
+       dispatch(dialogSlice.resetState())
+    } catch (error) {
+      console.error(`Error deleting file: ${error.message}`);
+    }
+  };
+  
 const handleDownload = async (file) => {
   const lowercaseValue = userForm?.english_last_name?.toLowerCase();
   try {
-    const fileUrl = `${END_POINT.UPLOADS}/${vacationId}/${lowercaseValue}/${file}`; // Update the URL as per your backend setup
+    const fileUrl = `${END_POINT.UPLOADS}/${vacationId}/${lowercaseValue}/${file}`;
     const response = await fetch(fileUrl, {
       method: 'GET',
       headers: {
@@ -76,6 +93,7 @@ const handleDownload = async (file) => {
     setFile={setFile}
     files={files}
     handleDownload={handleDownload}
+    handleDelete={handleDelete}
   />;
 };
 
