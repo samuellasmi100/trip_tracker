@@ -11,10 +11,11 @@ const UploadFile = () => {
   const dispatch = useDispatch();
   const form = useSelector((state) => state.notesSlice.form);
   const userForm = useSelector((state) => state.userSlice.form);
+  const familyName = userForm?.english_last_name?.toLowerCase();
   const token = sessionStorage.getItem("token")
   const [file, setFile] = useState(null);
   const [filePreview, setFilePreview] = useState(null);
-  const [newFileName, setNewFileName] = useState("");
+  const [newFileName, setNewFileName] = useState(familyName + "_");
   const vacationId = useSelector((state) => state.vacationSlice.vacationId);
 
   const handleInputChange = (e) => {
@@ -29,7 +30,7 @@ const UploadFile = () => {
     if (uploadedFile) {
       setFile(uploadedFile);
       setFilePreview(URL.createObjectURL(uploadedFile));
-      setNewFileName(uploadedFile.name.split(".").slice(0, -1).join(".")); // Default name without extension
+      // setNewFileName(uploadedFile.name.split(".").slice(0, -1).join(".")); 
     }
   };
 
