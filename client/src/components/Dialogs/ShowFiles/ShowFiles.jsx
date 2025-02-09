@@ -58,7 +58,7 @@ const handleDownload = async (file) => {
   const lowercaseValue = userForm?.english_last_name?.toLowerCase();
   
   try {
-    const fileUrl = `http://localhost:5000/uploads/${vacationId}/${lowercaseValue}/${file}`
+    const fileUrl = `http://localhost:4000/uploads/${vacationId}/${lowercaseValue}/${file}`
     const response = await fetch(fileUrl, {
       method: 'GET',
       headers: {
