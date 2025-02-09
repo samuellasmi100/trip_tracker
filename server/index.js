@@ -42,6 +42,7 @@ app.use('/uploads', express.static(uploadsPath),uploadsController);
 
 app.use(errorHandler);
 const launchServer = async () => {
+  console.log(process.env.REST_API_PORT)
   app.listen(process.env.REST_API_PORT, () =>
     console.log(`The Main Server is running on ${process.env.REST_API_PORT}`)
   );
