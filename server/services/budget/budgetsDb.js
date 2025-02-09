@@ -97,6 +97,7 @@ const getExpenses = async (vacationId) => {
   try {
     const sql = budgetQuery.getExpenses(vacationId)
     const response = await connection.execute(sql)
+    console.log(response)
     return response
   } catch (error) { 
     logger.error(
