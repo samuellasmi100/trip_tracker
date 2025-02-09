@@ -61,7 +61,7 @@ function PaymentView({ submit, handleInputChange, handleCloseClicked,filteredPay
               <TableCell className={classes.dataTableCell}>
               <CheckCircleIcon
                   style={{
-                    color: payment.paid === 1
+                    color: payment.is_paid === 1
                       ? "green"
                         : "red",
                     height: "25px",

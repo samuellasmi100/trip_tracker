@@ -82,7 +82,7 @@ try {
     acc[`paymentDate_${index + 1}`] = payment.paymentDate;
     acc[`formOfPayment_${index + 1}`] = payment.formOfPayment;
     acc[`paymentCurrency_${index + 1}`] = payment.paymentCurrency;
-    acc[`isPaid_${index + 1}`] = payment.paid;
+    acc[`isPaid_${index + 1}`] = payment.is_paid;
     acc[`id_${index + 1}`] = payment.id;
 
   
