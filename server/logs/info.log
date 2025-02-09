@@ -405,3 +405,13 @@
   level: 'error',
   timestamp: '2025-02-09T21:28:33.264Z'
 }
+{
+  message: "Error: Function:getPaymentsDetails :, Unknown column 'p.is_paid' in 'field list'",
+  level: 'error',
+  timestamp: '2025-02-09T22:00:20.729Z'
+}
+{
+  message: "Error: Function:getPaymentsDetails :, Unknown column 'p.is_paid' in 'field list'",
+  level: 'error',
+  timestamp: '2025-02-09T22:00:29.439Z'
+}
