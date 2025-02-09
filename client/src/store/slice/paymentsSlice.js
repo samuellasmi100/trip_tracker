@@ -26,14 +26,7 @@ export const paymentsSlice = createSlice({
       state.userPayments = action.payload;
     },
     resetForm: (state, action) => {
-      state.form = {
-        amount:"",
-        amountReceived:"",
-        formOfPayment:"",
-        paymentCurrency:"",
-        paymentDate:"",
-        remainsToBePaid:""
-      };
+      state.form = [];
     },
   },
 });

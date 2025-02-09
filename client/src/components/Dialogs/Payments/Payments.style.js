@@ -11,7 +11,7 @@ export const useStyles = makeStyles((theme) => ({
             position: "relative",
             color: "#FFFFFF",
             fontSize: 14,
-            width: "145px",
+            width: "100px",
             padding: "5px 18px",
             height: "24px",
         },
@@ -66,7 +66,7 @@ export const useStyles = makeStyles((theme) => ({
   
     selectOutline: {
         height: "35px",
-         width:"180px",
+         width:"90px",
         "&.MuiOutlinedInput-root": {
           color: "#ffffff !important",
           "& .MuiOutlinedInput-notchedOutline": {
@@ -76,8 +76,8 @@ export const useStyles = makeStyles((theme) => ({
         "& .MuiSvgIcon-root": {
           color: "#54a9ff",
         },
-      },
-      selectedMenuItem: {
+    },
+    selectedMenuItem: {
         backgroundColor: "#2D2D2D !important",
         
         "& Mui=Menu-list" :{

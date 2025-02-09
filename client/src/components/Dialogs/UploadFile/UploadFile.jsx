@@ -51,7 +51,7 @@ const UploadFile = () => {
     const formData = new FormData();
     formData.append('file', renamedFile);
     try {
-      ApiFile.addFile(token,vacationId,formData)
+      await ApiFile.addFile(token,vacationId,formData)
 
       dispatch(
         snackBarSlice.setSnackBar({
@@ -65,7 +65,7 @@ const UploadFile = () => {
       console.error('Error uploading file:', error);
     }
   };
-  ;
+  
   const handleCloseClicked = () => {
      dispatch(dialogSlice.resetState())
   }

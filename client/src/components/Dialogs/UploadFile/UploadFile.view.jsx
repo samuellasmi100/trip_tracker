@@ -50,7 +50,7 @@ const UploadFileView = (props) => {
             </Grid>
             <input
               type="file"
-              accept="image/*,.pdf"
+              accept=".pdf, .jpeg, .jpg"
               onChange={handleFileChange}
             />
             {filePreview && (

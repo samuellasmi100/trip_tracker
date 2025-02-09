@@ -56,8 +56,9 @@ const ShowFiles = () => {
   
 const handleDownload = async (file) => {
   const lowercaseValue = userForm?.english_last_name?.toLowerCase();
+  
   try {
-    const fileUrl = `${END_POINT.UPLOADS}/${vacationId}/${lowercaseValue}/${file}`;
+    const fileUrl = `http://localhost:5000/uploads/${vacationId}/${lowercaseValue}/${file}`
     const response = await fetch(fileUrl, {
       method: 'GET',
       headers: {
@@ -66,6 +67,11 @@ const handleDownload = async (file) => {
     });
     if (!response.ok) {
       throw new Error(`Failed to fetch the file: ${response.statusText}`);
+    }
+
+    const contentType = response.headers.get('Content-Type');
+    if (!contentType || (!contentType.includes('application/pdf') && !contentType.includes('image/jpeg'))) {
+      throw new Error(`Expected a PDF or JPEG file, but received: ${contentType}`);
     }
 
     const blob = await response.blob();

@@ -6,6 +6,7 @@ import FinancialForecast from "./FinancialForecast/FinancialForecast"
 import * as budgetSlice from "../../../../store/slice/budgetSlice"
 import { useDispatch, useSelector } from "react-redux";
 import MainDialog from "./Dialogs/MainDialog/MainDialog"
+import Overview from "./Overview/Overview"
 
 const Budgets = () => {
 
@@ -13,8 +14,8 @@ const Budgets = () => {
   const isExpense = useSelector((state) => state.budgetSlice.isExpense)
   const dialogOpen = useSelector((state) => state.budgetSlice.open)
   const dialogType = useSelector((state) => state.budgetSlice.type)
-
-
+  const sumExpectedExpensesAndIncome = useSelector((state => state.budgetSlice.sumExpectedExpensesAndIncome))
+   const sumExpensesAndIncome = useSelector((state) => state.budgetSlice.sumExpensesAndIncome)
   const handleToggle = (event) => {
     dispatch(budgetSlice.updateIncomeOrExpense(event.target.checked))
   };
@@ -61,9 +62,21 @@ const Budgets = () => {
           label={isExpense ? <Typography style={{ color: "white" }}>הוצאות</Typography> : <Typography style={{ color: "white" }}>הכנסות</Typography>}
         />
       </Grid>
-      <Grid style={{ display: "flex", justifyContent: "center" }}>
+      <Grid>
+      <Grid item container style={{marginTop:"-10px",marginBottom:"10px",gap:'500px' }}>
+        <Grid style={{height:"40px",width:"200px",border:"1px solid #494C55",borderRadius:"4px",marginRight:"400px"}}>
+          <Typography style={{color:"white",textAlign:"center",padding:"6px"}}>סכום כולל : {sumExpectedExpensesAndIncome}  </Typography>
+        </Grid>
+        <Grid style={{height:"40px",width:"200px",border:"1px solid #494C55",borderRadius:"4px"}}>
+          <Typography style={{color:"white",textAlign:"center",padding:"6px"}}>סכום כולל : {sumExpensesAndIncome} </Typography>
+        </Grid>
+      </Grid>
+        <Grid style={{ display: "flex", justifyContent: "center" ,marginRight:"40px"}}>
         <FinancialForecast handleDialogTypeOpen={handleDialogTypeOpen} />
         <Expense handleDialogTypeOpen={handleDialogTypeOpen} />
+        <Overview handleDialogTypeOpen={handleDialogTypeOpen} />
+        </Grid>
+ 
       </Grid>
 
 

@@ -20,20 +20,16 @@ const FinancialForecast = ({ handleDialogTypeOpen }) => {
   
 
   const handleSelectInputChange = async (e) => {
-    clearModalForms();
-    dispatch(userSlice.updateFamiliesList([]));
-    dispatch(userSlice.updateGuest([]));
-    const getVacationId = vacationList?.find((key) => {
-      return key.name === e.target.value;
-    });
-    dispatch(vacationSlice.updateChosenVacation(getVacationId.vacation_id));
-    dispatch(vacationSlice.updateVacationName(getVacationId.name));
-    sessionStorage.setItem("vacId", getVacationId.vacation_id);
-    sessionStorage.setItem("vacName", getVacationId.name);
-    try {
-    } catch (error) {
-      console.log(error);
-    }
+      clearModalForms();
+      dispatch(userSlice.updateFamiliesList([]));
+      dispatch(userSlice.updateGuest([]));
+      const getVacationId = vacationList?.find((key) => {
+        return key.name === e.target.value;
+      });
+      dispatch(vacationSlice.updateChosenVacation(getVacationId.vacation_id));
+      dispatch(vacationSlice.updateVacationName(getVacationId.name));
+      sessionStorage.setItem("vacId", getVacationId.vacation_id);
+      sessionStorage.setItem("vacName", getVacationId.name);
   };
 
   const clearModalForms = () => {
@@ -45,15 +41,14 @@ const FinancialForecast = ({ handleDialogTypeOpen }) => {
   };
 
   const getFutureExpenses = async () => {
-    if(isExpense){
-      const response = await ApiBudget.getFutureExpenses(token, vacationId);
-      dispatch(budgetSlice.updateExpectedExpensesAndIncome(response.data));
-    }else {
-      // const response = await ApiBudget.getFutureIncomes(token, vacationId);
-      dispatch(budgetSlice.updateExpectedExpensesAndIncome([]));
-    }
- 
     try {
+      if(isExpense){
+        const response = await ApiBudget.getFutureExpenses(token, vacationId);
+        dispatch(budgetSlice.updateExpectedExpensesAndIncome(response.data));
+      }else {
+        // const response = await ApiBudget.getFutureIncomes(token, vacationId);
+        dispatch(budgetSlice.updateExpectedExpensesAndIncome([]));
+      }
     } catch (error) {
       console.log(error);
     }

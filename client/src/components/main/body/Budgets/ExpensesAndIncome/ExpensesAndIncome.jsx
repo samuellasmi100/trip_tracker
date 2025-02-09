@@ -10,15 +10,14 @@ const ExpensesAndIncome = ({ handleDialogTypeOpen }) => {
   const vacationId = useSelector((state) => state.vacationSlice.vacationId);
   const isExpense = useSelector((state) => state.budgetSlice.isExpense)
 
-  const getExpenses = async () => {
-    if(isExpense){
-    const response = await ApiBudgets.getExpenses(token, vacationId);
-    dispatch(budgetSlice.updateExpensesAndIncome(response.data));
-    }else {
-    dispatch(budgetSlice.updateExpensesAndIncome([]));
-
-    }
+  const getExpenses = async () => { 
     try {
+      if(isExpense){
+        const response = await ApiBudgets.getExpenses(token, vacationId);
+        dispatch(budgetSlice.updateExpensesAndIncome(response.data));
+        }else {
+        dispatch(budgetSlice.updateExpensesAndIncome([]));
+        }
     } catch (error) {
       console.log(error);
     }

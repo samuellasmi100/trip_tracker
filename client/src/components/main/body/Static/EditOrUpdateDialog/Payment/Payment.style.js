@@ -96,5 +96,31 @@ export const useStyles = makeStyles((theme) => ({
         borderRadius: "4px",
         opacity: 1,
     },
+    dataTableBody: {
+        "& tr:nth-of-type(odd)": {
+          backgroundColor: "#222222",
+        },
+        "& tr:nth-of-type(even)": {
+          backgroundColor: "#2d2d2d",
+        },
+    },
+     dataTableCell: {
+        fontSize: "14px !important",
+        color: "#ffffff !important",
+        textAlign: "center !important",
+        borderBottom: "none !important",
+        whiteSpace: "nowrap"
+      },
+     headerTableRow: {
+        fontSize: "14px !important",
+        color: "#5a5c62 !important",
+        textAlign: "center !important",
+        borderBottom: "none!important",
+        fontWeight: "600 !important",
+        width: "10px",
+        "&.MuiTableCell-stickyHeader": {
+          backgroundColor: "#2d2d2d !important",
+        },
+     },
   
 }));

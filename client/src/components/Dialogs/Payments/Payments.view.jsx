@@ -20,6 +20,7 @@ const PaymentsView = (props) => {
   const formOfPayment = ["מזומן", "העברה בנקאית", "כרטיס אשראי", "המחאות"]
   const paymentCurrency = ["שקל", "דולר", "יורו"]
   const form = useSelector((state) => state.paymentsSlice.form)
+  const userForm = useSelector((state) => state.userSlice.form)
   const classes = useStyles();
 
   const {
@@ -40,121 +41,106 @@ const PaymentsView = (props) => {
   };
   return (
     <>
-      <Grid container style={{ minHeight: "350px", padding: "20px" }} >
-        <Grid item xs={6}>
-          <Grid container spacing={2} justifyContent="center">
-            <Grid item>
-              <InputLabel className={classes.inputLabelStyle}>
-                סכום עסקה
-              </InputLabel>
-              <TextField
-                name="amount"
-                value={form.amount}
-                className={classes.textField}
-                onChange={handleInputChange}
-                inputRef={(el) => (inputRefs.current[11] = el)}
-                onKeyDown={(e) => handleKeyDown(e, 11)}
-              />
-            </Grid>
-            <Grid item>
-              <InputLabel className={classes.inputLabelStyle}>
-                סכום תקבול
-              </InputLabel>
-              <TextField
-                name="amountReceived"
-                value={form.amountReceived}
-                className={classes.textField}
-                onChange={handleInputChange}
-                inputRef={(el) => (inputRefs.current[12] = el)}
-                onKeyDown={(e) => handleKeyDown(e, 12)}
-              />
-            </Grid>
-            <Grid item>
-              <InputLabel className={classes.inputLabelStyle}>
-                תאריך תשלום
-              </InputLabel>
-              <TextField
-                type="date"
-                name="paymentDate"
-                value={form.paymentDate}
-                className={classes.textField}
-                onChange={handleInputChange}
-                inputRef={(el) => (inputRefs.current[13] = el)}
-                onKeyDown={(e) => handleKeyDown(e, 13)}
-              />
-            </Grid>
-          </Grid>
-        </Grid>
-
-        <Grid item xs={5}>
-          <Grid container spacing={2} justifyContent="center">
-            <Grid item>
-              <InputLabel className={classes.inputLabelStyle}>צורת תשלום</InputLabel>
-              <Select
-                name="formOfPayment"
-                value={form.formOfPayment}
-                onChange={handleInputChange}
-                inputRef={(el) => (inputRefs.current[14] = el)}
-                onKeyDown={(e) => handleKeyDown(e, 14)}
-                input={<OutlinedInput className={classes.selectOutline} />}
-                MenuProps={{
-                  PaperProps: {
-                    sx: {
-                      color: "#ffffff !important",
-                      bgcolor: "#222222",
+      <Grid container style={{ minHeight: "350px", padding: "20px"}} >
+        <Grid item xs={12} style={{maxHeight:"300px",overflow:"auto",overflowX:"hidden"}}>
+          {[...Array(Number(userForm.number_of_payments))].map((_, index) => (
+            <Grid container spacing={1} key={index}>
+              <Grid item style={{marginTop: "18px" }}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            sx={{
+                              color: "#686B76",
+                              "&.Mui-checked": {
+                                color: "#54A9FF",
+                              },
+                            }}
+                            name={`isPaid_${index + 1}`}
+                            checked={form[`isPaid_${index + 1}`] || false} 
+                            className={classes.checkbox}
+                            onChange={handleInputChange}
+                          />
+                        }
+                      />
+              </Grid>
+              <Grid item>
+                <InputLabel className={classes.inputLabelStyle}>
+                  {"תשלום" + " " + (index + 1)}
+                </InputLabel>
+                <TextField
+                  name={`amount_${index + 1}`}
+                  value={form[`amountReceived_${index + 1}`]}
+                  className={classes.textField}
+                  onChange={handleInputChange}
+                />
+              </Grid>
+              <Grid item>
+                <InputLabel className={classes.inputLabelStyle}>
+                  תאריך תשלום
+                </InputLabel>
+                <TextField
+                  type="date"
+                  name={`paymentDate_${index + 1}`}  
+                  value={form[`paymentDate_${index + 1}`]}  
+                  className={classes.textField}
+                  onChange={handleInputChange}
+                />
+              </Grid>
+              <Grid item>
+                <InputLabel className={classes.inputLabelStyle}>צורת תשלום</InputLabel>
+                <Select
+                   name={`formOfPayment_${index + 1}`}
+                   value={form[`formOfPayment_${index + 1}`] || ''}
+                   onChange={handleInputChange}
+                  input={<OutlinedInput className={classes.selectOutline} />}
+                  MenuProps={{
+                    PaperProps: {
+                      sx: {
+                        color: "#ffffff !important",
+                        bgcolor: "#222222",
+                      },
                     },
-                  },
-                }}
-              >
-                {formOfPayment?.map((type) => (
-                  <MenuItem key={type} value={type} className={classes.selectedMenuItem}>
-                    {type}
-                  </MenuItem>
-                ))}
-              </Select>
-            </Grid>
-
-            <Grid item>
-              <InputLabel className={classes.inputLabelStyle}>נותר לתשלום</InputLabel>
-              <TextField
-                name="remainsToBePaid"
-                value={form.remainsToBePaid}
-                className={classes.textField}
-                onChange={handleInputChange}
-                inputRef={(el) => (inputRefs.current[15] = el)}
-                onKeyDown={(e) => handleKeyDown(e, 15)}
-              />
-            </Grid>
-
-            <Grid item>
-              <InputLabel className={classes.inputLabelStyle}>מטבע תשלום</InputLabel>
-              <Select
-                name="paymentCurrency"
-                value={form.paymentCurrency}
-                onChange={handleInputChange}
-                inputRef={(el) => (inputRefs.current[16] = el)}
-                onKeyDown={(e) => handleKeyDown(e, 16)}
-                input={<OutlinedInput className={classes.selectOutline} />}
-                MenuProps={{
-                  PaperProps: {
-                    sx: {
-                      color: "#ffffff !important",
-                      bgcolor: "#222222",
+                  }}
+                >
+                  {formOfPayment?.map((type) => (
+                    <MenuItem key={type} value={type} className={classes.selectedMenuItem}>
+                      {type}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Grid>
+              <Grid item>
+                <InputLabel className={classes.inputLabelStyle}>מטבע תשלום</InputLabel>
+                <Select
+                   name={`paymentCurrency_${index + 1}`}
+                   value={form[`paymentCurrency_${index + 1}`] || ""}
+                  onChange={handleInputChange}
+                  input={<OutlinedInput className={classes.selectOutline} />}
+                  MenuProps={{
+                    PaperProps: {
+                      sx: {
+                        color: "#ffffff !important",
+                        bgcolor: "#222222",
+                      },
                     },
-                  },
-                }}
-              >
-                {paymentCurrency?.map((type) => (
-                  <MenuItem key={type} value={type} className={classes.selectedMenuItem}>
-                    {type}
-                  </MenuItem>
-                ))}
-              </Select>
+                  }}
+                >
+                  {paymentCurrency?.map((type) => (
+                    <MenuItem key={type} value={type} className={classes.selectedMenuItem}>
+                      {type}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Grid>
+
             </Grid>
-          </Grid>
+          ))}
         </Grid>
-        <Grid>
-          <Grid style={{ marginRight: "20px" }}>
+      </Grid>
+      <Grid>
+
+      <Grid style={{marginBottom:"30px"}}>
+      <Grid>
             <FormControlLabel
               control={
                 <Checkbox
@@ -176,9 +162,9 @@ const PaymentsView = (props) => {
                 </Typography>
               }
             />
-          </Grid>
-          <Grid container style={{ marginRight: "42px",marginTop:"5px", alignItems: "center" }} spacing={1}>
-            <Grid item>
+       </Grid>
+        <Grid container style={{marginTop:"5px" }}>
+            <Grid item style={{marginRight:"25px"}}>
               <DescriptionIcon style={{ color: "rgb(255, 158, 84)" }} />
             </Grid>
             <Grid item>
@@ -187,13 +173,12 @@ const PaymentsView = (props) => {
               </Typography>
             </Grid>
           </Grid>
-        </Grid>
-      </Grid>
+     </Grid>
       <Grid
         item
         xs={12}
         container
-        style={{ marginTop: "30px" }}
+        style={{ }}
         justifyContent="space-around">
         <Grid item>
           <Button
@@ -208,6 +193,8 @@ const PaymentsView = (props) => {
           </Button>
         </Grid>
       </Grid>
+      </Grid>
+      
     </>
   );
 };

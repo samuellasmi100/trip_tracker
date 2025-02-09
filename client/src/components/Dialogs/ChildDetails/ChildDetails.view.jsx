@@ -93,7 +93,7 @@ const ChildDetailsView = ({ userData }) => {
         }
     }
     return (
-        <Grid container style={{ display: "flex", flexDirection: "column", paddingRight: '25px' }}>
+        <Grid container style={{ display: "flex", flexDirection: "column", paddingRight: '25px',maxHeight: "300px" }}>
             <Grid item xs={6}>
                 <Grid>
                     <Typography style={{ fontSize: "25px" }}>פרטי אורח</Typography>

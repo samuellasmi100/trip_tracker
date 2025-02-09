@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import OverviewView from "./Overview.style";
+import OverviewView from "./Overview.view";
 
 
 

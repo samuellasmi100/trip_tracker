@@ -15,38 +15,48 @@ const token = sessionStorage.getItem("token")
 const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
 
 const handleInputChange = (e) => {
-  const { name, value,checked } = e.target;
-  if(name !== "amount" && name !== "remainsToBePaid"){
-    if(name === "invoice"){
-      let value = checked
-      dispatch(paymentsSlice.updateFormField({ field: "invoice", value: value}));
-    }else {
-      if(name === "paymentDate"){
-        const selectedDate = new Date(value);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-    
-        if (selectedDate < today) {
-          dispatch(
-            snackBarSlice.setSnackBar({
-              type: "warn",
-              message: "תאריך התשלום שבחרת הוא תאריך שעבר",
-              timeout: 3000,
-            })
-          )
-        }
+  const { name, value, checked,type  } = e.target;
+  const paymentIndex = name.split('_')[1]; 
+  if (type === "checkbox") {
+    dispatch(paymentsSlice.updateFormField({ field: name, value: checked }));
+  } else {
+    if (name.startsWith("amount_")) {
+      dispatch(paymentsSlice.updateFormField({ field: `amountReceived_${paymentIndex}`, value }));
+    } else if (name.startsWith("paymentDate_")) {
+      const selectedDate = new Date(value);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (selectedDate < today) {
+        dispatch(
+          snackBarSlice.setSnackBar({
+            type: "warn",
+            message: "תאריך התשלום שבחרת הוא תאריך שעבר",
+            timeout: 3000,
+          })
+        );
       }
-      dispatch(paymentsSlice.updateFormField({ field: name, value }));
+      dispatch(paymentsSlice.updateFormField({ field: `paymentDate_${paymentIndex}`, value }));
+    } else if (name.startsWith("formOfPayment_")) {
+      dispatch(paymentsSlice.updateFormField({ field: `formOfPayment_${paymentIndex}`, value }));
+    } else if (name.startsWith("paymentCurrency_")) {
+      dispatch(paymentsSlice.updateFormField({ field: `paymentCurrency_${paymentIndex}`, value }));
+    } else {   
+       if (name === "invoice") {
+        dispatch(paymentsSlice.updateFormField({ field: "invoice", value: checked }));
+      } else {
+        dispatch(paymentsSlice.updateFormField({ field: name, value }));
+      }
     }
   }
-    
+  
   dispatch(paymentsSlice.updateFormField({ field: "familyId", value: userForm.family_id }));
   dispatch(paymentsSlice.updateFormField({ field: "userId", value: userForm.user_id }));
+  dispatch(paymentsSlice.updateFormField({ field: "number_of_payments", value: userForm.number_of_payments }));
 };
+
 
 const submit = async () => {
   try {
-
       await ApiPayments.addPayments(token,form,vacationId)
       dispatch(
         snackBarSlice.setSnackBar({
@@ -67,18 +77,24 @@ const getPayments = async () => {
 try {
   const familyId = userForm.family_id;
   let response = await ApiPayments.getPayments(token,familyId,vacationId)
-  if(response.data.length > 0){
-    dispatch(paymentsSlice.updateFormField({ field: "remainsToBePaid", value: response.data[0].remainsToBePaid }));
-    dispatch(paymentsSlice.updateFormField({ field: "invoice", value: response?.data[0].invoice }));
-  }else {
-    dispatch(paymentsSlice.updateFormField({ field: "invoice", value: false}));
-    dispatch(paymentsSlice.updateFormField({ field: "remainsToBePaid", value: userForm.total_amount }));
-  }
-  dispatch(paymentsSlice.updateFormField({ field: "amount", value: userForm.total_amount }));
+  const renameArr = response?.data?.reduce((acc, payment, index) => {
+    acc[`amountReceived_${index + 1}`] = payment.amountReceived;
+    acc[`paymentDate_${index + 1}`] = payment.paymentDate;
+    acc[`formOfPayment_${index + 1}`] = payment.formOfPayment;
+    acc[`paymentCurrency_${index + 1}`] = payment.paymentCurrency;
+    acc[`isPaid_${index + 1}`] = payment.paid;
+    acc[`id_${index + 1}`] = payment.id;
+
+  
+    return acc;
+  }, {});
+  
+  dispatch(paymentsSlice.updateForm(renameArr));
 } catch (error) {
   console.log(error)
 }
 }
+
 const handleCloseClicked = () => {
   dispatch(paymentsSlice.resetForm())
   dispatch(dialogSlice.resetState())

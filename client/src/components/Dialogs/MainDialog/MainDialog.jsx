@@ -43,8 +43,6 @@ const MainDialog = (props) => {
       }else {
         return <ShowFiles />
       }
-
-   
     } else{
        if (activeButton === "פרטים אישיים") {
         return <Guest />
@@ -67,7 +65,7 @@ const MainDialog = (props) => {
 
   const handleButtonHeader = () => {
     if(dialogType === "childDetails" || dialogType === "parentDetails" || dialogType === "addChild" || dialogType === "addParent"){
-    }if(dialogType === "uploadFile"){
+    }else if(dialogType === "uploadFile"){
       return ["העלה קובץ","הצג קבצים שהועלו",]
       .map((label) => (
         <Button
@@ -77,8 +75,7 @@ const MainDialog = (props) => {
           {label}
         </Button>
        ))
-    }
-    else {
+    }else {
         if(form.user_type === "client"){
           return (Number(form.flights) === 1
           ?  ["פרטים אישיים","פרטי נסיעה", "בחירת חדרים", "טיסות", "הערות"] 

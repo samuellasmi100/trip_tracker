@@ -1,14 +1,82 @@
-import { Grid, TextField, InputLabel, Button } from "@mui/material";
+import {
+  Grid,
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material";
 import { useStyles } from "./Payment.style";
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
-function PaymentView({ submit, handleInputChange, handleCloseClicked }) {
+
+function PaymentView({ submit, handleInputChange, handleCloseClicked,filteredPayments }) {
   const classes = useStyles();
   const userPayments = useSelector((state) => state.paymentsSlice.userPayments);
+  const headers = [
+    "סכום",
+    "צורת תשלום",
+    "מטבע תשלום",
+    "שולם"
+  ];
   return (
     <Grid container>
-      <Grid
+<TableContainer>
+  <Table stickyHeader style={{ width: "inherit" }} size="small">
+    <TableHead>
+      <TableRow>
+        {headers.map((header, index) => {
+          return (
+            <TableCell
+              key={index}
+              className={classes.headerTableRow}
+              style={{ textAlign: "center" }}
+            >
+              {header}
+            </TableCell>
+          );
+        })}
+      </TableRow>
+    </TableHead>
+    <TableBody className={classes.dataTableBody}>
+      {userPayments?.map((payment, index) => {
+        return (
+          <TableRow key={index}>
+
+            <>
+          
+              <TableCell className={classes.dataTableCell}>
+                {payment?.amountReceived}
+              </TableCell>
+              <TableCell className={classes.dataTableCell}>
+                {payment?.formOfPayment}
+              </TableCell>
+              <TableCell className={classes.dataTableCell}>
+              {payment?.paymentCurrency}
+              </TableCell>
+              <TableCell className={classes.dataTableCell}>
+              <CheckCircleIcon
+                  style={{
+                    color: payment.paid === 1
+                      ? "green"
+                        : "red",
+                    height: "25px",
+                    width: "25px",
+                  }}
+                />
+              </TableCell>
+            </>
+          </TableRow>
+        );
+      })}
+    </TableBody>
+  </Table>
+</TableContainer>
+      {/* <Grid
         item
         container
         xs={12}
@@ -99,7 +167,7 @@ function PaymentView({ submit, handleInputChange, handleCloseClicked }) {
             סגור
           </Button>
         </Grid>
-      </Grid>
+      </Grid> */}
     </Grid>
   );
 }

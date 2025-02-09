@@ -25,7 +25,6 @@ function PaymentsView({
   handleExportToExcel,
   handleEditClick
 }) {
-
   const classes = useStyles();
 
   return (
@@ -89,11 +88,12 @@ function PaymentsView({
                       {payment?.default_amount}
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
-                      {payment?.remainsToBePaid === null ? payment?.default_amount : payment?.remainsToBePaid}
+                    {payment?.number_of_payments}
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
-                      {payment?.invoice === null || payment?.invoice === 0 ? "לא" : "כן"}
+                    {payment?.unpaid}
                     </TableCell>
+                   
                     <TableCell
                       className={classes.dataTableCell}
                       style={{ maxWidth: "1px" }}

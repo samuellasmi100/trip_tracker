@@ -21,6 +21,7 @@ import { useStyles } from "./FinancialForecast.style"
 import { useSelector } from "react-redux";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import SearchIcon from "@material-ui/icons/Search";
+import { ReactComponent as EditIcon } from "../../../../../assets/icons/edit.svg";
 
 function FinancialForecastView({handleDialogTypeOpen,handleSelectInputChange}) {
 const classes = useStyles();
@@ -29,14 +30,14 @@ const vacationName = useSelector((state) => state.vacationSlice.vacationName)
 const isExpense = useSelector((state) => state.budgetSlice.isExpense)
 const expectedExpensesAndIncome = useSelector((state) => state.budgetSlice.expectedExpensesAndIncome)
 
-const headers = [" ","קטגוריה","תת קטגוריה","מטבע תשלום","צפי הוצאה בשקלים","צפי הוצאה במטבע זר","תאריך תשלום"]
+const headers = [" ","קטגוריה","תת קטגוריה","מטבע תשלום","צפי הוצאה בשקלים","צפי הוצאה במטבע זר","תאריך תשלום","ערוך"]
 
   return (
       <Grid
          container
          style={{
            background: "#2d2d2d",
-           width: "45vw",
+           width: "40vw",
            border: "1px solid rgb(61, 63, 71)",
            marginLeft: "10px",
          }}
@@ -147,6 +148,24 @@ const headers = [" ","קטגוריה","תת קטגוריה","מטבע תשלום
                     <TableCell className={classes.dataTableCell}>{key.expenditure_ils}</TableCell>
                     <TableCell className={classes.dataTableCell}>{key.expenditure}</TableCell>
                     <TableCell className={classes.dataTableCell}>{key.payment_date}</TableCell>
+                    <TableCell
+                    className={classes.dataTableCell}
+                    style={{ maxWidth: "1px" }}
+                  >
+                    <IconButton
+                      size={"small"}
+                      // onClick={() =>
+                      //   handleDialogTypeOpen(
+                      //     user.is_main_user
+                      //       ? "editParent"
+                      //       : "editChild",
+                      //     user
+                      //   )
+                      // }
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  </TableCell>
                   </TableRow>
                 );
               })}

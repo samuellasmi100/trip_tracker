@@ -15,17 +15,16 @@ export const budgetSlice = createSlice({
     categories: [],
     subCategories: [],
     expensesAndIncome:[],
-    expectedExpensesAndIncome:[]
+    expectedExpensesAndIncome:[],
+    sumExpensesAndIncome:"",
+    sumExpectedExpensesAndIncome:""
   },
   reducers: {
     updateFormField: (state, action) => {
       const { index, field, value } = action.payload;
-    
       if (index !== undefined && state.form.payments && state.form.payments[index]) {
-        // Update a specific field in a payment object
         state.form.payments[index][field] = value;
       } else {
-        // Update top-level fields like `numberOfPayments`
         state.form[field] = value;
       }
     },
@@ -33,13 +32,21 @@ export const budgetSlice = createSlice({
       state.form = action.payload;
     },
     updateExpensesAndIncome: (state, action) => {
+
       state.expensesAndIncome = action.payload;
+      const totalExpense = action.payload
+    .filter(item => item.is_paid !== 0) 
+    .reduce((sum, item) => sum + parseFloat(item.expenditure_ils), 0);
+    state.sumExpensesAndIncome = totalExpense
     },
     updateExpectedExpensesAndIncome: (state, action) => {
+      const totalExpenditureILS = action.payload.reduce((sum, item) => sum + parseFloat(item.expenditure_ils), 0);
       state.expectedExpensesAndIncome = action.payload;
+      state.sumExpectedExpensesAndIncome = totalExpenditureILS
     },
     resetForm: (state, action) => {
       state.form = {};
+      state.open = false
     },
     updateCategories: (state, action) => {
       state.categories = action.payload;
