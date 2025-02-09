@@ -83,6 +83,7 @@ CREATE TABLE guest (
   date_chosen VARCHAR(45) NULL DEFAULT NULL,
   age VARCHAR(45) NULL DEFAULT NULL,
   birth_date VARCHAR(45) NULL DEFAULT NULL,
+  number_of_payments VARCHAR(45) NULL DEFAULT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=83 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 `;
@@ -106,12 +107,15 @@ const createPaymentsTableQuery = `
    payment_date varchar(45) NOT NULL,
    amount varchar(45) NOT NULL,
    form_of_payment varchar(45) NOT NULL,
-   remains_to_be_paid varchar(45) NOT NULL,
+   remains_to_be_paid varchar(45) DEFAULT NULL,
    payment_currency varchar(45) NOT NULL,
    amount_received varchar(45) DEFAULT NULL,
    family_id varchar(45) DEFAULT NULL,
    created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
    user_id varchar(45) DEFAULT NULL,
+   invoice tinyint DEFAULT '0',
+   is_paid tinyint DEFAULT '0',
+   updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP
    PRIMARY KEY (id)
  ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 `;
@@ -203,6 +207,7 @@ CREATE TABLE expenses (
   expenses_sub_category_id varchar(45) DEFAULT NULL,
   payment_date varchar(45) DEFAULT NULL,
   expenditure_ils varchar(45) DEFAULT NULL,
+  is_paid tinyint DEFAULT '0',
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 `;

@@ -14,6 +14,7 @@ const getMainGuests = async (vacationId) => {
     );
   }
 }
+
 const getAllGuests = async (vacationId) => {
 
     try {
@@ -39,6 +40,7 @@ const getFlightsDetails = async (vacationId) => {
       );
     }
   }
+
   const getVacationDetails = async (vacationId) => {
     try {
       const sql = staticQuery.getVacationDetails(vacationId)

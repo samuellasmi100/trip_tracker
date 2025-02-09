@@ -30,34 +30,45 @@ const getHistoryPayments = async (id,vacationId) => {
   }
 }
 
-const addPayments = async (paymentDetails,vacationId) => {
-  const remainsToBePaid = Number(paymentDetails.remainsToBePaid)
-  const amountReceived = Number(paymentDetails.amountReceived)
-  const result = Number(remainsToBePaid) - Number(amountReceived)
-
+const addPayments = async (paymentDetails) => {
   try {
-    const sql = paymentsQuery.addPayments(vacationId)
+    const sql = paymentsQuery.addPayments(paymentDetails.vacationId)
     const parameters = [
       paymentDetails.paymentDate,
       paymentDetails.amount,
       paymentDetails.formOfPayment,
-      result,
       paymentDetails.paymentCurrency,
       paymentDetails.amountReceived,
       paymentDetails.familyId,
       paymentDetails.userId,
       paymentDetails.invoice,
     ]
-    if(paymentDetails.remainsToBePaid === "0" || paymentDetails.amountReceived === ""){
-      const sql = paymentsQuery.updatePayments(vacationId)
-      const parameters = [paymentDetails.invoice,paymentDetails.familyId,]
-      await connection.executeWithParameters(sql,parameters)
-    }else {
      await connection.executeWithParameters(sql,parameters)
-    }
+    
   } catch (error) { 
     logger.error(
       `Error: Function:addPayments :, ${error.sqlMessage}`,
+    );
+  }
+}
+
+const updatePayments = async (paymentDetails) => {
+  try {
+    const sql = paymentsQuery.updatePayments(paymentDetails.vacationId)
+    const parameters = [
+      paymentDetails.paymentDate,
+      paymentDetails.formOfPayment,
+      paymentDetails.paymentCurrency,
+      paymentDetails.amountReceived,
+      paymentDetails.isPaid,
+      paymentDetails.familyId,
+      paymentDetails.id,
+    ]
+    await connection.executeWithParameters(sql,parameters)
+    
+  } catch (error) { 
+    logger.error(
+      `Error: Function:updatePayments :, ${error.sqlMessage}`,
     );
   }
 }
@@ -68,5 +79,6 @@ const addPayments = async (paymentDetails,vacationId) => {
 module.exports = {
   addPayments,
   getPayments,
-  getHistoryPayments
+  getHistoryPayments,
+  updatePayments
 }

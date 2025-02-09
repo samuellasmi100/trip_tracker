@@ -220,3 +220,188 @@
   level: 'error',
   timestamp: '2025-01-25T18:25:18.741Z'
 }
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-09T09:45:48.028Z'
+}
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-09T09:45:48.033Z'
+}
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-09T09:45:59.822Z'
+}
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-09T09:45:59.827Z'
+}
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-09T09:46:17.008Z'
+}
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-09T09:46:17.025Z'
+}
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-09T11:06:25.654Z'
+}
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-09T11:06:25.659Z'
+}
+{
+  message: "Error: Function:getPayments :, Unknown database 'trip_tracker_undefined'",
+  level: 'error',
+  timestamp: '2025-02-09T11:07:43.023Z'
+}
+{
+  message: 'Error: Function:updatePayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-09T11:41:23.437Z'
+}
+{
+  message: 'Error: Function:updatePayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-09T11:41:23.447Z'
+}
+{
+  message: 'Error: Function:updatePayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-09T11:48:48.878Z'
+}
+{
+  message: 'Error: Function:updatePayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-09T11:48:48.887Z'
+}
+{
+  message: 'Error: Function:updatePayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-09T11:49:02.110Z'
+}
+{
+  message: 'Error: Function:updatePayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-09T11:49:02.112Z'
+}
+{
+  message: 'Error: Function:updatePayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-09T11:49:15.734Z'
+}
+{
+  message: 'Error: Function:updatePayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-09T11:49:15.741Z'
+}
+{
+  message: "Error: Function:getPayments :, You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 2",
+  level: 'error',
+  timestamp: '2025-02-09T11:54:26.131Z'
+}
+{
+  message: "Error: Function:updatePayments :, Truncated incorrect DOUBLE value: '129d0eb7-4e38-4df1-ad12-2dd2ca658a74'",
+  level: 'error',
+  timestamp: '2025-02-09T11:55:47.388Z'
+}
+{
+  message: "Error: Function:updatePayments :, Truncated incorrect DOUBLE value: '129d0eb7-4e38-4df1-ad12-2dd2ca658a74'",
+  level: 'error',
+  timestamp: '2025-02-09T11:55:47.398Z'
+}
+{
+  message: "Error: Function:updatePayments :, Truncated incorrect DOUBLE value: '129d0eb7-4e38-4df1-ad12-2dd2ca658a74'",
+  level: 'error',
+  timestamp: '2025-02-09T11:56:16.647Z'
+}
+{
+  message: "Error: Function:updatePayments :, Truncated incorrect DOUBLE value: '129d0eb7-4e38-4df1-ad12-2dd2ca658a74'",
+  level: 'error',
+  timestamp: '2025-02-09T11:56:16.659Z'
+}
+{
+  message: "Error: Function:updatePayments :, Truncated incorrect DOUBLE value: '129d0eb7-4e38-4df1-ad12-2dd2ca658a74'",
+  level: 'error',
+  timestamp: '2025-02-09T11:56:33.976Z'
+}
+{
+  message: "Error: Function:updatePayments :, Truncated incorrect DOUBLE value: '129d0eb7-4e38-4df1-ad12-2dd2ca658a74'",
+  level: 'error',
+  timestamp: '2025-02-09T11:56:33.994Z'
+}
+{
+  message: 'Error: Function:updatePayments :, Malformed communication packet.',
+  level: 'error',
+  timestamp: '2025-02-09T11:57:10.709Z'
+}
+{
+  message: "Error: Function:getPaymentsDetails :, Unknown column 'g.family_id' in 'window partition by'",
+  level: 'error',
+  timestamp: '2025-02-09T14:04:35.097Z'
+}
+{
+  message: 'Error: Function:addFutureExpenses :, undefined',
+  level: 'error',
+  timestamp: '2025-02-09T20:38:08.337Z'
+}
+{
+  message: 'Error: Function:getExchangeRates :, undefined',
+  level: 'error',
+  timestamp: '2025-02-09T20:41:57.269Z'
+}
+{
+  message: "Error: Function:getFamilyGuests :, Unknown column 'gu.number_of_payments' in 'field list'",
+  level: 'error',
+  timestamp: '2025-02-09T21:01:08.523Z'
+}
+{
+  message: "Error: Function:getFamilyGuests :, Unknown column 'gu.number_of_payments' in 'field list'",
+  level: 'error',
+  timestamp: '2025-02-09T21:01:10.265Z'
+}
+{
+  message: "Error: Function:getFamilyGuests :, Unknown column 'gu.number_of_payments' in 'field list'",
+  level: 'error',
+  timestamp: '2025-02-09T21:01:12.024Z'
+}
+{
+  message: "Error: Function:getFamilyGuests :, Unknown column 'gu.number_of_payments' in 'field list'",
+  level: 'error',
+  timestamp: '2025-02-09T21:01:12.793Z'
+}
+{
+  message: "Error: Function:getFamilyGuests :, Unknown column 'gu.number_of_payments' in 'field list'",
+  level: 'error',
+  timestamp: '2025-02-09T21:01:13.481Z'
+}
+{
+  message: "Error: Function:getExpenses :, Unknown column 'fe.is_paid' in 'field list'",
+  level: 'error',
+  timestamp: '2025-02-09T21:02:54.429Z'
+}
+{
+  message: "Error: Function:getExpenses :, Unknown column 'fe.is_paid' in 'field list'",
+  level: 'error',
+  timestamp: '2025-02-09T21:03:38.347Z'
+}
+{
+  message: "Error: Function:getExpenses :, Unknown column 'fe.is_paid' in 'field list'",
+  level: 'error',
+  timestamp: '2025-02-09T21:03:43.006Z'
+}
+{
+  message: "Error: Function:getPaymentsDetails :, Unknown column 'g.number_of_payments' in 'field list'",
+  level: 'error',
+  timestamp: '2025-02-09T21:28:33.264Z'
+}

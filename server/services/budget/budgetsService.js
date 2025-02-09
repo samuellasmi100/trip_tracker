@@ -29,11 +29,11 @@ const addExpenses = async (vacationId,data,isFuture) => {
         paymentDate: data[`paymentDate${i}`],
         paymentCurrency,
       };
-      if(isFuture){
+      // if(isFuture){
         await budgetsDb.addFutureExpenses(vacationId, payment);
-      }else {
+      // }else {
         await budgetsDb.addExpenses(vacationId, payment);
-      }
+      // }
     }
 }
 

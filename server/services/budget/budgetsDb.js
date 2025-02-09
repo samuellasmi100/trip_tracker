@@ -52,9 +52,7 @@ const addFutureExpenses = async (vacationId,payment) => {
       payment.paymentDate,
       payment.paymentCurrency,
     ]
- 
-    const response = await connection.executeWithParameters(sql,parameters)
-    // return response
+    await connection.executeWithParameters(sql,parameters)
   } catch (error) { 
     logger.error(
       `Error: Function:addFutureExpenses :, ${error.sqlMessage}`,

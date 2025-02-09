@@ -1,7 +1,8 @@
 const router = require("express").Router();
 const fs = require("fs");
 const path = require("path");
-const multer = require('multer')
+const multer = require('multer');
+
 
 const uploadsFolder = path.resolve(__dirname, '..', '..', 'uploads');
 if (!fs.existsSync(uploadsFolder)) {
@@ -29,8 +30,15 @@ const storage = multer.diskStorage({
     cb(null, decodedName);
   },
 });
-
-const upload = multer({ storage: storage });
+const fileFilter = (req, file, cb) => {
+  const allowedMimeTypes = ['application/pdf', 'image/jpeg'];
+  if (allowedMimeTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Invalid file type. Only PDF and JPEG are allowed.'));
+  }
+};
+const upload = multer({ storage: storage,fileFilter: fileFilter  });
 
 router.post("/:vacationId", upload.single('file'), async (req, res, next) => {
   try {
@@ -84,6 +92,5 @@ router.delete('/files/:familyName/:vacationId/:file', (req, res) => {
     res.status(500).json({ message: 'Failed to delete file', error: error.message });
   }
 });
-
 
 module.exports = router;

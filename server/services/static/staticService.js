@@ -17,7 +17,14 @@ const getVacationDetails = async (vacationId) => {
 }
 
 const getPaymentsDetails = async (vacationId) => {
-    return await staticDb.getPaymentsDetails(vacationId)
+    const payments = await staticDb.getPaymentsDetails(vacationId)
+    const uniquePaymentsAndGuests = payments.reduce((acc, current) => {
+        if (!acc.some(item => item.familyId === current.familyId)) {
+            acc.push(current);
+        }
+        return acc;
+    }, []);
+    return uniquePaymentsAndGuests
 }
 
 module.exports = {

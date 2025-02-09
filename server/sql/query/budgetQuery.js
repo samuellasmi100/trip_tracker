@@ -43,6 +43,7 @@ fe.expenses_category_id,
 fe.expenses_sub_category_id,
 fe.payment_date,
 fe.expenditure_ils,
+fe.is_paid,
 ec.name as categoryName,
 esc.name as subCategoryName
 FROM trip_tracker_${vacationId}.expenses fe

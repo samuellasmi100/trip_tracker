@@ -179,25 +179,7 @@ GROUP BY
 }
 
 const getPaymentsDetails = (vacationId) => {
-    return `WITH LatestPayments AS (
-    SELECT 
-        user_id,
-        MAX(created_at) AS latest_created_at
-    FROM 
-        trip_tracker_${vacationId}.payments
-    GROUP BY 
-        user_id
-),
-FilteredPayments AS (
-    SELECT 
-        p.*
-    FROM 
-        trip_tracker_${vacationId}.payments p
-    JOIN 
-        LatestPayments lp 
-    ON 
-        p.user_id = lp.user_id AND p.created_at = lp.latest_created_at
-)
+return `
 SELECT 
     p.id,
     g.user_id,
@@ -210,20 +192,66 @@ SELECT
     p.amount_received AS amountReceived,
     p.invoice,
     p.created_at,
+    p.is_paid,
+    g.number_of_payments,
     g.hebrew_first_name,
     g.hebrew_last_name,
-    g.total_amount AS default_amount
+    g.total_amount AS default_amount,
+    COUNT(CASE WHEN p.is_paid = 0 THEN 1 END) OVER (PARTITION BY g.family_id) AS unpaid
 FROM 
     trip_tracker_${vacationId}.guest g
 LEFT JOIN 
-    FilteredPayments p
-ON 
-    g.user_id = p.user_id
+    trip_tracker_${vacationId}.payments p 
+    ON g.user_id = p.user_id 
 WHERE 
     g.is_main_user = 1
-ORDER BY 
-    g.family_id;
+
 `
+//     return `WITH LatestPayments AS (
+//     SELECT 
+//         user_id,
+//         MAX(created_at) AS latest_created_at
+//     FROM 
+//         trip_tracker_${vacationId}.payments
+//     GROUP BY 
+//         user_id
+// ),
+// FilteredPayments AS (
+//     SELECT 
+//         p.*
+//     FROM 
+//         trip_tracker_${vacationId}.payments p
+//     JOIN 
+//         LatestPayments lp 
+//     ON 
+//         p.user_id = lp.user_id AND p.created_at = lp.latest_created_at
+// )
+// SELECT 
+//     p.id,
+//     g.user_id,
+//     g.family_id AS familyId,
+//     p.payment_date AS paymentDate,
+//     p.amount,
+//     p.form_of_payment AS formOfPayment,
+//     p.remains_to_be_paid AS remainsToBePaid,
+//     p.payment_currency AS paymentCurrency,
+//     p.amount_received AS amountReceived,
+//     p.invoice,
+//     p.created_at,
+//     g.hebrew_first_name,
+//     g.hebrew_last_name,
+//     g.total_amount AS default_amount
+// FROM 
+//     trip_tracker_${vacationId}.guest g
+// LEFT JOIN 
+//     FilteredPayments p
+// ON 
+//     g.user_id = p.user_id
+// WHERE 
+//     g.is_main_user = 1
+// ORDER BY 
+//     g.family_id;
+// `
    
 }
 
