@@ -41,13 +41,12 @@ function ExpensesAndIncomeView({ handleDialogTypeOpen }) {
   const expensesAndIncome = useSelector(
     (state) => state.budgetSlice.expensesAndIncome
   );
-  console.log(expensesAndIncome)
   return (
     <Grid
       container
       style={{
         background: "#2d2d2d",
-        width: "42vw",
+        width: "45vw",
         border: "1px solid rgb(61, 63, 71)",
         marginLeft: "10px",
       }}
@@ -144,10 +143,12 @@ function ExpensesAndIncomeView({ handleDialogTypeOpen }) {
                       {key.payment_currency}
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
-                      {key.expenditure_ils}
+                      {Number(key.expenditure_ils) % 1 === 0
+                        ? Number(key.expenditure_ils).toFixed(0)
+                        : key.expenditure_ils.toString()}
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
-                      {key.expenditure}
+                      {key.payment_currency === "שקל" ? "" : key.expenditure }
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
                       {key.payment_date}

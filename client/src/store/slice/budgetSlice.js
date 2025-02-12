@@ -1,3 +1,4 @@
+import { CloudDone } from "@material-ui/icons";
 import { createSlice } from "@reduxjs/toolkit";
 const storageToken = sessionStorage.getItem("token")
 
@@ -29,10 +30,17 @@ export const budgetSlice = createSlice({
       }
     },
     updateForm: (state, action) => {
-      state.form = action.payload;
+      let data = {...action.payload};
+      let createSubCategoryForUpdate = [{
+        expenses_category_id:data.subCategories,
+        id:data.subCategories,
+        name:data.subCategoryName,
+      }]
+      state.form = data
+      state.form.numberOfPayments = 1;
+      state.subCategories = createSubCategoryForUpdate
     },
     updateExpensesAndIncome: (state, action) => {
-
       state.expensesAndIncome = action.payload;
       const totalExpense = action.payload
     .filter(item => item.is_paid !== 0) 

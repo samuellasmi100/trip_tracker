@@ -11,6 +11,8 @@ const ForecastManager = () => {
   const vacationId = useSelector((state) => state.vacationSlice.vacationId);
   const dialogType = useSelector((state) => state.budgetSlice.type);
   const isExpense = useSelector((state) => state.budgetSlice.isExpense);
+
+  
   const handleInputChange = (eventOrValue, fieldName) => {
     if (typeof eventOrValue === "object" && eventOrValue.target) {
       const { name, value } = eventOrValue.target;
@@ -48,11 +50,18 @@ const ForecastManager = () => {
   };
 
   const submit = async () => {
+    console.log(dialogType)
 
     try {
       if (isExpense) {
         if (dialogType === "FinancialForecast") {
           await ApiBudgets.addFutureExpenses(token, form, vacationId);
+          dispatch(budgetSlice.resetForm());
+          await getFutureExpenses();
+          await getExpenses()
+        }else if(dialogType === "updateFinancialForecast"){
+          console.log("333333333")
+          await ApiBudgets.updateExpenses(token, form, vacationId);
           dispatch(budgetSlice.resetForm());
           await getFutureExpenses();
           await getExpenses()
@@ -66,6 +75,7 @@ const ForecastManager = () => {
       console.log(error);
     }
   };
+
   const getFutureExpenses = async () => {
     const response = await ApiBudgets.getFutureExpenses(token, vacationId);
     dispatch(budgetSlice.updateExpectedExpensesAndIncome(response.data));

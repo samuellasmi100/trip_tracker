@@ -36,17 +36,17 @@ const ForecastManagerView = (props) => {
     submit,
     handleCloseClicked
   } = props;
-
   return (
     <>
       <Grid container>
-        <Grid container style={{ height: "300px", maxHeight: "301px", overflow: "auto", }}>
+        <Grid container style={{ }}>
           <Grid item xs={12}>
             <Grid spacing={2} style={{ display: "flex", justifyContent: 'center', marginTop: "20px", gap: "10px" }}>
               <Grid item>
                 <InputLabel className={classes.inputLabelStyle}>בחר קטגוריה</InputLabel>
                 <Select
                   name="categories"
+                  value={form.categories  || ""}
                   onChange={handleInputChange}
                   input={<OutlinedInput className={classes.selectOutline} />}
                   MenuProps={{
@@ -69,8 +69,7 @@ const ForecastManagerView = (props) => {
                         },
                       },
                     },
-                  }}
-                >
+                  }}>
                   {categories?.map((type) => (
                     <MenuItem
                       key={type.id}
@@ -95,6 +94,7 @@ const ForecastManagerView = (props) => {
                 <InputLabel className={classes.inputLabelStyle}>בחר תת קטגוריה</InputLabel>
                 <Select
                   name="subCategories"
+                  value={form.subCategories || ''}
                   onChange={handleInputChange}
                   input={<OutlinedInput className={classes.selectOutline} />}
                   MenuProps={{
@@ -117,9 +117,9 @@ const ForecastManagerView = (props) => {
                         },
                       },
                     },
-                  }}
-                >
+                  }}>
                   {subCategories?.map((type) => (
+                   
                     <MenuItem
                       key={type.id}
                       value={type.id}
@@ -132,8 +132,7 @@ const ForecastManagerView = (props) => {
                         "&:hover": {
                           background: "#babec7",
                         },
-                      }}
-                    >
+                      }}>
                       {type.name}
                     </MenuItem>
                   ))}
@@ -150,7 +149,7 @@ const ForecastManagerView = (props) => {
               </Grid>
             </Grid>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} style={{height: "200px",maxHeight: "201px", overflow: "auto",marginTop:"20px"}}>
             {Array.from({ length: form?.numberOfPayments }).map((_, index) => (
               <Grid spacing={2} style={{ display: "flex", justifyContent: 'center', gap: "10px" }}>
                 <Grid item>
@@ -179,8 +178,6 @@ const ForecastManagerView = (props) => {
                   <Select
                     name={`paymentCurrency${index}`}
                     value={form[`paymentCurrency${index}`] || ''}
-
-
                     onChange={handleInputChange}
                     input={<OutlinedInput className={classes.selectOutline} />}
                     MenuProps={{
@@ -201,7 +198,6 @@ const ForecastManagerView = (props) => {
                 </Grid>
               </Grid>
             ))}
-
           </Grid>
         </Grid>
 
@@ -209,7 +205,9 @@ const ForecastManagerView = (props) => {
           item
           xs={12}
           container
-          justifyContent="space-around">
+          justifyContent="space-around"
+          style={{marginTop:"10px"}}
+          >
           <Grid item>
             <Button
               onClick={submit}
@@ -223,9 +221,7 @@ const ForecastManagerView = (props) => {
             </Button>
           </Grid>
         </Grid>
-
       </Grid>
-
     </>
   );
 };

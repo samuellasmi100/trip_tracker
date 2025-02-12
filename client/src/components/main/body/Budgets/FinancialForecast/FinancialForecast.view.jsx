@@ -16,33 +16,33 @@ import {
   Select,
   MenuItem,
   OutlinedInput,
-} from "@mui/material";import React from "react";
+} from "@mui/material"; import React from "react";
 import { useStyles } from "./FinancialForecast.style"
 import { useSelector } from "react-redux";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import SearchIcon from "@material-ui/icons/Search";
 import { ReactComponent as EditIcon } from "../../../../../assets/icons/edit.svg";
 
-function FinancialForecastView({handleDialogTypeOpen,handleSelectInputChange}) {
-const classes = useStyles();
- const vacationList = useSelector((state) => state.vacationSlice.vacations)
-const vacationName = useSelector((state) => state.vacationSlice.vacationName)
-const isExpense = useSelector((state) => state.budgetSlice.isExpense)
-const expectedExpensesAndIncome = useSelector((state) => state.budgetSlice.expectedExpensesAndIncome)
+function FinancialForecastView({ handleDialogTypeOpen, handleSelectInputChange }) {
+  const classes = useStyles();
+  const vacationList = useSelector((state) => state.vacationSlice.vacations)
+  const vacationName = useSelector((state) => state.vacationSlice.vacationName)
+  const isExpense = useSelector((state) => state.budgetSlice.isExpense)
+  const expectedExpensesAndIncome = useSelector((state) => state.budgetSlice.expectedExpensesAndIncome)
 
-const headers = [" ","קטגוריה","תת קטגוריה","מטבע תשלום","צפי הוצאה בשקלים","צפי הוצאה במטבע זר","תאריך תשלום","ערוך"]
+  const headers = [" ", "קטגוריה", "תת קטגוריה", "מטבע תשלום", "צפי הוצאה בשקלים", "צפי הוצאה במטבע זר", "תאריך תשלום", "ערוך"]
 
   return (
+    <Grid
+      container
+      style={{
+        background: "#2d2d2d",
+        width: "45vw",
+        border: "1px solid rgb(61, 63, 71)",
+        marginLeft: "10px",
+      }}
+    >
       <Grid
-         container
-         style={{
-           background: "#2d2d2d",
-           width: "40vw",
-           border: "1px solid rgb(61, 63, 71)",
-           marginLeft: "10px",
-         }}
-       >
-     <Grid
         item
         xs={12}
         style={{
@@ -77,7 +77,7 @@ const headers = [" ","קטגוריה","תת קטגוריה","מטבע תשלום
         </Grid>
         <Grid item></Grid>
         <Grid item style={{ marginRight: "-100px", marginTop: "10px" }}>
-          <Typography style={{ color: "white" }}> {isExpense  ? "צפי הוצאות " : "צפי הכנסות"}</Typography>
+          <Typography style={{ color: "white" }}> {isExpense ? "צפי הוצאות " : "צפי הכנסות"}</Typography>
         </Grid>
         <Grid>
           <Grid style={{ display: "flex" }}>
@@ -104,7 +104,7 @@ const headers = [" ","קטגוריה","תת קטגוריה","מטבע תשלום
             </Grid>
             <Grid>
               <IconButton
-                 onClick={() => handleDialogTypeOpen("FinancialForecast")}>
+                onClick={() => handleDialogTypeOpen("FinancialForecast")}>
                 <AddBoxIcon style={{ color: "#54A9FF", fontSize: "30px" }} />
               </IconButton>
             </Grid>
@@ -112,7 +112,7 @@ const headers = [" ","קטגוריה","תת קטגוריה","מטבע תשלום
         </Grid>
       </Grid>
 
-    <Grid item xs={12} style={{ border: "1px solid rgb(61, 63, 71)" }}>
+      <Grid item xs={12} style={{ border: "1px solid rgb(61, 63, 71)" }}>
         <TableContainer
           style={{
             border: "1px solid #3D3F47",
@@ -144,28 +144,27 @@ const headers = [" ","קטגוריה","תת קטגוריה","מטבע תשלום
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>{key.categoryName}</TableCell>
                     <TableCell className={classes.dataTableCell}>{key.subCategoryName}</TableCell>
-                    <TableCell className={classes.dataTableCell}>{key.payment_currency}</TableCell>
-                    <TableCell className={classes.dataTableCell}>{key.expenditure_ils}</TableCell>
-                    <TableCell className={classes.dataTableCell}>{key.expenditure}</TableCell>
-                    <TableCell className={classes.dataTableCell}>{key.payment_date}</TableCell>
+                    <TableCell className={classes.dataTableCell}>{key.paymentCurrency0}</TableCell>
+                    <TableCell className={classes.dataTableCell}>
+                      {Number(key.expenditure_ils) % 1 === 0
+                        ? Number(key.expenditure_ils).toFixed(0)
+                        : key.expenditure_ils.toString()}
+                    </TableCell>
+                    <TableCell className={classes.dataTableCell}>                      
+                      {key.paymentCurrency === "שקל" ? "" : key.expenditure }
+                    </TableCell>
+                    <TableCell className={classes.dataTableCell}>{key.paymentDate0}</TableCell>
                     <TableCell
-                    className={classes.dataTableCell}
-                    style={{ maxWidth: "1px" }}
-                  >
-                    <IconButton
-                      size={"small"}
-                      // onClick={() =>
-                      //   handleDialogTypeOpen(
-                      //     user.is_main_user
-                      //       ? "editParent"
-                      //       : "editChild",
-                      //     user
-                      //   )
-                      // }
+                      className={classes.dataTableCell}
+                      style={{ maxWidth: "1px" }}
                     >
-                      <EditIcon />
-                    </IconButton>
-                  </TableCell>
+                      <IconButton
+                        size={"small"}
+                        onClick={() => handleDialogTypeOpen("updateFinancialForecast",key)}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    </TableCell>
                   </TableRow>
                 );
               })}

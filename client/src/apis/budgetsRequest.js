@@ -33,6 +33,15 @@ export default {
       }
     );
   },
+  updateExpenses(token, form,vacationId) {
+    return Api.put(
+      `/${END_POINT.BUDGET}/expenses/${vacationId}`,form,{
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+  },
   getExpenses(token,vacationId) {
     return Api.get(`/${END_POINT.BUDGET}/expenses/${vacationId}`, {
       headers: { Authorization: token },
