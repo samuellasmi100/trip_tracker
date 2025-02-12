@@ -190,6 +190,7 @@ CREATE TABLE future_expenses (
   id int NOT NULL AUTO_INCREMENT,
   expenditure varchar(45) DEFAULT NULL,
   payment_currency varchar(45) DEFAULT NULL,
+  action_id varchar(455) DEFAULT NULL,
   expenses_category_id varchar(45) DEFAULT NULL,
   expenses_sub_category_id varchar(45) DEFAULT NULL,
   payment_date varchar(45) DEFAULT NULL,
@@ -208,6 +209,7 @@ CREATE TABLE expenses (
   payment_date varchar(45) DEFAULT NULL,
   expenditure_ils varchar(45) DEFAULT NULL,
   is_paid tinyint DEFAULT '0',
+  action_id varchar(455) DEFAULT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 `;
