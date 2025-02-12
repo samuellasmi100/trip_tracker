@@ -51,6 +51,7 @@ const addFutureExpenses = async (vacationId,payment) => {
       payment.expenditureILS,
       payment.paymentDate,
       payment.paymentCurrency,
+      payment.actionId
     ]
     await connection.executeWithParameters(sql,parameters)
   } catch (error) { 
@@ -82,10 +83,10 @@ const addExpenses = async (vacationId,payment) => {
       payment.expenditureILS,
       payment.paymentDate,
       payment.paymentCurrency,
+      payment.actionId
     ]
  
-    const response = await connection.executeWithParameters(sql,parameters)
-    // return response
+     await connection.executeWithParameters(sql,parameters)
   } catch (error) { 
     logger.error(
       `Error: Function:addExpenses :, ${error.sqlMessage}`,
@@ -97,7 +98,6 @@ const getExpenses = async (vacationId) => {
   try {
     const sql = budgetQuery.getExpenses(vacationId)
     const response = await connection.execute(sql)
-    console.log(response)
     return response
   } catch (error) { 
     logger.error(
@@ -106,6 +106,39 @@ const getExpenses = async (vacationId) => {
   }
 }
 
+const updateExpenses = async (vacationId,payment) => {
+  try {
+    const sql = budgetQuery.updateExpenses(vacationId)
+    const parameters = [
+      payment.expenditure0,
+      payment.paymentDate0,
+      payment.expenditureILS,
+      payment.action_id
+    ]
+     await connection.executeWithParameters(sql,parameters)
+  } catch (error) { 
+    logger.error(
+      `Error: Function:updateExpenses :, ${error.sqlMessage}`,
+    );
+  }
+}
+const updateFutureExpenses = async (vacationId,payment) => {
+  try {
+    const sql = budgetQuery.updateFutureExpenses(vacationId)
+    const parameters = [
+      payment.expenditure0,
+      payment.paymentDate0,
+      payment.expenditureILS,
+      payment.action_id
+    ]
+ 
+     await connection.executeWithParameters(sql,parameters)
+  } catch (error) { 
+    logger.error(
+      `Error: Function:updateFutureExpenses :, ${error.sqlMessage}`,
+    );
+  }
+}
 module.exports = {
     getCategory,
     getSubCategory,
@@ -113,5 +146,7 @@ module.exports = {
   addFutureExpenses,
   getFutureExpenses,
   getExpenses,
-  addExpenses
+  addExpenses,
+  updateExpenses,
+updateFutureExpenses
 }

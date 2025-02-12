@@ -73,4 +73,16 @@ router.get("/sub_category/:id/:category_id", async (req, res, next) => {
      return next(error);
    }
  });
+
+ router.put("/expenses/:id", async (req, res, next) => {
+  const vacationId = req.params.id
+  const futureExpensesDetails = req.body
+ try {
+   const response = await budgetsService.updateExpensesAndFutureExpenses(vacationId,futureExpensesDetails)
+   res.send("response")
+
+ } catch (error) {
+   return next(error);
+ }
+});
 module.exports = router;

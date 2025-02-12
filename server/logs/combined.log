@@ -415,3 +415,104 @@
   level: 'error',
   timestamp: '2025-02-09T22:00:29.439Z'
 }
+{
+  message: "Error: Function:getFutureExpenses :, You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.expenditure,\n" +
+    'fe.payment_currency as paymentCurrency,\n' +
+    'fe.expenses_category_id,\n' +
+    "f' at line 3",
+  level: 'error',
+  timestamp: '2025-02-11T13:21:51.858Z'
+}
+{
+  message: "Error: Function:getFutureExpenses :, You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.expenditure,\n" +
+    'fe.payment_currency as paymentCurrency,\n' +
+    'fe.expenses_category_id,\n' +
+    "f' at line 3",
+  level: 'error',
+  timestamp: '2025-02-11T13:22:09.394Z'
+}
+{
+  message: "Error: Function:getFutureExpenses :, You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.expenditure,\n" +
+    'fe.payment_currency as paymentCurrency,\n' +
+    'fe.expenses_category_id,\n' +
+    "f' at line 3",
+  level: 'error',
+  timestamp: '2025-02-11T13:22:42.148Z'
+}
+{
+  message: 'Error: Function:addExpenses :, Malformed communication packet.',
+  level: 'error',
+  timestamp: '2025-02-11T16:07:56.482Z'
+}
+{
+  message: 'Error: Function:addExpenses :, undefined',
+  level: 'error',
+  timestamp: '2025-02-11T16:55:29.257Z'
+}
+{
+  message: 'Error: Function:addExpenses :, undefined',
+  level: 'error',
+  timestamp: '2025-02-11T16:55:29.263Z'
+}
+{
+  message: 'Error: Function:updateExpenses :, undefined',
+  level: 'error',
+  timestamp: '2025-02-11T16:56:02.541Z'
+}
+{
+  message: 'Error: Function:updateFutureExpenses :, undefined',
+  level: 'error',
+  timestamp: '2025-02-11T16:56:02.549Z'
+}
+{
+  message: 'Error: Function:updateExpenses :, undefined',
+  level: 'error',
+  timestamp: '2025-02-11T16:56:50.139Z'
+}
+{
+  message: 'Error: Function:updateFutureExpenses :, undefined',
+  level: 'error',
+  timestamp: '2025-02-11T16:56:50.148Z'
+}
+{
+  message: 'Error: Function:updateExpenses :, undefined',
+  level: 'error',
+  timestamp: '2025-02-11T16:57:36.080Z'
+}
+{
+  message: 'Error: Function:updateFutureExpenses :, undefined',
+  level: 'error',
+  timestamp: '2025-02-11T16:57:36.083Z'
+}
+{
+  message: 'Error: Function:updateExpenses :, undefined',
+  level: 'error',
+  timestamp: '2025-02-11T16:58:21.925Z'
+}
+{
+  message: 'Error: Function:updateFutureExpenses :, undefined',
+  level: 'error',
+  timestamp: '2025-02-11T16:58:21.931Z'
+}
+{
+  message: 'Error: Function:updateExpenses :, undefined',
+  level: 'error',
+  timestamp: '2025-02-11T16:58:34.849Z'
+}
+{
+  message: 'Error: Function:updateFutureExpenses :, undefined',
+  level: 'error',
+  timestamp: '2025-02-11T16:58:34.855Z'
+}
+{
+  message: "Error: Function:updateExpenses :, You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '?\n" +
+    "  WHERE action_id = ?' at line 5",
+  level: 'error',
+  timestamp: '2025-02-11T17:05:07.772Z'
+}
+{
+  message: "Error: Function:updateFutureExpenses :, You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '?\n" +
+    "  WHERE action_id = ?' at line 5",
+  level: 'error',
+  timestamp: '2025-02-11T17:05:07.780Z'
+}
