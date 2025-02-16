@@ -2,46 +2,47 @@
 const connection = require("../../db/connection-wrapper");
 const budgetQuery = require("../../sql/query/budgetQuery")
 const logger = require("../../utils/logger");
+const moment = require("moment");
 
 const getCategory = async (vacationId) => {
   try {
     const sql = budgetQuery.getCategory(vacationId)
     const response = await connection.execute(sql)
     return response
-  } catch (error) { 
+  } catch (error) {
     logger.error(
       `Error: Function:getCategory :, ${error.sqlMessage}`,
     );
   }
 }
 
-const getSubCategory = async (vacationId,categoryId) => {
+const getSubCategory = async (vacationId, categoryId) => {
   try {
     const sql = budgetQuery.getSubCategory(vacationId)
     const parameters = [categoryId]
-    const response = await connection.executeWithParameters(sql,parameters)
+    const response = await connection.executeWithParameters(sql, parameters)
     return response
-  } catch (error) { 
+  } catch (error) {
     logger.error(
       `Error: Function:getSubCategory :, ${error.sqlMessage}`,
     );
   }
 }
 
-const getExchangeRates = async (vacationId,currency) => {
+const getExchangeRates = async (vacationId, currency) => {
   try {
     const sql = budgetQuery.getExchangeRates(vacationId)
     const parameters = [currency]
-    const response = await connection.executeWithParameters(sql,parameters)
+    const response = await connection.executeWithParameters(sql, parameters)
     return response[0].amount
-  } catch (error) { 
+  } catch (error) {
     logger.error(
       `Error: Function:getExchangeRates :, ${error.sqlMessage}`,
     );
   }
 }
 
-const addFutureExpenses = async (vacationId,payment) => {
+const addFutureExpenses = async (vacationId, payment) => {
   try {
     const sql = budgetQuery.addFutureExpenses(vacationId)
     const parameters = [
@@ -53,8 +54,8 @@ const addFutureExpenses = async (vacationId,payment) => {
       payment.paymentCurrency,
       payment.actionId
     ]
-    await connection.executeWithParameters(sql,parameters)
-  } catch (error) { 
+    await connection.executeWithParameters(sql, parameters)
+  } catch (error) {
     logger.error(
       `Error: Function:addFutureExpenses :, ${error.sqlMessage}`,
     );
@@ -66,14 +67,14 @@ const getFutureExpenses = async (vacationId) => {
     const sql = budgetQuery.getFutureExpenses(vacationId)
     const response = await connection.execute(sql)
     return response
-  } catch (error) { 
+  } catch (error) {
     logger.error(
       `Error: Function:getFutureExpenses :, ${error.sqlMessage}`,
     );
   }
 }
 
-const addExpenses = async (vacationId,payment) => {
+const addExpenses = async (vacationId, payment) => {
   try {
     const sql = budgetQuery.addExpenses(vacationId)
     const parameters = [
@@ -82,12 +83,14 @@ const addExpenses = async (vacationId,payment) => {
       payment.expenditure,
       payment.expenditureILS,
       payment.paymentDate,
+      payment.actualPaymentDateDate,
       payment.paymentCurrency,
-      payment.actionId
+      payment.actionId,
+      payment.isPaid,
     ]
- 
-     await connection.executeWithParameters(sql,parameters)
-  } catch (error) { 
+
+    await connection.executeWithParameters(sql, parameters)
+  } catch (error) {
     logger.error(
       `Error: Function:addExpenses :, ${error.sqlMessage}`,
     );
@@ -99,14 +102,14 @@ const getExpenses = async (vacationId) => {
     const sql = budgetQuery.getExpenses(vacationId)
     const response = await connection.execute(sql)
     return response
-  } catch (error) { 
+  } catch (error) {
     logger.error(
       `Error: Function:getExpenses :, ${error.sqlMessage}`,
     );
   }
 }
 
-const updateExpenses = async (vacationId,payment) => {
+const updateExpenses = async (vacationId, payment) => {
   try {
     const sql = budgetQuery.updateExpenses(vacationId)
     const parameters = [
@@ -115,14 +118,32 @@ const updateExpenses = async (vacationId,payment) => {
       payment.expenditureILS,
       payment.action_id
     ]
-     await connection.executeWithParameters(sql,parameters)
-  } catch (error) { 
+    await connection.executeWithParameters(sql, parameters)
+  } catch (error) {
     logger.error(
       `Error: Function:updateExpenses :, ${error.sqlMessage}`,
     );
   }
 }
-const updateFutureExpenses = async (vacationId,payment) => {
+
+const updateExpensesStatus = async (vacationId, expensesId) => {
+  try {
+    const actualPaymentDateDate = moment().format('YYYY-MM-DD');
+    const sql = budgetQuery.updateExpensesStatus(vacationId)
+    const parameters = [
+      true,
+      actualPaymentDateDate,
+      expensesId
+    ]
+    await connection.executeWithParameters(sql, parameters)
+  } catch (error) {
+    logger.error(
+      `Error: Function:updateExpenses :, ${error.sqlMessage}`,
+    );
+  }
+}
+
+const updateFutureExpenses = async (vacationId, payment) => {
   try {
     const sql = budgetQuery.updateFutureExpenses(vacationId)
     const parameters = [
@@ -131,22 +152,24 @@ const updateFutureExpenses = async (vacationId,payment) => {
       payment.expenditureILS,
       payment.action_id
     ]
- 
-     await connection.executeWithParameters(sql,parameters)
-  } catch (error) { 
+
+    await connection.executeWithParameters(sql, parameters)
+  } catch (error) {
     logger.error(
       `Error: Function:updateFutureExpenses :, ${error.sqlMessage}`,
     );
   }
 }
+
 module.exports = {
-    getCategory,
-    getSubCategory,
-    getExchangeRates,
+  getCategory,
+  getSubCategory,
+  getExchangeRates,
   addFutureExpenses,
   getFutureExpenses,
   getExpenses,
   addExpenses,
   updateExpenses,
-updateFutureExpenses
+  updateFutureExpenses,
+  updateExpensesStatus
 }

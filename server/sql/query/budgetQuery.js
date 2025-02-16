@@ -17,7 +17,7 @@ const addFutureExpenses = (vacationId) => {
 
 const addExpenses = (vacationId) => {
   return `INSERT INTO trip_tracker_${vacationId}.expenses 
-    (expenses_category_id,expenses_sub_category_id,expenditure,expenditure_ils,payment_date,payment_currency,action_id) VALUES (?,?,?,?,?,?,?)`;
+    (expenses_category_id,expenses_sub_category_id,expenditure,expenditure_ils,planned_payment_date,actual_payment_date,payment_currency,action_id,is_paid) VALUES (?,?,?,?,?,?,?,?,?)`;
 };
 
 const getFutureExpenses = (vacationId) => {
@@ -41,10 +41,11 @@ const getExpenses = (vacationId) => {
   return `SELECT 
 fe.action_id,
 fe.expenditure,
-fe.payment_currency ,
+fe.payment_currency,
 fe.expenses_category_id,
 fe.expenses_sub_category_id,
-fe.payment_date,
+fe.planned_payment_date,
+fe.actual_payment_date,
 fe.expenditure_ils,
 fe.is_paid,
 ec.name as categoryName,
@@ -70,6 +71,13 @@ const updateFutureExpenses = (vacationId) => {
   expenditure_ils = ?
   WHERE action_id = ?`
 }
+const updateExpensesStatus = (vacationId) => {
+  return `UPDATE trip_tracker_${vacationId}.expenses
+  SET 
+  is_paid = ?,
+  actual_payment_date = ?
+  WHERE action_id = ?`
+}
 module.exports = {
   getCategory,
   getSubCategory,
@@ -79,5 +87,6 @@ module.exports = {
   addExpenses,
   getExpenses,
   updateExpenses,
-  updateFutureExpenses
+  updateFutureExpenses,
+  updateExpensesStatus
 };
