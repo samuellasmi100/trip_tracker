@@ -1,5 +1,7 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
+import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
+import { styled } from '@mui/material/styles';
 
 export const useStyles = makeStyles((theme) => ({
   dataTableBody: {
@@ -132,5 +134,17 @@ export const useStyles = makeStyles((theme) => ({
     textAlign: "center !important",
     borderBottom: "none !important",
     fontWeight: "900 !important",
+  },
+}));
+
+export const StyledTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    color: 'white',
+    maxWidth: 300,
+    paddingTop:"10px",
+    height : 30,
+    fontSize: "15px",
   },
 }));

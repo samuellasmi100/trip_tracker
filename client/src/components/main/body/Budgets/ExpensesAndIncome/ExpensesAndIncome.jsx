@@ -22,12 +22,20 @@ const ExpensesAndIncome = ({ handleDialogTypeOpen }) => {
       console.log(error);
     }
   };
-
+  const handlePaymentStatus = async (expenses) => {
+    let expensesId = expenses.action_id
+    try {
+      await ApiBudgets.updateExpensesStatus(token,expensesId,vacationId)
+      await getExpenses()
+    } catch (error) {
+      console.log(error)
+    }
+  }
   useEffect(() => {
-    getExpenses();
+     getExpenses();
   }, [vacationId,isExpense]);
 
-  return <ExpensesAndIncomeView handleDialogTypeOpen={handleDialogTypeOpen} />;
+  return <ExpensesAndIncomeView handleDialogTypeOpen={handleDialogTypeOpen} handlePaymentStatus={handlePaymentStatus}/>;
 };
 
 export default ExpensesAndIncome;

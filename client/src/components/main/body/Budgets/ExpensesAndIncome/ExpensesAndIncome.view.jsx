@@ -14,7 +14,7 @@ import {
   FormControl,
 } from "@mui/material";
 import React from "react";
-import { useStyles } from "./ExpensesAndIncome.style";
+import { StyledTooltip, useStyles } from "./ExpensesAndIncome.style";
 import { useSelector } from "react-redux";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import SearchIcon from "@material-ui/icons/Search";
@@ -22,7 +22,8 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { ReactComponent as EditIcon } from "../../../../../assets/icons/edit.svg";
 import ErrorIcon from '@mui/icons-material/Error';
 
-function ExpensesAndIncomeView({ handleDialogTypeOpen }) {
+
+function ExpensesAndIncomeView({ handleDialogTypeOpen ,handlePaymentStatus}) {
   const classes = useStyles();
   const vacationList = useSelector((state) => state.vacationSlice.vacations);
   const vacationName = useSelector((state) => state.vacationSlice.vacationName);
@@ -34,8 +35,8 @@ function ExpensesAndIncomeView({ handleDialogTypeOpen }) {
     "מטבע תשלום",
     "הוצאה בשקלים",
     "הוצאה במטבע זר",
-    "תאריך תשלום",
-    "שולם",
+    "שולם בתאריך",
+    "סטטוס תשלום",
     "ערוך"
   ];
   const expensesAndIncome = useSelector(
@@ -46,7 +47,7 @@ function ExpensesAndIncomeView({ handleDialogTypeOpen }) {
       container
       style={{
         background: "#2d2d2d",
-        width: "45vw",
+        width: "47vw",
         border: "1px solid rgb(61, 63, 71)",
         marginLeft: "10px",
       }}
@@ -148,31 +149,49 @@ function ExpensesAndIncomeView({ handleDialogTypeOpen }) {
                         : key.expenditure_ils.toString()}
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
-                      {key.payment_currency === "שקל" ? "" : key.expenditure }
+                      {key.payment_currency === "שקל" ? "" : key.expenditure}
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
-                      {key.payment_date}
+                      {key.actual_payment_date}
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
                       {(() => {
-                        const paymentDate = new Date(key.payment_date);
+                        const paymentDate = new Date(key.planned_payment_date);
                         const today = new Date();
 
                         if (key.is_paid === 1) {
-                          return <CheckCircleIcon style={{ color: "green" }} />;
+                          return <StyledTooltip title="שולם" placement="bottom-end" arrow>
+                            <IconButton>
+                              <CheckCircleIcon style={{ color: "green", width: '20px', height: '20px' }} />
+                            </IconButton>
+                          </StyledTooltip>;
                         } else if (paymentDate < today) {
-                          return <ErrorIcon style={{ color: "red" }} />;
+                          return <StyledTooltip
+                            title={`תשלום זה היה צריך להיות משולם עד ${key.planned_payment_date}`}
+                            placement="bottom-end"
+                            arrow>
+                            <IconButton onClick={() => handlePaymentStatus(key)}>
+                              <ErrorIcon style={{ color: "red", width: '20px', height: '20px' }} />
+                            </IconButton>
+                          </StyledTooltip>;
+
                         } else {
-                          return <CheckCircleIcon style={{ color: "orange" }} />;
+                          return  <StyledTooltip
+                          title={`תשלום זה צריך להיות משולם עד ${key.planned_payment_date}`}
+                          placement="bottom-end"
+                          arrow
+                        >
+                             <IconButton onClick={() => handlePaymentStatus(key)}>
+                              <CheckCircleIcon style={{ color: "orange", width: '20px', height: '20px' }} />
+                            </IconButton>
+                          </StyledTooltip>;
                         }
                       })()}
                     </TableCell>
                     <TableCell
                       className={classes.dataTableCell}
-                      style={{ maxWidth: "1px" }}
                     >
                       <IconButton
-                        size={"small"}
                       // onClick={() =>
                       //   handleDialogTypeOpen(
                       //     user.is_main_user
@@ -182,7 +201,7 @@ function ExpensesAndIncomeView({ handleDialogTypeOpen }) {
                       //   )
                       // }
                       >
-                        <EditIcon />
+                        <EditIcon style={{ width: '20px', height: '20px' }} />
                       </IconButton>
                     </TableCell>
                   </TableRow>

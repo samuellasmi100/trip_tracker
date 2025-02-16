@@ -60,7 +60,6 @@ const ForecastManager = () => {
           await getFutureExpenses();
           await getExpenses()
         }else if(dialogType === "updateFinancialForecast"){
-          console.log("333333333")
           await ApiBudgets.updateExpenses(token, form, vacationId);
           dispatch(budgetSlice.resetForm());
           await getFutureExpenses();

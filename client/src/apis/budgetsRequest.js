@@ -24,6 +24,7 @@ export default {
       }
     );
   },
+
   addExpenses(token, form,vacationId) {
     return Api.post(
       `/${END_POINT.BUDGET}/expenses/${vacationId}`,form,{
@@ -33,6 +34,7 @@ export default {
       }
     );
   },
+  
   updateExpenses(token, form,vacationId) {
     return Api.put(
       `/${END_POINT.BUDGET}/expenses/${vacationId}`,form,{
@@ -42,11 +44,23 @@ export default {
       }
     );
   },
+
+  updateExpensesStatus(token, id,vacationId) {
+    return Api.put(
+      `/${END_POINT.BUDGET}/status_expenses/${vacationId}`,{id},{
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+  },
+  
   getExpenses(token,vacationId) {
     return Api.get(`/${END_POINT.BUDGET}/expenses/${vacationId}`, {
       headers: { Authorization: token },
     });
   },
+
   getFutureExpenses(token,vacationId) {
     return Api.get(`/${END_POINT.BUDGET}/future_expenses/${vacationId}`, {
       headers: { Authorization: token },

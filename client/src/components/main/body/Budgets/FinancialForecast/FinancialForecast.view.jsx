@@ -30,7 +30,7 @@ function FinancialForecastView({ handleDialogTypeOpen, handleSelectInputChange }
   const isExpense = useSelector((state) => state.budgetSlice.isExpense)
   const expectedExpensesAndIncome = useSelector((state) => state.budgetSlice.expectedExpensesAndIncome)
 
-  const headers = [" ", "קטגוריה", "תת קטגוריה", "מטבע תשלום", "צפי הוצאה בשקלים", "צפי הוצאה במטבע זר", "תאריך תשלום", "ערוך"]
+  const headers = [" ", "קטגוריה", "תת קטגוריה", "מטבע תשלום", "צפי הוצאה בשקלים", "צפי הוצאה במטבע זר","תאריך תשלום עתידי", "ערוך"]
 
   return (
     <Grid
@@ -155,14 +155,9 @@ function FinancialForecastView({ handleDialogTypeOpen, handleSelectInputChange }
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>{key.paymentDate0}</TableCell>
                     <TableCell
-                      className={classes.dataTableCell}
-                      style={{ maxWidth: "1px" }}
-                    >
-                      <IconButton
-                        size={"small"}
-                        onClick={() => handleDialogTypeOpen("updateFinancialForecast",key)}
-                      >
-                        <EditIcon />
+                      className={classes.dataTableCell}>
+                      <IconButton onClick={() => handleDialogTypeOpen("updateFinancialForecast",key)}>
+                        <EditIcon style={{width:'20px',height:'20px'}}/>
                       </IconButton>
                     </TableCell>
                   </TableRow>

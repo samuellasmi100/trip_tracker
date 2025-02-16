@@ -6,13 +6,23 @@ import { useSelector } from "react-redux";
 import Expense from "./ExpensesAndIncome/ExpensesAndIncome";
 import FinancialForecast from "./FinancialForecast/FinancialForecast"
 import MainDialog from "./Dialogs/MainDialog/MainDialog"
-
+import MenuIcon from '@mui/icons-material/Menu';
 
   function BudgetsView({handleToggle,dialogOpen,dialogType,handleDialogTypeOpen,closeModal}) {
     const isExpense = useSelector((state) => state.budgetSlice.isExpense)
     const sumExpectedExpensesAndIncome = useSelector((state => state.budgetSlice.sumExpectedExpensesAndIncome))
       const sumExpensesAndIncome = useSelector((state) => state.budgetSlice.sumExpensesAndIncome)
-
+      const [anchorEl, setAnchorEl] = React.useState(null);
+      const open = Boolean(anchorEl);
+    
+      const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+      };
+    
+      const handleClose = () => {
+        setAnchorEl(null);
+      };
+      
     return (
     <Grid style={{display:"flex",justifyContent:"center"}}>
      <Grid style={{ display: "flex", flexDirection: "column" }}>
@@ -45,6 +55,8 @@ import MainDialog from "./Dialogs/MainDialog/MainDialog"
         </Grid>
         <Grid style={{display:"flex",justifyContent:"space-around",marginTop:"20px"}}>
         <Grid style={{height:"40px",width:"200px",border:"1px solid #494C55",borderRadius:"4px"}}>
+        <Typography style={{color:"white",textAlign:"center",padding:"6px"}}>סכום כולל : {sumExpectedExpensesAndIncome}  </Typography>
+
           <Typography style={{color:"white",textAlign:"center",padding:"6px"}}>סכום כולל : {sumExpectedExpensesAndIncome}  </Typography>
         </Grid>
         <Grid style={{height:"40px",width:"200px",border:"1px solid #494C55",borderRadius:"4px"}}>
