@@ -17,7 +17,7 @@ const addFutureExpenses = (vacationId) => {
 
 const addExpenses = (vacationId) => {
   return `INSERT INTO trip_tracker_${vacationId}.expenses 
-    (expenses_category_id,expenses_sub_category_id,expenditure,expenditure_ils,planned_payment_date,actual_payment_date,payment_currency,action_id,is_paid) VALUES (?,?,?,?,?,?,?,?,?)`;
+    (expenses_category_id,expenses_sub_category_id,expenditure,expenditure_ils,planned_payment_date,actual_payment_date,payment_currency,action_id,is_paid,is_unexpected) VALUES (?,?,?,?,?,?,?,?,?,?)`;
 };
 
 const getFutureExpenses = (vacationId) => {
@@ -39,15 +39,17 @@ join trip_tracker_${vacationId}.expenses_sub_category esc on esc.id = fe.expense
 
 const getExpenses = (vacationId) => {
   return `SELECT 
+fe.id,
 fe.action_id,
-fe.expenditure,
-fe.payment_currency,
-fe.expenses_category_id,
-fe.expenses_sub_category_id,
-fe.planned_payment_date,
+fe.expenditure as expenditure0,
+fe.payment_currency as paymentCurrency0,
+fe.expenses_category_id as categories,
+fe.expenses_sub_category_id as subCategories,
+fe.planned_payment_date as paymentDate0,
 fe.actual_payment_date,
 fe.expenditure_ils,
 fe.is_paid,
+fe.is_unexpected,
 ec.name as categoryName,
 esc.name as subCategoryName
 FROM trip_tracker_${vacationId}.expenses fe

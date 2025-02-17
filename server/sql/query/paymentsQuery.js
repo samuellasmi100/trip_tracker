@@ -10,7 +10,7 @@ const getHistoryPayments = (vacationId) => {
     return `SELECT family_id as familyId,
      DATE_FORMAT(payment_date, '%d/%m/%Y') AS paymentDate,amount,form_of_payment as formOfPayment,
     remains_to_be_paid as remainsToBePaid,payment_currency as paymentCurrency,updated_at,
-    amount_received as amountReceived,invoice,is_paid from trip_tracker_${vacationId}.payments WHERE user_id = ?`
+    amount_received as amountReceived,invoice,is_paid from trip_tracker_${vacationId}.payments WHERE user_id = ? And is_paid = 1`
 }
 const updatePayments = (vacationId) => {
     return `UPDATE trip_tracker_${vacationId}.payments

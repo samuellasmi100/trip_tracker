@@ -87,6 +87,7 @@ const addExpenses = async (vacationId, payment) => {
       payment.paymentCurrency,
       payment.actionId,
       payment.isPaid,
+      payment.isUnexpected
     ]
 
     await connection.executeWithParameters(sql, parameters)
@@ -126,12 +127,12 @@ const updateExpenses = async (vacationId, payment) => {
   }
 }
 
-const updateExpensesStatus = async (vacationId, expensesId) => {
+const updateExpensesStatus = async (vacationId, expensesId,paymentStatus) => {
   try {
     const actualPaymentDateDate = moment().format('YYYY-MM-DD');
     const sql = budgetQuery.updateExpensesStatus(vacationId)
     const parameters = [
-      true,
+      paymentStatus ? true : false,
       actualPaymentDateDate,
       expensesId
     ]

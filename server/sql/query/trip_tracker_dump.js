@@ -115,7 +115,7 @@ const createPaymentsTableQuery = `
    user_id varchar(45) DEFAULT NULL,
    invoice tinyint DEFAULT '0',
    is_paid tinyint DEFAULT '0',
-   updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP
+   updated_at varchar(455) DEFAULT NULL
    PRIMARY KEY (id)
  ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 `;
@@ -210,6 +210,7 @@ CREATE TABLE expenses (
   actual_payment_date varchar(45) DEFAULT NULL,
   expenditure_ils varchar(45) DEFAULT NULL,
   is_paid tinyint DEFAULT '0',
+  is_unexpected tinyint DEFAULT '0',
   action_id varchar(455) DEFAULT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

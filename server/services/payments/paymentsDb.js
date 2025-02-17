@@ -54,6 +54,7 @@ const addPayments = async (paymentDetails) => {
 }
 
 const updatePayments = async (paymentDetails) => {
+
   try {
     const actualPaymentDateDate = moment().format('YYYY-MM-DD');
     const sql = paymentsQuery.updatePayments(paymentDetails.vacationId)
@@ -66,8 +67,7 @@ const updatePayments = async (paymentDetails) => {
       paymentDetails.familyId,
       paymentDetails.id,
     ]
-    // console.log(sql,parameters)
-    // await connection.executeWithParameters(sql,parameters)
+    await connection.executeWithParameters(sql,parameters)
     
   } catch (error) { 
     logger.error(

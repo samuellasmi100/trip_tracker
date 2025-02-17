@@ -33,7 +33,8 @@ const addFutureExpenses = async (vacationId,data,isFuture) => {
         paymentCurrency,
         actionId,
         isPaid:false,
-        actualPaymentDateDate:""
+        actualPaymentDateDate:"",
+        isUnexpected:false
       };
         await budgetsDb.addFutureExpenses(vacationId, payment);
         await budgetsDb.addExpenses(vacationId, payment);
@@ -64,7 +65,8 @@ const addExpenses = async (vacationId,data,isFuture) => {
       paymentCurrency,
       actionId,
       isPaid:true,
-      actualPaymentDateDate
+      actualPaymentDateDate,
+      isUnexpected:true
     };
       await budgetsDb.addExpenses(vacationId, payment);
   }
@@ -96,10 +98,20 @@ const getExpenses = async (vacationId) => {
   return await budgetsDb.getExpenses(vacationId);
 }
 
-const updateExpensesStatus = async (vacationId,expensesId) => {
-  return await budgetsDb.updateExpensesStatus(vacationId,expensesId);
+const updateExpensesStatus = async (vacationId,expensesId,paymentStatus) => {
+  return await budgetsDb.updateExpensesStatus(vacationId,expensesId,paymentStatus);
 }
 
+const updateExpenses = async (vacationId,data) => {
+  let expenditureILS = data.expenditure0;
+  if (data.paymentCurrency0 === 'דולר' || data.paymentCurrency0 === 'יורו') {
+    const rate = await getExchangeRates(vacationId,data.paymentCurrency0);
+    expenditureILS = data.expenditure0 * rate;
+  }
+
+  data.expenditureILS = expenditureILS
+  await budgetsDb.updateExpenses(vacationId,data)
+}
 module.exports = {
     getCategory,
     getSubCategory,
@@ -109,5 +121,6 @@ module.exports = {
     addExpenses,
     updateExpensesAndFutureExpenses,
     addFutureExpenses,
-    updateExpensesStatus
+    updateExpensesStatus,
+    updateExpenses
 }

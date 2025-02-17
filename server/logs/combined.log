@@ -621,3 +621,58 @@
   level: 'error',
   timestamp: '2025-02-16T21:57:41.039Z'
 }
+{
+  message: "Error: Function:addPayments :, Field 'remains_to_be_paid' doesn't have a default value",
+  level: 'error',
+  timestamp: '2025-02-17T08:47:26.413Z'
+}
+{
+  message: "Error: Function:addPayments :, Field 'remains_to_be_paid' doesn't have a default value",
+  level: 'error',
+  timestamp: '2025-02-17T08:47:26.419Z'
+}
+{
+  message: 'Error: Function:getPayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-17T08:57:06.883Z'
+}
+{
+  message: "Error: Function:getExpenses :, Unknown column 'fe.planned_payment_date' in 'field list'",
+  level: 'error',
+  timestamp: '2025-02-17T09:06:18.603Z'
+}
+{
+  message: "Error: Function:getFutureExpenses :, Unknown column 'fe.action_id' in 'field list'",
+  level: 'error',
+  timestamp: '2025-02-17T09:06:18.609Z'
+}
+{
+  message: 'Error: Function:getExchangeRates :, undefined',
+  level: 'error',
+  timestamp: '2025-02-17T10:57:02.930Z'
+}
+{
+  message: "Error: Function:addExpenses :, You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '?is_unexpected) VALUES (?,?,?,?,?,?,?,?,?,?)' at line 2",
+  level: 'error',
+  timestamp: '2025-02-17T10:57:02.937Z'
+}
+{
+  message: 'Error: Function:getExchangeRates :, undefined',
+  level: 'error',
+  timestamp: '2025-02-17T10:57:53.136Z'
+}
+{
+  message: 'Error: Function:addFutureExpenses :, undefined',
+  level: 'error',
+  timestamp: '2025-02-17T11:28:34.753Z'
+}
+{
+  message: 'Error: Function:addExpenses :, undefined',
+  level: 'error',
+  timestamp: '2025-02-17T11:28:34.757Z'
+}
+{
+  message: "Error: Function:getExpenses :, Unknown column 'fe.updated_at' in 'field list'",
+  level: 'error',
+  timestamp: '2025-02-17T11:43:33.333Z'
+}

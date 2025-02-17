@@ -74,7 +74,7 @@ router.get("/sub_category/:id/:category_id", async (req, res, next) => {
    }
  });
 
- router.put("/expenses/:id", async (req, res, next) => {
+ router.put("/future_expenses/:id", async (req, res, next) => {
   const vacationId = req.params.id
   const futureExpensesDetails = req.body
  try {
@@ -85,12 +85,23 @@ router.get("/sub_category/:id/:category_id", async (req, res, next) => {
    return next(error);
  }
 });
+router.put("/expenses/:id", async (req, res, next) => {
+  const vacationId = req.params.id
+  const futureExpensesDetails = req.body
+ try {
+   const response = await budgetsService.updateExpenses(vacationId,futureExpensesDetails)
+   res.send("response")
+
+ } catch (error) {
+   return next(error);
+ }
+});
 router.put("/status_expenses/:id", async (req, res, next) => {
   const vacationId = req.params.id
   const expensesId = req.body.id
-
+  const paymentStatus = req.body.paymentStatus
  try {
-   const response = await budgetsService.updateExpensesStatus(vacationId,expensesId)
+   const response = await budgetsService.updateExpensesStatus(vacationId,expensesId,paymentStatus)
    res.send("response")
 
  } catch (error) {
