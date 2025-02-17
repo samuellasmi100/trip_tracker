@@ -36,8 +36,10 @@ export const budgetSlice = createSlice({
         expenses_category_id:data.subCategories,
         id:data.subCategories,
         name:data.subCategoryName,
+
       }]
       state.form = data
+      console.log(data)
       state.form.numberOfPayments = 1;
       state.subCategories = createSubCategoryForUpdate
     },

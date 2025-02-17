@@ -15,30 +15,10 @@ const MainDialog = (props) => {
   const isExpense = useSelector((state) => state.budgetSlice.isExpense)
 
   const handleDataView = () => {
-   if(activeButton === "צפי תקציב"){
-    return <BudgetManager />
-   }else if(activeButton === "הוסף הוצאה עתידית"){
     return <ForecastManager />
-   }
   };
 
-  const handleButtonClick = (buttonName) => {
-    dispatch(budgetSlice.updateActiveButton(buttonName))
-  }
 
-  const handleButtonHeader = () => {
-        return(
-          [isExpense ? "הוסף הוצאה עתידית" : "הוסף הכנסה עתידית"]
-          .map((label) => (
-            <Button
-              key={label}
-              className={`${classes.navButton} ${activeButton === label ? "active" : ""}`}
-              onClick={() => handleButtonClick(label)}>
-              {label}
-            </Button>
-          ))
-        )
-  }
     
   const { dialogOpen,closeModal } = props;
 
@@ -47,7 +27,6 @@ const MainDialog = (props) => {
     dialogOpen={dialogOpen}
     closeModal={closeModal}
     handleDataView={handleDataView}
-     handleButtonHeader={handleButtonHeader}
     />
   );
 };

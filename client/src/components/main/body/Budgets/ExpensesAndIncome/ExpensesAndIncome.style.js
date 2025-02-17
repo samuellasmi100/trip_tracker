@@ -4,6 +4,11 @@ import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
 import { styled } from '@mui/material/styles';
 
 export const useStyles = makeStyles((theme) => ({
+  dialog: {
+    color: "#FFFFFF !important",
+    backgroundColor: "#2D2D2D  !important",
+    width:"25vw"
+  },
   dataTableBody: {
     "& tr:nth-of-type(odd)": {
       backgroundColor: "#222222",
@@ -15,6 +20,12 @@ export const useStyles = makeStyles((theme) => ({
   dataTableCell: {
     fontSize: "14px !important",
     color: "#ffffff !important",
+    textAlign: "center !important",
+    borderBottom: "none !important",
+  },
+  dataTableCell2: {
+    fontSize: "14px !important",
+    color: "#ce2525 !important",
     textAlign: "center !important",
     borderBottom: "none !important",
   },

@@ -51,7 +51,6 @@ const ForecastManager = () => {
 
   const submit = async () => {
     console.log(dialogType)
-
     try {
       if (isExpense) {
         if (dialogType === "FinancialForecast") {
@@ -60,9 +59,13 @@ const ForecastManager = () => {
           await getFutureExpenses();
           await getExpenses()
         }else if(dialogType === "updateFinancialForecast"){
-          await ApiBudgets.updateExpenses(token, form, vacationId);
+          await ApiBudgets.updateFutureExpenses(token, form, vacationId);
           dispatch(budgetSlice.resetForm());
           await getFutureExpenses();
+          await getExpenses()
+        }else if(dialogType === "updateExpense") {
+          await ApiBudgets.updateExpenses(token, form, vacationId);
+          dispatch(budgetSlice.resetForm());
           await getExpenses()
         }else {
           await ApiBudgets.addExpenses(token, form, vacationId);

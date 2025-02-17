@@ -58,16 +58,16 @@ const handleInputChange = (e) => {
 const submit = async () => {
   try {
       await ApiPayments.addPayments(token,form,vacationId)
-      // dispatch(
-      //   snackBarSlice.setSnackBar({
-      //     type: "success",
-      //     message: "נתוני תשלום עודכנו בהצלחה",
-      //     timeout: 3000,
-      //   })
-      // )
-      // dispatch(paymentsSlice.resetForm())
-      // dispatch(dialogSlice.updateActiveButton("הערות"))
-    
+      dispatch(
+        snackBarSlice.setSnackBar({
+          type: "success",
+          message: "נתוני תשלום עודכנו בהצלחה",
+          timeout: 3000,
+        })
+      )
+      dispatch(paymentsSlice.resetForm())
+      dispatch(dialogSlice.updateActiveButton("הערות"))
+      await getPayments()
   } catch (error) {
     console.log(error)
   }
@@ -84,8 +84,6 @@ try {
     acc[`paymentCurrency_${index + 1}`] = payment.paymentCurrency;
     acc[`isPaid_${index + 1}`] = payment.is_paid;
     acc[`id_${index + 1}`] = payment.id;
-
-  
     return acc;
   }, {});
   

@@ -149,7 +149,7 @@ const ForecastManagerView = (props) => {
               </Grid>
             </Grid>
           </Grid>
-          <Grid item xs={12} style={{height: "200px",maxHeight: "201px", overflow: "auto",marginTop:"20px"}}>
+          <Grid item xs={12} style={{height: "160px",maxHeight: "161px", overflow: "auto",marginTop:"20px"}}>
             {Array.from({ length: form?.numberOfPayments }).map((_, index) => (
               <Grid spacing={2} style={{ display: "flex", justifyContent: 'center', gap: "10px" }}>
                 <Grid item>
@@ -206,7 +206,7 @@ const ForecastManagerView = (props) => {
           xs={12}
           container
           justifyContent="space-around"
-          style={{marginTop:"10px"}}
+          style={{marginTop:"30px"}}
           >
           <Grid item>
             <Button

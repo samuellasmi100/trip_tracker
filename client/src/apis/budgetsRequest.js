@@ -44,10 +44,22 @@ export default {
       }
     );
   },
-
-  updateExpensesStatus(token, id,vacationId) {
+    
+  updateFutureExpenses(token, form,vacationId) {
     return Api.put(
-      `/${END_POINT.BUDGET}/status_expenses/${vacationId}`,{id},{
+      `/${END_POINT.BUDGET}/future_expenses/${vacationId}`,form,{
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+  },
+
+
+  updateExpensesStatus(token, id,paymentStatus,vacationId) {
+    let data = {paymentStatus,id}
+    return Api.put(
+      `/${END_POINT.BUDGET}/status_expenses/${vacationId}`,data,{
         headers: {
           Authorization: token,
         },

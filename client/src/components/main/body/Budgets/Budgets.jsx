@@ -43,9 +43,9 @@ const Budgets = () => {
       dispatch(budgetSlice.updateForm(data))
     }
     dispatch(budgetSlice.updateDialogType(type))
-    if (isExpense && type === "FinancialForecast" || isExpense && type === "updateFinancialForecast") {
+    if (type === "FinancialForecast" || isExpense && type === "updateFinancialForecast") {
       dispatch(budgetSlice.openModal())
-    } else if (isExpense && type === "ExpensesAndIncomeView") {
+    } else if (type === "ExpensesAndIncomeView" || type === "updateExpense") {
       dispatch(budgetSlice.openModal())
     }
 

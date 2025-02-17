@@ -12,37 +12,66 @@ import {
   TextField,
   InputAdornment,
   FormControl,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import React from "react";
 import { StyledTooltip, useStyles } from "./ExpensesAndIncome.style";
 import { useSelector } from "react-redux";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import SearchIcon from "@material-ui/icons/Search";
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { ReactComponent as EditIcon } from "../../../../../assets/icons/edit.svg";
-import ErrorIcon from '@mui/icons-material/Error';
+import ErrorIcon from "@mui/icons-material/Error";
 
-
-function ExpensesAndIncomeView({ handleDialogTypeOpen ,handlePaymentStatus}) {
+function ExpensesAndIncomeView({
+  handleDialogTypeOpen,
+  handlePaymentStatus,
+  handleClose,
+  handleConfirm,
+  open,
+  selectedKey,
+  handleClickOpen
+}) {
   const classes = useStyles();
   const vacationList = useSelector((state) => state.vacationSlice.vacations);
   const vacationName = useSelector((state) => state.vacationSlice.vacationName);
   const isExpense = useSelector((state) => state.budgetSlice.isExpense);
-  const budgetStatus = useSelector((state) => state.budgetSlice.status)
+  const budgetStatus = useSelector((state) => state.budgetSlice.status);
   const headers = [
     " ",
     "קטגוריה",
     "תת קטגוריה",
     "מטבע תשלום",
-    budgetStatus === "צפי הוצאות" ? "הוצאה בשקלים" : budgetStatus === "צפי הכנסות"? "הכנסה בשקלים" : "הוצאה בשקלים",
-    budgetStatus === "צפי הוצאות" ? "הוצאה במטבע זר" : budgetStatus === "צפי הכנסות"? "הכנסה במטבע זר" : "הוצאה במטבע זר",
+    budgetStatus === "צפי הוצאות"
+      ? "הוצאה בשקלים"
+      : budgetStatus === "צפי הכנסות"
+      ? "הכנסה בשקלים"
+      : "הוצאה בשקלים",
+    budgetStatus === "צפי הוצאות"
+      ? "הוצאה במטבע זר"
+      : budgetStatus === "צפי הכנסות"
+      ? "הכנסה במטבע זר"
+      : "הוצאה במטבע זר",
     "שולם בתאריך",
     "סטטוס תשלום",
-    "ערוך"
+    "ערוך",
   ];
   const expensesAndIncome = useSelector(
     (state) => state.budgetSlice.expensesAndIncome
   );
+  const handleMessageString = () => {
+    if (selectedKey) {
+      if (selectedKey.is_paid === 1) {
+        return "האם הנך בטוח שברצונך לשנות סטטוס הוצאה זו להוצאה שלא שולמה?";
+      } else {
+        return "האם הנך בטוח שברצןנך לשנות סטטוס הוצאה זו להוצאה ששולמה?";
+      }
+    }
+  };
+
   return (
     <Grid
       container
@@ -62,13 +91,18 @@ function ExpensesAndIncomeView({ handleDialogTypeOpen ,handlePaymentStatus}) {
           borderRadius: "4px",
         }}
       >
-        <Grid style={{ marginRight: "5px", marginTop: "5px" }}>
-        </Grid>
+        <Grid style={{ marginRight: "5px", marginTop: "5px" }}></Grid>
         <Grid item></Grid>
         <Grid item style={{ marginRight: "-100px", marginTop: "10px" }}>
           {" "}
-        <Typography style={{ color: "white" }}> {budgetStatus === "צפי הוצאות" ? "הוצאות" : budgetStatus === "צפי הכנסות" ?  "הכנסות" : "הוצאות"}</Typography>
-          
+          <Typography style={{ color: "white" }}>
+            {" "}
+            {budgetStatus === "צפי הוצאות"
+              ? "הוצאות"
+              : budgetStatus === "צפי הכנסות"
+              ? "הכנסות"
+              : "הוצאות"}
+          </Typography>
         </Grid>
         <Grid>
           <Grid style={{ display: "flex" }}>
@@ -83,8 +117,8 @@ function ExpensesAndIncomeView({ handleDialogTypeOpen ,handlePaymentStatus}) {
                     endAdornment: (
                       <InputAdornment
                         position="end"
-                      // style={{ display: showClearIcon }}
-                      // onClick={handleClick}
+                        // style={{ display: showClearIcon }}
+                        // onClick={handleClick}
                       >
                         <SearchIcon style={{ color: "rgb(84, 169, 255)" }} />
                       </InputAdornment>
@@ -134,74 +168,152 @@ function ExpensesAndIncomeView({ handleDialogTypeOpen ,handlePaymentStatus}) {
                     <TableCell className={classes.dataTableCell}>
                       {index + 1}
                     </TableCell>
-                    <TableCell className={classes.dataTableCell}>
+                    <TableCell
+                      className={
+                        key.is_unexpected === 1 && budgetStatus === "צפי הוצאות"
+                          ? classes.dataTableCell2
+                          : classes.dataTableCell
+                      }
+                    >
                       {key.categoryName}
                     </TableCell>
-                    <TableCell className={classes.dataTableCell}>
+                    <TableCell
+                      className={
+                        key.is_unexpected === 1 && budgetStatus === "צפי הוצאות"
+                          ? classes.dataTableCell2
+                          : classes.dataTableCell
+                      }
+                    >
                       {key.subCategoryName}
                     </TableCell>
-                    <TableCell className={classes.dataTableCell}>
+                    <TableCell
+                      className={
+                        key.is_unexpected === 1 && budgetStatus === "צפי הוצאות"
+                          ? classes.dataTableCell2
+                          : classes.dataTableCell
+                      }
+                    >
                       {key.payment_currency}
                     </TableCell>
-                    <TableCell className={classes.dataTableCell}>
+                    <TableCell
+                      className={
+                        key.is_unexpected === 1 && budgetStatus === "צפי הוצאות"
+                          ? classes.dataTableCell2
+                          : classes.dataTableCell
+                      }
+                    >
                       {Number(key.expenditure_ils) % 1 === 0
                         ? Number(key.expenditure_ils).toFixed(0)
                         : key.expenditure_ils.toString()}
                     </TableCell>
-                    <TableCell className={classes.dataTableCell}>
+                    <TableCell
+                      className={
+                        key.is_unexpected === 1 && budgetStatus === "צפי הוצאות"
+                          ? classes.dataTableCell2
+                          : classes.dataTableCell
+                      }
+                    >
                       {key.payment_currency === "שקל" ? "" : key.expenditure}
                     </TableCell>
-                    <TableCell className={classes.dataTableCell}>
+                    <TableCell
+                      className={
+                        key.is_unexpected === 1 && budgetStatus === "צפי הוצאות"
+                          ? classes.dataTableCell2
+                          : classes.dataTableCell
+                      }
+                    >
                       {key.actual_payment_date}
                     </TableCell>
-                    <TableCell className={classes.dataTableCell}>
+                    <TableCell
+                      className={
+                        key.is_unexpected === 1 && budgetStatus === "צפי הוצאות"
+                          ? classes.dataTableCell2
+                          : classes.dataTableCell
+                      }
+                    >
                       {(() => {
-                        const paymentDate = new Date(key.planned_payment_date);
+                        const paymentDate = new Date(key.planned_payment_date0);
                         const today = new Date();
 
                         if (key.is_paid === 1) {
-                          return <StyledTooltip title="שולם" placement="bottom-end" arrow>
-                            <IconButton>
-                              <CheckCircleIcon style={{ color: "green", width: '20px', height: '20px' }} />
-                            </IconButton>
-                          </StyledTooltip>;
+                          return (
+                            <StyledTooltip
+                              title="שולם"
+                              placement="bottom-end"
+                              arrow
+                            >
+                              <IconButton
+                                onClick={() => handleClickOpen(key, false)}
+                              >
+                                <CheckCircleIcon
+                                  style={{
+                                    color: "green",
+                                    width: "20px",
+                                    height: "20px",
+                                  }}
+                                />
+                              </IconButton>
+                            </StyledTooltip>
+                          );
                         } else if (paymentDate < today) {
-                          return <StyledTooltip
-                            title={`תשלום זה היה צריך להיות משולם עד ${key.planned_payment_date}`}
-                            placement="bottom-end"
-                            arrow>
-                            <IconButton onClick={() => handlePaymentStatus(key)}>
-                              <ErrorIcon style={{ color: "red", width: '20px', height: '20px' }} />
-                            </IconButton>
-                          </StyledTooltip>;
-
+                          return (
+                            <StyledTooltip
+                              title={`תשלום זה היה צריך להיות משולם עד ${
+                                key.is_unexpected === 1
+                                  ? key.actual_payment_date
+                                  : key.planned_payment_date0
+                              }`}
+                              placement="bottom-end"
+                              arrow
+                            >
+                              <IconButton
+                                onClick={() => handleClickOpen(key, true)}
+                              >
+                                <ErrorIcon
+                                  style={{
+                                    color: "red",
+                                    width: "20px",
+                                    height: "20px",
+                                  }}
+                                />
+                              </IconButton>
+                            </StyledTooltip>
+                          );
                         } else {
-                          return  <StyledTooltip
-                          title={`תשלום זה צריך להיות משולם עד ${key.planned_payment_date}`}
-                          placement="bottom-end"
-                          arrow
-                        >
-                             <IconButton onClick={() => handlePaymentStatus(key)}>
-                              <CheckCircleIcon style={{ color: "orange", width: '20px', height: '20px' }} />
-                            </IconButton>
-                          </StyledTooltip>;
+                        
+                          return (
+                            <StyledTooltip
+                              title={`תשלום זה צריך להיות משולם עד ${
+                                key.is_unexpected === 1
+                                  ? key.actual_payment_date
+                                  : key.planned_payment_date0
+                              }`}
+                              placement="bottom-end"
+                              arrow
+                            >
+                              <IconButton
+                                onClick={() => handleClickOpen(key, true)}
+                              >
+                                <CheckCircleIcon
+                                  style={{
+                                    color: key.is_unexpected === 1 ? "red" : "orange",
+                                    width: "20px",
+                                    height: "20px",
+                                  }}
+                                />
+                              </IconButton>
+                            </StyledTooltip>
+                          );
                         }
                       })()}
                     </TableCell>
-                    <TableCell
-                      className={classes.dataTableCell}
-                    >
+                    <TableCell className={classes.dataTableCell}>
                       <IconButton
-                      // onClick={() =>
-                      //   handleDialogTypeOpen(
-                      //     user.is_main_user
-                      //       ? "editParent"
-                      //       : "editChild",
-                      //     user
-                      //   )
-                      // }
+                        onClick={() =>
+                          handleDialogTypeOpen("updateExpense", key)
+                        }
                       >
-                        <EditIcon style={{ width: '20px', height: '20px' }} />
+                        <EditIcon style={{ width: "20px", height: "20px" }} />
                       </IconButton>
                     </TableCell>
                   </TableRow>
@@ -211,6 +323,39 @@ function ExpensesAndIncomeView({ handleDialogTypeOpen ,handlePaymentStatus}) {
           </Table>
         </TableContainer>
       </Grid>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        classes={{ paper: classes.dialog }}
+      >
+     <DialogContent> {handleMessageString()}</DialogContent>
+        <DialogActions>
+          <Button
+            onClick={handleClose}
+            style={{
+              color: "#FFFFFF",
+              padding: "2px",
+              border: "1px solid black",
+              marginLeft: "3px",
+              background: "#494C55",
+            }}
+          >
+            ביטול
+          </Button>
+          <Button
+          onClick={handleConfirm}
+            autoFocus
+            style={{
+              color: "#FFFFFF",
+              padding: "2px",
+              border: "1px solid black",
+              background: "red",
+            }}
+          >
+            עדכן
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Grid>
   );
 }
