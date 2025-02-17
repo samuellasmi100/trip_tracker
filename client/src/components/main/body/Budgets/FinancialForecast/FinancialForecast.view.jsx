@@ -155,8 +155,8 @@ function FinancialForecastView({ handleDialogTypeOpen, handleSelectInputChange }
                         ? Number(key.expenditure_ils).toFixed(0)
                         : key.expenditure_ils.toString()}
                     </TableCell>
-                    <TableCell className={classes.dataTableCell}>                      
-                      {key.paymentCurrency === "שקל" ? "" : key.expenditure }
+                    <TableCell className={classes.dataTableCell}>                  
+                      {key.paymentCurrency0 === "שקל" ? "" : key.expenditure0 }
                     </TableCell>
                      <>
                       <TableCell className={classes.dataTableCell}>{key.paymentDate0}</TableCell> 

@@ -213,7 +213,7 @@ function ExpensesAndIncomeView({
                           : classes.dataTableCell
                       }
                     >
-                      {key.payment_currency === "שקל" ? "" : key.expenditure}
+                      {key.paymentCurrency0 === "שקל" ? "" : key.expenditure0}
                     </TableCell>
                     <TableCell
                       className={
