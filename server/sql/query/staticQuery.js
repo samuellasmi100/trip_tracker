@@ -190,6 +190,7 @@ SELECT
     p.remains_to_be_paid AS remainsToBePaid,
     p.payment_currency AS paymentCurrency,
     p.amount_received AS amountReceived,
+    p.updated_at,
     p.invoice,
     p.created_at,
     p.is_paid,
@@ -197,14 +198,19 @@ SELECT
     g.hebrew_first_name,
     g.hebrew_last_name,
     g.total_amount AS default_amount,
-    COUNT(CASE WHEN p.is_paid = 0 THEN 1 END) OVER (PARTITION BY g.family_id) AS unpaid
+    CASE 
+      WHEN COUNT(p.id) OVER (PARTITION BY g.user_id) = 0 
+        THEN g.number_of_payments
+      ELSE COUNT(CASE WHEN p.is_paid = 0 THEN 1 END) OVER (PARTITION BY g.user_id)
+    END AS unpaid
 FROM 
     trip_tracker_${vacationId}.guest g
 LEFT JOIN 
     trip_tracker_${vacationId}.payments p 
     ON g.user_id = p.user_id 
 WHERE 
-    g.is_main_user = 1
+    g.is_main_user = 1;
+
 
 `
 //     return `WITH LatestPayments AS (

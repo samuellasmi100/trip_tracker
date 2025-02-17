@@ -9,12 +9,13 @@ const getPayments = (vacationId) => {
 const getHistoryPayments = (vacationId) => {
     return `SELECT family_id as familyId,
      DATE_FORMAT(payment_date, '%d/%m/%Y') AS paymentDate,amount,form_of_payment as formOfPayment,
-    remains_to_be_paid as remainsToBePaid,payment_currency as paymentCurrency,amount_received as amountReceived,invoice,is_paid from trip_tracker_${vacationId}.payments WHERE user_id = ?`
+    remains_to_be_paid as remainsToBePaid,payment_currency as paymentCurrency,updated_at,
+    amount_received as amountReceived,invoice,is_paid from trip_tracker_${vacationId}.payments WHERE user_id = ?`
 }
 const updatePayments = (vacationId) => {
     return `UPDATE trip_tracker_${vacationId}.payments
     SET 
-  payment_date = ?,
+  updated_at = ?,
   form_of_payment = ?,
   payment_currency = ?,
   amount_received = ?,

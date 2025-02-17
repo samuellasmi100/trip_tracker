@@ -4,7 +4,6 @@ const uuid = require("uuid").v4;
 
 
 router.post("/:id", async (req, res, next) => {
-
   const vacationId = req.params.id
   const paymentsDetails = req.body
   try {

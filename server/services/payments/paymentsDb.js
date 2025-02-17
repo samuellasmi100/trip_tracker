@@ -1,6 +1,7 @@
 const connection = require("../../db/connection-wrapper");
 const paymentsQuery = require("../../sql/query/paymentsQuery")
 const logger = require("../../utils/logger");
+const moment = require("moment");
 
 const getPayments = async (id,vacationId) => {
     try {
@@ -41,7 +42,7 @@ const addPayments = async (paymentDetails) => {
       paymentDetails.amountReceived,
       paymentDetails.familyId,
       paymentDetails.userId,
-      paymentDetails.invoice,
+      paymentDetails.invoice === undefined ? false : paymentDetails.invoice
     ]
      await connection.executeWithParameters(sql,parameters)
     
@@ -54,9 +55,10 @@ const addPayments = async (paymentDetails) => {
 
 const updatePayments = async (paymentDetails) => {
   try {
+    const actualPaymentDateDate = moment().format('YYYY-MM-DD');
     const sql = paymentsQuery.updatePayments(paymentDetails.vacationId)
     const parameters = [
-      paymentDetails.paymentDate,
+      actualPaymentDateDate,
       paymentDetails.formOfPayment,
       paymentDetails.paymentCurrency,
       paymentDetails.amountReceived,
@@ -64,7 +66,8 @@ const updatePayments = async (paymentDetails) => {
       paymentDetails.familyId,
       paymentDetails.id,
     ]
-    await connection.executeWithParameters(sql,parameters)
+    // console.log(sql,parameters)
+    // await connection.executeWithParameters(sql,parameters)
     
   } catch (error) { 
     logger.error(
@@ -72,8 +75,6 @@ const updatePayments = async (paymentDetails) => {
     );
   }
 }
-
-
 
 
 module.exports = {

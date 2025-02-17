@@ -526,3 +526,98 @@
   level: 'error',
   timestamp: '2025-02-12T11:55:54.900Z'
 }
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-16T16:34:47.519Z'
+}
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-16T16:36:04.673Z'
+}
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-16T16:36:04.675Z'
+}
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-16T16:36:47.195Z'
+}
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-16T16:36:47.197Z'
+}
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-16T16:38:23.495Z'
+}
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-16T16:39:02.612Z'
+}
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-16T16:39:28.861Z'
+}
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-16T16:40:06.386Z'
+}
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-16T16:41:01.186Z'
+}
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-16T16:46:27.319Z'
+}
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-16T16:48:59.452Z'
+}
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-16T16:49:31.008Z'
+}
+{
+  message: "Error: Function:addPayments :, Field 'amount' doesn't have a default value",
+  level: 'error',
+  timestamp: '2025-02-16T16:50:32.760Z'
+}
+{
+  message: "Error: Function:addPayments :, Field 'amount' doesn't have a default value",
+  level: 'error',
+  timestamp: '2025-02-16T16:53:08.709Z'
+}
+{
+  message: 'Error: Function:updatePayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-16T17:07:19.554Z'
+}
+{
+  message: 'Error: Function:updatePayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-16T21:21:26.874Z'
+}
+{
+  message: "Error: Function:addPayments :, Unknown database 'trip_tracker_undefined'",
+  level: 'error',
+  timestamp: '2025-02-16T21:51:47.424Z'
+}
+{
+  message: 'Error: Function:addPayments :, undefined',
+  level: 'error',
+  timestamp: '2025-02-16T21:57:41.039Z'
+}
