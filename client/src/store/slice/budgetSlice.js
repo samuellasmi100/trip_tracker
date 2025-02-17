@@ -9,7 +9,7 @@ export const budgetSlice = createSlice({
       numberOfPayments: 0,
       payments: []
     },
-    isExpense: true,
+    isExpense:true,
     open: false,
     type: "",
     activeButton: "הוסף הוצאה עתידית",
@@ -18,7 +18,8 @@ export const budgetSlice = createSlice({
     expensesAndIncome:[],
     expectedExpensesAndIncome:[],
     sumExpensesAndIncome:"",
-    sumExpectedExpensesAndIncome:""
+    sumExpectedExpensesAndIncome:"",
+    status:"צפי הוצאות"
   },
   reducers: {
     updateFormField: (state, action) => {
@@ -59,6 +60,9 @@ export const budgetSlice = createSlice({
     updateCategories: (state, action) => {
       state.categories = action.payload;
     },
+    updateStatus: (state, action) => {
+      state.status = action.payload;
+    },
     updateSubCategories: (state, action) => {
       state.subCategories = action.payload;
     },
@@ -95,7 +99,8 @@ export const {
   updateCategories,
   updateSubCategories,
   updateExpensesAndIncome,
-updateExpectedExpensesAndIncome
+  updateStatus,
+  updateExpectedExpensesAndIncome
 } = budgetSlice.actions;
 
 export default budgetSlice.reducer;

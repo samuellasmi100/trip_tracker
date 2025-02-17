@@ -12,16 +12,19 @@ import { useStyles } from "./Payment.style";
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import moment from "moment/moment";
 
 
 function PaymentView({ submit, handleInputChange, handleCloseClicked,filteredPayments }) {
   const classes = useStyles();
   const userPayments = useSelector((state) => state.paymentsSlice.userPayments);
+
   const headers = [
     "סכום",
     "צורת תשלום",
     "מטבע תשלום",
-    "שולם"
+    "שולם",
+    "שולם בתאריך"
   ];
   return (
     <Grid container>
@@ -68,6 +71,9 @@ function PaymentView({ submit, handleInputChange, handleCloseClicked,filteredPay
                     width: "25px",
                   }}
                 />
+              </TableCell>
+              <TableCell className={classes.dataTableCell}>
+              {payment?.updated_at !== null ? moment(payment?.updated_at).format('YYYY-MM-DD') : payment?.updated_at}
               </TableCell>
             </>
           </TableRow>

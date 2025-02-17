@@ -36,6 +36,7 @@ const Payment = () => {
     try {
 
       const response = await ApiPayments.getUserPayments(token,form.user_id,vacationId)
+      console.log(response)
       dispatch(paymentsSlice.updateUserPayments(response.data))
     } catch (error) {
       console.log(error)

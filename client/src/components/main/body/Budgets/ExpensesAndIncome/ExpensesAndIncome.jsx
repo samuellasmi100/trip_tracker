@@ -9,14 +9,22 @@ const ExpensesAndIncome = ({ handleDialogTypeOpen }) => {
   const dispatch = useDispatch();
   const vacationId = useSelector((state) => state.vacationSlice.vacationId);
   const isExpense = useSelector((state) => state.budgetSlice.isExpense)
+  const budgetStatus = useSelector((state) => state.budgetSlice.status)
 
   const getExpenses = async () => { 
+    console.log(budgetStatus)
     try {
-      if(isExpense){
+      if(budgetStatus === "צפי הוצאות"){
+        console.log("111111111")
         const response = await ApiBudgets.getExpenses(token, vacationId);
         dispatch(budgetSlice.updateExpensesAndIncome(response.data));
-        }else {
+        }else if(budgetStatus === "צפי הכנסות"){
+          console.log("222222222222")
         dispatch(budgetSlice.updateExpensesAndIncome([]));
+        }else {
+          const response = await ApiBudgets.getExpenses(token, vacationId);
+          dispatch(budgetSlice.updateExpensesAndIncome(response.data));
+          console.log("3333333333333333333")
         }
     } catch (error) {
       console.log(error);
@@ -33,7 +41,7 @@ const ExpensesAndIncome = ({ handleDialogTypeOpen }) => {
   }
   useEffect(() => {
      getExpenses();
-  }, [vacationId,isExpense]);
+  }, [vacationId,isExpense,budgetStatus]);
 
   return <ExpensesAndIncomeView handleDialogTypeOpen={handleDialogTypeOpen} handlePaymentStatus={handlePaymentStatus}/>;
 };

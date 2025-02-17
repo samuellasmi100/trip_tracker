@@ -48,25 +48,25 @@ const handleInputChange = (e) => {
       }
     }
   }
-  
   dispatch(paymentsSlice.updateFormField({ field: "familyId", value: userForm.family_id }));
   dispatch(paymentsSlice.updateFormField({ field: "userId", value: userForm.user_id }));
   dispatch(paymentsSlice.updateFormField({ field: "number_of_payments", value: userForm.number_of_payments }));
+  dispatch(paymentsSlice.updateFormField({ field: "amount", value: userForm.total_amount }));
 };
 
 
 const submit = async () => {
   try {
       await ApiPayments.addPayments(token,form,vacationId)
-      dispatch(
-        snackBarSlice.setSnackBar({
-          type: "success",
-          message: "נתוני תשלום עודכנו בהצלחה",
-          timeout: 3000,
-        })
-      )
-      dispatch(paymentsSlice.resetForm())
-      dispatch(dialogSlice.updateActiveButton("הערות"))
+      // dispatch(
+      //   snackBarSlice.setSnackBar({
+      //     type: "success",
+      //     message: "נתוני תשלום עודכנו בהצלחה",
+      //     timeout: 3000,
+      //   })
+      // )
+      // dispatch(paymentsSlice.resetForm())
+      // dispatch(dialogSlice.updateActiveButton("הערות"))
     
   } catch (error) {
     console.log(error)

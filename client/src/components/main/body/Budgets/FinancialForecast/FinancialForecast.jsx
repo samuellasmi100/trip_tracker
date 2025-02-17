@@ -17,7 +17,7 @@ const FinancialForecast = ({ handleDialogTypeOpen }) => {
   const vacationId = useSelector((state) => state.vacationSlice.vacationId);
   const vacationList = useSelector((state) => state.vacationSlice.vacations);
   const isExpense = useSelector((state) => state.budgetSlice.isExpense)
-  
+  const budgetStatus = useSelector((state) => state.budgetSlice.status)
 
   const handleSelectInputChange = async (e) => {
       clearModalForms();
@@ -42,11 +42,13 @@ const FinancialForecast = ({ handleDialogTypeOpen }) => {
 
   const getFutureExpenses = async () => {
     try {
-      if(isExpense){
+      if(budgetStatus === "צפי הוצאות"){
         const response = await ApiBudget.getFutureExpenses(token, vacationId);
         dispatch(budgetSlice.updateExpectedExpensesAndIncome(response.data));
-      }else {
+      }else if(budgetStatus === "צפי הכנסות"){
         // const response = await ApiBudget.getFutureIncomes(token, vacationId);
+        dispatch(budgetSlice.updateExpectedExpensesAndIncome([]));
+      }else {
         dispatch(budgetSlice.updateExpectedExpensesAndIncome([]));
       }
     } catch (error) {
@@ -68,7 +70,7 @@ const FinancialForecast = ({ handleDialogTypeOpen }) => {
   useEffect(() => {
     getFutureExpenses();
     getVacations();
-  }, [vacationId,isExpense]);
+  }, [vacationId,isExpense,budgetStatus]);
 
   return (
     <FinancialForecastView

@@ -29,8 +29,13 @@ function FinancialForecastView({ handleDialogTypeOpen, handleSelectInputChange }
   const vacationName = useSelector((state) => state.vacationSlice.vacationName)
   const isExpense = useSelector((state) => state.budgetSlice.isExpense)
   const expectedExpensesAndIncome = useSelector((state) => state.budgetSlice.expectedExpensesAndIncome)
+  const budgetStatus = useSelector((state) => state.budgetSlice.status)
 
-  const headers = [" ", "קטגוריה", "תת קטגוריה", "מטבע תשלום", "צפי הוצאה בשקלים", "צפי הוצאה במטבע זר","תאריך תשלום עתידי", "ערוך"]
+  const headers = [" ", "קטגוריה", "תת קטגוריה", "מטבע תשלום",
+
+     budgetStatus === "צפי הוצאות" ? "צפי הוצאה בשקלים" : "צפי הכנסה עתידית", 
+      budgetStatus === "צפי הוצאות" ? "צפי הוצאה במטבע זר" : "צפי הכנסה במטבע זר",
+     "תאריך תשלום עתידי", "ערוך"]
 
   return (
     <Grid
@@ -77,7 +82,7 @@ function FinancialForecastView({ handleDialogTypeOpen, handleSelectInputChange }
         </Grid>
         <Grid item></Grid>
         <Grid item style={{ marginRight: "-100px", marginTop: "10px" }}>
-          <Typography style={{ color: "white" }}> {isExpense ? "צפי הוצאות " : "צפי הכנסות"}</Typography>
+          <Typography style={{ color: "white" }}> {budgetStatus === "צפי הוצאות" ? "צפי הוצאות " : budgetStatus === "צפי הכנסות" ?  "צפי הכנסות" : "הכנסות"}</Typography>
         </Grid>
         <Grid>
           <Grid style={{ display: "flex" }}>
@@ -153,13 +158,15 @@ function FinancialForecastView({ handleDialogTypeOpen, handleSelectInputChange }
                     <TableCell className={classes.dataTableCell}>                      
                       {key.paymentCurrency === "שקל" ? "" : key.expenditure }
                     </TableCell>
-                    <TableCell className={classes.dataTableCell}>{key.paymentDate0}</TableCell>
-                    <TableCell
-                      className={classes.dataTableCell}>
-                      <IconButton onClick={() => handleDialogTypeOpen("updateFinancialForecast",key)}>
-                        <EditIcon style={{width:'20px',height:'20px'}}/>
-                      </IconButton>
-                    </TableCell>
+                     <>
+                      <TableCell className={classes.dataTableCell}>{key.paymentDate0}</TableCell> 
+                      <TableCell
+                        className={classes.dataTableCell}>
+                        <IconButton onClick={() => handleDialogTypeOpen("updateFinancialForecast",key)}>
+                          <EditIcon style={{width:'20px',height:'20px'}}/>
+                        </IconButton>
+                      </TableCell> 
+                      </>
                   </TableRow>
                 );
               })}

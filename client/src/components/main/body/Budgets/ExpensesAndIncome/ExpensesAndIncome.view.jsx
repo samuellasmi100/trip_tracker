@@ -28,13 +28,14 @@ function ExpensesAndIncomeView({ handleDialogTypeOpen ,handlePaymentStatus}) {
   const vacationList = useSelector((state) => state.vacationSlice.vacations);
   const vacationName = useSelector((state) => state.vacationSlice.vacationName);
   const isExpense = useSelector((state) => state.budgetSlice.isExpense);
+  const budgetStatus = useSelector((state) => state.budgetSlice.status)
   const headers = [
     " ",
     "קטגוריה",
     "תת קטגוריה",
     "מטבע תשלום",
-    "הוצאה בשקלים",
-    "הוצאה במטבע זר",
+    budgetStatus === "צפי הוצאות" ? "הוצאה בשקלים" : budgetStatus === "צפי הכנסות"? "הכנסה בשקלים" : "הוצאה בשקלים",
+    budgetStatus === "צפי הוצאות" ? "הוצאה במטבע זר" : budgetStatus === "צפי הכנסות"? "הכנסה במטבע זר" : "הוצאה במטבע זר",
     "שולם בתאריך",
     "סטטוס תשלום",
     "ערוך"
@@ -65,10 +66,9 @@ function ExpensesAndIncomeView({ handleDialogTypeOpen ,handlePaymentStatus}) {
         </Grid>
         <Grid item></Grid>
         <Grid item style={{ marginRight: "-100px", marginTop: "10px" }}>
-          <Typography style={{ color: "white" }}>
-            {" "}
-            {isExpense ? " הוצאות " : " הכנסות"}
-          </Typography>
+          {" "}
+        <Typography style={{ color: "white" }}> {budgetStatus === "צפי הוצאות" ? "הוצאות" : budgetStatus === "צפי הכנסות" ?  "הכנסות" : "הוצאות"}</Typography>
+          
         </Grid>
         <Grid>
           <Grid style={{ display: "flex" }}>

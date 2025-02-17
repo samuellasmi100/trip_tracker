@@ -9,6 +9,7 @@ export default {
     });
   },
   addPayments(token,form,vacationId) {
+    console.log(token,form,vacationId)
     return Api.post(`${END_POINT.PAYMENTS}/${vacationId}`, form, {
       headers: { Authorization: token },
     });
