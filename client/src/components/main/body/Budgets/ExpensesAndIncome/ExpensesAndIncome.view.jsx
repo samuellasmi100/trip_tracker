@@ -193,7 +193,7 @@ function ExpensesAndIncomeView({
                           : classes.dataTableCell
                       }
                     >
-                      {key.payment_currency}
+                      {key.paymentCurrency0}
                     </TableCell>
                     <TableCell
                       className={
@@ -232,9 +232,10 @@ function ExpensesAndIncomeView({
                       }
                     >
                       {(() => {
-                        const paymentDate = new Date(key.planned_payment_date0);
                         const today = new Date();
-
+                        today.setHours(0, 0, 0, 0);
+                        const paymentDate = new Date(key.paymentDate0);
+                        paymentDate.setHours(0, 0, 0, 0);
                         if (key.is_paid === 1) {
                           return (
                             <StyledTooltip
@@ -255,13 +256,11 @@ function ExpensesAndIncomeView({
                               </IconButton>
                             </StyledTooltip>
                           );
-                        } else if (paymentDate < today) {
+                        } else if (paymentDate <= today) {
                           return (
                             <StyledTooltip
                               title={`תשלום זה היה צריך להיות משולם עד ${
-                                key.is_unexpected === 1
-                                  ? key.actual_payment_date
-                                  : key.planned_payment_date0
+                                key.paymentDate0
                               }`}
                               placement="bottom-end"
                               arrow
@@ -280,13 +279,11 @@ function ExpensesAndIncomeView({
                             </StyledTooltip>
                           );
                         } else {
-                        
                           return (
                             <StyledTooltip
                               title={`תשלום זה צריך להיות משולם עד ${
-                                key.is_unexpected === 1
-                                  ? key.actual_payment_date
-                                  : key.planned_payment_date0
+                        
+                                  key.paymentDate0
                               }`}
                               placement="bottom-end"
                               arrow
@@ -296,7 +293,7 @@ function ExpensesAndIncomeView({
                               >
                                 <CheckCircleIcon
                                   style={{
-                                    color: key.is_unexpected === 1 ? "red" : "orange",
+                                    color: "orange",
                                     width: "20px",
                                     height: "20px",
                                   }}

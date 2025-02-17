@@ -5,7 +5,7 @@ import { makeStyles } from "@mui/styles";
 export const useStyles = makeStyles((theme) => ({
   dialog: {
     minWidth: "30vw",
-    height: "30vh", 
+    height: "40vh", 
     color: "#FFFFFF !important",
     backgroundColor: "#2D2D2D !important",
   

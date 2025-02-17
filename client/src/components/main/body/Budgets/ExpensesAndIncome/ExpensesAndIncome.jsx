@@ -21,7 +21,6 @@ const ExpensesAndIncome = ({ handleDialogTypeOpen }) => {
   };
 
   const handleClickOpen = (key,status) => {
-    console.log(status)
     setSelectedKey(key);
     setPaymentStatus(status)
     setOpen(true); 

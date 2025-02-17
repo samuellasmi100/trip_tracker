@@ -50,7 +50,6 @@ const ForecastManager = () => {
   };
 
   const submit = async () => {
-    console.log(dialogType)
     try {
       if (isExpense) {
         if (dialogType === "FinancialForecast") {
