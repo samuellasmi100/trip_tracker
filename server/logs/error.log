@@ -676,3 +676,13 @@
   level: 'error',
   timestamp: '2025-02-17T11:43:33.333Z'
 }
+{
+  message: "Error: Function:updateExpenses :, Unknown column 'payment_date' in 'field list'",
+  level: 'error',
+  timestamp: '2025-02-17T21:58:33.006Z'
+}
+{
+  message: "Error: Function:updateExpenses :, Unknown column 'payment_date' in 'field list'",
+  level: 'error',
+  timestamp: '2025-02-17T21:59:35.376Z'
+}

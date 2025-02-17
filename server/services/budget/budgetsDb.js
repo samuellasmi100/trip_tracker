@@ -119,7 +119,8 @@ const updateExpenses = async (vacationId, payment) => {
       payment.expenditureILS,
       payment.action_id
     ]
-    await connection.executeWithParameters(sql, parameters)
+    console.log(parameters,sql)
+    // await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     logger.error(
       `Error: Function:updateExpenses :, ${error.sqlMessage}`,
@@ -133,13 +134,13 @@ const updateExpensesStatus = async (vacationId, expensesId,paymentStatus) => {
     const sql = budgetQuery.updateExpensesStatus(vacationId)
     const parameters = [
       paymentStatus ? true : false,
-      actualPaymentDateDate,
+      paymentStatus === false ? "" : actualPaymentDateDate,
       expensesId
     ]
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     logger.error(
-      `Error: Function:updateExpenses :, ${error.sqlMessage}`,
+      `Error: Function:updateExpensesStatus :, ${error.sqlMessage}`,
     );
   }
 }
