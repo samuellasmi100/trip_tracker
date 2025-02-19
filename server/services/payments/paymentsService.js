@@ -6,6 +6,7 @@ const getPayments = async (id, vacationId) => {
 const getHistoryPayments = async (id, vacationId) => {
   return await paymentsDb.getHistoryPayments(id, vacationId);
 };
+
 const addPayments = async (paymentDetails, vacationId) => {
   const checkIfUserAlreadyAddedPayments = await getPayments(
     paymentDetails.familyId,

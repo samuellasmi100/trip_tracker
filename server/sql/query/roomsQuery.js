@@ -57,10 +57,6 @@ WHERE rt.room_id IS NULL;
 `
  }
 
-
-//     )
-// );
-
 const getUnAvailableDates = (vacationId) => {
   return `SELECT 
     DATE_SUB(start_date, INTERVAL 1 DAY) AS start_date,

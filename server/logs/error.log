@@ -716,3 +716,18 @@
   level: 'error',
   timestamp: '2025-02-19T10:27:07.365Z'
 }
+{
+  message: "Error: Function:getRoomAvailable :, You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 10",
+  level: 'error',
+  timestamp: '2025-02-19T10:38:30.476Z'
+}
+{
+  message: "Error: Function:addPayments :, Field 'remains_to_be_paid' doesn't have a default value",
+  level: 'error',
+  timestamp: '2025-02-19T11:55:54.989Z'
+}
+{
+  message: "Error: Function:getUserNotes :, Unknown column 'user_id' in 'where clause'",
+  level: 'error',
+  timestamp: '2025-02-19T12:06:55.013Z'
+}

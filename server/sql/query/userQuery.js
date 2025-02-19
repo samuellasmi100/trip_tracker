@@ -6,7 +6,8 @@ const addGuest = (userData, vacationId) => {
 };
 
 const getFamilyGuests = (vacationId) => {
-  return `SELECT fa.family_id,fa.family_name,
+  return `
+SELECT fa.family_id,fa.family_name,urs.room_id,
 gu.hebrew_first_name,gu.hebrew_last_name,
 gu.english_first_name,gu.english_last_name,
 gu.flights,
@@ -25,7 +26,9 @@ gu.birth_date,
 gu.flying_with_us,
 gu.number_of_payments,
 gu.user_id,gu.is_main_user,gu.user_type,gu.is_in_group,gu.arrival_date,gu.departure_date,gu.address
-FROM trip_tracker_${vacationId}.families fa join trip_tracker_${vacationId}.guest gu
+FROM trip_tracker_7ede9a79_2fe8_4ac1_b0a7_978647f1cf94.families fa join trip_tracker_7ede9a79_2fe8_4ac1_b0a7_978647f1cf94.guest gu
+join trip_tracker_7ede9a79_2fe8_4ac1_b0a7_978647f1cf94.user_room_assignments urs
+on urs.user_id = gu.user_id
 on fa.family_id = gu.family_id where gu.family_id = ?`;
 };
 
@@ -84,36 +87,45 @@ const deleteGuest = (vacationId) => {
 DELETE FROM trip_tracker_${vacationId}.guest WHERE user_id = ?;
 `;
 };
+
 const deleteGuestFlights = (vacationId) => {
   return `
 DELETE FROM trip_tracker_${vacationId}.flights WHERE user_id = ?;`;
 };
+
 const deleteGuestRooms = (vacationId) => {
   return `
 
 DELETE FROM trip_tracker_${vacationId}.user_room_assignments WHERE user_id = ?;`;
 };
+
 const deleteNotes = (vacationId) => {
   return `DELETE FROM trip_tracker_${vacationId}.notes WHERE user_id = ?;`;
 };
+
 const deleteFamilyGuests = (vacationId) => {
   return `DELETE FROM trip_tracker_${vacationId}.guest WHERE family_id = ?;`;
 };
+
 const deleteFamilyFlights = (vacationId) => {
   return `DELETE FROM trip_tracker_${vacationId}.flights WHERE family_id = ?;`;
 };
 const deleteFamilyRooms = (vacationId) => {
   return `DELETE FROM trip_tracker_${vacationId}.room_taken WHERE family_id = ?;`;
 };
+
 const deleteFamilyGuestRooms = (vacationId) => {
   return `DELETE FROM trip_tracker_${vacationId}.user_room_assignments WHERE family_id = ?;`;
 };
+
 const deleteFamilyNotes = (vacationId) => {
   return `DELETE FROM trip_tracker_${vacationId}.notes WHERE family_id = ?;`;
 };
+
 const deleteFamilyPayments = (vacationId) => {
   return `DELETE FROM trip_tracker_${vacationId}.payments WHERE family_id = ?;`;
 };
+
 const deleteFamily = (vacationId) => {
   return `DELETE FROM trip_tracker_${vacationId}.families WHERE family_id = ?;`;
 };
