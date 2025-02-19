@@ -28,7 +28,7 @@ function FamilyMemberView({ handleDialogTypeOpen, handleSearchChange }) {
   });
   const classes = useStyles();
   const family = useSelector((state) => state.userSlice.family);
-  const headers = ["","שם", "תעודת זהות", "ערוך", "פרטים", "סטטוס"];
+  const headers = ["","שם", "משויך לחדר", "ערוך", "פרטים", "סטטוס"];
 
   return (
     <Grid
@@ -132,7 +132,7 @@ function FamilyMemberView({ handleDialogTypeOpen, handleSearchChange }) {
                     {user.hebrew_first_name + " " + user.hebrew_last_name}
                   </TableCell>
                   <TableCell className={classes.dataTableCell}>
-                    {user.identity_id}
+                    {user.room_id}
                   </TableCell>
                   <TableCell
                     className={classes.dataTableCell}

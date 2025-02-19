@@ -73,7 +73,7 @@ function PaymentView({ submit, handleInputChange, handleCloseClicked,filteredPay
                 />
               </TableCell>
               <TableCell className={classes.dataTableCell}>
-              {payment?.updated_at !== null ? moment(payment?.updated_at).format('YYYY-MM-DD') : payment?.updated_at}
+               {payment?.paymentDate}
               </TableCell>
             </>
           </TableRow>

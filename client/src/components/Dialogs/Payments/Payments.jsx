@@ -59,10 +59,11 @@ const submit = async () => {
   try {
     const calculateTotalAmountReceived = (data) => {
       return Object.keys(data)
-        .filter((key) => key.startsWith("amountReceived_")) // Find all keys that start with "amountReceived_"
-        .reduce((total, key) => total + parseFloat(data[key] || 0), 0); // Sum up their values
+        .filter((key) => key.startsWith("amountReceived_"))
+        .reduce((total, key) => total + parseFloat(data[key] || 0), 0);
     };
-    if(Number(calculateTotalAmountReceived(form) > form.amount)){
+
+    if(Number(calculateTotalAmountReceived(form) > parseInt(form.amount.replace(/,/g, "")))){
        dispatch(
           snackBarSlice.setSnackBar({
             type: "error",
@@ -70,28 +71,29 @@ const submit = async () => {
             timeout: 3000,
           })
         )
-    }else if(Number(form.amount) < calculateTotalAmountReceived(form)){
+    }else {
+      if(calculateTotalAmountReceived(form) < parseInt(form.amount.replace(/,/g, "")) ){
+        dispatch(
+          snackBarSlice.setSnackBar({
+            type: "info",
+            message: "הסכום שהוזן קטן מסכום העסקה",
+            timeout: 3000,
+          })
+        )
+      }
+     await ApiPayments.addPayments(token,form,vacationId)
       dispatch(
         snackBarSlice.setSnackBar({
-          type: "info",
-          message: "הסכום שהוזן קטן מסכום העסקה",
+          type: "success",
+          message: "נתוני תשלום עודכנו בהצלחה",
           timeout: 3000,
         })
       )
+      dispatch(paymentsSlice.resetForm())
+      dispatch(dialogSlice.updateActiveButton("הערות"))
+      await getPayments()
     }
-    console.log(calculateTotalAmountReceived(form))
-    console.log(form)
-      // await ApiPayments.addPayments(token,form,vacationId)
-      // dispatch(
-      //   snackBarSlice.setSnackBar({
-      //     type: "success",
-      //     message: "נתוני תשלום עודכנו בהצלחה",
-      //     timeout: 3000,
-      //   })
-      // )
-      // dispatch(paymentsSlice.resetForm())
-      // dispatch(dialogSlice.updateActiveButton("הערות"))
-      // await getPayments()
+     
   } catch (error) {
     console.log(error)
   }
