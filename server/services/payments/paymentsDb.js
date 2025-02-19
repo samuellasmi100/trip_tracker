@@ -54,12 +54,10 @@ const addPayments = async (paymentDetails) => {
 }
 
 const updatePayments = async (paymentDetails) => {
-
   try {
-    const actualPaymentDateDate = moment().format('YYYY-MM-DD');
     const sql = paymentsQuery.updatePayments(paymentDetails.vacationId)
     const parameters = [
-      actualPaymentDateDate,
+      paymentDetails.paymentDate,
       paymentDetails.formOfPayment,
       paymentDetails.paymentCurrency,
       paymentDetails.amountReceived,

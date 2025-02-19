@@ -15,7 +15,7 @@ const getHistoryPayments = (vacationId) => {
 const updatePayments = (vacationId) => {
     return `UPDATE trip_tracker_${vacationId}.payments
     SET 
-  updated_at = ?,
+  payment_date = ?,
   form_of_payment = ?,
   payment_currency = ?,
   amount_received = ?,

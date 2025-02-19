@@ -3,16 +3,20 @@ const getAll = (vacationId) => {
 return `
 
 SELECT 
-    r.*,
-    COUNT(ura.user_id) AS number_of_people
+    r.*, 
+    COUNT(ura.user_id) AS number_of_people,
+    f.*  
 FROM 
     trip_tracker_${vacationId}.rooms r
 LEFT JOIN 
     trip_tracker_${vacationId}.user_room_assignments ura
-ON 
-    r.rooms_id = ura.room_id
+    ON r.rooms_id = ura.room_id
+LEFT JOIN 
+    trip_tracker_${vacationId}.families f
+    ON ura.family_id = f.family_id
 GROUP BY 
-    r.rooms_id`
+    r.rooms_id, f.family_id;  
+`
   // return `SELECT rooms_id ,type,size,direction,floor,base_occupancy,max_occupancy FROM trip_tracker_${vacationId}.rooms;`
 }
 
@@ -40,7 +44,6 @@ const updateRoom = (roomData,id,vacationId) => {
 }
 
 const getRoomAvailable = (vacationId) => {
-
   return `
     SELECT r.*
 FROM trip_tracker_${vacationId}.rooms r
@@ -53,6 +56,10 @@ ON r.rooms_id = rt.room_id
 WHERE rt.room_id IS NULL; 
 `
  }
+
+
+//     )
+// );
 
 const getUnAvailableDates = (vacationId) => {
   return `SELECT 

@@ -9,12 +9,10 @@ const getHistoryPayments = async (id, vacationId) => {
 const addPayments = async (paymentDetails, vacationId) => {
   const checkIfUserAlreadyAddedPayments = await getPayments(
     paymentDetails.familyId,
-
     vacationId
   );
 
   const plannedPayments = Number(paymentDetails.number_of_payments);
-
   const existingPaymentsCount = Object.keys(paymentDetails).filter((key) =>
     key.startsWith("id_")
   ).length;

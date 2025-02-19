@@ -686,3 +686,33 @@
   level: 'error',
   timestamp: '2025-02-17T21:59:35.376Z'
 }
+{
+  message: "Error: Function:getRoomAvailable :, You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 9",
+  level: 'error',
+  timestamp: '2025-02-19T10:21:41.452Z'
+}
+{
+  message: "Error: Function:getRoomAvailable :, You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 10",
+  level: 'error',
+  timestamp: '2025-02-19T10:23:09.601Z'
+}
+{
+  message: "Error: Function:getRoomAvailable :, You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 10",
+  level: 'error',
+  timestamp: '2025-02-19T10:24:31.193Z'
+}
+{
+  message: "Error: Function:getRoomAvailable :, You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 10",
+  level: 'error',
+  timestamp: '2025-02-19T10:25:30.318Z'
+}
+{
+  message: "Error: Function:getRoomAvailable :, You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 10",
+  level: 'error',
+  timestamp: '2025-02-19T10:26:20.768Z'
+}
+{
+  message: "Error: Function:getRoomAvailable :, You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 10",
+  level: 'error',
+  timestamp: '2025-02-19T10:27:07.365Z'
+}

@@ -119,8 +119,7 @@ const updateExpenses = async (vacationId, payment) => {
       payment.expenditureILS,
       payment.action_id
     ]
-    console.log(parameters,sql)
-    // await connection.executeWithParameters(sql, parameters)
+    await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     logger.error(
       `Error: Function:updateExpenses :, ${error.sqlMessage}`,
