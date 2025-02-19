@@ -77,6 +77,7 @@ export const useStyles = makeStyles((theme) => ({
           color: "#54a9ff",
         },
     },
+    
     selectedMenuItem: {
         backgroundColor: "#2D2D2D !important",
         
@@ -93,5 +94,6 @@ export const useStyles = makeStyles((theme) => ({
           backgroundColor: "#3C3E43",
         },
         
-      },
+    },
+    
 }));

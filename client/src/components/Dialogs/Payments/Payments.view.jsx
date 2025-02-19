@@ -30,15 +30,7 @@ const PaymentsView = (props) => {
   } = props;
 
   const inputRefs = useRef([]);
-  const handleKeyDown = (e, index) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const nextInput = inputRefs.current[index + 1];
-      if (nextInput) {
-        nextInput.focus();
-      }
-    }
-  };
+  
   return (
     <>
       <Grid container style={{ minHeight: "350px", padding: "20px"}} >
@@ -70,8 +62,8 @@ const PaymentsView = (props) => {
                 <TextField
                   name={`amount_${index + 1}`}
                   value={form[`amountReceived_${index + 1}`]}
-                  className={classes.textField}
-                  onChange={handleInputChange}
+                  className={classes.textField }
+                  onChange={form[`isPaid_${index + 1}`] ? "" :  handleInputChange}
                 />
               </Grid>
               <Grid item>
@@ -83,7 +75,7 @@ const PaymentsView = (props) => {
                   name={`paymentDate_${index + 1}`}  
                   value={form[`paymentDate_${index + 1}`]}  
                   className={classes.textField}
-                  onChange={handleInputChange}
+                  onChange={form[`isPaid_${index + 1}`] ? "" :  handleInputChange}
                 />
               </Grid>
               <Grid item>
@@ -91,7 +83,7 @@ const PaymentsView = (props) => {
                 <Select
                    name={`formOfPayment_${index + 1}`}
                    value={form[`formOfPayment_${index + 1}`] || ''}
-                   onChange={handleInputChange}
+                   onChange={form[`isPaid_${index + 1}`] ? "" :  handleInputChange}
                   input={<OutlinedInput className={classes.selectOutline} />}
                   MenuProps={{
                     PaperProps: {
@@ -112,9 +104,9 @@ const PaymentsView = (props) => {
               <Grid item>
                 <InputLabel className={classes.inputLabelStyle}>מטבע תשלום</InputLabel>
                 <Select
-                   name={`paymentCurrency_${index + 1}`}
-                   value={form[`paymentCurrency_${index + 1}`] || ""}
-                  onChange={handleInputChange}
+                  name={`paymentCurrency_${index + 1}`}
+                  value={form[`paymentCurrency_${index + 1}`] || ""}
+                  onChange={form[`isPaid_${index + 1}`] ? "" :  handleInputChange}
                   input={<OutlinedInput className={classes.selectOutline} />}
                   MenuProps={{
                     PaperProps: {

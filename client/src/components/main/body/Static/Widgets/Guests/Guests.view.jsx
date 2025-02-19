@@ -77,7 +77,7 @@ function GuestsView({
       <TableContainer
       
       >
-        <Table stickyHeader style={{ width: "inherit" }} size="small">
+        <Table style={{ width: "inherit" }} size="small" stickyHeader>
           <TableHead>
             <TableRow>
               {headers.map((header, index) => {

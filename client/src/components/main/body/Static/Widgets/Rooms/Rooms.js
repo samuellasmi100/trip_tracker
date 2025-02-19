@@ -29,6 +29,7 @@ const Rooms = ({ handleDialogTypeOpen }) => {
     "גודל",
     "קיבולת החדר",
     "תפוסה מקסימלית",
+    "משויך",
     "מספר אנשים בחדר ",
     "ערוך",
     "זמינות",
@@ -67,7 +68,8 @@ const Rooms = ({ handleDialogTypeOpen }) => {
         "כיוון": row.direction,
         "גודל": row.size,
         "קיבולת החדר": row.base_occupancy,
-        "תפוסה מקסימלית": row.max_occupancy
+        "תפוסה מקסימלית": row.max_occupancy,
+        "משויך":row.family_name
       };
     });
   
@@ -79,9 +81,10 @@ const Rooms = ({ handleDialogTypeOpen }) => {
       "גודל",
       "קיבולת החדר",
       "תפוסה מקסימלית",
+      "משויך"
     ];
-  
-    const ws = XLSX.utils.json_to_sheet(transformedData, { skipHeader: true });
+
+    const ws = XLSX.utils.json_to_sheet(transformedData);
     XLSX.utils.sheet_add_aoa(ws, [hebrewHeaders], { origin: "A1" });
     ws["!dir"] = "rtl";
     ws["!cols"] = hebrewHeaders.map(() => ({ wch: 20 }));

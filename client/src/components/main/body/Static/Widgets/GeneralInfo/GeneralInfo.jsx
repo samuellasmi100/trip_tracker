@@ -87,6 +87,7 @@ const GeneralInfo = (props) => {
 
   const handleExportToExcel = () => {
     const transformedData = generalInfoDetails.map((row) => {
+      console.log(row)
       return {
         "חופשה":vacationName,
         "מסלול": row.week_chosen,
@@ -97,7 +98,7 @@ const GeneralInfo = (props) => {
         "שם משפחה בעברית": row.hebrew_last_name,
         "שם פרטי באנגלית": row.english_first_name,
         "שם משפחה באנגלית": row.english_last_name,
-        "תאריך לידה": row.birth_date,
+        "תאריך לידה": row.birth_date === null ? row.defaule_birth_date : row.birth_date,
         "מספר זהות": row.identity_id,
         "מספר טלפון": row.phone_a !== null && row.phone_b !== null ? row.phone_a + row.phone_b : "",
         "אימייל": row.email,

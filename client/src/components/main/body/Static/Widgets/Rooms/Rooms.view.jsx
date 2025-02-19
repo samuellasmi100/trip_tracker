@@ -29,7 +29,6 @@ function StaticView({
   handleExportToExcel,
 }) {
   const classes = useStyles();
-
   return (
     <Grid>
       <Grid style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -57,8 +56,8 @@ function StaticView({
       </Grid>
       <TableContainer
         style={{
-          border: "1px solid #3D3F47",
-          height: "calc(100vh - 245px)",
+          // border: "1px solid #3D3F47",
+          // height: "calc(100vh - 279px)",
           maxHeight: "80vh",
         }}
       >
@@ -104,6 +103,9 @@ function StaticView({
                   <TableCell className={classes.dataTableCell}>
                     {room.max_occupancy}
                   </TableCell>
+                  <TableCell className={classes.dataTableCell}>
+                    {room.family_name}
+                  </TableCell>
                   <TableCell
                     className={`${classes.dataTableCell} ${Number(room.number_of_people) === 0 ? classes.greenText : classes.redText
                       }`}
@@ -130,8 +132,6 @@ function StaticView({
                       />
                     </IconButton>
                   </TableCell>
-
-
                 </TableRow>
               );
             })}

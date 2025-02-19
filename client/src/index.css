@@ -49,7 +49,7 @@ html, body, #root {
 
 li:hover {
   background: #babec7; /* Change this to match your hover style */
-  /* background-color: theme.palette.modal.primary; If using theme palette, you would need to inject the theme into CSS, or use inline styles or styled-components */
+  
 }
 
 
