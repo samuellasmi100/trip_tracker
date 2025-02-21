@@ -26,8 +26,8 @@ gu.birth_date,
 gu.flying_with_us,
 gu.number_of_payments,
 gu.user_id,gu.is_main_user,gu.user_type,gu.is_in_group,gu.arrival_date,gu.departure_date,gu.address
-FROM trip_tracker_7ede9a79_2fe8_4ac1_b0a7_978647f1cf94.families fa join trip_tracker_7ede9a79_2fe8_4ac1_b0a7_978647f1cf94.guest gu
-join trip_tracker_7ede9a79_2fe8_4ac1_b0a7_978647f1cf94.user_room_assignments urs
+FROM trip_tracker_${vacationId}.families fa join trip_tracker_${vacationId}.guest gu
+join trip_tracker_${vacationId}.user_room_assignments urs
 on urs.user_id = gu.user_id
 on fa.family_id = gu.family_id where gu.family_id = ?`;
 };
