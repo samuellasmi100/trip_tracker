@@ -33,7 +33,7 @@ const getHistoryPayments = async (id,vacationId) => {
 
 const addPayments = async (paymentDetails) => {
   try {
-    const sql = paymentsQuery.addPayments(paymentDetails.vacationId)
+    const sql = paymentsQuery.addPayments(paymentDetails.vacationId) 
     const parameters = [
       paymentDetails.paymentDate,
       paymentDetails.amount,
@@ -44,6 +44,7 @@ const addPayments = async (paymentDetails) => {
       paymentDetails.userId,
       paymentDetails.invoice === undefined ? false : paymentDetails.invoice
     ]
+    console.log(parameters)
      await connection.executeWithParameters(sql,parameters)
     
   } catch (error) { 
