@@ -731,3 +731,28 @@
   level: 'error',
   timestamp: '2025-02-19T12:06:55.013Z'
 }
+{
+  message: "Error: Function:updateGuest :, Unknown column 'room_id' in 'field list'",
+  level: 'error',
+  timestamp: '2025-02-21T06:56:56.040Z'
+}
+{
+  message: "Error: Function:updateGuest :, Unknown column 'room_id' in 'field list'",
+  level: 'error',
+  timestamp: '2025-02-28T10:34:08.509Z'
+}
+{
+  message: "Error: Function:updateRoom :, Unknown column 'family_id' in 'field list'",
+  level: 'error',
+  timestamp: '2025-02-28T10:36:58.398Z'
+}
+{
+  message: "Error: Function:updateRoom :, Unknown column 'family_name' in 'field list'",
+  level: 'error',
+  timestamp: '2025-02-28T10:37:36.825Z'
+}
+{
+  message: "Error: Function:updateRoom :, Unknown column 'people_count' in 'field list'",
+  level: 'error',
+  timestamp: '2025-02-28T10:37:56.548Z'
+}

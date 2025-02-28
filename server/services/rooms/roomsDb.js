@@ -31,6 +31,9 @@ const updateRoom = async (data,vacationId) => {
     const roomsId = data.rooms_id
     delete data.number_of_people
     delete data.id
+    delete data.family_id
+    delete data.family_name
+    delete data.people_count
     const sql = roomsQuery.updateRoom(data,roomsId,vacationId)
     const parameters = Object.values(data)
     const response = await connection.executeWithParameters(sql,parameters)

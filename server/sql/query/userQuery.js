@@ -72,6 +72,7 @@ on fa.family_id = gu.family_id where gu.user_id= ?`;
 };
 
 const updateGuest = (userData, id, vacationId) => {
+  delete userData.room_id
   return `UPDATE trip_tracker_${vacationId}.guest SET ${Object.keys(userData)
     .map((key) => `${key}=?`)
     .join(",")}
