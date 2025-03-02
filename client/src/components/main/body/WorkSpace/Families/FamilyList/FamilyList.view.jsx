@@ -175,9 +175,7 @@ function FamilyListView(props) {
                       </IconButton>
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>
-                      {user.remains_to_be_paid === null
-                        ? user.total_amount
-                        : user.remains_to_be_paid}
+                      {user.total_amount - user.total_paid_amount}
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>{user.number_of_guests}</TableCell>
                     <TableCell className={`${classes.dataTableCell} ${classes.redText}`}>

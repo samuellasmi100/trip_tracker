@@ -92,6 +92,15 @@ const ChildDetailsView = ({ userData }) => {
             )
         }
     }
+
+    const calaculatRminedToBePaid = () => {
+   if(paymentsDetails.length === 0){
+    return ""
+   }else {
+    const totalAmountReceived = paymentsDetails.reduce((sum, payment) => sum + Number(payment.amountReceived), 0);
+    return userDetails[0]?.total_amount - totalAmountReceived 
+   }
+    }
     return (
         <Grid container style={{ display: "flex", flexDirection: "column", paddingRight: '25px',maxHeight: "300px" }}>
             <Grid item xs={6}>
@@ -175,7 +184,7 @@ const ChildDetailsView = ({ userData }) => {
                     </Grid>
                     
                 </Grid>
-    
+ 
                  {
                     userDetails[0]?.user_type === "parent" ?   <Grid>
                     <Grid>
@@ -187,7 +196,7 @@ const ChildDetailsView = ({ userData }) => {
                     </Grid>
                     <Grid style={{ display: 'flex', gap: "5px" }}>
                         <Typography className={classes.inputLabelStyle}>היתרה לתשלום  :</Typography>
-                        <Typography className={classes.inputLabelStyle}> {paymentsDetails[paymentsDetails?.length-1]?.totalUnpaidAmount}</Typography>
+                        <Typography className={classes.inputLabelStyle}> {calaculatRminedToBePaid()}</Typography>
                     </Grid>
                     <Grid style={{ display: 'flex', flexDirection: "column", gap: "5px", }}>
                         {paymentsDetails?.length > 0 ?
