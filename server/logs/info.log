@@ -756,3 +756,8 @@
   level: 'error',
   timestamp: '2025-02-28T10:37:56.548Z'
 }
+{
+  message: 'Error: Function:getHistoryPayments :, Malformed communication packet.',
+  level: 'error',
+  timestamp: '2025-03-02T09:53:51.339Z'
+}
