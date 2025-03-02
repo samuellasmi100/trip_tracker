@@ -183,11 +183,11 @@ const ChildDetailsView = ({ userData }) => {
                     </Grid>
                     <Grid style={{ display: 'flex', gap: "5px" }}>
                         <Typography className={classes.inputLabelStyle}>סכום מקורי :</Typography>
-                        <Typography className={classes.inputLabelStyle}> {paymentsDetails[paymentsDetails?.length-1]?.amount}</Typography>
+                        <Typography className={classes.inputLabelStyle}> {userDetails[0]?.total_amount}</Typography>
                     </Grid>
                     <Grid style={{ display: 'flex', gap: "5px" }}>
                         <Typography className={classes.inputLabelStyle}>היתרה לתשלום  :</Typography>
-                        <Typography className={classes.inputLabelStyle}> {paymentsDetails[paymentsDetails?.length-1]?.remainsToBePaid}</Typography>
+                        <Typography className={classes.inputLabelStyle}> {paymentsDetails[paymentsDetails?.length-1]?.totalUnpaidAmount}</Typography>
                     </Grid>
                     <Grid style={{ display: 'flex', flexDirection: "column", gap: "5px", }}>
                         {paymentsDetails?.length > 0 ?
