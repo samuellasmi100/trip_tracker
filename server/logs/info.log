@@ -796,3 +796,21 @@
   level: 'error',
   timestamp: '2025-03-02T10:11:35.534Z'
 }
+{
+  message: "Error: Function:getFamilies :, You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ', ',', ''),\n" +
+    "    lp.total_paid_amount,  -- This will now show the total paid amou' at line 20",
+  level: 'error',
+  timestamp: '2025-03-02T10:29:23.265Z'
+}
+{
+  message: "Error: Function:getFamilies :, You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ', ',', ''),\n" +
+    "    lp.total_paid_amount,  -- This will now show the total paid amou' at line 20",
+  level: 'error',
+  timestamp: '2025-03-02T10:29:38.091Z'
+}
+{
+  message: "Error: Function:getFamilies :, You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ', ',', '') as total_amount,\n" +
+    "    lp.total_paid_amount,  -- This will now show the' at line 19",
+  level: 'error',
+  timestamp: '2025-03-02T10:30:00.810Z'
+}

@@ -22,7 +22,7 @@ SELECT
     gu.hebrew_last_name,
     gu.english_last_name,
     gu.number_of_guests,
-    gu.total_amount,
+    REPLACE(gu.total_amount, ',', '') as total_amount,
     lp.total_paid_amount,  -- This will now show the total paid amount
     (SELECT COUNT(*) 
      FROM trip_tracker_${vacationId}.guest 
