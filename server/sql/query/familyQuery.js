@@ -8,10 +8,11 @@ const addFamily = (vacationId) =>{
     SELECT 
         p.family_id,
         p.user_id,
-        SUM(CASE WHEN p.is_paid = 0 THEN p.amount_received ELSE 0 END) AS remains_to_be_paid,
+        SUM(p.amount_received) AS total_paid_amount,  -- Sum of all amounts where is_paid = 1
         ROW_NUMBER() OVER (PARTITION BY p.user_id ORDER BY p.created_at DESC) AS row_num
     FROM 
         trip_tracker_${vacationId}.payments p
+    WHERE p.is_paid = 1  -- Only include rows where is_paid = 1
     GROUP BY p.family_id, p.user_id
 )
 SELECT 
@@ -22,7 +23,7 @@ SELECT
     gu.english_last_name,
     gu.number_of_guests,
     gu.total_amount,
-    lp.remains_to_be_paid,
+    lp.total_paid_amount,  -- This will now show the total paid amount
     (SELECT COUNT(*) 
      FROM trip_tracker_${vacationId}.guest 
      WHERE family_id = fa.family_id) AS user_in_system_count

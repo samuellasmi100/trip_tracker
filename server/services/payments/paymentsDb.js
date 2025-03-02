@@ -20,7 +20,7 @@ const getPayments = async (id,vacationId) => {
 const getHistoryPayments = async (id,vacationId) => {
   try {
     const sql = paymentsQuery.getHistoryPayments(vacationId)
-    const parameters = [id,id]
+    const parameters = [id]
     const response = await connection.executeWithParameters(sql,parameters)
     return response
    

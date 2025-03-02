@@ -761,3 +761,38 @@
   level: 'error',
   timestamp: '2025-03-02T09:53:51.339Z'
 }
+{
+  message: "Error: Function:getHistoryPayments :, You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'return SELECT family_id as familyId,\n" +
+    '\n' +
+    "     DATE_FORMAT(payment_date, '%d/%m/%Y')' at line 1",
+  level: 'error',
+  timestamp: '2025-03-02T09:59:44.717Z'
+}
+{
+  message: "Error: Function:getHistoryPayments :, You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'return SELECT family_id as familyId,\n" +
+    '\n' +
+    "     DATE_FORMAT(payment_date, '%d/%m/%Y')' at line 1",
+  level: 'error',
+  timestamp: '2025-03-02T10:00:05.749Z'
+}
+{
+  message: "Error: Function:getFamilies :, You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ';\n" +
+    ')\n' +
+    'SELECT \n' +
+    '    fa.family_id,\n' +
+    '    fa.family_name,\n' +
+    '    gu.hebrew_first_name,\n' +
+    "    ' at line 4",
+  level: 'error',
+  timestamp: '2025-03-02T10:10:02.597Z'
+}
+{
+  message: "Error: Function:getFamilies :, Unknown column 'lp.remains_to_be_paid' in 'field list'",
+  level: 'error',
+  timestamp: '2025-03-02T10:11:24.453Z'
+}
+{
+  message: "Error: Function:getFamilies :, Unknown column 'lp.remains_to_be_paid' in 'field list'",
+  level: 'error',
+  timestamp: '2025-03-02T10:11:35.534Z'
+}

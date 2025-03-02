@@ -7,28 +7,10 @@ const getPayments = (vacationId) => {
     remains_to_be_paid as remainsToBePaid,payment_currency as paymentCurrency,amount_received as amountReceived,invoice,is_paid from trip_tracker_${vacationId}.payments WHERE family_id = ?`
 }
 const getHistoryPayments = (vacationId) => {
-    return `SELECT 
-    (SELECT COALESCE(SUM(amount_received), 0) 
-     FROM trip_tracker_${vacationId}.payments 
-     WHERE user_id = ?
-     AND is_paid = 0) AS totalUnpaidAmount,
-    DATE_FORMAT(payment_date, '%d/%m/%Y') AS paymentDate,
-    amount,
-    form_of_payment AS formOfPayment,
-    remains_to_be_paid AS remainsToBePaid,
-    payment_currency AS paymentCurrency,
-    updated_at,
-    amount_received AS amountReceived,
-    invoice
-FROM trip_tracker_${vacationId}.payments
-WHERE user_id = ?;`
-//     return `
-// SELECT SUM(amount_received) AS totalUnpaidAmount,
-//      DATE_FORMAT(payment_date, '%d/%m/%Y') AS paymentDate,amount,form_of_payment as formOfPayment,
-//     remains_to_be_paid as remainsToBePaid,payment_currency as paymentCurrency,updated_at,
-//     amount_received as amountReceived,invoice
-// FROM trip_tracker_${vacationId}.payments
-// where user_id = ? AND is_paid = 0;`
+    return `SELECT family_id as familyId,
+     DATE_FORMAT(payment_date, '%d/%m/%Y') AS paymentDate,amount,form_of_payment as formOfPayment,
+    remains_to_be_paid as remainsToBePaid,payment_currency as paymentCurrency,updated_at,
+    amount_received as amountReceived,invoice,is_paid from trip_tracker_${vacationId}.payments WHERE user_id = ? And is_paid = 1;`
 }
 const updatePayments = (vacationId) => {
     return `UPDATE trip_tracker_${vacationId}.payments
