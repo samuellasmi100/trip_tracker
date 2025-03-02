@@ -25,6 +25,7 @@ const getUserDetails = async (id,familyId) => {
 let dataToReturn = {
     userDetails, flightsDetails, roomsDetails, notesDetails,paymentsDetails
 }
+console.log(paymentsDetails)
     return dataToReturn
 }
 
