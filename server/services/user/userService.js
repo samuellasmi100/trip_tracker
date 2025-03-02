@@ -72,7 +72,7 @@ const getUserDetails = async (id, familyId, isIngroup, vacationId) => {
     notesDetails,
     paymentsDetails,
   };
-  console.log(paymentsDetails)
+ 
   return dataToReturn;
 };
 
