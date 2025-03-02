@@ -46,6 +46,7 @@ gu.date_chosen,
 gu.age,
 gu.birth_date,
 gu.flying_with_us,
+gu.total_amount,
 gu.flights_direction,gu.is_main_user,gu.user_type,gu.is_in_group,gu.arrival_date,gu.departure_date,gu.address
 FROM trip_tracker_${vacationId}.families fa join trip_tracker_${vacationId}.guest gu
 on fa.family_id = gu.family_id where gu.user_id= ?`;

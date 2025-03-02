@@ -44,9 +44,8 @@ const addPayments = async (paymentDetails) => {
       paymentDetails.userId,
       paymentDetails.invoice === undefined ? false : paymentDetails.invoice
     ]
-    console.log(parameters)
      await connection.executeWithParameters(sql,parameters)
-    
+  
   } catch (error) { 
     logger.error(
       `Error: Function:addPayments :, ${error.sqlMessage}`,

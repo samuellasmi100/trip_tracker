@@ -8,10 +8,11 @@ const addFamily = (vacationId) =>{
     SELECT 
         p.family_id,
         p.user_id,
-        p.remains_to_be_paid,
+        SUM(CASE WHEN p.is_paid = 0 THEN p.amount_received ELSE 0 END) AS remains_to_be_paid,
         ROW_NUMBER() OVER (PARTITION BY p.user_id ORDER BY p.created_at DESC) AS row_num
     FROM 
         trip_tracker_${vacationId}.payments p
+    GROUP BY p.family_id, p.user_id
 )
 SELECT 
     fa.family_id,

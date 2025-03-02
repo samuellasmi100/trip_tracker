@@ -88,7 +88,7 @@ const addPayments = async (paymentDetails, vacationId) => {
             const paymentDate = paymentDetails[`paymentDate_${i}`];
             const paymentCurrency = paymentDetails[`paymentCurrency_${i}`];
             const formOfPayment = paymentDetails[`formOfPayment_${i}`];
-            const isPaid = paymentDetails[`isPaid_${i}`] === 0 ? false : true;
+            const isPaid = paymentDetails[`isPaid_${i}`] === 0 ? false || aymentDetails[`isPaid_${i}`] === false: true;
             const id = paymentDetails[`id_${i}`];
             if (
               amountReceived &&
@@ -116,7 +116,7 @@ const addPayments = async (paymentDetails, vacationId) => {
         const paymentDate = paymentDetails[`paymentDate_${i}`];
         const paymentCurrency = paymentDetails[`paymentCurrency_${i}`];
         const formOfPayment = paymentDetails[`formOfPayment_${i}`];
-        const isPaid = paymentDetails[`isPaid_${i}`] === 0 ? false : true;
+        const isPaid = paymentDetails[`isPaid_${i}`] === 0 ||  paymentDetails[`isPaid_${i}`] === false ? false : true;
         const id = paymentDetails[`id_${i}`];
         if (amountReceived && paymentDate && paymentCurrency && formOfPayment) {
           await paymentsDb.updatePayments({
