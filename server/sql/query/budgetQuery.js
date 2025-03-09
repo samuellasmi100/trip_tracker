@@ -69,7 +69,6 @@ const updateFutureExpenses = (vacationId) => {
   return `UPDATE trip_tracker_${vacationId}.future_expenses
   SET 
   expenditure = ?,
-  planned_payment_date = ?,
   expenditure_ils = ?
   WHERE action_id = ?`
 }
