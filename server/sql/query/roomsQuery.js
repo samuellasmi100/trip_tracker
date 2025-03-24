@@ -67,8 +67,8 @@ FROM trip_tracker_${vacationId}.rooms r
 LEFT JOIN trip_tracker_${vacationId}.room_taken rt
 ON r.rooms_id = rt.room_id
    AND NOT (
-       rt.end_date < ? 
-       OR rt.start_date > ? 
+       rt.end_date <= ? 
+       OR rt.start_date >= ? 
    )
 WHERE rt.room_id IS NULL; 
 `
