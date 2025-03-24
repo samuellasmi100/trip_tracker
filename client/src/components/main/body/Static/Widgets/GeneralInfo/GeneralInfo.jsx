@@ -87,7 +87,6 @@ const GeneralInfo = (props) => {
 
   const handleExportToExcel = () => {
     const transformedData = generalInfoDetails.map((row) => {
-      console.log(row)
       return {
         "חופשה":vacationName,
         "מסלול": row.week_chosen,

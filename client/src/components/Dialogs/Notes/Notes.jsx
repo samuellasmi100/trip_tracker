@@ -26,15 +26,27 @@ const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
   };
 
   const submit = async () => {
+    const isEmptyObject = (obj) => JSON.stringify(obj) === '{}';
     try {
-       await ApiNotes.addNotes(token,form,vacationId)
-       dispatch(
-        snackBarSlice.setSnackBar({
-          type: "success",
-          message: "הערות עודכנו בהצלחה",
-          timeout: 3000,
-        })
+      if(!isEmptyObject(form)){
+        await ApiNotes.addNotes(token,form,vacationId)
+        dispatch(
+         snackBarSlice.setSnackBar({
+           type: "success",
+           message: "הערות עודכנו בהצלחה",
+           timeout: 3000,
+         })
+         )
+         handleCloseClicked()
+      }else {
+        dispatch(
+          snackBarSlice.setSnackBar({
+            type: "warn",
+            message: "הערה לא נוספה",
+            timeout: 3000,
+          })
         )
+      }
     } catch (error) {
       console.log(error);
     }

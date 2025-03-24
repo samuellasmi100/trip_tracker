@@ -39,7 +39,6 @@ export const budgetSlice = createSlice({
 
       }]
       state.form = data
-      console.log(data)
       state.form.numberOfPayments = 1;
       state.subCategories = createSubCategoryForUpdate
     },

@@ -26,7 +26,6 @@ function PaymentsView({
   handleEditClick
 }) {
   const classes = useStyles();
-console.log(filteredPayments)
   return (
     <Grid style={{
       width: "99.9%", maxHeight: "80vh",
