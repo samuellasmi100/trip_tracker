@@ -105,7 +105,7 @@ const createPaymentsTableQuery = `
    user_id varchar(255) DEFAULT NULL,
    invoice tinyint DEFAULT '0',
    is_paid tinyint DEFAULT '0',
-   updated_at varchar(455) DEFAULT NULL
+   updated_at varchar(455) DEFAULT NULL,
    PRIMARY KEY (id)
  ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 `;
