@@ -19,17 +19,7 @@ const createFamilyTableQuery = `
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;`;
 
-const createFileTableQuery = `
- CREATE TABLE files (
-  id int NOT NULL AUTO_INCREMENT,
-  filename text NOT NULL,
-  fileType text NOT NULL,
-  filePath text NOT NULL,
-  family_id varchar(455) DEFAULT NULL,
-  uploadedAt datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (id)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-`;
+
 
 const createFightsTableQuery = `
 CREATE TABLE flights (
@@ -112,7 +102,7 @@ const createPaymentsTableQuery = `
    amount_received varchar(45) DEFAULT NULL,
    family_id varchar(45) DEFAULT NULL,
    created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-   user_id varchar(45) DEFAULT NULL,
+   user_id varchar(255) DEFAULT NULL,
    invoice tinyint DEFAULT '0',
    is_paid tinyint DEFAULT '0',
    updated_at varchar(455) DEFAULT NULL
@@ -182,20 +172,22 @@ const createExpensesSubCategoryTable = `
 `;
 
 const insertExpensesSubCategoryQuery = `
-INSERT INTO expenses_sub_category VALUES (1,'1','מלון'),(2,'2','טיסות כללי'),(3,'2','טיסות קבוצה אל על '),(4,'2','העברות'),(5,'6','אוטובוסים'),(6,'6','טיולים כניסות'),(7,'1','קונטיינר'),(8,'1','בשר'),(9,'1','עופות '),(10,'1','דגים'),(11,'1','שלומוביץ חלבי'),(12,'2','הובלות קונטיינר'),(13,'1','הובלות אירופה'),(14,'1','משאית קירור '),(15,'3','רכב'),(16,'1','אומנים מקומיים'),(17,'1','אומנים'),(18,'1','הגברה'),(19,'1','שוק מקומי'),(20,'1','מטבח רכוש'),(21,'1','צוות מטבח'),(22,'1','שף'),(23,'1','מחסנאי'),(24,'1','קונדיטור'),(25,'1','משגיח'),(26,'2','טיסות צוות'),(27,'6','מדריך'),(28,'1','מארחת'),(29,'3','תהילה'),(30,'1','כשרות'),(31,'3','פרסום'),(32,'3','משרד'),(33,'5','משכורות'),(34,'2','טיסות קבוצה hisky'),(35,'2','העברות פרטיות'),(36,'6','חניות');
-
-`;
+INSERT INTO expenses_sub_category VALUES (1,'1','מלון'),(2,'2','טיסות כללי'),(3,'2','טיסות קבוצה אל על '),(4,'2','העברות'),(5,'6','אוטובוסים'),(6,'6','טיולים כניסות'),(7,'1','קונטיינר'),(8,'1','בשר'),(9,'1','עופות '),
+(10,'1','דגים'),(11,'1','שלומוביץ חלבי'),(12,'2','הובלות קונטיינר'),(13,'1','הובלות אירופה'),(14,'1','משאית קירור '),(15,'3','רכב'),(16,'1','אומנים מקומיים'),
+(17,'1','אומנים'),(18,'1','הגברה'),(19,'1','שוק מקומי'),(20,'1','מטבח רכוש'),(21,'1','צוות מטבח'),(22,'1','שף'),(23,'1','מחסנאי'),(24,'1','קונדיטור'),(25,'1','משגיח'),
+(26,'2','טיסות צוות'),(27,'6','מדריך'),(28,'1','מארחת'),(29,'3','תהילה'),(30,'1','כשרות'),(31,'3','פרסום'),(32,'3','משרד'),(33,'5','משכורות'),(34,'2','טיסות קבוצה hisky'),
+(35,'2','העברות פרטיות'),(36,'6','חניות');`;
 
 const createFutureExpensesTable = `
 CREATE TABLE future_expenses (
   id int NOT NULL AUTO_INCREMENT,
   expenditure varchar(45) DEFAULT NULL,
   payment_currency varchar(45) DEFAULT NULL,
-  action_id varchar(455) DEFAULT NULL,
   expenses_category_id varchar(45) DEFAULT NULL,
   expenses_sub_category_id varchar(45) DEFAULT NULL,
   payment_date varchar(45) DEFAULT NULL,
   expenditure_ils varchar(45) DEFAULT NULL,
+  action_id varchar(455) DEFAULT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 `;
@@ -207,12 +199,13 @@ CREATE TABLE expenses (
   payment_currency varchar(45) DEFAULT NULL,
   expenses_category_id varchar(45) DEFAULT NULL,
   expenses_sub_category_id varchar(45) DEFAULT NULL,
+  payment_date varchar(45) DEFAULT NULL,
   planned_payment_date varchar(45) DEFAULT NULL,
-  actual_payment_date varchar(45) DEFAULT NULL,
   expenditure_ils varchar(45) DEFAULT NULL,
   is_paid tinyint DEFAULT '0',
-  is_unexpected tinyint DEFAULT '0',
+  actual_payment_date varchar(45) DEFAULT NULL,
   action_id varchar(455) DEFAULT NULL,
+  is_unexpected tinyint DEFAULT '0',
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 `;
@@ -232,7 +225,6 @@ CREATE TABLE exchange_rates (
 module.exports = {
   dropTablesQueries,
   createFamilyTableQuery,
-  createFileTableQuery,
   createFightsTableQuery,
   createGuestTableQuery,
   createNotesTableQuery,
