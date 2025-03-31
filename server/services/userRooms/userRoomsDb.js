@@ -41,9 +41,12 @@ const updateAssignRoom = async (userId,roomId,vacationId) => {
 }
 const updateStartEndAndDate = async (vacationId,familyId,startDate,endDate) => {
   try {
-    let sql  = userRoomQuery.updateStartEndAndDate(vacationId)
-    const parameters = [startDate,endDate,familyId]
-    await connection.executeWithParameters(sql,parameters) 
+    if(startDate !== undefined && endDate !== undefined){
+      let sql  = userRoomQuery.updateStartEndAndDate(vacationId)
+      const parameters = [startDate,endDate,familyId]
+      await connection.executeWithParameters(sql,parameters) 
+    }
+    
   } catch (error) { 
   logger.error(
       `Error: Function:updateStartEndAndDate :, ${error.sqlMessage}`,
