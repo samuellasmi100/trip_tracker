@@ -35,7 +35,7 @@ const RoomSelector = ({
     <>
       <Grid style={{ padding: "20px" }}>
         <Grid item style={{ marginTop: "-20px", marginBottom: "8px" }}>
-          <Typography>בחר חדר עבור משתמש זה</Typography>
+          <Typography>{userForm.user_type === "parent" ? "שייך אורחים לחדרים": "אורח זה משוייך לחדר"}</Typography>
         </Grid>
 
         <Grid item xs={12} style={{ position: "relative" }}>
@@ -98,7 +98,11 @@ const RoomSelector = ({
                         }}
                       
                         checked={expandedRoomId === room.rooms_id}
-                        onChange={() => handleCheckboxChange(room.rooms_id)}
+                        onChange={() => {
+                          if(userForm.user_type === "parent"){
+                            handleCheckboxChange(room.rooms_id)
+                          }
+                        }}
                       />
                     }
                   />
@@ -155,7 +159,7 @@ const RoomSelector = ({
                   />
                 </Grid>
               </Grid>
-              <Collapse
+              {userForm.user_type === "parent"  ?   <Collapse
                 in={expandedRoomId === room.rooms_id}
                 timeout="auto"
                 unmountOnExit
@@ -207,20 +211,17 @@ const RoomSelector = ({
                       </Grid>
                     ))}
                   </> : <></>
-                  // <Typography>
-                  //   חדר זה מכיל {room.base_occupancy} מיטות || מיטות פנויות:{" "}
-                  //   {room.base_occupancy - room.peopleCount}{" "}
-                  // </Typography>
                   }
                 </Grid>
-              </Collapse>
+              </Collapse> : <></> }
+            
             </>
           );
         })}
       </Grid>
       <Grid item xs={12} container justifyContent="space-around">
         <Grid item style={{ marginTop: "auto", padding: "26px 0" }}>
-          <Button className={classes.submitButton} onClick={submit}>
+          <Button className={classes.submitButton} onClick={submit} disabled={userForm.user_type === "parent" ? false : true}>
             בחר חדרים
           </Button>
         </Grid>

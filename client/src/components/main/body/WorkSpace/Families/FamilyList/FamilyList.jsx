@@ -24,6 +24,7 @@ const FamilyList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const token = sessionStorage.getItem('token')
   const vacationList = useSelector((state) => state.vacationSlice.vacations)
+  const chosenFamily = useSelector((state) => state.userSlice.family)
 
   const closeModal = () => {
     dispatch(dialogSlice.initialActiveButton())
@@ -92,6 +93,7 @@ const FamilyList = () => {
   }
 
   const handleNameClick = async (user) => {
+  
     dispatch(userSlice.updateFamily(user))
     let family_id = user.family_id
     try {
@@ -107,6 +109,21 @@ const FamilyList = () => {
     }
   }
 
+  const getChosenFamily = async () => {
+    dispatch(userSlice.updateFamily(chosenFamily))
+    let family_id = chosenFamily.family_id
+    try {
+      let response = await ApiUser.getUserFamilyList(token, family_id, vacationId)
+      if (response.data.length > 0) {
+        dispatch(userSlice.updateGuest(response.data))
+      } else {
+        dispatch(userSlice.updateGuest([]))
+
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  } 
 
   const filteredFamilyList = usersData?.filter((user) => {
     if (searchTerm !== "") {
@@ -128,7 +145,6 @@ const FamilyList = () => {
     }
   }
 
-
   const handleSelectInputChange = async (e) => {
     closeModal()
     clearModalForms()
@@ -149,6 +165,7 @@ const FamilyList = () => {
 
   useEffect(() => {
     getFamilies()
+    getChosenFamily()
   }, [dialogOpen, vacationId])
 
   useEffect(() => {
@@ -167,11 +184,8 @@ const FamilyList = () => {
           setSearchTerm={setSearchTerm}
           handleSelectInputChange={handleSelectInputChange}
         />
-
         <FamilyMember handleDialogTypeOpen={handleDialogTypeOpen} />
       </Grid>
-
-
       <MainDialog
         dialogType={dialogType}
         dialogOpen={dialogOpen}

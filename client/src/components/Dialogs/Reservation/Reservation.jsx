@@ -70,7 +70,6 @@ const Reservation = () => {
 
   const submit = async () => {
     try {
-
       let response = await ApiUser.updateUser(token,form,vacationId);
       await getGuests();
       dispatch(
