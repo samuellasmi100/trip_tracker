@@ -39,6 +39,7 @@ const assignGroupUserRoom = async (selectedRoomList) => {
 }
 
 const getFamilyRoom = async (id, vacationId) => {
+
     const familyRooms = await userRoomsDb.getFamilyRoom(id, vacationId)
     const userAssignRoom = await userRoomsDb.getUsersChosenRoom(id, vacationId)
     return { familyRooms, userAssignRoom }
@@ -60,16 +61,21 @@ const assignRoom = async (userId, roomId, familyId, vacationId, status) => {
         if (status === false) {
             await userRoomsDb.removeUserAssignMainRoom(userId, vacationId)
         } else {
-            const response = await getChosenRoom(userId, vacationId)
-            if (response.length > 0) {
-                await userRoomsDb.updateAssignRoom(userId, roomId, vacationId)
-            } else {
-                await userRoomsDb.assignRoom(userId, roomId, familyId, vacationId)
-            }
+            const familyRoom = await userRoomsDb.getFamilyRoom(familyId, vacationId)
+            const isRoomExists = familyRoom.some(room => room.rooms_id === roomId);
+            if(isRoomExists){
+                const response = await getChosenRoom(userId, vacationId)
+                if (response.length > 0) {
+                    await userRoomsDb.updateAssignRoom(userId, roomId, vacationId)
+                } else {
+                    await userRoomsDb.assignRoom(userId, roomId, familyId, vacationId)
+                }
+                return true
+            }else {
+                return false
+            }  
         }
-
     }
-
 }
 
 const getChosenRoom = async (id, vacationId) => {

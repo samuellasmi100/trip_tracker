@@ -63,8 +63,9 @@ router.post("/room", async (req, res, next) => {
   const vacationId = req.body.vacationId
 
   try {
-    await userRoomsService.assignRoom(userId,roomId,familyId,vacationId)
+    const result = await userRoomsService.assignRoom(userId,roomId,familyId,vacationId)
     const response = await userRoomsService.getChosenRoom(userId,vacationId)
+    response.roomAssignStatus=result
     res.send(response)
 
   } catch (error) {
@@ -81,8 +82,9 @@ router.post("/room/parent/:id", async (req, res, next) => {
   const status = form.status
   const vacationId = req.params.id
   try {
-    await userRoomsService.assignRoom(userId,roomId,familyId,vacationId,status)
+    const result = await userRoomsService.assignRoom(userId,roomId,familyId,vacationId,status)
     const response = await userRoomsService.getFamilyRoom(familyId,vacationId)
+    response.roomAssignStatus= result
     res.send(response)
 
   } catch (error) {
