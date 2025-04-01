@@ -8,7 +8,6 @@ import ApiRoom from "../../../apis/roomsRequest";
 import * as userSlice from "../../../store/slice/userSlice";
 import ApiRooms from "../../../apis/roomsRequest";
 
-
 const RoomSelector = () => {
   const token = sessionStorage.getItem("token");
   const dispatch = useDispatch();
@@ -21,7 +20,7 @@ const RoomSelector = () => {
   const form = useSelector((state) => state.userSlice.form);
   const [roomChosenType, setRoomChosenType] = useState(false);
   const guests = useSelector((state) => state.userSlice.guests);
-  
+
   const [names, setNames] = useState(
     guests.map((key) => {
       return {
@@ -41,18 +40,21 @@ const RoomSelector = () => {
 
   const handleUserCheckboxChange = async (e, userId, roomsId, familyId) => {
     let status = e.target.checked;
-    const findRoomDetails = guestsRoomList?.find((room) => Number(room.room_id) === Number(roomsId))
-    let badAvailble 
-     if(findRoomDetails?.max_occupancy === null){
-      badAvailble = findRoomDetails?.base_occupancy
-     }else {
-      badAvailble = Number(findRoomDetails?.base_occupancy) + Number(findRoomDetails?.max_occupancy)
-     }
-    
-    
+    const findRoomDetails = guestsRoomList?.find(
+      (room) => Number(room.room_id) === Number(roomsId)
+    );
+    let badAvailble;
+    if (findRoomDetails?.max_occupancy === null) {
+      badAvailble = findRoomDetails?.base_occupancy;
+    } else {
+      badAvailble =
+        Number(findRoomDetails?.base_occupancy) +
+        Number(findRoomDetails?.max_occupancy);
+    }
+
     try {
-      if(status === true && findRoomDetails !== undefined){
-        if(Number(findRoomDetails.people_count) + 1 > Number(badAvailble)){
+      if (status === true && findRoomDetails !== undefined) {
+        if (Number(findRoomDetails.people_count) + 1 > Number(badAvailble)) {
           dispatch(
             snackBarSlice.setSnackBar({
               type: "warn",
@@ -60,18 +62,36 @@ const RoomSelector = () => {
               timeout: 3000,
             })
           );
-           return 
-        }else {
+          return;
+        } else {
           let dataToSend = { userId, roomsId, familyId, status };
-          let response = await ApiRoom.assignRoomToGroupOfUser(token, dataToSend,vacationId);
+          let response = await ApiRoom.assignRoomToGroupOfUser(
+            token,
+            dataToSend,
+            vacationId
+          );
           setGuestsRoomList(response.data.userAssignRoom);
         }
-       }else {
+      } else {
         let dataToSend = { userId, roomsId, familyId, status };
-      let response = await ApiRoom.assignRoomToGroupOfUser(token, dataToSend,vacationId);
-      setGuestsRoomList(response.data.userAssignRoom);
-       }
-      
+        let response = await ApiRoom.assignRoomToGroupOfUser(
+          token,
+          dataToSend,
+          vacationId
+        );
+        if (response.data.roomAssignStatus) {
+          setGuestsRoomList(response.data.userAssignRoom);
+        } else {
+          dispatch(
+            snackBarSlice.setSnackBar({
+              type: "error",
+              message: "אופס ... נראה שהחדר משוייך לאורח אחר",
+              timeout: 3000,
+            })
+          );
+          handleCloseClicked();
+        }
+      }
     } catch (error) {
       console.log(error);
     }
@@ -79,7 +99,7 @@ const RoomSelector = () => {
 
   const submit = async () => {
     try {
-      if (form.user_type !== "parent") { 
+      if (form.user_type !== "parent") {
         let response = ApiRoom.assignUserToRoom(
           token,
           selectedChildRoomId,
@@ -94,12 +114,11 @@ const RoomSelector = () => {
           timeout: 3000,
         })
       );
-      if(form.flights === null){
-        dispatch(dialogSlice.updateActiveButton("הערות"))
-      }else {
-        dispatch(dialogSlice.updateActiveButton("טיסות"))
+      if (form.flights === null) {
+        dispatch(dialogSlice.updateActiveButton("הערות"));
+      } else {
+        dispatch(dialogSlice.updateActiveButton("טיסות"));
       }
-    
     } catch (error) {
       dispatch(
         snackBarSlice.setSnackBar({
@@ -149,6 +168,7 @@ const RoomSelector = () => {
       console.log(error);
     }
   };
+
   const getUsersChosenRoom = async () => {
     try {
       let response = await ApiRoom.getUsersChosenRoom(
@@ -157,9 +177,9 @@ const RoomSelector = () => {
         vacationId
       );
 
-      if(response.data.length > 0){
+      if (response.data.length > 0) {
         setGuestsRoomList(response.data);
-      }else {
+      } else {
         setGuestsRoomList([]);
       }
     } catch (error) {
