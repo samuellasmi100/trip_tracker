@@ -1,7 +1,64 @@
-import React from "react";
 import { makeStyles } from "@mui/styles";
 
 export const useStyles = makeStyles((theme) => ({
+  /* ===== PAGE CONTAINER ===== */
+  pageContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "6px",
+    padding: "10px 16px",
+    height: "calc(100vh - 48px)",
+    boxSizing: "border-box",
+    "@media (max-width: 600px)": {
+      padding: "8px",
+      gap: "6px",
+    },
+  },
+
+  /* ===== TABLE CARD ===== */
+  tableCard: {
+    background: "#ffffff",
+    borderRadius: "12px",
+    border: "1px solid #e2e8f0",
+    overflow: "hidden",
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    minHeight: 0,
+  },
+  tableToolbar: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "8px 14px",
+    borderBottom: "1px solid #f1f5f9",
+    backgroundColor: "#fafbfc",
+    gap: "10px",
+    flexShrink: 0,
+    "@media (max-width: 600px)": {
+      flexWrap: "wrap",
+      padding: "6px 10px",
+    },
+  },
+  tableTitle: {
+    fontSize: "15px !important",
+    fontWeight: "600 !important",
+    color: "#1e293b !important",
+    fontFamily: "'Inter', sans-serif !important",
+    whiteSpace: "nowrap",
+  },
+  toolbarActions: {
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+  },
+  tableWrap: {
+    flex: 1,
+    overflow: "auto",
+    minHeight: 0,
+  },
+
+  /* ===== TABLE STYLES ===== */
   dataTableBody: {
     "& tr:nth-of-type(odd)": {
       backgroundColor: "#ffffff",
@@ -10,139 +67,206 @@ export const useStyles = makeStyles((theme) => ({
       backgroundColor: "#f8fafc",
     },
     "& tr": {
-      transition: "background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+      cursor: "pointer",
+      transition: "background-color 120ms ease",
       "&:hover": {
         backgroundColor: "#f0fdfa !important",
       },
     },
   },
   dataTableCell: {
-    fontSize: "14px !important",
+    fontSize: "13px !important",
     color: "#1e293b !important",
     textAlign: "center !important",
     borderBottom: "1px solid #f1f5f9 !important",
-    padding: "12px 8px !important",
+    padding: "8px 6px !important",
+    whiteSpace: "nowrap",
+  },
+  familyNameCell: {
+    fontSize: "13px !important",
+    color: "#0f766e !important",
+    fontWeight: "600 !important",
+    textAlign: "center !important",
+    borderBottom: "1px solid #f1f5f9 !important",
+    padding: "8px 6px !important",
+    cursor: "pointer",
+    "&:hover": {
+      color: "#0d9488 !important",
+      textDecoration: "underline",
+    },
   },
   headerTableRow: {
-    fontSize: "13px !important",
+    fontSize: "12px !important",
     color: "#64748b !important",
     textAlign: "center !important",
     borderBottom: "2px solid #e2e8f0 !important",
     fontWeight: "600 !important",
     textTransform: "uppercase",
     letterSpacing: "0.05em",
+    whiteSpace: "nowrap",
+    padding: "8px 6px !important",
     "&.MuiTableCell-stickyHeader": {
       backgroundColor: "#ffffff !important",
     },
   },
-  textField: {
-    borderRadius: 10,
-    "& .MuiInputBase-input": {
-      position: "relative",
-      color: "#1e293b",
-      fontSize: 14,
-      padding: "5px 18px",
-      height: "24px",
-    },
-    "& .MuiFormLabel-root": {
-      color: "#94a3b8",
-      fontSize: "14px",
-    },
-    "& label.Mui-focused": {
-      color: "#0d9488",
-      top: "0px",
-    },
-    "& .MuiInput-underline:after": {
-      borderBottomColor: "#0d9488",
-    },
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        borderColor: "#e2e8f0",
-      },
-      "&:hover fieldset": {
-        borderColor: "#0d9488",
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: "#0d9488",
-      },
-    },
-  },
-  searchField: {
-    borderRadius: 10,
-    "& .MuiInputBase-input": {
-      position: "relative",
-      color: "#1e293b",
-      fontSize: 14,
-      width: "140px",
-      padding: "8px 16px",
-      height: "20px",
-    },
-    "& .MuiFormLabel-root": {
-      color: "#94a3b8",
-      fontSize: "14px",
-    },
-    "& label.Mui-focused": {
-      color: "#0d9488",
-      top: "0px",
-    },
-    "& .MuiInput-underline:after": {
-      borderBottomColor: "#0d9488",
-    },
-    "& .MuiOutlinedInput-root": {
-      borderRadius: "10px",
-      "& fieldset": {
-        borderColor: "#e2e8f0",
-      },
-      "&:hover fieldset": {
-        borderColor: "#0d9488",
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: "#0d9488",
-      },
-    },
-  },
-  inputLabelStyle: {
-    color: "#94a3b8 !important",
-    fontSize: "15px",
-  },
-  selectOutline: {
-    height: "38px",
-    width: "200px",
-    borderRadius: "10px !important",
-    "&.MuiOutlinedInput-root": {
-      color: "#1e293b !important",
-      "& .MuiOutlinedInput-notchedOutline": {
-        borderColor: "#e2e8f0",
-      },
-      "&:hover .MuiOutlinedInput-notchedOutline": {
-        borderColor: "#0d9488",
-      },
-    },
-    "& .MuiSvgIcon-root": {
-      color: "#0d9488",
-    },
-  },
-  selectedMenuItem: {
-    backgroundColor: "#ffffff !important",
-    color: "#1e293b !important",
-    "& Mui=Menu-list": {
-      padding: "0px !important"
-    },
-    "&.Mui-selected": {
-      backgroundColor: "#f0fdfa !important",
-      "&:hover": {
-        backgroundColor: "#ccfbf1 !important",
-      },
-    },
-    "&:hover": {
-      backgroundColor: "#f8fafc !important",
-    },
-  },
   redText: {
     color: "#ef4444 !important",
-    fontSize: "14px !important",
-    textAlign: "center !important",
-    borderBottom: "1px solid #f1f5f9 !important",
     fontWeight: "700 !important",
   },
+  statusBadge: {
+    display: "inline-block",
+    padding: "2px 8px",
+    borderRadius: "10px",
+    fontSize: "11px !important",
+    fontWeight: "600 !important",
+    lineHeight: "16px",
+  },
+  statusOk: {
+    backgroundColor: "#f0fdf4",
+    color: "#16a34a !important",
+  },
+  statusWarning: {
+    backgroundColor: "#fefce8",
+    color: "#ca8a04 !important",
+  },
+
+  /* ===== SEARCH FIELD ===== */
+  searchField: {
+    "& .MuiInputBase-input": {
+      color: "#1e293b",
+      fontSize: 13,
+      width: "120px",
+      padding: "6px 12px",
+      height: "18px",
+      "@media (max-width: 600px)": {
+        width: "80px",
+      },
+    },
+    "& .MuiOutlinedInput-root": {
+      borderRadius: "8px",
+      "& fieldset": {
+        borderColor: "#e2e8f0",
+      },
+      "&:hover fieldset": {
+        borderColor: "#0d9488",
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: "#0d9488",
+      },
+    },
+  },
+
+  /* ===== DRAWER OVERLAY ===== */
+  drawerOverlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(15, 23, 42, 0.35)",
+    zIndex: 1400,
+    opacity: 0,
+    pointerEvents: "none",
+    transition: "opacity 0.25s ease",
+  },
+  drawerOverlayOpen: {
+    opacity: 1,
+    pointerEvents: "auto",
+  },
+
+  /* ===== DRAWER ===== */
+  drawer: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    bottom: 0,
+    width: "40%",
+    maxWidth: "560px",
+    backgroundColor: "#ffffff",
+    boxShadow: "6px 0 24px rgba(0, 0, 0, 0.1)",
+    zIndex: 1500,
+    display: "flex",
+    flexDirection: "column",
+    transform: "translateX(-100%)",
+    transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+    "@media (max-width: 1024px)": {
+      width: "70%",
+      maxWidth: "none",
+    },
+    "@media (max-width: 768px)": {
+      width: "100%",
+      maxWidth: "none",
+    },
+  },
+  drawerOpen: {
+    transform: "translateX(0)",
+  },
+
+  /* ===== DRAWER HEADER ===== */
+  drawerHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "10px 16px",
+    borderBottom: "1px solid #e2e8f0",
+    backgroundColor: "#fafbfc",
+    flexShrink: 0,
+  },
+  drawerTitleArea: {
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+  },
+  drawerTitle: {
+    fontSize: "15px !important",
+    fontWeight: "700 !important",
+    color: "#1e293b !important",
+    fontFamily: "'Inter', sans-serif !important",
+  },
+  drawerSubtitle: {
+    fontSize: "12px !important",
+    color: "#94a3b8 !important",
+    fontFamily: "'Inter', sans-serif !important",
+  },
+  drawerActions: {
+    display: "flex",
+    alignItems: "center",
+    gap: "4px",
+  },
+  drawerCloseBtn: {
+    width: "30px !important",
+    height: "30px !important",
+    borderRadius: "8px !important",
+    backgroundColor: "#f1f5f9 !important",
+    "&:hover": {
+      backgroundColor: "#e2e8f0 !important",
+    },
+  },
+
+  /* ===== DRAWER BODY ===== */
+  drawerBody: {
+    flex: 1,
+    overflowY: "auto",
+    minHeight: 0,
+  },
+  drawerGuestTable: {
+    "& .MuiTableCell-root": {
+      padding: "7px 6px !important",
+      fontSize: "13px !important",
+    },
+  },
+  drawerEmpty: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "40px 16px",
+    gap: "8px",
+  },
+  drawerEmptyText: {
+    fontSize: "14px !important",
+    color: "#94a3b8 !important",
+    fontFamily: "'Inter', sans-serif !important",
+  },
+
 }));

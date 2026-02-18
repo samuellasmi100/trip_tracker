@@ -1,15 +1,9 @@
 import React from "react";
-import FamilyMemberView from "./FamilyMember.view";
 
-const FamilyMember = ({handleDialogTypeOpen}) => {
-  
-
-  return(
-  <>
-  <FamilyMemberView handleDialogTypeOpen={handleDialogTypeOpen}/>
-
-  </>
-  )
+// FamilyMember guest view is now rendered inside the FamilyList drawer.
+// This component is kept for import compatibility.
+const FamilyMember = () => {
+  return null;
 };
 
 export default FamilyMember;

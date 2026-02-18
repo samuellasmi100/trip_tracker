@@ -26,7 +26,7 @@ export const useStyles = makeStyles((theme) => ({
   },
 
   sidebarHidden: {
-    "@media (max-width: 768px)": {
+    "@media (max-width: 1024px)": {
       transform: "translateX(100%) !important",
     },
   },
@@ -201,16 +201,16 @@ export const useStyles = makeStyles((theme) => ({
   /* ===== MOBILE HAMBURGER ===== */
   hamburger: {
     position: "fixed !important",
-    top: "12px",
-    right: "12px",
+    top: "4px",
+    right: "8px",
     zIndex: 1300,
-    backgroundColor: "#ffffff !important",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.12) !important",
+    backgroundColor: "transparent !important",
+    boxShadow: "none !important",
     width: "40px !important",
     height: "40px !important",
     borderRadius: "10px !important",
     display: "none !important",
-    "@media (max-width: 768px)": {
+    "@media (max-width: 1024px)": {
       display: "flex !important",
     },
   },
@@ -226,7 +226,7 @@ export const useStyles = makeStyles((theme) => ({
     pointerEvents: "none",
     transition: "opacity 0.3s ease",
     display: "none",
-    "@media (max-width: 768px)": {
+    "@media (max-width: 1024px)": {
       display: "block",
     },
   },

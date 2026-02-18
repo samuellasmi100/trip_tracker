@@ -12,7 +12,7 @@ function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 1024);
   const [staticExpanded, setStaticExpanded] = useState(false);
 
   const staticDialogType = useSelector((state) => state.staticSlice.type);

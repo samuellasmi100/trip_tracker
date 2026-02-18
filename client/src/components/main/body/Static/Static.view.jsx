@@ -1,112 +1,26 @@
-import { Button, Grid, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import React from "react";
-import { useStyles } from "./Static.style";
-import { useSelector } from "react-redux";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
-
-function StaticView({ handleWidgetClick}) {
-  const classes = useStyles();
-  const vacationName = sessionStorage.getItem("vacName") 
-
-   return (
+function StaticView() {
+  return (
     <Grid
       style={{
         display: "flex",
-        justifyContent: "center",
+        flexDirection: "column",
         alignItems: "center",
-        flexWrap: "wrap",
-        margin: "0 auto",
-        gap: "16px",
-        border: "none",
-        maxWidth: "100vw",
-        padding: "0 24px",
-        marginRight: "0",
+        justifyContent: "center",
+        height: "calc(100vh - 48px)",
+        color: "#94a3b8",
+        gap: "8px",
       }}
     >
-      <Grid className={classes.containerGrid}>
-        <Button className={classes.button}onClick={() => handleWidgetClick("rooms")}>
-          <Grid className={classes.dataGrid}>
-          <Grid className={classes.headerBox}>
-              <Typography className={classes.header}>רשימת חדרים</Typography>
-              </Grid>
-          </Grid>
-        </Button>
-      </Grid>
-      <Grid className={classes.containerGrid}>
-        <Button className={classes.button}  onClick={() => handleWidgetClick("roomsStatus")}>
-          <Grid className={classes.dataGrid}>
-          <Grid className={classes.headerBox}>
-              <Typography className={classes.header}>סטטוס חדרים</Typography>
-              </Grid>
-          </Grid>
-        </Button>
-      </Grid>
-      <Grid className={classes.containerGrid}>
-        <Button className={classes.button}onClick={() => handleWidgetClick("payments")}>
-          <Grid className={classes.dataGrid}>
-            <Grid className={classes.headerBox}>
-              <Typography className={classes.header}>תשלומים</Typography>
-              </Grid>
-          </Grid>
-        </Button>
-      </Grid>
-      <Grid className={classes.containerGrid}>
-        <Button className={classes.button}  onClick={() => handleWidgetClick("mainGuests")}>
-          <Grid className={classes.dataGrid}>
-          <Grid className={classes.headerBox}>
-              <Typography className={classes.header}>נרשמים</Typography>
-              </Grid>
-          </Grid>
-        </Button>
-      </Grid>
-      <Grid className={classes.containerGrid}>
-        <Button className={classes.button}  onClick={() => handleWidgetClick("guests")}>
-          <Grid className={classes.dataGrid}>
-          <Grid className={classes.headerBox}>
-              <Typography className={classes.header}>כלל האורחים</Typography>
-               
-              </Grid>
-          </Grid>
-        </Button>
-      </Grid>
-      <Grid className={classes.containerGrid}>
-        <Button className={classes.button}  onClick={() => handleWidgetClick("hotels")}>
-          <Grid className={classes.dataGrid}>
-          <Grid className={classes.headerBox}>
-              <Typography className={classes.header}>מלונות</Typography>
-              </Grid>
-          </Grid>
-        </Button>
-      </Grid>
-      <Grid className={classes.containerGrid}>
-        <Button className={classes.button}  onClick={() => handleWidgetClick("vacations")}>
-          <Grid className={classes.dataGrid}>
-          <Grid className={classes.headerBox}>
-              <Typography className={classes.header}>חופשות</Typography>
-              </Grid>
-          </Grid>
-        </Button>
-      </Grid>
-      <Grid className={classes.containerGrid}>
-        <Button className={classes.button} onClick={() => handleWidgetClick("flights")}>
-          <Grid className={classes.dataGrid}>
-          <Grid className={classes.headerBox}>
-              <Typography className={classes.header}>טיסות</Typography>
-              </Grid>
-          </Grid>
-        </Button>
-      </Grid>
-      <Grid className={classes.containerGrid}>
-        <Button className={classes.button} onClick={() => handleWidgetClick("generalInformation")}>
-          <Grid className={classes.dataGrid}>
-          <Grid className={classes.headerBox}>
-              <Typography className={classes.header}>מידע כולל {vacationName} </Typography>
-              </Grid>
-          </Grid>
-        </Button>
-      </Grid>
+      <InfoOutlinedIcon style={{ fontSize: "48px", color: "#e2e8f0" }} />
+      <Typography style={{ fontSize: "14px", fontFamily: "'Inter', sans-serif", color: "#94a3b8" }}>
+        בחר נושא מהתפריט
+      </Typography>
     </Grid>
-   );
+  );
 }
 
 export default StaticView;

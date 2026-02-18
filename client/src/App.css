@@ -11,10 +11,14 @@ html, body, #root {
   padding: 0;
 }
 
-/* ===== Responsive: Mobile (<= 768px) ===== */
-@media (max-width: 768px) {
-  /* Remove sidebar margin on mobile - content takes full width */
-  .App > .MuiGrid-root {
+/* Main content area — offset by sidebar width */
+.main-content {
+  margin-right: 240px;
+}
+
+/* Tablet & mobile: no sidebar margin (sidebar hidden below 1024px) */
+@media (max-width: 1024px) {
+  .main-content {
     margin-right: 0 !important;
   }
 }

@@ -46,7 +46,7 @@ const Static = () => {
 
   return (
     <Grid>
-      <StaticView handleWidgetClick={handleWidgetClick} />
+      <StaticView />
       <MainDialog mainDialogOpen={mainDialogOpen} closeMainModal={closeMainModal} />
     </Grid>
   );

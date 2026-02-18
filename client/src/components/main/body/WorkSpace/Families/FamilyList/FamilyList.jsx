@@ -1,17 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import MainDialog from "../../../../../Dialogs/MainDialog/MainDialog";
 import { useDispatch, useSelector } from "react-redux";
 import ApiUser from "../../../../../../apis/userRequest"
-import ApiVacations from "../../../../../../apis/vacationRequest"
-import FamilyMember from "../FamilyMember/FamilyMember";
-import { Grid, Typography } from "@mui/material";
 import FamilyListView from "./FamilyList.view";
 import * as userSlice from "../../../../../../store/slice/userSlice";
 import * as dialogSlice from "../../../../../../store/slice/dialogSlice";
 import * as flightsSlice from "../../../../../../store/slice/flightsSlice";
 import * as roomsSlice from "../../../../../../store/slice/roomsSlice";
 import * as notesSlice from "../../../../../../store/slice/notesSlice";
-import * as vacationSlice from "../../../../../../store/slice/vacationSlice";
 import * as paymentsSlice from "../../../../../../store/slice/paymentsSlice";
 
 const FamilyList = () => {
@@ -20,11 +16,16 @@ const FamilyList = () => {
   const dispatch = useDispatch();
   const dialogOpen = useSelector((state) => state.dialogSlice.open)
   const dialogType = useSelector((state) => state.dialogSlice.type)
-  const [file, setFile] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const token = sessionStorage.getItem('token')
-  const vacationList = useSelector((state) => state.vacationSlice.vacations)
   const chosenFamily = useSelector((state) => state.userSlice.family)
+
+  // Drawer state
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const closeDrawer = useCallback(() => {
+    setDrawerOpen(false);
+  }, []);
 
   const closeModal = () => {
     dispatch(dialogSlice.initialActiveButton())
@@ -93,7 +94,7 @@ const FamilyList = () => {
   }
 
   const handleNameClick = async (user) => {
-  
+
     dispatch(userSlice.updateFamily(user))
     let family_id = user.family_id
     try {
@@ -107,6 +108,8 @@ const FamilyList = () => {
     } catch (error) {
       console.log(error)
     }
+    // Open drawer when family is clicked
+    setDrawerOpen(true);
   }
 
   const getChosenFamily = async () => {
@@ -123,7 +126,7 @@ const FamilyList = () => {
     } catch (error) {
       console.log(error)
     }
-  } 
+  }
 
   const filteredFamilyList = usersData?.filter((user) => {
     if (searchTerm !== "") {
@@ -134,62 +137,35 @@ const FamilyList = () => {
   }
   );
 
-  const getVacations = async () => {
-    try {
-      const response = await ApiVacations.getVacations(token)
-      if (response?.data?.vacations?.length > 0) {
-        dispatch(vacationSlice.updateVacationList(response?.data?.vacations))
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  const handleSelectInputChange = async (e) => {
-    closeModal()
-    clearModalForms()
-    dispatch(userSlice.updateFamiliesList([]))
-    dispatch(userSlice.updateGuest([]))
-    const getVacationId = vacationList?.find((key) => {
-      return key.name === e.target.value
-    })
-    dispatch(vacationSlice.updateChosenVacation(getVacationId.vacation_id))
-    dispatch(vacationSlice.updateVacationName(getVacationId.name))
-    sessionStorage.setItem("vacId", getVacationId.vacation_id)
-    sessionStorage.setItem("vacName", getVacationId.name)
-    try {
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  // Close drawer and modals when vacation changes (dropdown is in Header now)
+  useEffect(() => {
+    setDrawerOpen(false);
+    closeModal();
+    clearModalForms();
+  }, [vacationId])
 
   useEffect(() => {
     getFamilies()
     getChosenFamily()
   }, [dialogOpen, vacationId])
 
-  useEffect(() => {
-    getVacations()
-  }, [])
   return (
-    <Grid style={{ display: "flex", flexDirection: "column" }}>
-      <Grid style={{ display: "flex", justifyContent: "center", gap: "16px", padding: "16px" }}>
-        <FamilyListView
-          handleDialogTypeOpen={handleDialogTypeOpen}
-          handleNameClick={handleNameClick}
-          filteredFamilyList={filteredFamilyList}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          handleSelectInputChange={handleSelectInputChange}
-        />
-        <FamilyMember handleDialogTypeOpen={handleDialogTypeOpen} />
-      </Grid>
+    <>
+      <FamilyListView
+        handleDialogTypeOpen={handleDialogTypeOpen}
+        handleNameClick={handleNameClick}
+        filteredFamilyList={filteredFamilyList}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        drawerOpen={drawerOpen}
+        closeDrawer={closeDrawer}
+      />
       <MainDialog
         dialogType={dialogType}
         dialogOpen={dialogOpen}
         closeModal={closeModal}
       />
-    </Grid>
+    </>
   )
 };
 

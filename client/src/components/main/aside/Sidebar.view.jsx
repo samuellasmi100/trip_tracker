@@ -139,19 +139,6 @@ function SidebarView({
               staticExpanded ? classes.subMenuOpen : ""
             }`}
           >
-            {/* Link to the static page itself */}
-            <Link to="/static" style={{ textDecoration: "none" }}>
-              <div
-                className={`${classes.subMenuItem} ${
-                  pathname.includes("/static") && !mainModalOpen
-                    ? classes.subMenuItemActive
-                    : ""
-                }`}
-              >
-                <InfoOutlinedIcon className={classes.subMenuIcon} />
-                <span>דף ראשי</span>
-              </div>
-            </Link>
             {staticSubItems.map((item) => (
               <div
                 key={item.key}

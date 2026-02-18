@@ -22,7 +22,7 @@ function App() {
     <Grid className="App" style={{ height: "100vh", width: "100vw", backgroundColor: "#f1f5f9" }}>
       <SnackBar />
      {isAuthenticated ? <Sidebar /> : <></>}
-      <Grid style={isAuthenticated ? { marginRight: "240px", display: "flex", flexDirection: "column", minHeight: "100vh" } : {}}>
+      <Grid className={isAuthenticated ? "main-content" : ""} style={isAuthenticated ? { display: "flex", flexDirection: "column", minHeight: "100vh" } : {}}>
         {isAuthenticated ? <Header /> : null}
 
         <Routes>
