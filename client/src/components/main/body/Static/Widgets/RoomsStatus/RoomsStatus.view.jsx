@@ -5,86 +5,131 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Paper,
+  Grid,
+  Tooltip,
 } from "@mui/material";
 import React from "react";
-import { useStyles } from "./RoomsStatus.style"
+import { useStyles } from "./RoomsStatus.style";
 import { useSelector } from "react-redux";
 
-
-function DateAvailabilityView({dateRange,gaps}) {
+function DateAvailabilityView({ dateRange, gaps }) {
   const classes = useStyles();
   const rooms = useSelector((state) => state.roomsSlice.rooms);
 
-  let roomsId = rooms.map((key) => {
-    return key.rooms_id
-  })
-
+  const roomsId = rooms.map((key) => key.rooms_id);
 
   const reformatDate = (date) => {
-    const [day, month, weekday] = date.split(" ");
-    return `${day.padStart(2, '0')} ${month}`; 
+    const [day, month] = date.split(" ");
+    return `${day.padStart(2, "0")} ${month}`;
   };
 
-  const isDateAvailable = (date1,roomId) => {
-     
-     if(gaps[roomId] === undefined){
-        return true
-      }else {
-        const format = reformatDate(date1)
-        const [day, date] = format.split(" ");
-        const formattedCheckString = `${date} ${day}`;
-        if(gaps[roomId]?.includes(String(formattedCheckString))){
-         return true
-        }else {
-          return false
-        }
+  const isDateAvailable = (date1, roomId) => {
+    if (gaps[roomId] === undefined) {
+      return true;
+    } else {
+      const format = reformatDate(date1);
+      const [day, date] = format.split(" ");
+      const formattedCheckString = `${date} ${day}`;
+      if (gaps[roomId]?.includes(String(formattedCheckString))) {
+        return true;
+      } else {
+        return false;
       }
+    }
+  };
+
+  // Parse "ראשון 04-08" → { dayName: "ראשון", dateNum: "04-08", isWeekend }
+  const parseDateHeader = (dateStr) => {
+    const parts = dateStr.split(" ");
+    const dayName = parts[0];
+    const dateNum = parts[1];
+    const isWeekend = dayName === "שישי" || dayName === "שבת";
+    return { dayName, dateNum, isWeekend };
+  };
+
+  // Abbreviate day names: ראשון→א׳, שני→ב׳, etc.
+  const shortDay = (name) => {
+    const map = {
+      "ראשון": "א׳",
+      "שני": "ב׳",
+      "שלישי": "ג׳",
+      "רביעי": "ד׳",
+      "חמישי": "ה׳",
+      "שישי": "ו׳",
+      "שבת": "ש׳",
     };
+    return map[name] || name;
+  };
 
+  return (
+    <Grid className={classes.wrapper}>
+      <Grid className={classes.toolbar}>
+        <div className={classes.legend}>
+          <div className={classes.legendItem}>
+            <div
+              className={classes.legendDot}
+              style={{ backgroundColor: "#d1fae5" }}
+            />
+            <span>פנוי</span>
+          </div>
+          <div className={classes.legendItem}>
+            <div
+              className={classes.legendDot}
+              style={{ backgroundColor: "#fecaca" }}
+            />
+            <span>תפוס</span>
+          </div>
+        </div>
+      </Grid>
 
-  return(
-    <TableContainer
-    style={{
-     width:"99.9%",
-     maxHeight: "80vh",
-    }}>
-    <Table stickyHeader style={{ width: "inherit" }} size="small">
-      <TableHead>
-        <TableRow>
-          <TableCell  className={classes.headerTableRow}>מספר חדר</TableCell>
-          {dateRange.map((date, index) => (
-            <TableCell key={index}
-            className={classes.headerTableRow}
-            style={{ textAlign: "center" }}>
-              {date}
-            </TableCell>
-          ))}
-        </TableRow>
-      </TableHead>
-      <TableBody className={classes.dataTableBody} >
-        {roomsId.map((roomId, rowIndex) => (
-          <TableRow key={rowIndex}>
-            <TableCell className={classes.dataTableCell}>{roomId}</TableCell>
-            {dateRange.map((date, index) => {
-                const isAvailable = isDateAvailable(date, roomId);
+      <TableContainer className={classes.tableWrap}>
+        <Table className={classes.table} size="small" stickyHeader>
+          <TableHead>
+            <TableRow>
+              <TableCell className={classes.cornerHeader}>חדר</TableCell>
+              {dateRange.map((date, index) => {
+                const { dayName, dateNum, isWeekend } = parseDateHeader(date);
                 return (
                   <TableCell
-                   className={classes.dataTableCell}
                     key={index}
-                    style={{
-                      backgroundColor: isAvailable ? 'green' : 'red',
-                    }}
+                    className={`${classes.dateHeader} ${isWeekend ? classes.weekendHeader : ""}`}
                   >
-               </TableCell>
+                    <div className={classes.dateHeaderDay}>{shortDay(dayName)}</div>
+                    <div className={classes.dateHeaderNum}>{dateNum}</div>
+                  </TableCell>
                 );
               })}
             </TableRow>
-          ))}
-      </TableBody>
-    </Table>
-  </TableContainer>
-  )
+          </TableHead>
+
+          <TableBody className={classes.dataTableBody}>
+            {roomsId.map((roomId, rowIndex) => (
+              <TableRow key={rowIndex}>
+                <TableCell className={classes.roomCell}>{roomId}</TableCell>
+                {dateRange.map((date, index) => {
+                  const isAvailable = isDateAvailable(date, roomId);
+                  const { isWeekend } = parseDateHeader(date);
+                  return (
+                    <Tooltip
+                      key={index}
+                      title={`חדר ${roomId} · ${date} · ${isAvailable ? "פנוי" : "תפוס"}`}
+                      arrow
+                      placement="top"
+                      enterDelay={200}
+                    >
+                      <TableCell
+                        className={`${classes.dayCell} ${isAvailable ? classes.available : classes.unavailable} ${isWeekend ? classes.weekendCol : ""}`}
+                      />
+                    </Tooltip>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Grid>
+  );
 }
 
 export default DateAvailabilityView;

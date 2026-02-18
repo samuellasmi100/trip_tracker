@@ -16,7 +16,7 @@ function Sidebar() {
   const [staticExpanded, setStaticExpanded] = useState(false);
 
   const staticDialogType = useSelector((state) => state.staticSlice.type);
-  const mainModalOpen = useSelector((state) => state.staticSlice.mainModalOpen);
+
 
   const handleLogOut = () => {
       sessionStorage.removeItem("token");
@@ -60,7 +60,6 @@ function Sidebar() {
       navigate("/static");
     }
     // Dispatch the same Redux actions the Static page buttons use
-    dispatch(staticSlice.openMainModal());
     dispatch(staticSlice.updateDialogType(widgetName));
   }, [dispatch, navigate, location.pathname]);
 
@@ -77,7 +76,6 @@ function Sidebar() {
       toggleStaticExpanded={toggleStaticExpanded}
       handleWidgetClick={handleWidgetClick}
       staticDialogType={staticDialogType}
-      mainModalOpen={mainModalOpen}
     />
   );
 }

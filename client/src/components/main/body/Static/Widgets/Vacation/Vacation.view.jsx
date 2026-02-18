@@ -39,33 +39,30 @@ function VacationView({
   
   return (
     <Grid style={{
-      width:"99.9%",  maxHeight: "80vh",
+      width: "100%",
      }}> 
-      <Grid style={{ display: "flex", justifyContent: "flex-end" }}>
-        <Grid style={{ marginTop: "5px" }}>
+      <Grid style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", padding: "8px 12px", gap: "8px" }}>
           <FormControl>
             <TextField
               size="small"
+              placeholder="חיפוש..."
               className={classes.textField}
               onChange={(e) => setSearchTerm(e.target.value)}
               value={searchTerm}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <SearchIcon style={{ color: "#0d9488" }} />
+                    <SearchIcon style={{ color: "#0d9488", fontSize: "18px" }} />
                   </InputAdornment>
                 ),
               }}
             />
           </FormControl>
-        </Grid>
-        <IconButton onClick={handleAddRow}>
-          <AddBoxIcon style={{ color: "#0d9488", fontSize: "30px" }} />
+        <IconButton size="small" onClick={handleAddRow} style={{ border: "1px solid #e2e8f0", borderRadius: "6px", padding: "6px" }}>
+          <AddBoxIcon style={{ color: "#0d9488", fontSize: "18px" }} />
         </IconButton>
       </Grid>
-      <TableContainer
-      
-      >
+      <TableContainer style={{ overflow: "visible" }}>
         <Table stickyHeader style={{ width: "inherit" }} size="small">
           <TableHead>
             <TableRow>
@@ -87,45 +84,39 @@ function VacationView({
               return (
                 <TableRow key={index}>
                   <TableCell className={classes.dataTableCell}>
-                        {index + 1}
-                      </TableCell>
-                      <TableCell className={classes.dataTableCell}>
-                        {vac.name}
-                      </TableCell>
-                      <TableCell className={classes.dataTableCell}>
-                        {vac.details.length}
-                      </TableCell>
-                      <TableCell className={classes.dataTableCell}>
-                        {vac.details.map((key) => {
-                           const formattedStartDate = key.start_date
-                           ? moment(key.start_date).format("D-M-YYYY")
-                           : "";
-                           
-                         const formattedEndDate = key.end_date
-                           ? moment(key.end_date).format("D-M-YYYY")
-                           : "";
-                           return (
-                            <Typography key={index}>
-                              {key.name !== "חריגים"
-                                ? `${key.name}: ${formattedEndDate} / ${formattedStartDate} `
-                                : key.name}
-                            </Typography>
-                          );
-                      
-                    
-                        })}
-                      </TableCell>
-                      <TableCell
-                        className={classes.dataTableCell}
-                        style={{ maxWidth: "1px" }}
-                      >
-                        <IconButton size="small">
-                          <EditIcon
-                            onClick={() => handleEditClick(index, vac)}
-                          />
-                        </IconButton>
-                      </TableCell>
-                      
+                    {index + 1}
+                  </TableCell>
+                  <TableCell className={`${classes.dataTableCell} ${classes.vacationName}`}>
+                    {vac.name}
+                  </TableCell>
+                  <TableCell className={classes.dataTableCell}>
+                    <span className={classes.countBadge}>{vac.details.length}</span>
+                  </TableCell>
+                  <TableCell className={classes.routesCell}>
+                    {vac.details.map((key, i) => {
+                      const formattedStartDate = key.start_date
+                        ? moment(key.start_date).format("DD/MM/YY")
+                        : "";
+                      const formattedEndDate = key.end_date
+                        ? moment(key.end_date).format("DD/MM/YY")
+                        : "";
+                      return (
+                        <div key={i} className={classes.routeChip}>
+                          <span className={classes.routeName}>{key.name}</span>
+                          {key.name !== "חריגים" && (
+                            <span className={classes.routeDates}>
+                              {formattedStartDate} — {formattedEndDate}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </TableCell>
+                  <TableCell className={classes.dataTableCell}>
+                    <IconButton size="small" onClick={() => handleEditClick(index, vac)}>
+                      <EditIcon style={{ width: "16px", height: "16px" }} />
+                    </IconButton>
+                  </TableCell>
                 </TableRow>
               );
             })}

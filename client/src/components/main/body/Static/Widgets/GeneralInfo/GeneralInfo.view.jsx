@@ -36,12 +36,11 @@ function GeneralInfoView({
   const selectOption = ["טסים איתנו", "גיל"]
   return (
     <Grid style={{
-      width: "100%", maxHeight: "80vh"
+      width: "100%"
     }}>
-      <Grid style={{ display: "flex", justifyContent: "space-between" }}>
-        <Grid style={{ marginTop: "6px", marginRight: "10px",display:"flex" }}>
-        <Grid>
-        <Select
+      <Grid style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px" }}>
+        <Grid style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <Select
             value={selectedFilter}
             displayEmpty
             onChange={(e) => setSelectedFilter(e.target.value)}
@@ -49,7 +48,6 @@ function GeneralInfoView({
               <OutlinedInput
                 className={classes.selectFilterOutline}
               />
-             
             }
             MenuProps={{
               PaperProps: {
@@ -62,51 +60,44 @@ function GeneralInfoView({
           >
             {selectOption.map((option) => (
               <MenuItem
-
-
                 key={option}
                 value={option}
                 className={classes.selectedMenuItem}
               >
                 <ListItemText
-                  primaryTypographyProps={{ fontSize: "16" }}
+                  primaryTypographyProps={{ fontSize: "13px" }}
                   primary={option}
                 />
               </MenuItem>
             ))}
           </Select>
+          <IconButton size="small" onClick={(e) => setSelectedFilter(e.target.value)} style={{ border: "1px solid #e2e8f0", borderRadius: "6px", padding: "6px" }}>
+            <RefreshIcon style={{ color: "#0d9488", fontSize: "18px" }} />
+          </IconButton>
         </Grid>
-          <Grid>
-          <IconButton onClick={(e) => setSelectedFilter(e.target.value)}>
-        <RefreshIcon style={{ color: "#0d9488", fontSize: "25px", border: '1px solid #e2e8f0', borderRadius: "4px",padding:"3.8px",marginTop:"-7px" }} />
-        </IconButton>
-          </Grid>
-        </Grid>
-        <Grid style={{ marginTop: "5px" }}>
+        <Grid style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <FormControl>
             <TextField
               size="small"
+              placeholder="חיפוש..."
               className={classes.textField}
               onChange={(e) => setSearchTerm(e.target.value)}
               value={searchTerm}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <SearchIcon style={{ color: "#0d9488" }} />
+                    <SearchIcon style={{ color: "#0d9488", fontSize: "18px" }} />
                   </InputAdornment>
                 ),
               }}
             />
           </FormControl>
-          <IconButton onClick={handleExportToExcel}>
-            <DownloadIcon style={{ color: "#0d9488", fontSize: "30px", border: '1px solid #e2e8f0', padding: "10px", marginTop: "-7", borderRadius: "4px" }} />
+          <IconButton size="small" onClick={handleExportToExcel} style={{ border: "1px solid #e2e8f0", borderRadius: "6px", padding: "6px" }}>
+            <DownloadIcon style={{ color: "#0d9488", width: "18px", height: "18px" }} />
           </IconButton>
         </Grid>
-
       </Grid>
-      <TableContainer
-        style={{ height: "74.7vh" }}
-      >
+      <TableContainer style={{ overflow: "visible" }}>
         <Table stickyHeader style={{ width: "inherit" }} size="small">
           <TableHead>
             <TableRow>

@@ -50,33 +50,30 @@ function MainGuestsView({
 
   return (
     <Grid style={{
-      width:"99.9%",  maxHeight: "80vh",
+      width: "100%",
      }}> 
-      <Grid style={{ display: "flex", justifyContent: "flex-end" }}>
-        <Grid style={{ marginTop: "5px" }}>
+      <Grid style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", padding: "8px 12px", gap: "8px" }}>
           <FormControl>
             <TextField
               size="small"
+              placeholder="חיפוש..."
               className={classes.textField}
               onChange={(e) => setSearchTerm(e.target.value)}
               value={searchTerm}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <SearchIcon style={{ color: "#0d9488" }} />
+                    <SearchIcon style={{ color: "#0d9488", fontSize: "18px" }} />
                   </InputAdornment>
                 ),
               }}
             />
           </FormControl>
-          <IconButton onClick={handleExportToExcel}>
-          <DownloadIcon style={{ color: "#0d9488", fontSize: "30px",border:'1px solid #e2e8f0',padding:"10px",marginTop:"-7",borderRadius:"4px" }} />
-        </IconButton>
-        </Grid>
+          <IconButton size="small" onClick={handleExportToExcel} style={{ border: "1px solid #e2e8f0", borderRadius: "6px", padding: "6px" }}>
+            <DownloadIcon style={{ color: "#0d9488", width: "18px", height: "18px" }} />
+          </IconButton>
       </Grid>
-      <TableContainer
-      
-      >
+      <TableContainer style={{ overflow: "visible" }}>
         <Table stickyHeader style={{ width: "inherit" }} size="small">
           <TableHead>
             <TableRow>

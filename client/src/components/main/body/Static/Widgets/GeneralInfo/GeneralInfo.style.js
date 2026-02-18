@@ -17,20 +17,21 @@ export const useStyles = makeStyles((theme) => ({
         },
       },
       dataTableCell: {
-        fontSize: "14px !important",
+        fontSize: "12px !important",
         color: "#1e293b !important",
         textAlign: "center !important",
         borderBottom: "none !important",
         whiteSpace: "nowrap",
+        padding: "6px 8px !important",
       },
       headerTableRow: {
         whiteSpace: "nowrap",
-        fontSize: "14px !important",
+        fontSize: "12px !important",
         color: "#64748b !important",
-        // textAlign: "center !important",
-        borderBottom: "none!important",
+        textAlign: "center !important",
+        borderBottom: "1px solid #e2e8f0 !important",
         fontWeight: "600 !important",
-        width: "5px !important",
+        padding: "8px !important",
         "&.MuiTableCell-stickyHeader": {
           backgroundColor: "#ffffff !important",
         },
@@ -41,10 +42,10 @@ export const useStyles = makeStyles((theme) => ({
         "& .MuiInputBase-input": {
           position: "relative",
           color: "#1e293b",
-          fontSize: 16,
-          width: "120px",
-          padding: "5px 18px",
-          height: "30px",
+          fontSize: 13,
+          width: "140px",
+          padding: "6px 12px",
+          height: "20px",
         },
         "& .MuiFormLabel-root": {
           color: "#94a3b8", // or black
@@ -85,8 +86,9 @@ export const useStyles = makeStyles((theme) => ({
     },
 },
 selectFilterOutline: {
-  height: "35px",
-  width: "150px",
+  height: "32px",
+  width: "140px",
+  fontSize: "13px !important",
   "&.MuiOutlinedInput-root": {
     color: "#1e293b !important",
     "& .MuiOutlinedInput-notchedOutline": {

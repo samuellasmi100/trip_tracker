@@ -1,24 +1,37 @@
-import React, { useEffect,useState } from "react";
-import StaticView from "./Static.view";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import * as staticSlice from "../../../../store/slice/staticSlice";
+import { useNavigate } from "react-router-dom";
 import * as vacationSlice from "../../../../store/slice/vacationSlice";
-import MainDialog from "./MainDialog/MainDialog";
 import ApiVacations from "../../../../apis/vacationRequest";
 import "./Static.css";
 import { Grid } from "@mui/material";
+import Rooms from "./Widgets/Rooms/Rooms";
+import RoomsStatus from "./Widgets/RoomsStatus/RoomsStatus";
+import Vacation from "./Widgets/Vacation/Vacation";
+import MainGuests from "./Widgets/MainGuests/MainGuests";
+import Guests from "./Widgets/Guests/Guests";
+import Flights from "./Widgets/Flights/Flights";
+import GeneralInfo from "./Widgets/GeneralInfo/GeneralInfo";
+import Payments from "./Widgets/Payments/Payments";
 
+const widgetMap = {
+  rooms: Rooms,
+  roomsStatus: RoomsStatus,
+  vacations: Vacation,
+  mainGuests: MainGuests,
+  guests: Guests,
+  flights: Flights,
+  generalInformation: GeneralInfo,
+  payments: Payments,
+};
 
 const Static = () => {
-  const mainDialogOpen = useSelector((state) => state.staticSlice.mainModalOpen);
+  const dialogType = useSelector((state) => state.staticSlice.type);
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
   const vacationId = useSelector((state) => state.vacationSlice.vacationId);
   const token = sessionStorage.getItem("token");
-
-  const closeMainModal = () => {
-    dispatch(staticSlice.closeMainModal());
-  };
 
   const getVacations = async () => {
     try {
@@ -33,21 +46,31 @@ const Static = () => {
     }
   };
 
-
   useEffect(() => {
+    if (!dialogType) {
+      navigate("/workspace", { replace: true });
+      return;
+    }
     getVacations();
   }, []);
 
-  const handleWidgetClick = (name) => {
-    dispatch(staticSlice.openMainModal());
-    dispatch(staticSlice.updateDialogType(name));
-  }
-
+  const WidgetComponent = widgetMap[dialogType];
 
   return (
-    <Grid>
-      <StaticView />
-      <MainDialog mainDialogOpen={mainDialogOpen} closeMainModal={closeMainModal} />
+    <Grid style={{ height: "calc(100vh - 48px)", padding: "16px", boxSizing: "border-box" }}>
+      {WidgetComponent ? (
+        <Grid style={{
+          height: "100%",
+          border: "1px solid #e2e8f0",
+          borderRadius: "12px",
+          overflow: "auto",
+          backgroundColor: "#ffffff",
+        }}>
+          <WidgetComponent />
+        </Grid>
+      ) : (
+        null
+      )}
     </Grid>
   );
 };

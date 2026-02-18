@@ -37,7 +37,6 @@ function SidebarView({
   toggleStaticExpanded,
   handleWidgetClick,
   staticDialogType,
-  mainModalOpen,
 }) {
   const classes = useStyles();
   const { pathname } = useLocation();
@@ -144,7 +143,6 @@ function SidebarView({
                 key={item.key}
                 className={`${classes.subMenuItem} ${
                   pathname.includes("/static") &&
-                  mainModalOpen &&
                   staticDialogType === item.key
                     ? classes.subMenuItemActive
                     : ""

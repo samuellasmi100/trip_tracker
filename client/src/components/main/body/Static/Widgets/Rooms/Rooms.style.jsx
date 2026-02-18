@@ -18,18 +18,21 @@ export const useStyles = makeStyles((theme) => ({
     },
   },
   dataTableCell: {
-    fontSize: "14px !important",
+    fontSize: "12px !important",
     color: "#1e293b !important",
     textAlign: "center !important",
     borderBottom: "none !important",
+    whiteSpace: "nowrap",
+    padding: "6px 8px !important",
   },
   headerTableRow: {
-    fontSize: "15px !important",
+    fontSize: "12px !important",
     color: "#64748b !important",
     textAlign: "center !important",
-    borderBottom: "none!important",
+    borderBottom: "1px solid #e2e8f0 !important",
     fontWeight: "600 !important",
-    width: "10px",
+    whiteSpace: "nowrap",
+    padding: "8px !important",
     "&.MuiTableCell-stickyHeader": {
       backgroundColor: "#ffffff !important",
     },
@@ -40,10 +43,10 @@ export const useStyles = makeStyles((theme) => ({
     "& .MuiInputBase-input": {
       position: "relative",
       color: "#1e293b",
-      fontSize: 16,
-      width: "120px",
-      padding: "5px 18px",
-      height: "30px",
+      fontSize: 13,
+      width: "140px",
+      padding: "6px 12px",
+      height: "20px",
     },
     "& .MuiFormLabel-root": {
       color: "#94a3b8", // or black
@@ -101,16 +104,16 @@ export const useStyles = makeStyles((theme) => ({
   },
   greenText: {
     color: "green !important",
-    fontSize: "15px !important",
+    fontSize: "12px !important",
     textAlign: "center !important",
     borderBottom: "none !important",
-    fontWeight: "900 !important",
+    fontWeight: "700 !important",
   },
   redText: {
     color: "#ef4444 !important",
-    fontSize: "14px !important",
+    fontSize: "12px !important",
     textAlign: "center !important",
     borderBottom: "none !important",
-    fontWeight: "900 !important",
+    fontWeight: "700 !important",
   },
 }));
