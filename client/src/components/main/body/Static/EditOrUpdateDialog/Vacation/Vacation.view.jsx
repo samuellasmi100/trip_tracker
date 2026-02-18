@@ -1,135 +1,126 @@
-import { Grid, Select, InputLabel, MenuItem, OutlinedInput, Button, Typography, TextField, FormControlLabel,Checkbox } from "@mui/material";
+import {
+  Grid,
+  InputLabel,
+  Button,
+  Typography,
+  TextField,
+  FormControlLabel,
+  Checkbox,
+} from "@mui/material";
 import React from "react";
-import { useStyles } from "./Vacation.style"
+import { useStyles } from "./Vacation.style";
 import { useSelector } from "react-redux";
-import { staticSlice } from "../../../../../../store/slice/staticSlice";
 
-
-function VacationView({handleInputChange,submit}) {
- const classes = useStyles()
- const form = useSelector((state) => state.staticSlice.form)
+function VacationView({ handleInputChange, submit, handleCloseClicked }) {
+  const classes = useStyles();
+  const form = useSelector((state) => state.staticSlice.form);
+  const detailsModalType = useSelector((state) => state.staticSlice.detailsModalType);
+  const isEdit = detailsModalType === "editVacation";
 
   return (
-    <Grid container>
-    <Grid xs={12}style={{ marginLeft: "30px"}}>
-      <Grid item xs={12} container justifyContent="center" style={{ marginBottom: "30px",marginTop:"-10px"  }}>
-        הוסף חופשה
-      </Grid>
-    
-    </Grid>
-    <Grid item xs={6}>
-      <Grid container spacing={1} justifyContent="center">
-        <Grid item>
-          <InputLabel className={classes.inputLabelStyle}>
-            שם חופשה
-          </InputLabel>
-          <TextField
-            name="vacation_name"
-            className={classes.textField}
-            value={form?.vacation_name}
-            onChange={handleInputChange}
-          />
-        </Grid>
-        <Grid item>
-          <InputLabel className={classes.inputLabelStyle}>
-            מספר מסלולים
-          </InputLabel>
-          <TextField
-            name="vacation_routes"
-            value={form?.vacation_routes}
-            className={classes.textField}
-            onChange={handleInputChange}
-          />
-        </Grid>
-    
-      </Grid>
-    </Grid>
-    <Grid item xs={5}>
-      <Grid container spacing={1} justifyContent="center">
-        {Array.from({ length: form?.vacation_routes }).map((_, index) => (
-          <>
-          <Grid style={{display:"flex",gap:"8px"}}>
-          <Grid item>
-            <InputLabel className={classes.inputLabelStyle}>
-               מתאריך
-            </InputLabel>
-    
-      
+    <Grid className={classes.wrapper}>
+      <Typography className={classes.title}>
+        {isEdit ? "עריכת חופשה" : "הוספת חופשה"}
+      </Typography>
+
+      <div className={classes.section}>
+        <div className={classes.fieldGroup}>
+          <div className={classes.fieldItem}>
+            <InputLabel className={classes.inputLabelStyle}>שם חופשה</InputLabel>
             <TextField
-             name={`start_date_${index}`} 
-              type="date"
-              multiple
-              value={form[`start_date_${index}`] || ''}
-              className={classes.shortTxtField}
+              name="vacation_name"
+              className={classes.textField}
+              value={form?.vacation_name || ""}
               onChange={handleInputChange}
+              size="small"
+              placeholder="הזן שם..."
             />
-          </Grid>
-          <Grid item>
-            <InputLabel className={classes.inputLabelStyle}>
-             עד תאריך
-            </InputLabel>
-    
+          </div>
+          <div className={classes.fieldItem}>
+            <InputLabel className={classes.inputLabelStyle}>מספר מסלולים</InputLabel>
             <TextField
-             name={`end_date_${index}`} 
-              type="date"
-              multiple
-              value={form[`end_date_${index}`] || ''}
-              className={classes.shortTxtField}
+              name="vacation_routes"
+              className={classes.textField}
+              value={form?.vacation_routes || ""}
               onChange={handleInputChange}
+              size="small"
+              placeholder="0"
             />
-          </Grid>
-          </Grid>
-          </>
-        ))}
-      </Grid>
-      {form?.vacation_routes ? <Grid item style={{marginRight:"-42px",marginTop:"15px"}}>
-      <FormControlLabel
-        control={
-          <Checkbox
-            sx={{
-              color: "#cbd5e1",
-              "&.Mui-checked": {
-                color: "#0d9488",
-              },
-            }}
-            name="exceptions"
-            className={classes.checkbox}
-            onClick={handleInputChange}
-            checked={form.exceptions}
-          />
-        }
-        label={
-          <Typography style={{ color: "#64748b", fontSize: "15px" }}>
-             חריגים ?
-          </Typography>
-        }
-      />
-    </Grid> : ""}
-    </Grid>
-    
-    <Grid
-      item
-      xs={12}
-      container
-      style={{ marginTop: "80px" }}
-      justifyContent="space-around">
-     
-      <Grid item>
-        <Button
-          onClick={submit}
-          className={classes.submitButton}
-        >  הוסף חופשה
-    
+          </div>
+        </div>
+      </div>
+
+      {form?.vacation_routes > 0 && (
+        <>
+          <hr className={classes.divider} />
+          <div className={classes.section}>
+            <Typography className={classes.sectionLabel}>מסלולים</Typography>
+            {Array.from({ length: form?.vacation_routes }).map((_, index) => (
+              <div key={index} className={classes.routeCard}>
+                <span className={classes.routeIndex}>#{index + 1}</span>
+                <div className={classes.fieldItem} style={{ flex: 1 }}>
+                  <InputLabel className={classes.inputLabelStyle}>מתאריך</InputLabel>
+                  <TextField
+                    name={`start_date_${index}`}
+                    type="date"
+                    value={form[`start_date_${index}`] || ""}
+                    className={classes.dateField}
+                    onChange={handleInputChange}
+                    size="small"
+                  />
+                </div>
+                <div className={classes.fieldItem} style={{ flex: 1 }}>
+                  <InputLabel className={classes.inputLabelStyle}>עד תאריך</InputLabel>
+                  <TextField
+                    name={`end_date_${index}`}
+                    type="date"
+                    value={form[`end_date_${index}`] || ""}
+                    className={classes.dateField}
+                    onChange={handleInputChange}
+                    size="small"
+                  />
+                </div>
+              </div>
+            ))}
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                  sx={{
+                    color: "#cbd5e1",
+                    "&.Mui-checked": {
+                      color: "#0d9488",
+                    },
+                  }}
+                  name="exceptions"
+                  onClick={handleInputChange}
+                  checked={form.exceptions || false}
+                  size="small"
+                />
+              }
+              label={
+                <Typography className={classes.checkboxLabel}>
+                  חריגים
+                </Typography>
+              }
+              style={{ marginTop: "4px" }}
+            />
+          </div>
+        </>
+      )}
+
+      <hr className={classes.divider} />
+
+      <div className={classes.actions}>
+        <Button onClick={submit} className={classes.submitButton}>
+          {isEdit ? "עדכן" : "הוסף"}
         </Button>
-      </Grid>
-      <Grid item>
-        <Button className={classes.cancelButton}>
-          סגור
+        <Button onClick={handleCloseClicked} className={classes.cancelButton}>
+          ביטול
         </Button>
-      </Grid>
+      </div>
     </Grid>
-    </Grid> 
-  )
+  );
 }
 
 export default VacationView;

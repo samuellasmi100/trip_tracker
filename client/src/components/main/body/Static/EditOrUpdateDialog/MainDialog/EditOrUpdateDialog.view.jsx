@@ -1,50 +1,42 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Dialog,
   Grid,
+  IconButton,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 import { useStyles } from "./EditOrUpdateDialog.style";
-import { useSelector } from "react-redux";
 
 const EditOrUpdateDialogView = (props) => {
-  const dialogType = useSelector((state) => state.userSlice.dialogType)
   const {
     detailsDialogOpen,
     closeDetailsModal,
     handleDataView,
-    handleButtonHeader,
   } = props;
 
   const classes = useStyles();
-
 
   return (
     <Dialog
       open={detailsDialogOpen}
       classes={{ paper: classes.dialog }}
-      onClose={closeDetailsModal}>
-      <Grid 
-        >
-        <Grid
-          item
-          container
-          xs={12}
-          style={{ marginTop: "30px", marginLeft: "30px"}}
-          
-          alignContent="center"
-          justifyContent="space-between"
-          
-        >
-          <Grid item xs={12} container justifyContent="center" style={{ marginTop: "20px", marginBottom: "30px" }} >
-         { handleButtonHeader()}
-          </Grid>
-        </Grid>
-
-      </Grid>
+      onClose={closeDetailsModal}
+    >
+      <IconButton
+        onClick={closeDetailsModal}
+        size="small"
+        style={{
+          position: "absolute",
+          top: "12px",
+          left: "12px",
+          color: "#94a3b8",
+          zIndex: 1,
+        }}
+      >
+        <CloseIcon style={{ fontSize: "20px" }} />
+      </IconButton>
       {handleDataView()}
-
-
     </Dialog>
   );
 };

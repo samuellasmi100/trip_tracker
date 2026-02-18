@@ -37,9 +37,20 @@ const Vacation = (props) => {
     }
   });
 
-  const handleEditClick = () => {
-    dispatch(staticSlice.updateDetailsModalType("editVacation"))
-   dispatch(staticSlice.openDetailsModal())
+  const handleEditClick = (index, vac) => {
+    dispatch(staticSlice.updateForm({
+      vacation_name: vac.name,
+      vacation_id: vac.vacation_id,
+      vacation_routes: vac.details.length,
+      ...vac.details.reduce((acc, detail, i) => {
+        acc[`start_date_${i}`] = detail.start_date || "";
+        acc[`end_date_${i}`] = detail.end_date || "";
+        return acc;
+      }, {}),
+      exceptions: vac.details.some((d) => d.name === "חריגים"),
+    }));
+    dispatch(staticSlice.updateDetailsModalType("editVacation"));
+    dispatch(staticSlice.openDetailsModal());
   };
 
 

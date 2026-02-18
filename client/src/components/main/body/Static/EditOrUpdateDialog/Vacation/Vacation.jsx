@@ -24,11 +24,16 @@ const Vacation = () => {
   const submit = async () => {
     try {
       const response = await ApiVacations.addVacation(token, form);
-      // dispatch(staticSlice.closeMainModal());
+      dispatch(staticSlice.closeDetailsModal());
     } catch (error) {}
   }
 
-  return <VacationsView  handleInputChange={handleInputChange} submit={submit} />;
+  const handleCloseClicked = () => {
+    dispatch(staticSlice.resetState());
+    dispatch(staticSlice.closeDetailsModal());
+  };
+
+  return <VacationsView handleInputChange={handleInputChange} submit={submit} handleCloseClicked={handleCloseClicked} />;
 };
 
 export default Vacation;
