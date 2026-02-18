@@ -41,14 +41,14 @@ function PaymentsView({
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <SearchIcon style={{ color: "rgb(84, 169, 255)" }} />
+                    <SearchIcon style={{ color: "#0d9488" }} />
                   </InputAdornment>
                 ),
               }}
             />
           </FormControl>
           <IconButton onClick={handleExportToExcel}>
-            <DownloadIcon style={{ color: "#54A9FF", fontSize: "30px", border: '1px solid #494C55', padding: "10px", marginTop: "-7", borderRadius: "4px" }} />
+            <DownloadIcon style={{ color: "#0d9488", fontSize: "30px", border: '1px solid #e2e8f0', padding: "10px", marginTop: "-7", borderRadius: "4px" }} />
           </IconButton>
         </Grid>
       </Grid>

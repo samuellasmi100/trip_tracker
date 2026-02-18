@@ -42,13 +42,13 @@ const PaymentsView = (props) => {
                         control={
                           <Checkbox
                             sx={{
-                              color: "#686B76",
+                              color: "#cbd5e1",
                               "&.Mui-checked": {
-                                color: "#54A9FF",
+                                color: "#0d9488",
                               },
                             }}
                             name={`isPaid_${index + 1}`}
-                            checked={form[`isPaid_${index + 1}`] || false} 
+                            checked={form[`isPaid_${index + 1}`] || false}
                             className={classes.checkbox}
                             onChange={handleInputChange}
                           />
@@ -88,8 +88,8 @@ const PaymentsView = (props) => {
                   MenuProps={{
                     PaperProps: {
                       sx: {
-                        color: "#ffffff !important",
-                        bgcolor: "#222222",
+                        color: "#1e293b !important",
+                        bgcolor: "#ffffff",
                       },
                     },
                   }}
@@ -111,8 +111,8 @@ const PaymentsView = (props) => {
                   MenuProps={{
                     PaperProps: {
                       sx: {
-                        color: "#ffffff !important",
-                        bgcolor: "#222222",
+                        color: "#1e293b !important",
+                        bgcolor: "#ffffff",
                       },
                     },
                   }}
@@ -137,9 +137,9 @@ const PaymentsView = (props) => {
               control={
                 <Checkbox
                   sx={{
-                    color: "#686B76",
+                    color: "#cbd5e1",
                     "&.Mui-checked": {
-                      color: "#54A9FF",
+                      color: "#0d9488",
                     },
                   }}
                   name="invoice"
@@ -149,7 +149,7 @@ const PaymentsView = (props) => {
                 />
               }
               label={
-                <Typography style={{ color: "##757882", fontSize: "15px" }}>
+                <Typography style={{ color: "#64748b", fontSize: "15px" }}>
                   חשבונית
                 </Typography>
               }
@@ -160,7 +160,7 @@ const PaymentsView = (props) => {
               <DescriptionIcon style={{ color: "rgb(255, 158, 84)" }} />
             </Grid>
             <Grid item>
-              <Typography variant="body1" style={{ color: "white", fontSize: "15px" }}>
+              <Typography variant="body1" style={{ color: "#1e293b", fontSize: "15px" }}>
                 היסטוריית תשלומים
               </Typography>
             </Grid>

@@ -46,7 +46,6 @@ const Static = () => {
 
   return (
     <Grid>
-      <Grid style={{ height: "10vh"}}> </Grid>
       <StaticView handleWidgetClick={handleWidgetClick} />
       <MainDialog mainDialogOpen={mainDialogOpen} closeMainModal={closeMainModal} />
     </Grid>

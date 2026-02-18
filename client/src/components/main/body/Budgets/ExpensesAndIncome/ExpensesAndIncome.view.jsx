@@ -76,9 +76,9 @@ function ExpensesAndIncomeView({
     <Grid
       container
       style={{
-        background: "#2d2d2d",
+        background: "#ffffff",
         width: "47vw",
-        border: "1px solid rgb(61, 63, 71)",
+        border: "1px solid #e2e8f0",
         marginLeft: "10px",
       }}
     >
@@ -95,7 +95,7 @@ function ExpensesAndIncomeView({
         <Grid item></Grid>
         <Grid item style={{ marginRight: "-100px", marginTop: "10px" }}>
           {" "}
-          <Typography style={{ color: "white" }}>
+          <Typography style={{ color: "#1e293b" }}>
             {" "}
             {budgetStatus === "צפי הוצאות"
               ? "הוצאות"
@@ -120,7 +120,7 @@ function ExpensesAndIncomeView({
                         // style={{ display: showClearIcon }}
                         // onClick={handleClick}
                       >
-                        <SearchIcon style={{ color: "rgb(84, 169, 255)" }} />
+                        <SearchIcon style={{ color: "#0d9488" }} />
                       </InputAdornment>
                     ),
                   }}
@@ -131,17 +131,17 @@ function ExpensesAndIncomeView({
               <IconButton
                 onClick={() => handleDialogTypeOpen("ExpensesAndIncomeView")}
               >
-                <AddBoxIcon style={{ color: "#54A9FF", fontSize: "30px" }} />
+                <AddBoxIcon style={{ color: "#0d9488", fontSize: "30px" }} />
               </IconButton>
             </Grid>
           </Grid>
         </Grid>
       </Grid>
 
-      <Grid item xs={12} style={{ border: "1px solid rgb(61, 63, 71)" }}>
+      <Grid item xs={12} style={{ border: "1px solid #e2e8f0" }}>
         <TableContainer
           style={{
-            border: "1px solid #3D3F47",
+            border: "1px solid #e2e8f0",
             height: "calc(100vh - 230px)",
           }}
         >
@@ -330,11 +330,11 @@ function ExpensesAndIncomeView({
           <Button
             onClick={handleClose}
             style={{
-              color: "#FFFFFF",
+              color: "#1e293b",
               padding: "2px",
-              border: "1px solid black",
+              border: "1px solid #e2e8f0",
               marginLeft: "3px",
-              background: "#494C55",
+              background: "#e2e8f0",
             }}
           >
             ביטול
@@ -343,9 +343,9 @@ function ExpensesAndIncomeView({
           onClick={handleConfirm}
             autoFocus
             style={{
-              color: "#FFFFFF",
+              color: "#1e293b",
               padding: "2px",
-              border: "1px solid black",
+              border: "1px solid #e2e8f0",
               background: "red",
             }}
           >

@@ -1,15 +1,22 @@
 import React from "react";
-import {useState } from "react";
+import { useState, useCallback } from "react";
 import SidebarView from "./Sidebar.view";
 import axios from "axios";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useLocation } from "react-router-dom";
 import * as authSlice from "../../../store/slice/authSlice"
+import * as staticSlice from "../../../store/slice/staticSlice"
 
 function Sidebar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false); 
+  const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
+  const [staticExpanded, setStaticExpanded] = useState(false);
+
+  const staticDialogType = useSelector((state) => state.staticSlice.type);
+  const mainModalOpen = useSelector((state) => state.staticSlice.mainModalOpen);
 
   const handleLogOut = () => {
       sessionStorage.removeItem("token");
@@ -19,7 +26,7 @@ function Sidebar() {
   };
 
   const logoutButtonFunction = async () => {
-    try {  
+    try {
         handleLogOut();
         navigate("/");
     } catch (error) {
@@ -35,14 +42,42 @@ function Sidebar() {
     setMenuOpen(false);
   };
 
+  const toggleSidebar = useCallback(() => {
+    setSidebarOpen((prev) => !prev);
+  }, []);
 
-  
+  const closeSidebar = useCallback(() => {
+    setSidebarOpen(false);
+  }, []);
+
+  const toggleStaticExpanded = useCallback(() => {
+    setStaticExpanded((prev) => !prev);
+  }, []);
+
+  const handleWidgetClick = useCallback((widgetName) => {
+    // Navigate to /static if not already there
+    if (!location.pathname.includes("/static")) {
+      navigate("/static");
+    }
+    // Dispatch the same Redux actions the Static page buttons use
+    dispatch(staticSlice.openMainModal());
+    dispatch(staticSlice.updateDialogType(widgetName));
+  }, [dispatch, navigate, location.pathname]);
+
   return (
     <SidebarView
       logoutButtonFunction={logoutButtonFunction}
       handleMenuOpen={handleMenuOpen}
       handleMenuClose={handleMenuClose}
       menuOpen={menuOpen}
+      sidebarOpen={sidebarOpen}
+      toggleSidebar={toggleSidebar}
+      closeSidebar={closeSidebar}
+      staticExpanded={staticExpanded}
+      toggleStaticExpanded={toggleStaticExpanded}
+      handleWidgetClick={handleWidgetClick}
+      staticDialogType={staticDialogType}
+      mainModalOpen={mainModalOpen}
     />
   );
 }

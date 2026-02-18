@@ -1,3 +1,13 @@
 .makeStyles-input-12 .MuiInputBase-input{
-  background-color: none "important";
+  background-color: transparent !important;
+}
+
+/* Autofill styling for light theme */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 30px #f8fafc inset !important;
+  -webkit-text-fill-color: #1e293b !important;
+  border-color: #e2e8f0 !important;
+  transition: background-color 5000s ease-in-out 0s;
 }

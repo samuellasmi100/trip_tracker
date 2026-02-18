@@ -22,9 +22,9 @@ function Flights({areaCodes,handleInputChange }) {
                 control={
                   <Checkbox
                     sx={{
-                      color: "#686B76",
+                      color: "#cbd5e1",
                       "&.Mui-checked": {
-                        color: "#54A9FF",
+                        color: "#0d9488",
                       },
                     }}
                     name="flights"
@@ -34,7 +34,7 @@ function Flights({areaCodes,handleInputChange }) {
                   />
                 }
                 label={
-                  <Typography style={{ color: "##757882", fontSize: "15px" }}>
+                  <Typography style={{ color: "#64748b", fontSize: "15px" }}>
                     כולל טיסות
                   </Typography>
                 }
@@ -43,9 +43,9 @@ function Flights({areaCodes,handleInputChange }) {
           control={
             <Checkbox
               sx={{
-                color: "#686B76",
+                color: "#cbd5e1",
                 "&.Mui-checked": {
-                  color: "#54A9FF",
+                  color: "#0d9488",
                 },
               }}
               name="is_in_group"
@@ -55,7 +55,7 @@ function Flights({areaCodes,handleInputChange }) {
             />
           }
           label={
-            <Typography style={{ color: "##757882", fontSize: "15px" }}>
+            <Typography style={{ color: "#64748b", fontSize: "15px" }}>
               חלק מקבוצה?
             </Typography>
           }
@@ -66,9 +66,9 @@ function Flights({areaCodes,handleInputChange }) {
                 control={
                   <Checkbox
                     sx={{
-                      color: "#686B76",
+                      color: "#cbd5e1",
                       "&.Mui-checked": {
-                        color: "#54A9FF",
+                        color: "#0d9488",
                       },
                     }}
                     name="flying_with_us"
@@ -79,7 +79,7 @@ function Flights({areaCodes,handleInputChange }) {
                   />
                 }
                 label={
-                  <Typography style={{ color: "##757882", fontSize: "15px" }}>
+                  <Typography style={{ color: "#64748b", fontSize: "15px" }}>
                     טסים איתנו
                   </Typography>
                 }
@@ -89,9 +89,9 @@ function Flights({areaCodes,handleInputChange }) {
                 control={
                   <Checkbox
                     sx={{
-                      color: "#686B76",
+                      color: "#cbd5e1",
                       "&.Mui-checked": {
-                        color: "#54A9FF",
+                        color: "#0d9488",
                       },
                     }}
                     name="flights_direction"
@@ -102,7 +102,7 @@ function Flights({areaCodes,handleInputChange }) {
                   />
                 }
                 label={
-                  <Typography style={{ color: "##757882", fontSize: "15px" }}>
+                  <Typography style={{ color: "#64748b", fontSize: "15px" }}>
                     הלוך ושוב
                   </Typography>
                 }
@@ -111,9 +111,9 @@ function Flights({areaCodes,handleInputChange }) {
                 control={
                   <Checkbox
                     sx={{
-                      color: "#686B76",
+                      color: "#cbd5e1",
                       "&.Mui-checked": {
-                        color: "#54A9FF",
+                        color: "#0d9488",
                       },
                     }}
                     name="flights_direction"
@@ -124,7 +124,7 @@ function Flights({areaCodes,handleInputChange }) {
                   />
                 }
                 label={
-                  <Typography style={{ color: "##757882", fontSize: "15px" }}>
+                  <Typography style={{ color: "#64748b", fontSize: "15px" }}>
                       הלוך בלבד
                   </Typography>
                 }
@@ -133,9 +133,9 @@ function Flights({areaCodes,handleInputChange }) {
                 control={
                   <Checkbox
                     sx={{
-                      color: "#686B76",
+                      color: "#cbd5e1",
                       "&.Mui-checked": {
-                        color: "#54A9FF",
+                        color: "#0d9488",
                       },
                     }}
                     name="flights_direction"
@@ -146,7 +146,7 @@ function Flights({areaCodes,handleInputChange }) {
                   />
                 }
                 label={
-                  <Typography style={{ color: "##757882", fontSize: "15px" }}>
+                  <Typography style={{ color: "#64748b", fontSize: "15px" }}>
                     חזור בלבד 
                   </Typography>
                 }

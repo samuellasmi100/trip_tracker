@@ -43,23 +43,30 @@ function FamilyListView(props) {
     <Grid
       container
       style={{
-        background: "#2d2d2d",
+        background: "#ffffff",
         width: "45vw",
-        border: "1px solid rgb(61, 63, 71)",
+        border: "1px solid #e2e8f0",
         marginLeft: "10px",
+        borderRadius: "14px",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)",
+        overflow: "hidden",
       }}
     >
-    
+
       <Grid
         item
         xs={12}
         style={{
           display: "flex",
           justifyContent: "space-between",
-          borderRadius: "4px",
+          alignItems: "center",
+          borderRadius: "0",
+          padding: "12px 16px",
+          borderBottom: "1px solid #f1f5f9",
+          backgroundColor: "#fafbfc",
         }}
       >
-        <Grid style={{ marginRight: "5px", marginTop: "5px" }}>
+        <Grid style={{ marginRight: "0px", marginTop: "0px" }}>
           <Select
             value={vacationName}
             onChange={handleSelectInputChange}
@@ -71,8 +78,11 @@ function FamilyListView(props) {
             MenuProps={{
               PaperProps: {
                 sx: {
-                  color: "#ffffff !important",
-                  bgcolor: "#222222",
+                  color: "#1e293b !important",
+                  bgcolor: "#ffffff",
+                  borderRadius: "10px",
+                  boxShadow: "0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04)",
+                  border: "1px solid #e2e8f0",
                 },
               },
             }}>
@@ -84,12 +94,12 @@ function FamilyListView(props) {
           </Select>
         </Grid>
         <Grid item></Grid>
-        <Grid item style={{ marginRight: "-100px", marginTop: "10px" }}>
-          <Typography style={{ color: "white" }}> נרשמים </Typography>
+        <Grid item style={{ marginRight: "0px", marginTop: "0px" }}>
+          <Typography style={{ color: "#1e293b", fontWeight: 600, fontSize: "16px" }}> נרשמים </Typography>
         </Grid>
         <Grid>
-          <Grid style={{ display: "flex" }}>
-            <Grid style={{ marginRight: "5px", marginTop: "5px" }}>
+          <Grid style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            <Grid style={{ marginRight: "0px", marginTop: "0px" }}>
               <FormControl>
                 <TextField
                   size="small"
@@ -103,7 +113,7 @@ function FamilyListView(props) {
                       // style={{ display: showClearIcon }}
                       // onClick={handleClick}
                       >
-                        <SearchIcon style={{ color: "rgb(84, 169, 255)" }} />
+                        <SearchIcon style={{ color: "#0d9488" }} />
                       </InputAdornment>
                     ),
                   }}
@@ -112,17 +122,17 @@ function FamilyListView(props) {
             </Grid>
             <Grid>
               <IconButton onClick={() => handleDialogTypeOpen("addFamily")}>
-                <AddBoxIcon style={{ color: "#54A9FF", fontSize: "30px" }} />
+                <AddBoxIcon style={{ color: "#0d9488", fontSize: "30px" }} />
               </IconButton>
             </Grid>
           </Grid>
         </Grid>
       </Grid>
 
-      <Grid item xs={12} style={{ border: "1px solid rgb(61, 63, 71)" }}>
+      <Grid item xs={12} style={{ border: "none" }}>
         <TableContainer
           style={{
-            border: "1px solid #3D3F47",
+            border: "none",
             height: "calc(100vh - 230px)",
           }}
         >
@@ -160,13 +170,13 @@ function FamilyListView(props) {
                       style={{ maxWidth: "1px" }}
                     >
                       <IconButton size={"small"}>
-                        {/* <Input    
+                        {/* <Input
                     onChange={handleFileChange}  type="file" sx={{
                       width:"105px",
                       paddingRight:'2px'
                      }}/> */}
                         <DriveFolderUploadIcon
-                          style={{ color: "#54A9FF", fontSize: "27px" }}
+                          style={{ color: "#0d9488", fontSize: "24px" }}
                           onClick={() =>
                             // handleUpload(user.family_name, user.family_id)
                             handleDialogTypeOpen("uploadFile",user)

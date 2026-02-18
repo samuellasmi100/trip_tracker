@@ -2,130 +2,132 @@ import { makeStyles } from "@mui/styles";
 
 export const useStyles = makeStyles((theme) => ({
     inputLabelStyle: {
-        color: "#757882 !important",
+        color: "#94a3b8 !important",
         fontSize: "15px",
     },
     textField: {
-        borderRadius: 4,
+        borderRadius: 10,
         "& .MuiInputBase-input": {
             position: "relative",
-            color: "#FFFFFF",
+            color: "#1e293b",
             fontSize: 14,
             width: "345px",
             padding: "5px 18px",
             height: "54px",
         },
         "& .MuiFormLabel-root": {
-            color: "#757882", // or black
+            color: "#94a3b8", // or black
             fontSize: "14px",
         },
         "& label.Mui-focused": {
-            color: "#54A9FF",
+            color: "#0d9488",
             top: "0px",
         },
         "& .MuiInput-underline:after": {
-            borderBottomColor: "#54A9FF",
+            borderBottomColor: "#0d9488",
         },
         "& .MuiOutlinedInput-root": {
             "& fieldset": {
-                borderColor: "#494C55",
+                borderColor: "#e2e8f0",
             },
             "&:hover fieldset": {
-                borderColor: "#494C55",
+                borderColor: "#e2e8f0",
             },
             "&.Mui-focused fieldset": {
-                borderColor: "#54A9FF",
+                borderColor: "#0d9488",
             },
         },
     },
     textFieldPhone: {
-        borderRadius: 4,
+        borderRadius: 10,
         "& .MuiInputBase-input": {
             position: "relative",
-            color: "#FFFFFF",
+            color: "#1e293b",
             fontSize: 16,
             width: "115px",
             padding: "5px 18px",
             height: "24px",
         },
         "& .MuiFormLabel-root": {
-            color: "#757882", // or black
+            color: "#94a3b8", // or black
             fontSize: "14px",
         },
         "& label.Mui-focused": {
-            color: "#54A9FF",
+            color: "#0d9488",
             top: "0px",
         },
         "& .MuiInput-underline:after": {
-            borderBottomColor: "#54A9FF",
+            borderBottomColor: "#0d9488",
         },
         "& .MuiOutlinedInput-root": {
             "& fieldset": {
-                borderColor: "#494C55",
+                borderColor: "#e2e8f0",
             },
             "&:hover fieldset": {
                 // top: "0px",
-                borderColor: "#494C55",
+                borderColor: "#e2e8f0",
             },
             "&.Mui-focused fieldset": {
-                borderColor: "#54A9FF",
+                borderColor: "#0d9488",
             },
         },
     },
     submitButton: {
-        color: "#000000 !important",
+        color: "#ffffff !important",
         fontSize: "1.125rem",
         textTransform: "capitalize !important",
         width: "168px",
         height: "32px",
-        background: "#54A9FF 0% 0% no-repeat padding-box !important",
-        borderRadius: "4px",
+        background: "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%) !important",
+        borderRadius: "10px",
         opacity: 1,
+        boxShadow: "0 2px 8px rgba(13, 148, 136, 0.25)",
         "&:hover": {
-            backgroundColor: "#2692ff !important",
+            background: "linear-gradient(135deg, #0f766e 0%, #0d9488 100%) !important",
+            boxShadow: "0 4px 12px rgba(13, 148, 136, 0.35)",
         },
     },
     cancelButton: {
-        color: "#ffffff !important",
+        color: "#64748b !important",
         fontSize: "1.125rem",
         textTransform: "capitalize !important",
         width: "136px",
         height: "32px",
-        background: "#494C55 0% 0% no-repeat padding-box !important",
-        borderRadius: "4px",
+        background: "#e2e8f0 !important",
+        borderRadius: "10px",
         opacity: 1,
     },
-  
+
 
     selectOutline: {
         height: "35px",
          width:"180px",
         "&.MuiOutlinedInput-root": {
-          color: "#ffffff !important",
+          color: "#1e293b !important",
           "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#494c55",
+            borderColor: "#e2e8f0",
           },
         },
         "& .MuiSvgIcon-root": {
-          color: "#54a9ff",
+          color: "#0d9488",
         },
       },
       selectedMenuItem: {
-        backgroundColor: "#2D2D2D !important",
+        backgroundColor: "#ffffff !important",
         // padding:"0px !important",
-        
+
         "& Mui=Menu-list" :{
             padding:"0pz !important"
         },
         "&.Mui-selected": {
           backgroundColor: "transparent",
           "&:hover": {
-            backgroundColor: "#3C3E43",
+            backgroundColor: "#f1f5f9",
           },
         },
         "&:hover": {
-          backgroundColor: "#3C3E43",
+          backgroundColor: "#f1f5f9",
         },
-        
+
       },
 }));

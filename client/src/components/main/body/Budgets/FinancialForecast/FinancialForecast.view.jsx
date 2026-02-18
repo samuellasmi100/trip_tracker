@@ -41,9 +41,9 @@ function FinancialForecastView({ handleDialogTypeOpen, handleSelectInputChange }
     <Grid
       container
       style={{
-        background: "#2d2d2d",
+        background: "#ffffff",
         width: "45vw",
-        border: "1px solid rgb(61, 63, 71)",
+        border: "1px solid #e2e8f0",
         marginLeft: "10px",
       }}
     >
@@ -68,8 +68,8 @@ function FinancialForecastView({ handleDialogTypeOpen, handleSelectInputChange }
             MenuProps={{
               PaperProps: {
                 sx: {
-                  color: "#ffffff !important",
-                  bgcolor: "#222222",
+                  color: "#1e293b !important",
+                  bgcolor: "#ffffff",
                 },
               },
             }}>
@@ -82,7 +82,7 @@ function FinancialForecastView({ handleDialogTypeOpen, handleSelectInputChange }
         </Grid>
         <Grid item></Grid>
         <Grid item style={{ marginRight: "-100px", marginTop: "10px" }}>
-          <Typography style={{ color: "white" }}> {budgetStatus === "צפי הוצאות" ? "צפי הוצאות " : budgetStatus === "צפי הכנסות" ?  "צפי הכנסות" : "הכנסות"}</Typography>
+          <Typography style={{ color: "#1e293b" }}> {budgetStatus === "צפי הוצאות" ? "צפי הוצאות " : budgetStatus === "צפי הכנסות" ?  "צפי הכנסות" : "הכנסות"}</Typography>
         </Grid>
         <Grid>
           <Grid style={{ display: "flex" }}>
@@ -100,7 +100,7 @@ function FinancialForecastView({ handleDialogTypeOpen, handleSelectInputChange }
                       // style={{ display: showClearIcon }}
                       // onClick={handleClick}
                       >
-                        <SearchIcon style={{ color: "rgb(84, 169, 255)" }} />
+                        <SearchIcon style={{ color: "#0d9488" }} />
                       </InputAdornment>
                     ),
                   }}
@@ -110,17 +110,17 @@ function FinancialForecastView({ handleDialogTypeOpen, handleSelectInputChange }
             <Grid>
               <IconButton
                 onClick={() => handleDialogTypeOpen("FinancialForecast")}>
-                <AddBoxIcon style={{ color: "#54A9FF", fontSize: "30px" }} />
+                <AddBoxIcon style={{ color: "#0d9488", fontSize: "30px" }} />
               </IconButton>
             </Grid>
           </Grid>
         </Grid>
       </Grid>
 
-      <Grid item xs={12} style={{ border: "1px solid rgb(61, 63, 71)" }}>
+      <Grid item xs={12} style={{ border: "1px solid #e2e8f0" }}>
         <TableContainer
           style={{
-            border: "1px solid #3D3F47",
+            border: "1px solid #e2e8f0",
             height: "calc(100vh - 230px)",
           }}
         >

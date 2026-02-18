@@ -19,13 +19,11 @@ function App() {
 
 
   return (
-    <Grid className="App" style={{ height: "100vh", width: "100vw" }}>
+    <Grid className="App" style={{ height: "100vh", width: "100vw", backgroundColor: "#f1f5f9" }}>
       <SnackBar />
      {isAuthenticated ? <Sidebar /> : <></>}
-      <Grid>
-        <Grid item xs={10} style={{ padding: "12px" }}>
-          {/* <Header /> */}
-        </Grid>
+      <Grid style={isAuthenticated ? { marginRight: "240px", display: "flex", flexDirection: "column", minHeight: "100vh" } : {}}>
+        {isAuthenticated ? <Header /> : null}
 
         <Routes>
           {isAuthenticated ? (

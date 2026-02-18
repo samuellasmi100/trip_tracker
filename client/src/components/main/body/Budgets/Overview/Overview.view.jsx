@@ -9,15 +9,15 @@ function OverviewView() {
   <Grid
         container
         style={{
-          background: "#2d2d2d",
+          background: "#ffffff",
           width: "10vw",
-          border: "1px solid rgb(61, 63, 71)",
+          border: "1px solid #e2e8f0",
         }}
       >
      <Grid container item>
-      <Grid style={{color:"white",marginTop:"10px",marginRight:"60px"}}>
-      <Typography style={{color:"white",textAlign:"center"}}>מבט כללי</Typography>
-      <hr style={{border: "1px solid rgb(61, 63, 71)"}} />
+      <Grid style={{color:"#1e293b",marginTop:"10px",marginRight:"60px"}}>
+      <Typography style={{color:"#1e293b",textAlign:"center"}}>מבט כללי</Typography>
+      <hr style={{border: "1px solid #e2e8f0"}} />
 
       </Grid>
       

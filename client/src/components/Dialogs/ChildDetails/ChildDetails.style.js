@@ -3,41 +3,44 @@ import { makeStyles } from "@mui/styles";
 
 export const useStyles = makeStyles((theme) => ({
     inputLabelStyle: {
-        color: "#757882 !important",
+        color: "#94a3b8 !important",
         fontSize: "15px",
     },
     cancelButton: {
-        color: "#ffffff !important",
+        color: "#64748b !important",
         fontSize: "1.125rem",
         textTransform: "capitalize !important",
         width: "136px",
         height: "32px",
-        background: "#494C55 0% 0% no-repeat padding-box !important",
-        borderRadius: "4px",
+        background: "#e2e8f0 !important",
+        borderRadius: "10px",
         opacity: 1,
     },
     dataTableBody: {
         "& tr:nth-of-type(odd)": {
-          backgroundColor: "#222222",
+          backgroundColor: "#f8fafc",
         },
         "& tr:nth-of-type(even)": {
-          backgroundColor: "#2d2d2d",
+          backgroundColor: "#ffffff",
+        },
+        "& tr": {
+          transition: "background-color 0.2s ease",
         },
       },
       dataTableCell: {
         fontSize:"14px !important",
-        color: "#ffffff !important",
+        color: "#1e293b !important",
         textAlign: "center !important",
         borderBottom: "none !important",
       },
       headerTableRow: {
         fontSize: "15px !important",
-        color: "#5a5c62 !important",
+        color: "#64748b !important",
         textAlign: "center !important",
         borderBottom: "none!important",
         fontWeight: "600 !important",
         "&.MuiTableCell-stickyHeader": {
-          backgroundColor: "#2d2d2d !important",
+          backgroundColor: "#ffffff !important",
         },
       },
 }));

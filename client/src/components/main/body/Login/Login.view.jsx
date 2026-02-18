@@ -23,10 +23,10 @@ function LoginView({
     <Grid container className={classes.loginPage}>
       <Grid item className={classes.loginContainer} >
       
-        <Grid style={{ paddingTop: "75px" }}>
+        <Grid style={{ paddingTop: "0px", textAlign: "center" }}>
           <Typography
             className={classes.welcome}
-            style={{ fontSize: "34px" }}
+            style={{ fontSize: "28px", fontWeight: 700, color: "#1e293b" }}
           >
             ברוכים הבאים!
           </Typography>
@@ -39,7 +39,7 @@ function LoginView({
           alignItems="center"
           className={classes.inputContainer}
         >
-          <Grid item container justifyContent="center" style={{marginTop:"50px"}}>
+          <Grid item container justifyContent="center" style={{marginTop:"24px"}}>
           <form autoComplete="off">
             <InputBase
               className={`${classes.input} autofill-disabled`}
@@ -71,7 +71,7 @@ function LoginView({
                         <VisibilityIcon
                           style={{
                             opacity: "100%",
-                            color: "#ffffff",
+                            color: "#94a3b8",
                             fontSize: "1.25rem",
                           }}
                         />
@@ -79,7 +79,7 @@ function LoginView({
                         <VisibilityOffIcon
                           style={{
                             opacity: "100%",
-                            color: "#ffffff",
+                            color: "#94a3b8",
                             fontSize: "1.25rem",
                           }}
                         />
@@ -97,9 +97,10 @@ function LoginView({
               className={classes.loginPostRequest}
               variant="contained"
               style={{
-                marginTop: "3vh",
+                marginTop: "2vh",
                 textTransform: "none",
-                fontSize: "1.125rem",
+                fontSize: "1rem",
+                fontWeight: 600,
               }}
               onClick={(e) => loginPostRequest(e)}
             >

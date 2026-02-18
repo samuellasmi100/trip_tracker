@@ -63,14 +63,14 @@ function MainGuestsView({
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <SearchIcon style={{ color: "rgb(84, 169, 255)" }} />
+                    <SearchIcon style={{ color: "#0d9488" }} />
                   </InputAdornment>
                 ),
               }}
             />
           </FormControl>
           <IconButton onClick={handleExportToExcel}>
-          <DownloadIcon style={{ color: "#54A9FF", fontSize: "30px",border:'1px solid #494C55',padding:"10px",marginTop:"-7",borderRadius:"4px" }} />
+          <DownloadIcon style={{ color: "#0d9488", fontSize: "30px",border:'1px solid #e2e8f0',padding:"10px",marginTop:"-7",borderRadius:"4px" }} />
         </IconButton>
         </Grid>
       </Grid>
@@ -157,15 +157,15 @@ function MainGuestsView({
       >
         <DialogTitle>אישור מחיקה</DialogTitle>
         <DialogContent>
-          <DialogContentText style={{color: "#FFFFFF" }}>
+          <DialogContentText style={{color: "#1e293b" }}>
             {handleMessageString()}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} style={{color:"#FFFFFF",padding:"2px",border:'1px solid black',marginLeft:'3px',background:"#494C55"}}>
+          <Button onClick={handleClose} style={{color:"#1e293b",padding:"2px",border:'1px solid #e2e8f0',marginLeft:'3px',background:"#e2e8f0"}}>
             ביטול
           </Button>
-          <Button onClick={handleDeleteClick} autoFocus style={{color:"#FFFFFF",padding:"2px",border:'1px solid black',background:"red"}}>
+          <Button onClick={handleDeleteClick} autoFocus style={{color:"#1e293b",padding:"2px",border:'1px solid #e2e8f0',background:"red"}}>
             מחק
           </Button>
         </DialogActions>

@@ -6,7 +6,7 @@ const FamilyMember = ({handleDialogTypeOpen}) => {
 
   return(
   <>
-  <FamilyMemberView handleDialogTypeOpen={handleDialogTypeOpen}/>;
+  <FamilyMemberView handleDialogTypeOpen={handleDialogTypeOpen}/>
 
   </>
   )

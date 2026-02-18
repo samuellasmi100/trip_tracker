@@ -4,115 +4,121 @@ import { makeStyles } from "@mui/styles";
 export const useStyles = makeStyles((theme) => ({
   dataTableBody: {
     "& tr:nth-of-type(odd)": {
-      backgroundColor: "#222222",
+      backgroundColor: "#f8fafc",
     },
     "& tr:nth-of-type(even)": {
-      backgroundColor: "#2d2d2d",
+      backgroundColor: "#ffffff",
+    },
+    "& tr": {
+      transition: "background-color 0.15s ease",
+      "&:hover": {
+        backgroundColor: "#f1f5f9",
+      },
     },
   },
   dataTableCell: {
     fontSize: "14px !important",
-    color: "#ffffff !important",
+    color: "#1e293b !important",
     textAlign: "center !important",
     borderBottom: "none !important",
     height:"30px"
   },
   headerTableRow: {
     fontSize: "15px !important",
-    color: "#5a5c62 !important",
+    color: "#64748b !important",
     textAlign: "center !important",
     borderBottom: "none!important",
     fontWeight: "600 !important",
     "&.MuiTableCell-stickyHeader": {
-      backgroundColor: "#2d2d2d !important",
+      backgroundColor: "#ffffff !important",
     },
   },
 
   textField: {
-    borderRadius: 4,
+    borderRadius: 10,
     "& .MuiInputBase-input": {
       position: "relative",
-      color: "#FFFFFF",
+      color: "#1e293b",
       fontSize: 14,
       padding: "5px 18px",
       height: "24px",
     },
     "& .MuiFormLabel-root": {
-      color: "#757882", // or black
+      color: "#94a3b8", // or black
       fontSize: "14px",
     },
     "& label.Mui-focused": {
-      color: "#54A9FF",
+      color: "#0d9488",
       top: "0px",
     },
     "& .MuiInput-underline:after": {
-      borderBottomColor: "#54A9FF",
+      borderBottomColor: "#0d9488",
     },
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        borderColor: "#494C55",
+        borderColor: "#e2e8f0",
       },
       "&:hover fieldset": {
-        borderColor: "#494C55",
+        borderColor: "#e2e8f0",
       },
       "&.Mui-focused fieldset": {
-        borderColor: "#54A9FF",
+        borderColor: "#0d9488",
       },
     },
   },
   searchField: {
-    borderRadius: 4,
+    borderRadius: 10,
 
     "& .MuiInputBase-input": {
       position: "relative",
-      color: "#FFFFFF",
+      color: "#1e293b",
       fontSize: 16,
       width: "120px",
       padding: "5px 18px",
       height: "25px",
     },
     "& .MuiFormLabel-root": {
-      color: "#757882", // or black
+      color: "#94a3b8", // or black
       fontSize: "14px",
     },
     "& label.Mui-focused": {
-      color: "#54A9FF",
+      color: "#0d9488",
       top: "0px",
     },
     "& .MuiInput-underline:after": {
-      borderBottomColor: "#54A9FF",
+      borderBottomColor: "#0d9488",
     },
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        borderColor: "#494C55",
+        borderColor: "#e2e8f0",
       },
       "&:hover fieldset": {
-        borderColor: "#494C55",
+        borderColor: "#e2e8f0",
       },
       "&.Mui-focused fieldset": {
-        borderColor: "#54A9FF",
+        borderColor: "#0d9488",
       },
     },
   },
   inputLabelStyle: {
-    color: "#757882 !important",
+    color: "#94a3b8 !important",
     fontSize: "15px",
   },
   selectOutline: {
     height: "35px",
     width: "180px",
     "&.MuiOutlinedInput-root": {
-      color: "#ffffff !important",
+      color: "#1e293b !important",
       "& .MuiOutlinedInput-notchedOutline": {
-        borderColor: "#494c55",
+        borderColor: "#e2e8f0",
       },
     },
     "& .MuiSvgIcon-root": {
-      color: "#54a9ff",
+      color: "#0d9488",
     },
   },
   selectedMenuItem: {
-    backgroundColor: "#2D2D2D !important",
+    backgroundColor: "#ffffff !important",
 
     "& Mui=Menu-list": {
       padding: "0px !important"
@@ -120,15 +126,15 @@ export const useStyles = makeStyles((theme) => ({
     "&.Mui-selected": {
       backgroundColor: "transparent",
       "&:hover": {
-        backgroundColor: "#3C3E43",
+        backgroundColor: "#f1f5f9",
       },
     },
     "&:hover": {
-      backgroundColor: "#3C3E43",
+      backgroundColor: "#f1f5f9",
     },
   },
   redText: {
-    color: "red !important",
+    color: "#ef4444 !important",
     fontSize: "14px !important",
     textAlign: "center !important",
     borderBottom: "none !important",

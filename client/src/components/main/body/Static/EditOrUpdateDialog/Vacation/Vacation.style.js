@@ -4,123 +4,130 @@ import { makeStyles } from "@mui/styles";
 export const useStyles = makeStyles((theme) => ({
     dataTableBody: {
         "& tr:nth-of-type(odd)": {
-          backgroundColor: "#222222",
+          backgroundColor: "#f8fafc",
         },
         "& tr:nth-of-type(even)": {
-          backgroundColor: "#2d2d2d",
+          backgroundColor: "#ffffff",
+        },
+        "& tr": {
+          transition: "background-color 0.15s ease",
+        },
+        "& tr:hover": {
+          backgroundColor: "#f0fdfa !important",
         },
       },
       dataTableCell: {
         fontSize: "14px !important",
-        color: "#ffffff !important",
+        color: "#1e293b !important",
         textAlign: "center !important",
         borderBottom: "none !important",
       },
       headerTableRow: {
         fontSize: "15px !important",
-        color: "#5a5c62 !important",
+        color: "#64748b !important",
         textAlign: "center !important",
         borderBottom: "none!important",
         fontWeight: "600 !important",
         width: "10px",
         "&.MuiTableCell-stickyHeader": {
-          backgroundColor: "#2d2d2d !important",
+          backgroundColor: "#ffffff !important",
         },
       },
       textField: {
-        borderRadius: 4,
-    
+        borderRadius: 10,
+
         "& .MuiInputBase-input": {
           position: "relative",
-          color: "#FFFFFF",
+          color: "#1e293b",
           fontSize: 16,
           width: "120px",
           padding: "5px 18px",
           height: "30px",
         },
         "& .MuiFormLabel-root": {
-          color: "#757882", // or black
+          color: "#94a3b8", // or black
           fontSize: "14px",
         },
         "& label.Mui-focused": {
-          color: "#54A9FF",
+          color: "#0d9488",
           top: "0px",
         },
         "& .MuiInput-underline:after": {
-          borderBottomColor: "#54A9FF",
+          borderBottomColor: "#0d9488",
         },
         "& .MuiOutlinedInput-root": {
           "& fieldset": {
-            borderColor: "#494C55",
+            borderColor: "#e2e8f0",
           },
           "&:hover fieldset": {
-            borderColor: "#494C55",
+            borderColor: "#e2e8f0",
           },
           "&.Mui-focused fieldset": {
-            borderColor: "#54A9FF",
+            borderColor: "#0d9488",
           },
         },
       },
-    
-    
+
+
       shortTxtField: {
-        borderRadius: 4,
+        borderRadius: 10,
         "& .MuiInputBase-input": {
             position: "relative",
-            color: "#FFFFFF",
+            color: "#1e293b",
             fontSize: 14,
             width: "105px",
             padding: "5px 18px",
             height: "24px",
         },
         "& .MuiFormLabel-root": {
-            color: "#757882", // or black
+            color: "#94a3b8", // or black
             fontSize: "14px",
         },
         "& label.Mui-focused": {
-            color: "#54A9FF",
+            color: "#0d9488",
             top: "0px",
         },
         "& .MuiInput-underline:after": {
-            borderBottomColor: "#54A9FF",
+            borderBottomColor: "#0d9488",
         },
         "& .MuiOutlinedInput-root": {
             "& fieldset": {
-                borderColor: "#494C55",
+                borderColor: "#e2e8f0",
             },
             "&:hover fieldset": {
-                borderColor: "#494C55",
+                borderColor: "#e2e8f0",
             },
             "&.Mui-focused fieldset": {
-                borderColor: "#54A9FF",
+                borderColor: "#0d9488",
             },
         },
     },
     inputLabelStyle: {
-      color: "#757882 !important",
+      color: "#94a3b8 !important",
       fontSize: "15px",
   },
       submitButton: {
-        color: "#000000 !important",
+        color: "#ffffff !important",
         fontSize: "1.125rem",
         textTransform: "capitalize !important",
         width: "168px",
         height: "32px",
-        background: "#54A9FF 0% 0% no-repeat padding-box !important",
-        borderRadius: "4px",
+        background: "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%) !important",
+        borderRadius: "10px",
         opacity: 1,
+        boxShadow: "0 2px 8px rgba(13, 148, 136, 0.25)",
         "&:hover": {
-            backgroundColor: "#2692ff !important",
+            backgroundColor: "#0f766e !important",
         },
     },
     cancelButton: {
-        color: "#ffffff !important",
+        color: "#64748b !important",
         fontSize: "1.125rem",
         textTransform: "capitalize !important",
         width: "136px",
         height: "32px",
-        background: "#494C55 0% 0% no-repeat padding-box !important",
-        borderRadius: "4px",
+        background: "#e2e8f0 !important",
+        borderRadius: "10px",
         opacity: 1,
     },
 }));

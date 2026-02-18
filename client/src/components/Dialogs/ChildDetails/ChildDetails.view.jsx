@@ -202,7 +202,7 @@ const ChildDetailsView = ({ userData }) => {
                         {paymentsDetails?.length > 0 ?
                             paymentsDetails.map((key) => {
                                 return( 
-                                <Grid style={{border:"6px solid #343536",width:"70%"}}>
+                                <Grid style={{border:"6px solid #e2e8f0",width:"70%"}}>
                                 <Grid style={{ display: 'flex', gap: "5px" }}>
                                 <Typography className={classes.inputLabelStyle}>סכום שהתקבל  :</Typography>
                                 <Typography className={classes.inputLabelStyle}> {key.amountReceived}</Typography>

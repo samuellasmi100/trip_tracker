@@ -52,8 +52,8 @@ const ForecastManagerView = (props) => {
                   MenuProps={{
                     PaperProps: {
                       sx: {
-                        bgcolor: "#222222",
-                        color: "#ffffff !important",
+                        bgcolor: "#ffffff",
+                        color: "#1e293b !important",
                         maxHeight: "260px",
                         overflowY: "auto",
                         width: "187px",
@@ -100,8 +100,8 @@ const ForecastManagerView = (props) => {
                   MenuProps={{
                     PaperProps: {
                       sx: {
-                        bgcolor: "#222222",
-                        color: "#ffffff !important",
+                        bgcolor: "#ffffff",
+                        color: "#1e293b !important",
                         maxHeight: "260px",
                         overflowY: "auto",
                         width: "151px",
@@ -183,8 +183,8 @@ const ForecastManagerView = (props) => {
                     MenuProps={{
                       PaperProps: {
                         sx: {
-                          color: "#ffffff !important",
-                          bgcolor: "#222222",
+                          color: "#1e293b !important",
+                          bgcolor: "#ffffff",
                         },
                       },
                     }}

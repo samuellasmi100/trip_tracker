@@ -24,11 +24,11 @@ function BudgetsView({ handleToggle, dialogOpen, dialogType, handleDialogTypeOpe
   return (
     <Grid style={{ display: "flex", justifyContent: "center" }}>
       <Grid style={{ display: "flex", flexDirection: "column" }}>
-        <Grid style={{ height: "10vh", marginTop: "20px" }}>
+        <Grid style={{ marginTop: "20px" }}>
           <Grid style={{ display: "flex", justifyContent: 'space-between' }}>
             <Grid style={{ marginRight: "30px" }}>
               <IconButton
-                style={{ color: 'white', marginRight: "10px" }}
+                style={{ color: '#1e293b', marginRight: "10px" }}
                 aria-label="menu"
                 aria-controls="burger-menu"
                 aria-haspopup="true"
@@ -81,24 +81,24 @@ function BudgetsView({ handleToggle, dialogOpen, dialogType, handleDialogTypeOpe
                     }}
                   />
                 }
-                label={isExpense ? <Typography style={{ color: "white" }}>הוצאות</Typography> : <Typography style={{ color: "white" }}>הכנסות</Typography>}
+                label={isExpense ? <Typography style={{ color: "#1e293b" }}>הוצאות</Typography> : <Typography style={{ color: "#1e293b" }}>הכנסות</Typography>}
               /> */}
             </Grid>
             <Grid></Grid>
           </Grid>
           <Grid style={{ display: "flex", justifyContent: "space-around", marginTop: "20px" }}>
             <Grid style={{ display: "flex" }}>
-              <Grid item style={{ height: "40px", width: "200px", border: "1px solid #494C55", borderRadius: "4px" }}>
-                <Typography style={{ color: "white", textAlign: "center", padding: "6px" }}>סכום כולל : {sumExpectedExpensesAndIncome}  </Typography>
+              <Grid item style={{ height: "44px", width: "220px", border: "1px solid #e2e8f0", borderRadius: "12px", backgroundColor: "#ffffff", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
+                <Typography style={{ color: "#1e293b", textAlign: "center", padding: "8px", fontWeight: 500, fontSize: "14px" }}>סכום כולל : {sumExpectedExpensesAndIncome}  </Typography>
               </Grid>
             </Grid>
-            <Grid style={{ height: "40px", width: "200px", border: "1px solid #494C55", borderRadius: "4px" }}>
-              <Typography style={{ color: "white", textAlign: "center", padding: "6px" }}>סכום כולל : {sumExpensesAndIncome} </Typography>
+            <Grid style={{ height: "44px", width: "220px", border: "1px solid #e2e8f0", borderRadius: "12px", backgroundColor: "#ffffff", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
+              <Typography style={{ color: "#1e293b", textAlign: "center", padding: "8px", fontWeight: 500, fontSize: "14px" }}>סכום כולל : {sumExpensesAndIncome} </Typography>
             </Grid>
           </Grid>
         </Grid>
         <Grid>
-          <Grid style={{ display: "flex", justifyContent: "center", marginRight: "40px" }}>
+          <Grid style={{ display: "flex", justifyContent: "center", marginRight: "40px", gap: "16px" }}>
             <FinancialForecast handleDialogTypeOpen={handleDialogTypeOpen} />
             <Expense handleDialogTypeOpen={handleDialogTypeOpen} />
             {/* <Overview handleDialogTypeOpen={handleDialogTypeOpen} /> */}

@@ -52,7 +52,7 @@ function VacationView({
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <SearchIcon style={{ color: "rgb(84, 169, 255)" }} />
+                    <SearchIcon style={{ color: "#0d9488" }} />
                   </InputAdornment>
                 ),
               }}
@@ -60,7 +60,7 @@ function VacationView({
           </FormControl>
         </Grid>
         <IconButton onClick={handleAddRow}>
-          <AddBoxIcon style={{ color: "#54A9FF", fontSize: "30px" }} />
+          <AddBoxIcon style={{ color: "#0d9488", fontSize: "30px" }} />
         </IconButton>
       </Grid>
       <TableContainer

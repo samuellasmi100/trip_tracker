@@ -35,9 +35,12 @@ function FamilyMemberView({ handleDialogTypeOpen, handleSearchChange }) {
       item
       xs={12}
       style={{
-        border: "1px solid rgb(61, 63, 71)",
-        background: "rgb(45, 45, 45)",
+        border: "1px solid #e2e8f0",
+        background: "#ffffff",
         width: "45vw",
+        borderRadius: "14px",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)",
+        overflow: "hidden",
       }}
     >
 
@@ -47,11 +50,15 @@ function FamilyMemberView({ handleDialogTypeOpen, handleSearchChange }) {
         style={{
           display: "flex",
           justifyContent: "space-between",
-          borderRadius: "4px",
+          alignItems: "center",
+          borderRadius: "0",
+          padding: "12px 16px",
+          borderBottom: "1px solid #f1f5f9",
+          backgroundColor: "#fafbfc",
         }}
       >
         <Grid style={{ display: "flex", justifyContent: "space-between" }} item>
-          <Grid style={{ marginRight: "5px", marginTop: '5px', marginBottom: "7px" }}>
+          <Grid style={{ marginRight: "0px", marginTop: '0px', marginBottom: "0px" }}>
             <FormControl>
               <TextField
                 size="small"
@@ -64,7 +71,7 @@ function FamilyMemberView({ handleDialogTypeOpen, handleSearchChange }) {
                     // style={{ display: showClearIcon }}
                     // onClick={handleClick}
                     >
-                      <SearchIcon style={{ color: 'rgb(84, 169, 255)' }} />
+                      <SearchIcon style={{ color: '#0d9488' }} />
                     </InputAdornment>
                   )
                 }}
@@ -74,8 +81,8 @@ function FamilyMemberView({ handleDialogTypeOpen, handleSearchChange }) {
         </Grid>
         {family.family_id !== undefined ? (
           <>
-            <Grid item style={{ marginRight: "-100px", marginTop: "10px" }}>
-              <Typography style={{ color: "white" }}> כלל האורחים משפחה /קבוצה {family.family_name} </Typography>
+            <Grid item style={{ marginRight: "0px", marginTop: "0px" }}>
+              <Typography style={{ color: "#1e293b", fontWeight: 600, fontSize: "16px" }}> כלל האורחים משפחה /קבוצה {family.family_name} </Typography>
             </Grid>
             <Grid>
               {Number(family?.user_in_system_count) < Number(family?.number_of_guests) ?
@@ -83,7 +90,7 @@ function FamilyMemberView({ handleDialogTypeOpen, handleSearchChange }) {
               onClick={() =>
                 handleDialogTypeOpen(isParentIdExist ? "addChild" : "addParent")
               } >
-              <AddBoxIcon style={{ color: "#54A9FF", fontSize: "30px" }} />
+              <AddBoxIcon style={{ color: "#0d9488", fontSize: "30px" }} />
             </IconButton>
               :""}
             </Grid>
@@ -94,7 +101,7 @@ function FamilyMemberView({ handleDialogTypeOpen, handleSearchChange }) {
       </Grid>
       <TableContainer
         style={{
-          border: "1px solid #3D3F47",
+          border: "none",
           height: "calc(100vh - 230px)",
         }}
       >
@@ -121,7 +128,7 @@ function FamilyMemberView({ handleDialogTypeOpen, handleSearchChange }) {
                   key={index}
                   style={
                     user.is_main_user
-                      ? { background: "#54a9ff40 " }
+                      ? { background: "rgba(13, 148, 136, 0.08)" }
                       : {}
                   }
                 >
@@ -167,7 +174,7 @@ function FamilyMemberView({ handleDialogTypeOpen, handleSearchChange }) {
                         )
                       }
                     >
-                      <DescriptionIcon style={{ color: "rgb(255, 158, 84)" }} />
+                      <DescriptionIcon style={{ color: "#f59e0b" }} />
                     </IconButton>
                   </TableCell>
                   <TableCell
@@ -184,14 +191,14 @@ function FamilyMemberView({ handleDialogTypeOpen, handleSearchChange }) {
                           user
                         )
                       }>
-                        
+
                       <CheckCircleIcon
                         style={{
                           color: user.is_main_user
-                            ? "green"
+                            ? "#22c55e"
                             : user.address !== null
-                              ? "orange"
-                              : "red",
+                              ? "#f59e0b"
+                              : "#ef4444",
                           height: "25px",
                           width: "25px",
                         }}

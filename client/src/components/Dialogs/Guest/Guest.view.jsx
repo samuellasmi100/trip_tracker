@@ -59,9 +59,9 @@ const GuestView = (props) => {
           control={
             <Checkbox
               sx={{
-                color: "#686B76",
+                color: "#cbd5e1",
                 "&.Mui-checked": {
-                  color: "#54A9FF",
+                  color: "#0d9488",
                 },
               }}
               name="is_in_group"
@@ -71,7 +71,7 @@ const GuestView = (props) => {
             />
           }
           label={
-            <Typography style={{ color: "##757882", fontSize: "15px" }}>
+            <Typography style={{ color: "#64748b", fontSize: "15px" }}>
               חלק מקבוצה?
             </Typography>
           }

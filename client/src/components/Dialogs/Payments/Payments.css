@@ -1,7 +1,7 @@
 input[type="date"]::-webkit-calendar-picker-indicator {
     background: transparent url("../../../assets//icons/calendar.svg")0% 0% no-repeat padding-box;
+    filter: invert(35%) sepia(85%) saturate(1000%) hue-rotate(150deg) brightness(90%);
  }
  .css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input.Mui-disabled{
-    -webkit-text-fill-color:white "!important"
+    -webkit-text-fill-color: #94a3b8 !important;
  }
- 

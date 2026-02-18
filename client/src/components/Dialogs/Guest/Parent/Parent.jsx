@@ -101,8 +101,8 @@ function Parent({ areaCodes, handleInputChange }) {
                     MenuProps={{
                       PaperProps: {
                         sx: {
-                          color: "#ffffff !important",
-                          bgcolor: "#222222",
+                          color: "#1e293b !important",
+                          bgcolor: "#ffffff",
                         },
                       },
                     }}

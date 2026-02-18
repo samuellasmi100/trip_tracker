@@ -79,8 +79,8 @@ const FlightsView = (props) => {
               MenuProps={{
                 PaperProps: {
                   sx: {
-                    color: "#ffffff !important",
-                    bgcolor: "#222222",
+                    color: "#1e293b !important",
+                    bgcolor: "#ffffff",
                   },
                 },
               }}
@@ -105,8 +105,8 @@ const FlightsView = (props) => {
               MenuProps={{
                 PaperProps: {
                   sx: {
-                    color: "#ffffff !important",
-                    bgcolor: "#222222",
+                    color: "#1e293b !important",
+                    bgcolor: "#ffffff",
                   },
                 },
               }}
@@ -163,8 +163,8 @@ const FlightsView = (props) => {
               MenuProps={{
                 PaperProps: {
                   sx: {
-                    color: "#ffffff !important",
-                    bgcolor: "#222222",
+                    color: "#1e293b !important",
+                    bgcolor: "#ffffff",
                   },
                 },
               }}
@@ -221,8 +221,8 @@ const FlightsView = (props) => {
               MenuProps={{
                 PaperProps: {
                   sx: {
-                    color: "#ffffff !important",
-                    bgcolor: "#222222",
+                    color: "#1e293b !important",
+                    bgcolor: "#ffffff",
                   },
                 },
               }}
@@ -298,8 +298,8 @@ const FlightsView = (props) => {
                 MenuProps={{
                   PaperProps: {
                     sx: {
-                      color: "#ffffff !important",
-                      bgcolor: "#222222",
+                      color: "#1e293b !important",
+                      bgcolor: "#ffffff",
                     },
                   },
                 }}
@@ -352,16 +352,16 @@ const FlightsView = (props) => {
         <Grid item style={{ marginRight: "20px", marginTop: "20px" }}>
           <FormControlLabel
             label={
-              <Typography style={{ color: "##757882", fontSize: "15px" }}>
+              <Typography style={{ color: "#64748b", fontSize: "15px" }}>
                 משמש כמקור מידע
               </Typography>
             }
             control={
               <Checkbox
                 sx={{
-                  color: "#686B76",
+                  color: "#cbd5e1",
                   "&.Mui-checked": {
-                    color: "#54A9FF",
+                    color: "#0d9488",
                   },
                 }}
                 checked={

@@ -173,9 +173,7 @@ const FamilyList = () => {
   }, [])
   return (
     <Grid style={{ display: "flex", flexDirection: "column" }}>
-      <Grid style={{ height: "10vh" }}>
-      </Grid>
-      <Grid style={{ display: "flex", justifyContent: "center" }}>
+      <Grid style={{ display: "flex", justifyContent: "center", gap: "16px", padding: "16px" }}>
         <FamilyListView
           handleDialogTypeOpen={handleDialogTypeOpen}
           handleNameClick={handleNameClick}

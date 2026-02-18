@@ -5,6 +5,7 @@ const authService = require("./authService")
 
 router.post("/login", async (req, res, next) => {
   let loginData = req.body
+  console.log(loginData)
   try {
     const response = await authService.login(loginData)
     res.send(response)

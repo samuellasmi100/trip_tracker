@@ -87,9 +87,9 @@ function VacationView({handleInputChange,submit}) {
         control={
           <Checkbox
             sx={{
-              color: "#686B76",
+              color: "#cbd5e1",
               "&.Mui-checked": {
-                color: "#54A9FF",
+                color: "#0d9488",
               },
             }}
             name="exceptions"
@@ -99,7 +99,7 @@ function VacationView({handleInputChange,submit}) {
           />
         }
         label={
-          <Typography style={{ color: "##757882", fontSize: "15px" }}>
+          <Typography style={{ color: "#64748b", fontSize: "15px" }}>
              חריגים ?
           </Typography>
         }

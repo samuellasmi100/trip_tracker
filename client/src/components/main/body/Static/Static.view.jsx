@@ -16,9 +16,11 @@ function StaticView({ handleWidgetClick}) {
         alignItems: "center",
         flexWrap: "wrap",
         margin: "0 auto",
-        gap: "10px",
-        border: "1px solid transparent",
-        maxWidth: "100vw"
+        gap: "16px",
+        border: "none",
+        maxWidth: "100vw",
+        padding: "0 24px",
+        marginRight: "0",
       }}
     >
       <Grid className={classes.containerGrid}>

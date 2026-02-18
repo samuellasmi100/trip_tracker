@@ -91,12 +91,12 @@ const RoomSelector = ({
                     control={
                       <Checkbox
                         sx={{
-                          color: "#686B76",
+                          color: "#cbd5e1",
                           "&.Mui-checked": {
-                            color: "#54A9FF",
+                            color: "#0d9488",
                           },
                         }}
-                      
+
                         checked={expandedRoomId === room.rooms_id}
                         onChange={() => {
                           if(userForm.user_type === "parent"){
@@ -167,7 +167,7 @@ const RoomSelector = ({
 
                 <Grid
                   style={{
-                    border: "1px solid #494C55",
+                    border: "1px solid #e2e8f0",
                     marginTop: "10px",
                     marginBottom: "10px",
                     borderRadius: "8px",
@@ -190,15 +190,15 @@ const RoomSelector = ({
                           control={
                             <Checkbox
                               sx={{
-                                color: "#686B76",
+                                color: "#cbd5e1",
                                 "&.Mui-checked": {
-                                  color: "#54A9FF",
+                                  color: "#0d9488",
                                 },
                               }}
                               checked={guestsRoomList.some(
                                 (item) =>
                                   item.user_id === key.user_id &&
-                                  item.room_id === room.rooms_id && 
+                                  item.room_id === room.rooms_id &&
                                   item.family_id === key.family_id
                               )}
                               onChange={(e) =>

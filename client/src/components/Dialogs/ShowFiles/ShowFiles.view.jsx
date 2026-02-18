@@ -36,10 +36,10 @@ const ShowFilesView = (props) => {
           <Grid>
             <h2> קבצים שהועלו</h2>
           </Grid>
-          <Grid item xs={11} style={{ border: "1px solid rgb(61, 63, 71)" }}>
+          <Grid item xs={11} style={{ border: "1px solid #e2e8f0" }}>
             <TableContainer
               style={{
-                border: "1px solid #3D3F47",
+                border: "1px solid #e2e8f0",
 
               }}
             >
@@ -79,7 +79,7 @@ const ShowFilesView = (props) => {
                           <IconButton size={"small"}
                            onClick={() => handleDownload(file)}>
                             <DownloadIcon
-                              style={{ color: "#54A9FF", fontSize: "27px" }} />
+                              style={{ color: "#0d9488", fontSize: "27px" }} />
                           </IconButton>
                         </TableCell>
                         <TableCell
