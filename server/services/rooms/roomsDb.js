@@ -14,32 +14,30 @@ const getAll = async (vacationId) => {
       );
     }
 }
-const getRoomDetailsWithCounts = async () => {
+const getRoomDetailsWithCounts = async (vacationId) => {
   try {
-    const sql = roomsQuery.getRoomDetailsWithCounts()
+    const sql = roomsQuery.getRoomDetailsWithCounts(vacationId)
     const response = await connection.execute(sql)
     return response
-   
-  } catch (error) { 
+  } catch (error) {
     logger.error(
       `Error: Function:getRoomDetailsWithCounts :, ${error.sqlMessage}`,
     );
   }
 }
-const updateRoom = async (data,vacationId) => {
+const updateRoom = async (data, vacationId) => {
   try {
-    const roomsId = data.rooms_id
-    delete data.number_of_people
-    delete data.id
-    delete data.family_id
-    delete data.family_name
-    delete data.people_count
-    const sql = roomsQuery.updateRoom(data,roomsId,vacationId)
-    const parameters = Object.values(data)
-    const response = await connection.executeWithParameters(sql,parameters)
+    const roomsId = data.rooms_id;
+    // Only keep whitelisted columns — prevents dynamic column injection
+    const filteredData = {};
+    for (const key of roomsQuery.ALLOWED_ROOM_COLUMNS) {
+      if (data[key] !== undefined) filteredData[key] = data[key];
+    }
+    const sql = roomsQuery.updateRoom(filteredData, roomsId, vacationId)
+    const parameters = [...Object.values(filteredData), roomsId]
+    const response = await connection.executeWithParameters(sql, parameters)
     return response
-   
-  } catch (error) { 
+  } catch (error) {
     logger.error(
       `Error: Function:updateRoom :, ${error.sqlMessage}`,
     );
@@ -60,16 +58,14 @@ const getRoomAvailable = async (vacationId,startData,endDate) => {
   }
 }
 
-const getUnAvailableDates = async (vacationId,roomId) => {
- 
+const getUnAvailableDates = async (vacationId, roomId) => {
   try {
-     let sql = roomsQuery.getUnAvailableDates(vacationId)
-    
-     const response = await connection.execute(sql)
-     
+    const sql = roomsQuery.getUnAvailableDates(vacationId, roomId)
+    const response = roomId
+      ? await connection.executeWithParameters(sql, [roomId])
+      : await connection.execute(sql)
     return response
-
-  } catch (error) { 
+  } catch (error) {
     logger.error(
       `Error: Function:getUnAvailableDates :, ${error.sqlMessage}`,
     );

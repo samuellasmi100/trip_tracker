@@ -85,7 +85,7 @@ const Payments = () => {
   
   useEffect(() => {
     getPayments()
-  }, [])
+  }, [vacationId])
   return (
   <>
   <PaymentsView

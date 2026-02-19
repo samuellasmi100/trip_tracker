@@ -1,167 +1,93 @@
 import React from "react";
 import {
-    Checkbox,
+    Switch,
+    RadioGroup,
+    Radio,
     FormControlLabel,
     Grid,
     Typography,
-
+    InputLabel,
 } from "@mui/material";
-import { useStyles } from "../../Guest/Guest.style";
+import { useStyles } from "../../Guest/GuestWizard.style";
 import { useSelector } from "react-redux";
 
-function Flights({areaCodes,handleInputChange }) {
-
+function Flights({ handleInputChange }) {
     const classes = useStyles();
-    const form = useSelector((state) => state.userSlice.form)
+    const form = useSelector((state) => state.userSlice.form);
+
     return (
-        <>
-        <Grid style={{ marginRight: "20px",marginTop: form.user_type === "parent" ? "20px" : "50px"}}>
-          <Grid container display="flex">
-            <Grid item>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    sx={{
-                      color: "#cbd5e1",
-                      "&.Mui-checked": {
-                        color: "#0d9488",
-                      },
-                    }}
+        <Grid style={{ marginRight: "20px", marginTop: form.user_type === "parent" ? "20px" : "50px" }}>
+            <div className={classes.switchRow}>
+                <Typography className={classes.switchLabel}>כולל טיסות</Typography>
+                <Switch
                     name="flights"
-                    className={classes.checkbox}
-                    onClick={handleInputChange}
-                    checked={Number(form.flights)}
-                  />
-                }
-                label={
-                  <Typography style={{ color: "#64748b", fontSize: "15px" }}>
-                    כולל טיסות
-                  </Typography>
-                }
-              />
-               <FormControlLabel
-          control={
-            <Checkbox
-              sx={{
-                color: "#cbd5e1",
-                "&.Mui-checked": {
-                  color: "#0d9488",
-                },
-              }}
-              name="is_in_group"
-              className={classes.checkbox}
-              onClick={handleInputChange}
-              checked={form.is_in_group}
-            />
-          }
-          label={
-            <Typography style={{ color: "#64748b", fontSize: "15px" }}>
-              חלק מקבוצה?
-            </Typography>
-          }
-        />
-              {form.flights ? 
-              <Grid item>
-                   <FormControlLabel
-                control={
-                  <Checkbox
-                    sx={{
-                      color: "#cbd5e1",
-                      "&.Mui-checked": {
-                        color: "#0d9488",
-                      },
-                    }}
-                    name="flying_with_us"
-                    value="flying_with_us"
-                    className={classes.checkbox}
-                    onClick={handleInputChange}
-                    checked={Number(form.flying_with_us)}
-                  />
-                }
-                label={
-                  <Typography style={{ color: "#64748b", fontSize: "15px" }}>
-                    טסים איתנו
-                  </Typography>
-                }
-                
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    sx={{
-                      color: "#cbd5e1",
-                      "&.Mui-checked": {
-                        color: "#0d9488",
-                      },
-                    }}
-                    name="flights_direction"
-                    value="round_trip" 
-                    className={classes.checkbox}
-                    onClick={handleInputChange}
-                    checked={form.flights_direction === "round_trip"}
-                  />
-                }
-                label={
-                  <Typography style={{ color: "#64748b", fontSize: "15px" }}>
-                    הלוך ושוב
-                  </Typography>
-                }
-              />
-               <FormControlLabel
-                control={
-                  <Checkbox
-                    sx={{
-                      color: "#cbd5e1",
-                      "&.Mui-checked": {
-                        color: "#0d9488",
-                      },
-                    }}
-                    name="flights_direction"
-                    value="one_way_outbound" 
-                    className={classes.checkbox}
-                    onClick={handleInputChange}
-                    checked={form.flights_direction === "one_way_outbound"}
-                  />
-                }
-                label={
-                  <Typography style={{ color: "#64748b", fontSize: "15px" }}>
-                      הלוך בלבד
-                  </Typography>
-                }
-              />
-               <FormControlLabel
-                control={
-                  <Checkbox
-                    sx={{
-                      color: "#cbd5e1",
-                      "&.Mui-checked": {
-                        color: "#0d9488",
-                      },
-                    }}
-                    name="flights_direction"
-                    value="one_way_return"
-                    className={classes.checkbox}
-                    onClick={handleInputChange}
-                    checked={form.flights_direction === "one_way_return"}
-                  />
-                }
-                label={
-                  <Typography style={{ color: "#64748b", fontSize: "15px" }}>
-                    חזור בלבד 
-                  </Typography>
-                }
-                
-              />
+                    checked={Boolean(form.flights)}
+                    onChange={handleInputChange}
+                    className={classes.switchControl}
+                    size="small"
+                />
+            </div>
 
-              </Grid>
-              :<Grid></Grid>}
-              
-            </Grid>
+            <div className={classes.switchRow}>
+                <Typography className={classes.switchLabel}>חלק מקבוצה?</Typography>
+                <Switch
+                    name="is_in_group"
+                    checked={Boolean(form.is_in_group)}
+                    onChange={handleInputChange}
+                    className={classes.switchControl}
+                    size="small"
+                />
+            </div>
 
-          </Grid>
+            {Boolean(form.flights) && (
+                <>
+                    <div className={classes.switchRow}>
+                        <Typography className={classes.switchLabel}>טסים איתנו</Typography>
+                        <Switch
+                            name="flying_with_us"
+                            checked={Boolean(form.flying_with_us)}
+                            onChange={handleInputChange}
+                            className={classes.switchControl}
+                            size="small"
+                        />
+                    </div>
+
+                    <div style={{ marginTop: "12px" }}>
+                        <InputLabel className={classes.inputLabelStyle} style={{ marginBottom: "8px" }}>
+                            כיוון טיסה
+                        </InputLabel>
+                        <div className={classes.radioGroupCard}>
+                            <RadioGroup
+                                name="flights_direction"
+                                value={form.flights_direction || ""}
+                                onChange={handleInputChange}
+                                row
+                            >
+                                <FormControlLabel
+                                    value="round_trip"
+                                    control={<Radio />}
+                                    label="הלוך ושוב"
+                                    className={classes.radioLabel}
+                                />
+                                <FormControlLabel
+                                    value="one_way_outbound"
+                                    control={<Radio />}
+                                    label="הלוך בלבד"
+                                    className={classes.radioLabel}
+                                />
+                                <FormControlLabel
+                                    value="one_way_return"
+                                    control={<Radio />}
+                                    label="חזור בלבד"
+                                    className={classes.radioLabel}
+                                />
+                            </RadioGroup>
+                        </div>
+                    </div>
+                </>
+            )}
         </Grid>
-        </>
-    )
+    );
 }
 
 export default Flights;

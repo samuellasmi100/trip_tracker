@@ -135,7 +135,7 @@ const handleDeleteClick = async () => {
   
   useEffect(() => {
     getMainGuests()
-  }, [])
+  }, [vacationId])
   return (
   <>
   <GuestsView

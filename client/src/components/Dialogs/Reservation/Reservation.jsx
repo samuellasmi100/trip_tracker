@@ -41,10 +41,11 @@ const Reservation = () => {
         dispatch(userSlice.updateFormField({ field: "date_chosen", value: "" }))
       }
     } else if (name === "flights_direction") {
+      // RadioGroup sends value directly
       dispatch(
         userSlice.updateFormField({
           field: "flights_direction",
-          value: checked ? e.target.value : "",
+          value: value,
         })
       );
     } else if (name === "departure_date") {

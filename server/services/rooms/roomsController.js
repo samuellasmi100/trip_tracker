@@ -1,29 +1,14 @@
 const router = require("express").Router();
 const roomsService = require("./roomsService")
-const uuid = require("uuid").v4;
 
+// IMPORTANT: Static-prefix routes must come before param routes (/:vacationId)
+// otherwise Express matches e.g. "/count" as /:vacationId with vacationId="count".
 
-router.get("/:vacationId/:startDate/:endDate", async (req, res, next) => {
+router.get("/count/:vacationId", async (req, res, next) => {
   const vacationId = req.params.vacationId
-  const startData = req.params.startDate
-  const endDate = req.params.endDate
-
   try {
-    const response = await roomsService.getRoomAvailable(vacationId,startData,endDate)
+    const response = await roomsService.getRoomDetailsWithCounts(vacationId)
     res.send(response)
-
-  } catch (error) {
-    return next(error);
-  }
-});
-
-router.get("/:vacationId", async (req, res, next) => {
-  const vacationId = req.params.vacationId
-  
-  try {
-    const response = await roomsService.getAll(vacationId)
-    res.send(response)
-
   } catch (error) {
     return next(error);
   }
@@ -36,26 +21,36 @@ router.get("/room_available/:id/:startDate/:endDate", async (req, res, next) => 
   try {
     const response = await roomsService.getRoomAvailableDates(vacationId,startDate,endDate)
     res.send(response)
-
   } catch (error) {
     return next(error);
   }
 });
 
-router.get("/count", async (req, res, next) => {
-  try {
-    const response = await roomsService.getRoomDetailsWithCounts()
-    res.send(response)
+router.get("/:vacationId/:startDate/:endDate", async (req, res, next) => {
+  const vacationId = req.params.vacationId
+  const startData = req.params.startDate
+  const endDate = req.params.endDate
 
+  try {
+    const response = await roomsService.getRoomAvailable(vacationId,startData,endDate)
+    res.send(response)
+  } catch (error) {
+    return next(error);
+  }
+});
+
+router.get("/:vacationId", async (req, res, next) => {
+  const vacationId = req.params.vacationId
+  try {
+    const response = await roomsService.getAll(vacationId)
+    res.send(response)
   } catch (error) {
     return next(error);
   }
 });
 
 router.post("/", async (req, res, next) => {
-
   try {
-   
   } catch (error) {
     return next(error);
   }
@@ -68,7 +63,6 @@ router.put("/:id", async (req, res, next) => {
    await roomsService.updateRoom(roomData,vacationId)
    const response = await roomsService.getAll(vacationId)
    res.send(response)
-
   } catch (error) {
     return next(error);
   }

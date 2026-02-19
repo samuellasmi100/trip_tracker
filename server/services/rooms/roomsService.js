@@ -9,8 +9,8 @@ const getAll = async (vacationId) => {
 const getRoomAvailable = async (vacationId,startData,endDate) => {
   return await roomsDb.getRoomAvailable(vacationId,startData,endDate)
 }
-const getRoomDetailsWithCounts = async () => {
-    return await roomsDb.getRoomDetailsWithCounts()
+const getRoomDetailsWithCounts = async (vacationId) => {
+    return await roomsDb.getRoomDetailsWithCounts(vacationId)
 }
 const updateRoom = async (data,vacationId) => {
     return await roomsDb.updateRoom(data,vacationId)

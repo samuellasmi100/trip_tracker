@@ -69,9 +69,9 @@ const RoomsStatus = () => {
 
   const dateRange = generateDateRange(startDate, endDate);
   useEffect(() => {
-    getAllRooms()
-   getUnAndAvailableDates();
-  }, []);
+    getAllRooms();
+    getUnAndAvailableDates();
+  }, [vacationId]);
 
   return <RoomStatusView gaps={gaps} dateRange={dateRange}
   /> 

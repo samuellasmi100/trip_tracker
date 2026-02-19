@@ -6,12 +6,14 @@ export const useStyles = makeStyles((theme) => ({
   dialog: {
     minWidth: "590px",
     maxWidth: "95vw",
-    height: "650px",
+    maxHeight: "90vh",
     color: "#1e293b !important",
     backgroundColor: "#ffffff !important",
     borderRadius: "16px !important",
     boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.06) !important",
     padding: "0 8px",
+    overflowX: "hidden",
+    overflowY: "auto",
   },
 
   navButton: {

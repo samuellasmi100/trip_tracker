@@ -27,18 +27,16 @@ SELECT
     (SELECT COUNT(*) 
      FROM trip_tracker_${vacationId}.guest 
      WHERE family_id = fa.family_id) AS user_in_system_count
-FROM 
+FROM
     trip_tracker_${vacationId}.families fa
-JOIN 
+LEFT JOIN
     trip_tracker_${vacationId}.guest gu
-ON 
-    fa.family_id = gu.family_id
-LEFT JOIN 
-    LatestPayments lp 
-ON 
-    gu.family_id = lp.family_id AND gu.user_id = lp.user_id AND lp.row_num = 1
-WHERE 
-    gu.is_main_user = 1;
+ON
+    fa.family_id = gu.family_id AND gu.is_main_user = 1
+LEFT JOIN
+    LatestPayments lp
+ON
+    gu.family_id = lp.family_id AND gu.user_id = lp.user_id AND lp.row_num = 1;
 `
 
 

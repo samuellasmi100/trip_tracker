@@ -122,7 +122,7 @@ const Flights = () => {
 
   useEffect(() => {
     getFlightsDetails()
-  }, [])
+  }, [vacationId])
   return (
   <>
   <FlightsView

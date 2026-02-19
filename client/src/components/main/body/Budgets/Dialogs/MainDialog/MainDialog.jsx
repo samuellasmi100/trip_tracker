@@ -1,33 +1,43 @@
 import React from "react";
-import MainDialogView from "./MainDialog.view";
-import { useDispatch, useSelector } from "react-redux";
-import { Button } from "@mui/material";
+import { Dialog } from "@mui/material";
 import { useStyles } from "./MainDialog.style";
-import * as budgetSlice from "../../../../../../store/slice/budgetSlice"
-import BudgetManager from "../BudgetManager/BudgetManager"
-import ForecastManager from "../ForecastManager/ForecastManager"
+import ExpenseForm from "../ExpenseForm/ExpenseForm";
+import IncomeForm from "../IncomeForm/IncomeForm";
+import CategoryManager from "../CategoryManager/CategoryManager";
+import BudgetSettings from "../BudgetSettings/BudgetSettings";
 
-const MainDialog = (props) => {
-  const dialogType = useSelector((state) => state.budgetSlice.type);
-  const dispatch = useDispatch()
+const MainDialog = ({ dialogOpen, dialogType, closeModal }) => {
   const classes = useStyles();
-  const activeButton = useSelector((state) => state.budgetSlice.activeButton)
-  const isExpense = useSelector((state) => state.budgetSlice.isExpense)
 
-  const handleDataView = () => {
-    return <ForecastManager />
+  const isLargeDialog = dialogType === "manageCategories";
+
+  const renderContent = () => {
+    switch (dialogType) {
+      case "addExpense":
+      case "editExpense":
+        return <ExpenseForm closeModal={closeModal} />;
+      case "addIncome":
+      case "editIncome":
+        return <IncomeForm closeModal={closeModal} />;
+      case "manageCategories":
+        return <CategoryManager closeModal={closeModal} />;
+      case "settings":
+        return <BudgetSettings closeModal={closeModal} />;
+      default:
+        return null;
+    }
   };
 
-
-    
-  const { dialogOpen,closeModal } = props;
-
   return (
-    <MainDialogView
-    dialogOpen={dialogOpen}
-    closeModal={closeModal}
-    handleDataView={handleDataView}
-    />
+    <Dialog
+      open={dialogOpen}
+      onClose={closeModal}
+      classes={{
+        paper: `${classes.dialog} ${isLargeDialog ? classes.dialogLarge : classes.dialogSmall}`,
+      }}
+    >
+      {renderContent()}
+    </Dialog>
   );
 };
 

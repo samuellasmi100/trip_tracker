@@ -172,7 +172,7 @@ const GeneralInfo = (props) => {
 
   useEffect(() => {
     getVacationDetails()
-  }, [])
+  }, [vacationId])
   return (
     <>
       <GeneralInfoView

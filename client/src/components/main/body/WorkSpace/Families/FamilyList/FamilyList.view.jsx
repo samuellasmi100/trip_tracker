@@ -104,18 +104,20 @@ function FamilyListView(props) {
                         </IconButton>
                       </TableCell>
                       <TableCell className={classes.dataTableCell}>
-                        {user.total_amount === "" || user.total_amount === null
+                        {user.total_amount == null || user.total_amount === ""
                           ? ""
-                          : `₪${(user.total_amount - user.total_paid_amount).toLocaleString()}`}
+                          : `₪${(Number(user.total_amount) - Number(user.total_paid_amount || 0)).toLocaleString()}`}
                       </TableCell>
-                      <TableCell className={classes.dataTableCell}>{user.number_of_guests}</TableCell>
+                      <TableCell className={classes.dataTableCell}>{user.number_of_guests || "—"}</TableCell>
                       <TableCell className={classes.dataTableCell}>
                         {missing > 0 && <span className={`${classes.statusBadge} ${classes.statusWarning}`}>{missing}</span>}
                       </TableCell>
                       <TableCell className={classes.dataTableCell}>
-                        {missing > 0
-                          ? <span className={`${classes.statusBadge} ${classes.statusWarning}`}>חסרים</span>
-                          : <span className={`${classes.statusBadge} ${classes.statusOk}`}>תקין</span>}
+                        {user.number_of_guests == null
+                          ? <span className={`${classes.statusBadge} ${classes.statusWarning}`}>חדש</span>
+                          : missing > 0
+                            ? <span className={`${classes.statusBadge} ${classes.statusWarning}`}>חסרים</span>
+                            : <span className={`${classes.statusBadge} ${classes.statusOk}`}>תקין</span>}
                       </TableCell>
                     </TableRow>
                   );
@@ -140,7 +142,7 @@ function FamilyListView(props) {
               <CloseIcon style={{ fontSize: "18px", color: "#64748b" }} />
             </IconButton>
             {family.family_id !== undefined &&
-              Number(family?.user_in_system_count) < Number(family?.number_of_guests) && (
+              (!family?.number_of_guests || Number(family?.user_in_system_count) < Number(family?.number_of_guests)) && (
                 <IconButton size="small" onClick={() => handleDialogTypeOpen(isParentIdExist ? "addChild" : "addParent")}>
                   <AddBoxIcon style={{ color: "#0d9488", fontSize: "24px" }} />
                 </IconButton>

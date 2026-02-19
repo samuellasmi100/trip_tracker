@@ -19,15 +19,12 @@ const assignMainRoom = async (roomDetails, familyId, vacationId, startDate, endD
             .filter(room => !checkIfUserAlreadyAssign.some(assign => assign.rooms_id === room.rooms_id))
             .map(room => room.rooms_id);
           if (roomsToRemove.length > 0) {
-            await userRoomsDb.removeMainRoomByRoomId(familyId, vacationId,roomsToRemove[0])
-            await userRoomsDb.removeAllUserAssignFromRoomId(familyId, vacationId,roomsToRemove[0])
-
-          } else {
+            await Promise.all(roomsToRemove.map(roomId => userRoomsDb.removeMainRoomByRoomId(familyId, vacationId, roomId)));
+            await Promise.all(roomsToRemove.map(roomId => userRoomsDb.removeAllUserAssignFromRoomId(familyId, vacationId, roomId)));
           }
-          
+
           if (roomsToAdd.length > 0) {
-            await Promise.all(roomsToAdd.map((room) => userRoomsDb.assignMainRoom(vacationId, familyId, roomsToAdd[0], startDate, endDate)));
-          } else {
+            await Promise.all(roomsToAdd.map(room => userRoomsDb.assignMainRoom(vacationId, familyId, room, startDate, endDate)));
           }
         }
     }

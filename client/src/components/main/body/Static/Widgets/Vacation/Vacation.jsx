@@ -83,7 +83,7 @@ const Vacation = (props) => {
 ;
   useEffect(() => {
     getVacations()
-  }, [])
+  }, [vacationId])
   return (
   <>
   <VacationView

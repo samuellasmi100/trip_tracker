@@ -16,7 +16,8 @@ const createFamilyTableQuery = `
   id int NOT NULL AUTO_INCREMENT,
   family_id varchar(45) NOT NULL,
   family_name varchar(45) NOT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_family_id (family_id)
 ) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;`;
 
 
@@ -118,10 +119,10 @@ CREATE TABLE rooms (
   floor varchar(45) NOT NULL,
   size varchar(45) NOT NULL,
   direction varchar(45) DEFAULT NULL,
-  is_taken varchar(455) DEFAULT NULL,
   base_occupancy varchar(45) DEFAULT NULL,
   max_occupancy varchar(45) DEFAULT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_rooms_id (rooms_id)
 ) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 `;
 
@@ -131,22 +132,27 @@ CREATE TABLE user_room_assignments (
   room_id varchar(45) NOT NULL,
   family_id varchar(45) DEFAULT NULL,
   user_id varchar(45) DEFAULT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  CONSTRAINT fk_ura_room FOREIGN KEY (room_id) REFERENCES rooms(rooms_id) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT fk_ura_family FOREIGN KEY (family_id) REFERENCES families(family_id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 `;
 
 const insertRoomsDataQuery = `
- INSERT INTO rooms VALUES (1,'101','סוויטה AP','1','140','טפט',0,'4',NULL),(2,'102','DLX','1','80','טפט',0,'4',NULL),(3,'103','EXE','1','100','טפט',0,'4',NULL),(4,'104','EXE','1','100','טפט',0,'4',NULL),(5,'105','EXE','1','100','טפט יער',0,'4',NULL),(6,'110','DLX','1','80','חניה',0,'4',NULL),(7,'111','DLX','1','80','חניה',0,'4',NULL),(8,'112','DLX','1','80','חניה',0,'4',NULL),(9,'113','DLX','1','80','חניה',0,'4',NULL),(10,'114','DLX','1','80','חניה',0,'4',NULL),(11,'115','DLX','1','80','חניה',0,'4',NULL),(12,'116','סוויטה AP','1','140','חניה',0,'4',NULL),(13,'201','סוויטה AP','2','140','חניה',0,'4',NULL),(14,'202','DLX','2','80','טפט',0,'4',NULL),(15,'203','DLX','2','80','טפט',0,'4',NULL),(16,'204','DLX','2','80','טפט',0,'4',NULL),(17,'205','EXE','2','100','טפט',0,'4',NULL),(18,'206','EXE','2','100','טפט',0,'4',NULL),(19,'207','EXE','2','100','אגם',0,'4',NULL),(20,'208','סוויטה AP','2','140','אגם',0,'4',NULL),(21,'209','סוויטה AP','2','140','אגם',0,'4',NULL),(22,'210','DLX','2','80','יער',0,'4',NULL),(23,'211','DLX','2','80','יער',0,'4',NULL),(24,'212','DLX','2','80','יער',0,'4',NULL),(25,'213','DLX','2','80','יער',0,'4',NULL),(26,'214','DLX','2','80','יער',0,'4',NULL),(27,'215','DLX','2','80','יער',0,'4',NULL),(28,'216','DLX','2','80','יער',0,'4',NULL),(29,'217','סוויטה AP','2','140','יער',0,'4',NULL),(30,'301','סוויטה AP','3','140','טפט',0,'4',NULL),(31,'302','DLX','3','80','טפט',0,'4',NULL),(32,'303','DLX','3','80','טפט',0,'4',NULL),(33,'304','DLX','3','80','טפט',0,'4',NULL),(34,'305','EXE','3','100','טפט',0,'4',NULL),(35,'306','EXE','3','100','אגם',0,'4',NULL),(36,'307','EXE','3','100','אגם',0,'4',NULL),(37,'308','סוויטה AP','3','140','אגם',0,'4',NULL),(38,'309','סוויטה AP','3','140','אגם',0,'4',NULL),(39,'310','DLX','3','80','יער',0,'4',NULL),(40,'311','DLX','3','80','יער',0,'4',NULL),(41,'312','DLX','3','80','יער',0,'4',NULL),(42,'313','DLX','3','80','יער',0,'4',NULL),(43,'314','DLX','3','80','יער',0,'4',NULL),(44,'315','DLX','3','80','יער',0,'4',NULL),(45,'316','DLX','3','80','יער',0,'4',NULL),(46,'317','סוויטה AP','3','140','יער',0,'4',NULL),(63,'401','סוויטה AP','4','140','אגם',0,'4',NULL),(64,'402','DLX','4','80','אגם',0,'4',NULL),(65,'403','EXE','4','100','אגם',0,'4',NULL),(66,'404','EXE','4','100','אגם',0,'4',NULL),(67,'405','EXE','4','100','אגם',0,'4',NULL),(68,'406','EXE','4','100','אגם',0,'4',NULL),(69,'407','EXE','4','100','אגם',0,'4',NULL),(70,'408','סוויטה AP','4','140','אגם',0,'4',NULL),(71,'409','סוויטה AP','4','140','אגם',0,'4',NULL),(72,'410','DLX','4','80','יער',0,'4',NULL),(73,'411','DLX','4','80','יער',0,'4',NULL),(74,'412','DLX','4','80','יער',0,'4',NULL),(75,'413','DLX','4','80','יער',0,'4',NULL),(76,'414','DLX','4','80','יער',0,'4',NULL),(77,'415','DLX','4','80','יער',0,'4',NULL),(78,'416','DLX','4','80','יער',0,'4',NULL),(79,'417','סוויטה AP','4','140','יער',0,'4',NULL),(80,'501','סוויטה AP','5','140','אגם',0,'4',NULL),(81,'502','SUP','5','60','אגם',0,'2',NULL),(82,'503','SUP','5','60','אגם',0,'2',NULL),(83,'504','SUP','5','60','אגם',0,'2',NULL),(84,'505','SUP','5','60','אגם',0,'2',NULL),(85,'506','SUP','5','60','אגם',0,'2',NULL),(86,'507','SUP','5','60','אגם',0,'2',NULL),(87,'508','סוויטת DELUX','5','220','אגם',0,'4',NULL),(88,'509','SUP','5','60','יער',0,'2',NULL),(89,'510','SUP','5','60','יער',0,'2',NULL),(90,'511','SUP','5','60','יער',0,'2',NULL),(91,'512','SUP','5','60','יער',0,'2',NULL),(92,'513','SUP','5','60','יער',0,'2',NULL),(93,'514','SUP','5','60','יער',0,'2',NULL),(94,'515','סוויטה AP','6','140','יער',0,'4',NULL),(95,'601','סוויטה DELUX','6','200','אגם',0,'4',NULL),(96,'602','סוויטה DELUX','6','200','אגם',0,'4',NULL),(97,'603','סוויטה DELUX','6','200','אגם',0,'4',NULL),(98,'604','סוויטה DELUX','6','200','יער',0,'4',NULL),(99,'605','סוויטה DELUX','6','200','יער',0,'4',NULL),(100,'606','סוויטה DELUX','6','200','יער',0,'4',NULL);
+ INSERT INTO rooms (id, rooms_id, type, floor, size, direction, base_occupancy, max_occupancy) VALUES (1,'101','סוויטה AP','1','140','טפט','4',NULL),(2,'102','DLX','1','80','טפט','4',NULL),(3,'103','EXE','1','100','טפט','4',NULL),(4,'104','EXE','1','100','טפט','4',NULL),(5,'105','EXE','1','100','טפט יער','4',NULL),(6,'110','DLX','1','80','חניה','4',NULL),(7,'111','DLX','1','80','חניה','4',NULL),(8,'112','DLX','1','80','חניה','4',NULL),(9,'113','DLX','1','80','חניה','4',NULL),(10,'114','DLX','1','80','חניה','4',NULL),(11,'115','DLX','1','80','חניה','4',NULL),(12,'116','סוויטה AP','1','140','חניה','4',NULL),(13,'201','סוויטה AP','2','140','חניה','4',NULL),(14,'202','DLX','2','80','טפט','4',NULL),(15,'203','DLX','2','80','טפט','4',NULL),(16,'204','DLX','2','80','טפט','4',NULL),(17,'205','EXE','2','100','טפט','4',NULL),(18,'206','EXE','2','100','טפט','4',NULL),(19,'207','EXE','2','100','אגם','4',NULL),(20,'208','סוויטה AP','2','140','אגם','4',NULL),(21,'209','סוויטה AP','2','140','אגם','4',NULL),(22,'210','DLX','2','80','יער','4',NULL),(23,'211','DLX','2','80','יער','4',NULL),(24,'212','DLX','2','80','יער','4',NULL),(25,'213','DLX','2','80','יער','4',NULL),(26,'214','DLX','2','80','יער','4',NULL),(27,'215','DLX','2','80','יער','4',NULL),(28,'216','DLX','2','80','יער','4',NULL),(29,'217','סוויטה AP','2','140','יער','4',NULL),(30,'301','סוויטה AP','3','140','טפט','4',NULL),(31,'302','DLX','3','80','טפט','4',NULL),(32,'303','DLX','3','80','טפט','4',NULL),(33,'304','DLX','3','80','טפט','4',NULL),(34,'305','EXE','3','100','טפט','4',NULL),(35,'306','EXE','3','100','אגם','4',NULL),(36,'307','EXE','3','100','אגם','4',NULL),(37,'308','סוויטה AP','3','140','אגם','4',NULL),(38,'309','סוויטה AP','3','140','אגם','4',NULL),(39,'310','DLX','3','80','יער','4',NULL),(40,'311','DLX','3','80','יער','4',NULL),(41,'312','DLX','3','80','יער','4',NULL),(42,'313','DLX','3','80','יער','4',NULL),(43,'314','DLX','3','80','יער','4',NULL),(44,'315','DLX','3','80','יער','4',NULL),(45,'316','DLX','3','80','יער','4',NULL),(46,'317','סוויטה AP','3','140','יער','4',NULL),(63,'401','סוויטה AP','4','140','אגם','4',NULL),(64,'402','DLX','4','80','אגם','4',NULL),(65,'403','EXE','4','100','אגם','4',NULL),(66,'404','EXE','4','100','אגם','4',NULL),(67,'405','EXE','4','100','אגם','4',NULL),(68,'406','EXE','4','100','אגם','4',NULL),(69,'407','EXE','4','100','אגם','4',NULL),(70,'408','סוויטה AP','4','140','אגם','4',NULL),(71,'409','סוויטה AP','4','140','אגם','4',NULL),(72,'410','DLX','4','80','יער','4',NULL),(73,'411','DLX','4','80','יער','4',NULL),(74,'412','DLX','4','80','יער','4',NULL),(75,'413','DLX','4','80','יער','4',NULL),(76,'414','DLX','4','80','יער','4',NULL),(77,'415','DLX','4','80','יער','4',NULL),(78,'416','DLX','4','80','יער','4',NULL),(79,'417','סוויטה AP','4','140','יער','4',NULL),(80,'501','סוויטה AP','5','140','אגם','4',NULL),(81,'502','SUP','5','60','אגם','2',NULL),(82,'503','SUP','5','60','אגם','2',NULL),(83,'504','SUP','5','60','אגם','2',NULL),(84,'505','SUP','5','60','אגם','2',NULL),(85,'506','SUP','5','60','אגם','2',NULL),(86,'507','SUP','5','60','אגם','2',NULL),(87,'508','סוויטת DELUX','5','220','אגם','4',NULL),(88,'509','SUP','5','60','יער','2',NULL),(89,'510','SUP','5','60','יער','2',NULL),(90,'511','SUP','5','60','יער','2',NULL),(91,'512','SUP','5','60','יער','2',NULL),(92,'513','SUP','5','60','יער','2',NULL),(93,'514','SUP','5','60','יער','2',NULL),(94,'515','סוויטה AP','6','140','יער','4',NULL),(95,'601','סוויטה DELUX','6','200','אגם','4',NULL),(96,'602','סוויטה DELUX','6','200','אגם','4',NULL),(97,'603','סוויטה DELUX','6','200','אגם','4',NULL),(98,'604','סוויטה DELUX','6','200','יער','4',NULL),(99,'605','סוויטה DELUX','6','200','יער','4',NULL),(100,'606','סוויטה DELUX','6','200','יער','4',NULL);
 `;
 
 const createRoomTakenTable = `
  CREATE TABLE room_taken (
   id int NOT NULL AUTO_INCREMENT,
   family_id varchar(45) NOT NULL,
-  start_date varchar(45) NOT NULL,
-  end_date varchar(45) NOT NULL,
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL,
   room_id varchar(45) NOT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_room_family (room_id, family_id),
+  CONSTRAINT fk_rt_room FOREIGN KEY (room_id) REFERENCES rooms(rooms_id) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT fk_rt_family FOREIGN KEY (family_id) REFERENCES families(family_id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 `;
 
@@ -222,6 +228,44 @@ CREATE TABLE exchange_rates (
 
 
 
+const createIncomeCategoryTable = `
+CREATE TABLE income_category (
+  id int NOT NULL AUTO_INCREMENT,
+  name varchar(45) NOT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+`;
+
+const insertIncomeCategoryQuery = `
+INSERT INTO income_category VALUES (1,'תשלומי משפחות'),(2,'חסויות'),(3,'אחר');
+`;
+
+const createIncomeSubCategoryTable = `
+CREATE TABLE income_sub_category (
+  id int NOT NULL AUTO_INCREMENT,
+  income_category_id varchar(45) DEFAULT NULL,
+  name varchar(45) NOT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+`;
+
+const createIncomeTable = `
+CREATE TABLE income (
+  id int NOT NULL AUTO_INCREMENT,
+  expenditure varchar(45) DEFAULT NULL,
+  payment_currency varchar(45) DEFAULT NULL,
+  expenses_category_id varchar(45) DEFAULT NULL,
+  expenses_sub_category_id varchar(45) DEFAULT NULL,
+  planned_payment_date varchar(45) DEFAULT NULL,
+  actual_payment_date varchar(45) DEFAULT NULL,
+  expenditure_ils varchar(45) DEFAULT NULL,
+  is_paid tinyint DEFAULT '0',
+  action_id varchar(455) DEFAULT NULL,
+  description varchar(255) DEFAULT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+`;
+
 module.exports = {
   dropTablesQueries,
   createFamilyTableQuery,
@@ -240,4 +284,8 @@ module.exports = {
   createFutureExpensesTable,
   createExpensesTable,
   createExchangeRatesTable,
+  createIncomeCategoryTable,
+  insertIncomeCategoryQuery,
+  createIncomeSubCategoryTable,
+  createIncomeTable,
 };

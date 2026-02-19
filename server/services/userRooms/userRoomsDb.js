@@ -54,23 +54,6 @@ const updateStartEndAndDate = async (vacationId,familyId,startDate,endDate) => {
   }
 }
 
-const updateMainRoom = async (roomDetails,userId) => {
- 
-  try {
-    const sql = `
-    INSERT INTO parent_room_details (room_id, userId)
-    VALUES ${roomDetails.map(() => '(?, ?)').join(', ')}
-    ON DUPLICATE KEY UPDATE room_id = VALUES(room_id);`;
-    const parameters = roomDetails.flatMap((room) => [room.roomId,userId]);
-    await connection.executeWithParameters(sql,parameters)
-
-  } catch (error) { 
-  logger.error(
-      `Error: Function:updateMainRoom :, ${error.sqlMessage}`,
-    );
-  }
-}
-
 const removeMainRoom = async (familyId,vacationId) => {
   try {
     const sql = userRoomQuery.removeMainRoom(vacationId)
@@ -198,14 +181,12 @@ const removeAllUserAssignFromRoomId = async (familyId,vacationId,roomId) => {
 module.exports = {
   assignMainRoom,
   getFamilyRoom,
-  updateMainRoom,
   removeMainRoom,
   assignRoom,
   getChosenRoom,
   updateAssignRoom,
   removeUserAssignMainRoom,
   removeAllUserAssignRoom,
-  getUsersChosenRoom,
   getUsersChosenRoom,
   updateStartEndAndDate,
   removeMainRoomByRoomId,

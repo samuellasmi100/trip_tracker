@@ -48,6 +48,33 @@ JWT-based. Passwords hashed with SHA256 (jshashes). Token payload: `{userId, per
 
 MySQL2 with promise-based queries (no ORM). Per-vacation tables: `guest`, `families`, `flights`, `rooms`, `user_room_assignments`, `rooms_taken`, `payments`, `notes`, `expenses_category`, `expenses_sub_category`, `future_expenses`, `expenses`, `exchange_rates`.
 
+## Database Change Protocol — MANDATORY
+
+Whenever you add or modify a database table/column, you MUST do ALL THREE of the following:
+
+**a. Update `sql/query/trip_tracker_dump.js`** — the CREATE TABLE / INSERT statements used when spinning up new vacation databases.
+
+**b. Add a new step to `server/migrations/run_migration.js`** — there is ONE migration file, never create separate files. Add the new step inside `migrateVacationDb()` above the `// ── add new steps above this line ──` comment. Every step must be idempotent (check before acting).
+
+**c. Update `DATABASE_SCHEMA.md`** (this folder: `server/DATABASE_SCHEMA.md`) — reflect the new columns/constraints/types.
+
+Skipping any of these three steps is a bug. New vacations and existing vacations must always end up with the same schema.
+
 ## Environment Variables
 
 Configured in `.env`: `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`, `REST_API_PORT`, `TOKEN_SECRET_KEY`.
+
+## STRICT RULES — DO NOT VIOLATE
+
+### Never do any of the following without explicit permission:
+- `npm run build` / `npm build` / any build or compile command
+- `npm start` / `npm run start` / starting the dev server
+- Run migrations on production databases
+- Delete or drop database tables
+- Push to git (`git push`)
+- Deploy anything
+- Run any destructive command
+
+**Only write code. Leave testing, building, running, and deploying to the user.**
+
+- **NEVER browse or search inside `node_modules/`.** Check `package.json` only for dependency info.

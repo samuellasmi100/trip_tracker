@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import MainDialogView from "./MainDialog.view";
-import Guest from "../Guest/Guest";
+import GuestWizard from "../Guest/GuestWizard";
 import RoomSelector from "../RoomSelector/RoomSelector";
 import RoomsAssigner from "../RoomsAssigner/RoomsAssigner";
 import Payments from "../Payments/Payments";
@@ -28,12 +28,13 @@ const MainDialog = (props) => {
     closeModal
   } = props;
 
-  
+  // Add flows use the wizard (self-contained stepper, no external nav buttons needed)
+  const isWizardFlow = dialogType === "addFamily" || dialogType === "addParent" || dialogType === "addChild";
+
   const handleButtonClick = async (buttonName) => {
-    
     dispatch(dialogSlice.updateActiveButton(buttonName))
   }
-  
+
   const handleDataView = () => {
     if(dialogType === "childDetails" || dialogType === "parentDetails"){
       return <ChildDetails />
@@ -43,9 +44,12 @@ const MainDialog = (props) => {
       }else {
         return <ShowFiles />
       }
+    } else if(isWizardFlow){
+      // Wizard handles its own steps internally
+      return <GuestWizard />
     } else{
        if (activeButton === "פרטים אישיים") {
-        return <Guest />
+        return <GuestWizard />
       } else if (activeButton === "פרטי הזמנה" || activeButton === "פרטי נסיעה" ) {
         return <Reservation />
       } else if (activeButton === "הקצאת חדרים") {
@@ -60,11 +64,16 @@ const MainDialog = (props) => {
         return <Notes />
       }
     }
-   
+
   }
 
   const handleButtonHeader = () => {
-    if(dialogType === "childDetails" || dialogType === "parentDetails" || dialogType === "addChild" || dialogType === "addParent"){
+    // Wizard flows handle their own navigation via the stepper — no header buttons
+    if(isWizardFlow){
+      return null;
+    }
+    if(dialogType === "childDetails" || dialogType === "parentDetails"){
+      return null;
     }else if(dialogType === "uploadFile"){
       return ["העלה קובץ","הצג קבצים שהועלו",]
       .map((label) => (
@@ -78,7 +87,7 @@ const MainDialog = (props) => {
     }else {
         if(form.user_type === "client"){
           return (Number(form.flights) === 1
-          ?  ["פרטים אישיים","פרטי נסיעה", "בחירת חדרים", "טיסות", "הערות"] 
+          ?  ["פרטים אישיים","פרטי נסיעה", "בחירת חדרים", "טיסות", "הערות"]
           :  ["פרטים אישיים","פרטי נסיעה", "בחירת חדרים", "הערות"]
         ).map((label) => (
           <Button
@@ -90,7 +99,7 @@ const MainDialog = (props) => {
          ))
         }else {
           return (Number(form.flights) === 1
-            ?  ["פרטים אישיים","פרטי הזמנה","הקצאת חדרים","בחירת חדרים", "טיסות", "תשלום", "הערות"] 
+            ?  ["פרטים אישיים","פרטי הזמנה","הקצאת חדרים","בחירת חדרים", "טיסות", "תשלום", "הערות"]
             :  ["פרטים אישיים","פרטי הזמנה", "הקצאת חדרים", "בחירת חדרים","תשלום", "הערות"]
           ).map((label) => (
             <Button
@@ -101,10 +110,10 @@ const MainDialog = (props) => {
             </Button>
           ))
         }
-      
-     
+
+
     }
-       
+
   }
 
   return (

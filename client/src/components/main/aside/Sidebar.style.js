@@ -33,23 +33,18 @@ export const useStyles = makeStyles((theme) => ({
 
   /* ===== LOGO / BRAND AREA ===== */
   brandArea: {
-    padding: "20px 20px 16px 20px",
+    padding: "16px 16px 14px 16px",
     borderBottom: "1px solid rgba(255,255,255,0.08)",
     marginBottom: "8px",
+    display: "flex",
+    justifyContent: "center",
   },
-  brandText: {
-    color: "#ffffff",
-    fontSize: "18px",
-    fontWeight: 700,
-    letterSpacing: "-0.02em",
-    textAlign: "right",
-  },
-  brandSub: {
-    color: "rgba(255,255,255,0.45)",
-    fontSize: "12px",
-    fontWeight: 400,
-    textAlign: "right",
-    marginTop: "2px",
+  brandLogo: {
+    height: "38px",
+    width: "auto",
+    objectFit: "contain",
+    filter: "brightness(0) invert(1)",
+    opacity: 0.92,
   },
 
   /* ===== NAV SECTION ===== */

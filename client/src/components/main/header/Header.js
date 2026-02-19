@@ -14,9 +14,23 @@ const Header = () => {
   const location = useLocation();
   const token = sessionStorage.getItem("token");
 
+  const staticDialogType = useSelector((state) => state.staticSlice.type);
+
+  const staticTitles = {
+    rooms: "רשימת חדרים",
+    roomsStatus: "סטטוס חדרים",
+    hotels: "מלונות",
+    flights: "טיסות",
+    payments: "תשלומים",
+    vacations: "חופשות",
+    generalInformation: "מידע כולל",
+    mainGuests: "נרשמים",
+    guests: "כלל האורחים",
+  };
+
   const getPageTitle = () => {
-    if (location.pathname.includes("/workspace")) return "סביבת עבודה";
-    if (location.pathname.includes("/static")) return "מידע כולל";
+    if (location.pathname.includes("/workspace")) return "דף הבית";
+    if (location.pathname.includes("/static")) return staticTitles[staticDialogType] || "";
     if (location.pathname.includes("/budgets")) return "תקציב";
     return "";
   };

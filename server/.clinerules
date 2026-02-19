@@ -1,0 +1,131 @@
+# Trip Tracker — Project Rules & Context
+
+## Project Overview
+
+**Trip Tracker** (branded "Avimor Tourism Online") is a vacation management platform for a tourism company managing group vacations. It handles family registration, room assignments, flight bookings, payments, file uploads, and budgeting/expenses — all scoped per-vacation.
+
+**Business domain:** A tourism operator (Avimor) organizes group vacations (e.g., Passover trip, Summer trip). Each vacation has multiple families, each family has a main contact (parent) and additional guests (children/dependents). The system tracks rooms, flights, payments, and budgets per vacation.
+
+## Tech Stack
+
+### Server
+- **Runtime:** Node.js with Express.js
+- **Database:** MySQL 8.0 via `mysql2` (no ORM)
+- **Auth:** JWT (`jsonwebtoken`) + SHA-256 password hashing (`jshashes`)
+- **Logging:** Winston (error.log, combined.log, info.log)
+- **File uploads:** Multer (PDF/JPEG only)
+- **Other:** dotenv, cors, uuid, moment, node-cron, multer
+
+### Client
+- **Framework:** React 18 (Create React App, plain JavaScript — no TypeScript)
+- **State:** Redux Toolkit (11 slices) with `redux-devtools-extension`
+- **Routing:** React Router v6 (3 authenticated routes: `/workspace`, `/static`, `/budgets`)
+- **UI Framework:** Material-UI v5 (MUI) with styled-components
+- **HTTP:** Axios via shared `baseApi.js` instance
+- **Tables:** ag-grid-react
+- **Charts:** chart.js + react-chartjs-2
+- **Export:** jspdf + jspdf-autotable, xlsx, papaparse
+
+### Database Architecture
+- **Shared DB:** `trip_tracker` — user accounts, vacation list, vacation dates
+- **Per-vacation DB:** `trip_tracker_{uuid}` — families, guests, rooms, flights, payments, notes, expenses, files
+- New vacation → `createDb.js` creates a fresh schema with all tables + seed data (100 hotel rooms, expense categories)
+
+## Architecture & Conventions
+
+### Server: 3-Tier Pattern
+Every feature follows: **Controller → Service → Db**
+```
+services/{feature}/{feature}Controller.js  — Express Router, req/res handling
+services/{feature}/{feature}Service.js     — Business logic
+services/{feature}/{feature}Db.js          — Database queries
+sql/query/{feature}Query.js                — SQL query string functions
+```
+
+SQL queries are functions that take `vacationId` and return template-literal SQL strings with `trip_tracker_${vacationId}` schema references.
+
+### Client: Component Pattern
+Components follow a split convention:
+```
+Component.jsx       — container/logic (state, dispatch, effects)
+Component.view.jsx  — presentational (receives props, renders JSX)
+Component.style.js  — styled-components / MUI makeStyles
+```
+
+### Request Flow
+```
+Client (Axios + Bearer token)
+  → Express (CORS → JSON → Auth middleware → Controller → Service → Db)
+  → MySQL (per-vacation schema)
+  → Response / ErrorHandler middleware
+```
+
+### Key Files
+- `server/index.js` — Express app setup, route registration
+- `server/db/connection-wrapper.js` — MySQL2 pool (execute, executeWithParameters)
+- `server/middleware/authMiddleware/checkAuthorization.js` — JWT verification
+- `server/sql/utils/createDb.js` — Per-vacation database creation
+- `server/sql/query/trip_tracker_dump.js` — Schema dump with CREATE TABLE + seed data
+- `client/src/apis/baseApi.js` — Axios instance
+- `client/src/utils/constants.js` — API endpoint paths
+- `client/src/store/` — Redux store with 11 slices
+
+## Design System
+
+- **Language:** Hebrew (RTL layout). All UI labels, button text, and user-facing messages are in Hebrew.
+- **Color palette:** Light background (#f1f5f9), MUI defaults
+- **Typography:** Inter font family
+- **Component library:** MUI v5 components (Grid, Dialog, TextField, Button, etc.)
+- **Styling approach:** Mix of styled-components and MUI's `makeStyles`/`sx` prop
+- **Notifications:** react-toastify (driven by `snackBarSlice`)
+
+## Gotchas & Known Issues
+
+### Database
+1. **All dates are varchar** — Not DATE type. Stored as strings like "2025-04-10". Watch out when comparing or sorting.
+2. **All numeric values are varchar** — Amounts, counts, ages, room sizes — all strings. Must parse before arithmetic.
+3. **No foreign keys** — All relationships are application-level only. Orphan records are possible.
+4. **No unique constraints** on business keys (`user_id`, `family_id`, `rooms_id`, `vacation_id`).
+5. **No indexes** beyond primary keys — JOINs may be slow at scale.
+
+### SQL Injection Risks
+6. **`vacationId` interpolated into SQL** — `trip_tracker_${vacationId}` is used as schema name. `vacationDb.js` sanitizes but other paths may not.
+7. **Dynamic column names** — `updateGuest` and `updateRoom` build SET clauses from `Object.keys(userData)`. Column names come from client input.
+
+### API
+8. **`GET /flights/family/:id`** — Missing leading `/` in route path, may not match.
+9. **`GET /rooms/count`** — No vacationId, probably broken.
+10. **`PUT /vacations`** and `POST /rooms`** — Empty handlers (not implemented).
+11. **Route param naming** — Inconsistent: sometimes `:id` is vacationId, sometimes familyId, sometimes userId. Always check the controller.
+
+### Client
+12. **`staticSlice` exports `updateMainGuests`** in destructured export but the reducer doesn't define it — will be `undefined` at runtime.
+13. **Token/session** — Stored in `sessionStorage` (clears on tab close). `vacationId` also in sessionStorage as `vacId`.
+14. **Redux store** — Uses old-style `createStore` with `redux-devtools-extension` instead of RTK's `configureStore`.
+
+### File Structure
+15. **Typo in filename** — `sql/query/fligthsQuery.js` (should be `flightsQuery`).
+16. **`files` table** — DB record tracking exists but uploads controller doesn't write to DB (only writes to disk). The `saveRegistrationForm` in userDb.js does write to DB but is never called from controllers.
+
+## Environment Variables (server/.env)
+
+```
+DB_HOST=localhost
+DB_USER=root
+DB_PASS=<password>
+DB_NAME=trip_tracker
+REST_API_PORT=4000
+TOKEN_SECRET_KEY=<jwt_secret>
+```
+
+## Development
+
+```bash
+# Server (port 4000)
+cd server && npm start   # nodemon --legacy-watch server.js
+
+# Client (port 3000)
+cd client && npm start   # react-scripts start
+```
+
+No build step for server. Client uses CRA's standard build.

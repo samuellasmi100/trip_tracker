@@ -41,7 +41,11 @@ app.use("/budget",budgetController)
 app.use('/uploads', express.static(uploadsPath),uploadsController);
 
 app.use(errorHandler);
+
+const migrateBudgetTables = require("./sql/utils/migrateBudgetTables");
+
 const launchServer = async () => {
+  await migrateBudgetTables();
   app.listen(process.env.REST_API_PORT, () =>
     console.log(`The Main Server is running on ${process.env.REST_API_PORT}`)
   );

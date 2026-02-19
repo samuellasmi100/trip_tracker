@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Dialog,
   Grid,
@@ -17,26 +17,29 @@ const MainDialogView = (props) => {
   } = props;
 
   const classes = useStyles();
-
+  const headerContent = handleButtonHeader();
 
   return (
     <Dialog
       open={dialogOpen}
       classes={{ paper: classes.dialog }}
-      onClose={closeModal}>
-      <Grid>
-        <Grid
-          item
-          container
-          xs={12}
-          style={{ marginTop: "30px", marginLeft: "30px"}}
-          alignContent="center"
-          justifyContent="space-between">
-          <Grid item xs={12} container justifyContent={dialogType !== "uploadFile" ? "center" : ""} style={{ marginTop: "20px", marginBottom: "30px",marginRight:dialogType !== "uploadFile" ? "" : "10px" }} >
-         { handleButtonHeader()}
+      onClose={closeModal}
+      style={{ zIndex: 1600 }}>
+      {headerContent && (
+        <Grid>
+          <Grid
+            item
+            container
+            xs={12}
+            style={{ marginTop: "30px", marginLeft: "30px"}}
+            alignContent="center"
+            justifyContent="space-between">
+            <Grid item xs={12} container justifyContent={dialogType !== "uploadFile" ? "center" : ""} style={{ marginTop: "20px", marginBottom: "30px",marginRight:dialogType !== "uploadFile" ? "" : "10px" }} >
+              {headerContent}
+            </Grid>
           </Grid>
         </Grid>
-      </Grid>
+      )}
       {handleDataView()}
     </Dialog>
   );

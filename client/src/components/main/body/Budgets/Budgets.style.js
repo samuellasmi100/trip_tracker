@@ -1,90 +1,99 @@
-import React from "react";
 import { makeStyles } from "@mui/styles";
 
-export const useStyles = makeStyles((theme) => ({
-   dataTableBody: {
-    "& tr:nth-of-type(odd)": {
-      backgroundColor: "#f8fafc",
-    },
-    "& tr:nth-of-type(even)": {
-      backgroundColor: "#ffffff",
-    },
-    "& tr": {
-      transition: "background-color 0.15s ease",
-      "&:hover": {
-        backgroundColor: "#f1f5f9",
-      },
+export const budgetColors = {
+  primary: "#0d9488",
+  primaryLight: "#14b8a6",
+  textDark: "#1e293b",
+  textMuted: "#64748b",
+  textPlaceholder: "#94a3b8",
+  border: "#e2e8f0",
+  bgWhite: "#ffffff",
+  bgOdd: "#f8fafc",
+  bgHover: "#f1f5f9",
+  success: "#22c55e",
+  warning: "#f59e0b",
+  error: "#ef4444",
+};
+
+export const useStyles = makeStyles(() => ({
+  root: {
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+    padding: "20px 30px",
+    minHeight: "calc(100vh - 64px)",
+    backgroundColor: "#f8fafc",
+  },
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "16px",
+  },
+  headerActions: {
+    display: "flex",
+    gap: "10px",
+    alignItems: "center",
+  },
+  tabs: {
+    "& .MuiTabs-indicator": {
+      backgroundColor: budgetColors.primary,
+      height: "3px",
+      borderRadius: "3px 3px 0 0",
     },
   },
-  dataTableCell: {
-    fontSize:"14px !important",
-    color: "#1e293b !important",
-    textAlign: "center !important",
-    borderBottom: "none !important",
-  },
-  headerTableRow: {
-    fontSize: "15px !important",
-    color: "#64748b !important",
-    textAlign: "center !important",
-    borderBottom: "none!important",
+  tab: {
+    color: `${budgetColors.textMuted} !important`,
     fontWeight: "600 !important",
-    "&.MuiTableCell-stickyHeader": {
-      backgroundColor: "#ffffff !important",
+    fontSize: "15px !important",
+    textTransform: "none !important",
+    minWidth: "120px !important",
+    "&.Mui-selected": {
+      color: `${budgetColors.primary} !important`,
     },
   },
-  submitButton: {
+  addButton: {
+    display: "inline-flex !important",
+    alignItems: "center !important",
+    flexDirection: "row !important",
     color: "#ffffff !important",
-    fontSize: "1.125rem",
-    textTransform: "capitalize !important",
-    width: "168px",
-    height: "32px",
-    /* UI Properties */
-    background: "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%) !important",
-    borderRadius: "10px",
-    opacity: 1,
-    boxShadow: "0 2px 8px rgba(13, 148, 136, 0.25)",
+    fontSize: "14px !important",
+    textTransform: "none !important",
+    padding: "6px 20px !important",
+    background: `linear-gradient(135deg, ${budgetColors.primary} 0%, ${budgetColors.primaryLight} 100%) !important`,
+    borderRadius: "10px !important",
+    boxShadow: "0 2px 8px rgba(13, 148, 136, 0.25) !important",
     "&:hover": {
-      backgroundColor: "#0f766e !important",
+      background: `linear-gradient(135deg, #0f766e 0%, ${budgetColors.primary} 100%) !important`,
     },
   },
-  downloadButton: {
-    width: "32px",
-    height: "32px",
-    background: "#24414B 0% 0% no-repeat padding-box",
-    border: "1px solid #0d9488 ",
-    borderRadius: "10px",
-    opacity: 1,
+  categoryButton: {
+    display: "inline-flex !important",
+    alignItems: "center !important",
+    flexDirection: "row !important",
+    color: `${budgetColors.textDark} !important`,
+    fontSize: "14px !important",
+    textTransform: "none !important",
+    padding: "6px 16px !important",
+    border: `1px solid ${budgetColors.border} !important`,
+    borderRadius: "10px !important",
+    backgroundColor: `${budgetColors.bgWhite} !important`,
+    "&:hover": {
+      backgroundColor: `${budgetColors.bgHover} !important`,
+    },
   },
-  textField: {
-    borderRadius: 10,
-    "& .MuiInputBase-input": {
-        position: "relative",
-        color: "#1e293b",
-        fontSize: 14,
-        padding: "5px 18px",
-        height: "24px",
+  settingsButton: {
+    minWidth: "36px !important",
+    width: "36px !important",
+    height: "36px !important",
+    padding: "6px !important",
+    border: `1px solid ${budgetColors.border} !important`,
+    borderRadius: "10px !important",
+    backgroundColor: `${budgetColors.bgWhite} !important`,
+    color: `${budgetColors.textMuted} !important`,
+    "&:hover": {
+      backgroundColor: `${budgetColors.bgHover} !important`,
+      color: `${budgetColors.textDark} !important`,
     },
-    "& .MuiFormLabel-root": {
-        color: "#94a3b8", // or black
-        fontSize: "14px",
-    },
-    "& label.Mui-focused": {
-        color: "#0d9488",
-        top: "0px",
-    },
-    "& .MuiInput-underline:after": {
-        borderBottomColor: "#0d9488",
-    },
-    "& .MuiOutlinedInput-root": {
-        "& fieldset": {
-            borderColor: "#e2e8f0",
-        },
-        "&:hover fieldset": {
-            borderColor: "#e2e8f0",
-        },
-        "&.Mui-focused fieldset": {
-            borderColor: "#0d9488",
-        },
-    },
-},
+  },
 }));

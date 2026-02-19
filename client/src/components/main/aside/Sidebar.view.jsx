@@ -1,7 +1,6 @@
 import React from "react";
 import {
   AppBar,
-  Grid,
   IconButton,
   Typography,
 } from "@mui/material";
@@ -10,8 +9,8 @@ import { Link, useLocation } from "react-router-dom";
 
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
+import avimorLogo from "../../../assets/icons/avimor-logo.png";
 import HomeWorkIcon from "@mui/icons-material/HomeWork";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import AnalyticsIcon from "@mui/icons-material/Analytics";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -24,6 +23,8 @@ import ApartmentIcon from "@mui/icons-material/Apartment";
 import BeachAccessIcon from "@mui/icons-material/BeachAccess";
 import FlightIcon from "@mui/icons-material/Flight";
 import AssessmentIcon from "@mui/icons-material/Assessment";
+import HotelIcon from "@mui/icons-material/Hotel";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 function SidebarView({
   logoutButtonFunction,
@@ -33,25 +34,18 @@ function SidebarView({
   sidebarOpen,
   toggleSidebar,
   closeSidebar,
-  staticExpanded,
-  toggleStaticExpanded,
+  linaExpanded,
+  toggleLinaExpanded,
+  vacationExpanded,
+  toggleVacationExpanded,
   handleWidgetClick,
   staticDialogType,
 }) {
   const classes = useStyles();
   const { pathname } = useLocation();
 
-  const staticSubItems = [
-    { key: "rooms", label: "רשימת חדרים", icon: <MeetingRoomIcon className={classes.subMenuIcon} /> },
-    { key: "roomsStatus", label: "סטטוס חדרים", icon: <CheckCircleOutlineIcon className={classes.subMenuIcon} /> },
-    { key: "payments", label: "תשלומים", icon: <PaymentsIcon className={classes.subMenuIcon} /> },
-    { key: "mainGuests", label: "נרשמים", icon: <PeopleAltIcon className={classes.subMenuIcon} /> },
-    { key: "guests", label: "כלל האורחים", icon: <GroupsIcon className={classes.subMenuIcon} /> },
-    { key: "hotels", label: "מלונות", icon: <ApartmentIcon className={classes.subMenuIcon} /> },
-    { key: "vacations", label: "חופשות", icon: <BeachAccessIcon className={classes.subMenuIcon} /> },
-    { key: "flights", label: "טיסות", icon: <FlightIcon className={classes.subMenuIcon} /> },
-    { key: "generalInformation", label: "מידע כולל", icon: <AssessmentIcon className={classes.subMenuIcon} /> },
-  ];
+  const linaKeys = ["rooms", "roomsStatus", "hotels"];
+  const vacationKeys = ["vacations", "generalInformation", "mainGuests", "guests"];
 
   return (
     <>
@@ -90,15 +84,13 @@ function SidebarView({
       >
         {/* Brand area */}
         <div className={classes.brandArea}>
-          <Typography className={classes.brandText}>Avimor</Typography>
-          <Typography className={classes.brandSub}>Tourism Management</Typography>
+          <img src={avimorLogo} alt="Avimor Tourism" className={classes.brandLogo} />
         </div>
 
         {/* Navigation section */}
         <div className={classes.navSection} style={{ flex: 1, overflowY: "auto" }}>
-          <Typography className={classes.sectionLabel}>ניווט</Typography>
 
-          {/* Workspace */}
+          {/* דף הבית */}
           <Link to="/workspace" style={{ textDecoration: "none" }}>
             <div
               className={`${classes.navItem} ${
@@ -108,54 +100,126 @@ function SidebarView({
               <div className={classes.navItemIcon}>
                 <HomeWorkIcon style={{ fontSize: "20px" }} />
               </div>
-              <span className={classes.navItemLabel}>סביבת עבודה</span>
+              <span className={classes.navItemLabel}>דף הבית</span>
             </div>
           </Link>
 
-          {/* Static / Info - Expandable */}
+          {/* לינה - expandable */}
           <div
             className={`${classes.expandHeader} ${
-              pathname.includes("/static") ? classes.expandHeaderActive : ""
+              pathname.includes("/static") && linaKeys.includes(staticDialogType) ? classes.expandHeaderActive : ""
             }`}
-            onClick={toggleStaticExpanded}
+            onClick={toggleLinaExpanded}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
               <div className={classes.navItemIcon}>
-                <InfoOutlinedIcon style={{ fontSize: "20px" }} />
+                <HotelIcon style={{ fontSize: "20px" }} />
               </div>
-              <span className={classes.navItemLabel}>מידע כולל</span>
+              <span className={classes.navItemLabel}>לינה</span>
             </div>
             <ExpandMoreIcon
-              className={`${classes.expandArrow} ${
-                staticExpanded ? classes.expandArrowOpen : ""
-              }`}
+              className={`${classes.expandArrow} ${linaExpanded ? classes.expandArrowOpen : ""}`}
             />
           </div>
-
-          {/* Static sub-items accordion */}
-          <div
-            className={`${classes.subMenuContainer} ${
-              staticExpanded ? classes.subMenuOpen : ""
-            }`}
-          >
-            {staticSubItems.map((item) => (
-              <div
-                key={item.key}
-                className={`${classes.subMenuItem} ${
-                  pathname.includes("/static") &&
-                  staticDialogType === item.key
-                    ? classes.subMenuItemActive
-                    : ""
-                }`}
-                onClick={() => handleWidgetClick(item.key)}
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </div>
-            ))}
+          <div className={`${classes.subMenuContainer} ${linaExpanded ? classes.subMenuOpen : ""}`}>
+            <div
+              className={`${classes.subMenuItem} ${pathname.includes("/static") && staticDialogType === "rooms" ? classes.subMenuItemActive : ""}`}
+              onClick={() => handleWidgetClick("rooms")}
+            >
+              <MeetingRoomIcon className={classes.subMenuIcon} />
+              <span>רשימת חדרים</span>
+            </div>
+            <div
+              className={`${classes.subMenuItem} ${pathname.includes("/static") && staticDialogType === "roomsStatus" ? classes.subMenuItemActive : ""}`}
+              onClick={() => handleWidgetClick("roomsStatus")}
+            >
+              <CheckCircleOutlineIcon className={classes.subMenuIcon} />
+              <span>סטטוס חדרים</span>
+            </div>
+            <div
+              className={`${classes.subMenuItem} ${pathname.includes("/static") && staticDialogType === "hotels" ? classes.subMenuItemActive : ""}`}
+              onClick={() => handleWidgetClick("hotels")}
+            >
+              <ApartmentIcon className={classes.subMenuIcon} />
+              <span>מלונות</span>
+            </div>
           </div>
 
-          {/* Budgets */}
+          {/* טיסות - direct link */}
+          <div
+            className={`${classes.navItem} ${
+              pathname.includes("/static") && staticDialogType === "flights" ? classes.navItemActive : ""
+            }`}
+            onClick={() => handleWidgetClick("flights")}
+          >
+            <div className={classes.navItemIcon}>
+              <FlightIcon style={{ fontSize: "20px" }} />
+            </div>
+            <span className={classes.navItemLabel}>טיסות</span>
+          </div>
+
+          {/* תשלומים - direct link */}
+          <div
+            className={`${classes.navItem} ${
+              pathname.includes("/static") && staticDialogType === "payments" ? classes.navItemActive : ""
+            }`}
+            onClick={() => handleWidgetClick("payments")}
+          >
+            <div className={classes.navItemIcon}>
+              <PaymentsIcon style={{ fontSize: "20px" }} />
+            </div>
+            <span className={classes.navItemLabel}>תשלומים</span>
+          </div>
+
+          {/* ניהול חופשה - expandable */}
+          <div
+            className={`${classes.expandHeader} ${
+              pathname.includes("/static") && vacationKeys.includes(staticDialogType) ? classes.expandHeaderActive : ""
+            }`}
+            onClick={toggleVacationExpanded}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <div className={classes.navItemIcon}>
+                <SettingsIcon style={{ fontSize: "20px" }} />
+              </div>
+              <span className={classes.navItemLabel}>ניהול חופשה</span>
+            </div>
+            <ExpandMoreIcon
+              className={`${classes.expandArrow} ${vacationExpanded ? classes.expandArrowOpen : ""}`}
+            />
+          </div>
+          <div className={`${classes.subMenuContainer} ${vacationExpanded ? classes.subMenuOpen : ""}`}>
+            <div
+              className={`${classes.subMenuItem} ${pathname.includes("/static") && staticDialogType === "vacations" ? classes.subMenuItemActive : ""}`}
+              onClick={() => handleWidgetClick("vacations")}
+            >
+              <BeachAccessIcon className={classes.subMenuIcon} />
+              <span>חופשות</span>
+            </div>
+            <div
+              className={`${classes.subMenuItem} ${pathname.includes("/static") && staticDialogType === "generalInformation" ? classes.subMenuItemActive : ""}`}
+              onClick={() => handleWidgetClick("generalInformation")}
+            >
+              <AssessmentIcon className={classes.subMenuIcon} />
+              <span>מידע כולל</span>
+            </div>
+            <div
+              className={`${classes.subMenuItem} ${pathname.includes("/static") && staticDialogType === "mainGuests" ? classes.subMenuItemActive : ""}`}
+              onClick={() => handleWidgetClick("mainGuests")}
+            >
+              <PeopleAltIcon className={classes.subMenuIcon} />
+              <span>נרשמים</span>
+            </div>
+            <div
+              className={`${classes.subMenuItem} ${pathname.includes("/static") && staticDialogType === "guests" ? classes.subMenuItemActive : ""}`}
+              onClick={() => handleWidgetClick("guests")}
+            >
+              <GroupsIcon className={classes.subMenuIcon} />
+              <span>כלל האורחים</span>
+            </div>
+          </div>
+
+          {/* תקציב */}
           <Link to="/budgets" style={{ textDecoration: "none" }}>
             <div
               className={`${classes.navItem} ${

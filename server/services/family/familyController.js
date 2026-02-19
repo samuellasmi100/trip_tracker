@@ -7,7 +7,7 @@ router.post("/:id", async (req, res, next) => {
     const vacationId = req.params.id
     const familyData = req.body.form
     familyData.familyId = req.body.newFamilyId
-    familyData.familyName = familyData.hebrew_first_name + " " + familyData.hebrew_last_name
+    familyData.familyName = familyData.family_name || (familyData.hebrew_first_name + " " + familyData.hebrew_last_name)
     try {
       const response = familyService.addFamily(familyData,vacationId)
       res.send("ההוספה עברה בהצלחה")

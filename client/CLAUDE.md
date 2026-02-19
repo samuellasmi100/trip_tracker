@@ -44,3 +44,18 @@ Components follow a split convention:
 - API endpoints follow pattern: `/{resource}/{vacationId}`
 - Redux pattern: `useSelector`/`useDispatch` hooks; dialog state managed via `dialogSlice`
 - Notifications via react-toastify driven by `snackBarSlice`
+
+## STRICT RULES — DO NOT VIOLATE
+
+### Never do any of the following without explicit permission:
+- `npm run build` / `npm build` / any build or compile command
+- `npm start` / `npm run start` / starting the dev server
+- Run migrations on production databases
+- Delete or drop database tables
+- Push to git (`git push`)
+- Deploy anything
+- Run any destructive command
+
+**Only write code. Leave testing, building, running, and deploying to the user.**
+
+- **NEVER browse or search inside `node_modules/`.** Do not glob, grep, read, or inspect anything in `node_modules`. If you need to know a package version, check `package.json` only.

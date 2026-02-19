@@ -97,7 +97,7 @@ const Rooms = ({ handleDialogTypeOpen }) => {
 
   useEffect(() => {
     getAllRooms();
-  }, []);
+  }, [vacationId]);
 
   return (
     <>

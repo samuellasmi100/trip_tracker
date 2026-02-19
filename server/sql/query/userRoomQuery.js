@@ -55,14 +55,6 @@ WHERE family_id = ?;
 
 };
 
-const updateMainRoom = () => {
-  return `
-      INSERT INTO family_room_details (room_id, userId)
-      VALUES ${roomDetails.map(() => "(?, ?)").join(", ")}
-      ON DUPLICATE KEY UPDATE room_id = VALUES(room_id);
-    `;
-};
-
 const removeMainRoom = (vacationId) => {
   return `
        DELETE FROM trip_tracker_${vacationId}.room_taken WHERE family_id= ?`;
@@ -103,7 +95,6 @@ const updateStartEndAndDate = (vacationId) => {
 module.exports = {
   assignMainRoom,
   getFamilyRoom,
-  updateMainRoom,
   removeMainRoom,
   assignRoom,
   getChosenRoom,
