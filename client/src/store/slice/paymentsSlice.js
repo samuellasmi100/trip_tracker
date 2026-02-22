@@ -3,37 +3,21 @@ import { createSlice } from "@reduxjs/toolkit";
 export const paymentsSlice = createSlice({
   name: "paymentsSlice",
   initialState: {
-    form: {
-      amount:"",
-      amountReceived:"",
-      formOfPayment:"",
-      paymentCurrency:"",
-      paymentDate:"",
-      remainsToBePaid:"",
-      invoice:false
-    },
-    userPayments:[]
+    summary: [],   // per-family totals, used by the Payments widget
+    loading: false,
   },
   reducers: {
-    updateFormField: (state, action) => {
-      const { field, value } = action.payload;
-      state.form[field] = value;
+    setSummary: (state, action) => {
+      state.summary = action.payload;
     },
-    updateForm: (state, action) => {
-      state.form = action.payload;
+    setLoading: (state, action) => {
+      state.loading = action.payload;
     },
-    updateUserPayments: (state, action) => {
-      state.userPayments = action.payload;
-    },
-    resetForm: (state, action) => {
-      state.form = [];
-    },
+    // kept for backward-compat (called in FamilyList clearModalForms)
+    resetForm: () => {},
   },
 });
 
-export const { updateFormField,updateForm,resetForm,updateUserPayments } = paymentsSlice.actions;
-
-
-
+export const { setSummary, setLoading, resetForm } = paymentsSlice.actions;
 
 export default paymentsSlice.reducer;

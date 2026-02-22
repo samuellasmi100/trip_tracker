@@ -28,8 +28,18 @@ let dataToReturn = {
     return dataToReturn
 }
 
+const updateFamily = async (data, vacationId) => {
+    return await familyDb.updateFamily(data, vacationId)
+}
+
+const searchFamilies = async (vacationId, searchTerm) => {
+    return await familyDb.searchFamilies(vacationId, searchTerm);
+};
+
 module.exports = {
     addFamily,
     getFamilies,
     getUserDetails,
+    updateFamily,
+    searchFamilies,
 }

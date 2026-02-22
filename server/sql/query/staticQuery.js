@@ -180,36 +180,16 @@ GROUP BY
 
 const getPaymentsDetails = (vacationId) => {
 return `
-SELECT 
-    p.id,
-    g.user_id,
-    g.family_id AS familyId,
-    p.payment_date AS paymentDate,
-    p.amount,
-    p.form_of_payment AS formOfPayment,
-    p.remains_to_be_paid AS remainsToBePaid,
-    p.payment_currency AS paymentCurrency,
-    p.amount_received AS amountReceived,
-    p.updated_at,
-    p.invoice,
-    p.created_at,
-    p.is_paid,
-    g.number_of_payments,
-    g.hebrew_first_name,
-    g.hebrew_last_name,
-    g.total_amount AS default_amount,
-    CASE 
-      WHEN COUNT(p.id) OVER (PARTITION BY g.user_id) = 0 
-        THEN g.number_of_payments
-      ELSE COUNT(CASE WHEN p.is_paid = 0 THEN 1 END) OVER (PARTITION BY g.user_id)
-    END AS unpaid
-FROM 
-    trip_tracker_${vacationId}.guest g
-LEFT JOIN 
-    trip_tracker_${vacationId}.payments p 
-    ON g.user_id = p.user_id 
-WHERE 
-    g.is_main_user = 1;
+SELECT
+    f.family_id                                                               AS familyId,
+    f.family_name                                                             AS familyName,
+    REPLACE(f.total_amount, ',', '')                                          AS totalAmount,
+    COALESCE(SUM(CASE WHEN p.status = 'completed' THEN p.amount ELSE 0 END), 0) AS paidAmount,
+    COUNT(CASE WHEN p.status = 'completed' THEN 1 END)                       AS paymentCount
+FROM trip_tracker_${vacationId}.families f
+LEFT JOIN trip_tracker_${vacationId}.payments p ON f.family_id = p.family_id
+GROUP BY f.family_id, f.family_name, f.total_amount
+ORDER BY f.family_name;
 
 
 `

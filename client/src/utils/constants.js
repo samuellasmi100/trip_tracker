@@ -11,7 +11,11 @@ export const END_POINT = {
   VACATIONS:"vacations",
   STATIC:"static",
   BUDGET:'budget',
-  UPLOADS:"uploads"
+  UPLOADS:"uploads",
+  LEADS:"leads",
+  DOCUMENTS:"documents",
+  SIGNATURES:"signatures",
+  SETTINGS:"settings",
 };
 
 // export function setAuthToken(token) {

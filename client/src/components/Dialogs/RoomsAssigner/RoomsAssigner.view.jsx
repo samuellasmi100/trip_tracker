@@ -19,8 +19,8 @@ import * as dialogSlice from "../../../store/slice/dialogSlice";
 import DeleteIcon from '@mui/icons-material/Delete'
 
 
-const RoomsAssigner = ({ 
-  submit, 
+const RoomsAssigner = ({
+  submit,
   handleDeleteButton,
   searchTerm,
   setSearchTerm,
@@ -29,7 +29,8 @@ const RoomsAssigner = ({
   roomsChosen,
   filteredRooms,
   handleRoomToggle,
-  handleCloseClicked
+  handleCloseClicked,
+  embedded
  }) => {
 
   const classes = useStyles();
@@ -191,21 +192,23 @@ const handleMouseLeave = () => {
             )
           })}
       </Grid>
-      <Grid item  xs={12} container justifyContent="space-around">
-        <Grid item style={{ marginTop: "auto", padding: "16px 0" }}>
-          <Button className={classes.submitButton} onClick={submit}>
-            בחר חדרים
-          </Button>
+      {!embedded && (
+        <Grid item  xs={12} container justifyContent="space-around">
+          <Grid item style={{ marginTop: "auto", padding: "16px 0" }}>
+            <Button className={classes.submitButton} onClick={submit}>
+              בחר חדרים
+            </Button>
+          </Grid>
+          <Grid item style={{ marginTop: "auto", padding: "16px 0" }}>
+            <Button
+              className={classes.cancelButton}
+              onClick={handleCloseClicked}
+            >
+              סגור
+            </Button>
+          </Grid>
         </Grid>
-        <Grid item style={{ marginTop: "auto", padding: "16px 0" }}>
-          <Button
-            className={classes.cancelButton}
-            onClick={handleCloseClicked}
-          >
-            סגור
-          </Button>
-        </Grid>
-      </Grid>
+      )}
     </>
   );
 };

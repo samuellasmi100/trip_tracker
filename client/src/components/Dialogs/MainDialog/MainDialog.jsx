@@ -7,6 +7,7 @@ import Payments from "../Payments/Payments";
 import Flights from "../Flights/Flights";
 import Reservation from "../Reservation/Reservation";
 import Notes from "../Notes/Notes"
+import EditGuestPage from "../EditGuestPage/EditGuestPage";
 import { Button } from "@mui/material";
 import { useStyles } from "./MainDialog.style";
 
@@ -30,6 +31,8 @@ const MainDialog = (props) => {
 
   // Add flows use the wizard (self-contained stepper, no external nav buttons needed)
   const isWizardFlow = dialogType === "addFamily" || dialogType === "addParent" || dialogType === "addChild";
+  // Edit flows use the single-page EditGuestPage (no tabs)
+  const isEditFlow = dialogType === "editParent" || dialogType === "editChild";
 
   const handleButtonClick = async (buttonName) => {
     dispatch(dialogSlice.updateActiveButton(buttonName))
@@ -47,6 +50,9 @@ const MainDialog = (props) => {
     } else if(isWizardFlow){
       // Wizard handles its own steps internally
       return <GuestWizard />
+    } else if(isEditFlow){
+      // Single scrollable page with all sections
+      return <EditGuestPage onClose={closeModal} />
     } else{
        if (activeButton === "פרטים אישיים") {
         return <GuestWizard />
@@ -68,8 +74,8 @@ const MainDialog = (props) => {
   }
 
   const handleButtonHeader = () => {
-    // Wizard flows handle their own navigation via the stepper — no header buttons
-    if(isWizardFlow){
+    // Wizard and edit flows handle their own navigation — no header buttons
+    if(isWizardFlow || isEditFlow){
       return null;
     }
     if(dialogType === "childDetails" || dialogType === "parentDetails"){

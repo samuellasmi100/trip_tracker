@@ -3,6 +3,7 @@ import React from "react";
 import { useStyles } from "./Header.style";
 import GroupsIcon from "@mui/icons-material/Groups";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import NotificationBell from "./NotificationBell/NotificationBell";
 
 function HeaderView({ vacationName, vacationList, pageTitle, familyCount, totalGuests, totalBalance, totalMissing, handleVacationChange }) {
   const classes = useStyles();
@@ -58,8 +59,9 @@ function HeaderView({ vacationName, vacationList, pageTitle, familyCount, totalG
       {/* Center - Page title */}
       <Typography className={classes.pageTitle}>{pageTitle}</Typography>
 
-      {/* Left side - User avatar */}
-      <Grid className={classes.leftSection}>
+      {/* Left side - Notification bell + User avatar */}
+      <Grid className={classes.leftSection} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <NotificationBell />
         <Avatar className={classes.avatar}>
           <AccountCircleIcon style={{ fontSize: "30px" }} />
         </Avatar>

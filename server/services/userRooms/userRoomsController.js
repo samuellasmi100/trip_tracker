@@ -3,6 +3,18 @@ const userRoomsService = require("./userRoomsService")
 
 
 
+// Move a family's booking from one room to another room
+// Also moves all guest assignments to the new room
+router.post("/move", async (req, res, next) => {
+  const { vacationId, familyId, fromRoomId, toRoomId } = req.body;
+  try {
+    await userRoomsService.moveRoom(vacationId, familyId, fromRoomId, toRoomId);
+    res.send("החדר הועבר בהצלחה");
+  } catch (error) {
+    return next(error);
+  }
+});
+
 router.post("/", async (req, res, next) => {
   const roomDetails = req.body.selectedRooms
   const familyId = req.body.familyId

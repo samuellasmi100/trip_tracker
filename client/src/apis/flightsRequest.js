@@ -18,5 +18,9 @@ export default {
           headers: { Authorization: token },
         });
       },
-   
+    getFamilyFlights(token, familyId, vacationId) {
+        return Api.get(`/${END_POINT.FLIGHTS}/family/${familyId}/${vacationId}`, {
+            headers: { Authorization: token },
+        });
+    },
 }

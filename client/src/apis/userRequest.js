@@ -47,6 +47,11 @@ export default {
       headers: { Authorization: token },
     });
   },
+  updateFamily(token, data, vacationId) {
+    return Api.put(`${END_POINT.FAMILY}/${vacationId}`, data, {
+      headers: { Authorization: token },
+    });
+  },
   deleteMainGuests(token,userId,vacationId) {
     return Api.delete(`${END_POINT.USER}/main/${userId}/${vacationId}`, {
       headers: { Authorization: token },

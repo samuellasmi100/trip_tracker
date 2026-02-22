@@ -23,7 +23,7 @@ const MainDialogView = (props) => {
     <Dialog
       open={dialogOpen}
       classes={{ paper: classes.dialog }}
-      onClose={closeModal}
+      onClose={(dialogType === "editParent" || dialogType === "editChild") ? undefined : closeModal}
       style={{ zIndex: 1600 }}>
       {headerContent && (
         <Grid>

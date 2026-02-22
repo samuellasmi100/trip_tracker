@@ -71,10 +71,26 @@ const getUnAvailableDates = async (vacationId, roomId) => {
     );
   }
 }
+const getBoardData = async (vacationId) => {
+  try {
+    const [rooms, bookings, guestAssignments, allGuests] = await Promise.all([
+      connection.execute(roomsQuery.getBoardRooms(vacationId)),
+      connection.execute(roomsQuery.getBoardBookings(vacationId)),
+      connection.execute(roomsQuery.getBoardGuestAssignments(vacationId)),
+      connection.execute(roomsQuery.getBoardAllGuests(vacationId)),
+    ]);
+    return { rooms, bookings, guestAssignments, allGuests };
+  } catch (error) {
+    logger.error(`Error: Function:getBoardData: ${error.sqlMessage}`);
+    throw error;
+  }
+};
+
 module.exports = {
   getAll,
   updateRoom,
   getRoomDetailsWithCounts,
   getRoomAvailable,
-  getUnAvailableDates
+  getUnAvailableDates,
+  getBoardData,
 }

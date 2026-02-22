@@ -1,17 +1,16 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import PaymentView from "./Payment.view";
-import * as staticSlice from "../../../../../../store/slice/staticSlice"
-import * as paymentsSlice from "../../../../../../store/slice/paymentsSlice"
+import * as staticSlice from "../../../../../../store/slice/staticSlice";
 import { useSelector, useDispatch } from "react-redux";
-import ApiPayments from "../../../../../../apis/paymentsRequest"
-
+import ApiPayments from "../../../../../../apis/paymentsRequest";
 
 const Payment = () => {
-  const dispatch = useDispatch()
-  const form = useSelector((state) => state.staticSlice.form)
-  const token = sessionStorage.getItem("token")
-  const vacationId = useSelector((state) => state.vacationSlice.vacationId);
- 
+  const dispatch    = useDispatch();
+  const form        = useSelector((state) => state.staticSlice.form);
+  const token       = sessionStorage.getItem("token");
+  const vacationId  = useSelector((state) => state.vacationSlice.vacationId);
+  const [userPayments, setUserPayments] = useState([]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     dispatch(staticSlice.updateFormField({ field: name, value }));
@@ -19,34 +18,40 @@ const Payment = () => {
 
   const submit = async () => {
     try {
-      // const response = await ApiRooms.updateRoom(token,form,vacationId)
-      // dispatch(roomsSlice.updateRoomsList(response.data));
-      // dispatch(staticSlice.closeDetailsModal());
+      // placeholder — handled via PaymentDialog now
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   const handleCloseClicked = () => {
-    dispatch(staticSlice.resetState())
+    dispatch(staticSlice.resetState());
     dispatch(staticSlice.closeDetailsModal());
-   }
+  };
 
-   const getUserPayments = async() => {
+  const getPayments = async () => {
     try {
-
-      const response = await ApiPayments.getUserPayments(token,form.user_id,vacationId)
-      console.log(response)
-      dispatch(paymentsSlice.updateUserPayments(response.data))
+      if (!form?.familyId || !vacationId) return;
+      const response = await ApiPayments.getPayments(token, vacationId, form.familyId);
+      setUserPayments(response.data || []);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-   }
-useEffect(() => {
-  getUserPayments()
-}, [])
+  };
 
-  return <PaymentView handleInputChange={handleInputChange} submit={submit} handleCloseClicked={handleCloseClicked}/>;
+  useEffect(() => {
+    getPayments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <PaymentView
+      handleInputChange={handleInputChange}
+      submit={submit}
+      handleCloseClicked={handleCloseClicked}
+      userPayments={userPayments}
+    />
+  );
 };
 
 export default Payment;

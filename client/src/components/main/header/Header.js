@@ -3,6 +3,7 @@ import HeaderView from "./Header.view";
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import ApiVacations from "../../../apis/vacationRequest";
+import ApiUser from "../../../apis/userRequest";
 import * as vacationSlice from "../../../store/slice/vacationSlice";
 import * as userSlice from "../../../store/slice/userSlice";
 
@@ -10,6 +11,7 @@ const Header = () => {
   const dispatch = useDispatch();
   const vacationName = useSelector((state) => state.vacationSlice.vacationName);
   const vacationList = useSelector((state) => state.vacationSlice.vacations);
+  const vacationId = useSelector((state) => state.vacationSlice.vacationId);
   const families = useSelector((state) => state.userSlice.families);
   const location = useLocation();
   const token = sessionStorage.getItem("token");
@@ -32,6 +34,8 @@ const Header = () => {
     if (location.pathname.includes("/workspace")) return "דף הבית";
     if (location.pathname.includes("/static")) return staticTitles[staticDialogType] || "";
     if (location.pathname.includes("/budgets")) return "תקציב";
+    if (location.pathname.includes("/leads")) return "לידים";
+    if (location.pathname.includes("/settings")) return "הגדרות";
     return "";
   };
 
@@ -62,6 +66,21 @@ const Header = () => {
       fetchVacations();
     }
   }, []);
+
+  // Fetch families so header stats are populated on any page (not just /workspace)
+  useEffect(() => {
+    const fetchFamilies = async () => {
+      try {
+        const response = await ApiUser.getFamilyList(token, vacationId);
+        dispatch(userSlice.updateFamiliesList(response.data));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    if (vacationId) {
+      fetchFamilies();
+    }
+  }, [vacationId]);
 
   const handleVacationChange = (e) => {
     const selected = vacationList?.find((v) => v.name === e.target.value);

@@ -54,11 +54,33 @@ const getFlightsByFamily = (vacationId) => {
   return `SELECT * FROM trip_tracker_${vacationId}.flights where family_id = ? AND is_source_user = 1;`
 }
 
-
+// Returns all family members who have at least some flight data, with their names
+const getFamilyFlightsWithNames = (vacationId) => {
+  return `SELECT
+      f.user_id,
+      f.outbound_flight_date,
+      f.outbound_flight_number,
+      f.outbound_airline,
+      f.return_flight_date,
+      f.return_flight_number,
+      f.return_airline,
+      f.user_classification,
+      g.hebrew_first_name,
+      g.hebrew_last_name
+    FROM trip_tracker_${vacationId}.flights f
+    JOIN trip_tracker_${vacationId}.guest g ON f.user_id = g.user_id
+    WHERE f.family_id = ?
+      AND (
+        f.outbound_flight_number IS NOT NULL OR
+        f.return_flight_number   IS NOT NULL OR
+        f.outbound_airline       IS NOT NULL
+      )`;
+}
 
 module.exports = {
     addFlightsDetails,
     updateFlightsDetails,
     getFlightsDetails,
-    getFlightsByFamily
+    getFlightsByFamily,
+    getFamilyFlightsWithNames,
 }

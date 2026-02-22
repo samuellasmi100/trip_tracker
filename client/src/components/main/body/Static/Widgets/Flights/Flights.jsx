@@ -73,7 +73,7 @@ const Flights = () => {
       "תאריך לידה":row.birth_date,
       "גיל":row.age === null ? row.default_age : row.age,
       "תואר":row.user_classification,
-      "כולל טיסות":row.flights === "1" ? 'כן': "לא",
+      "כולל טיסות":(row.flights === "1" || row.passport_number || row.outbound_flight_date) ? 'כן': "לא",
       "טסים איתנו":row.flying_with_us === 1 ? 'כן': "לא",
       "סוג טיסה":row.flights_direction === "round_trip" ? "הלוך חזור":row.flights_direction === "one_way_outbound" ? "הלוך בלבד" : row.flights_direction === "one_way_return" ? "חזור בלבד" : "",
       "מספר דרכון":row.passport_number,

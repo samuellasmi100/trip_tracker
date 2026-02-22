@@ -8,7 +8,7 @@ import ApiRooms from "../../../apis/roomsRequest"
 import * as userSlice from "../../../store/slice/userSlice";
 import * as snackBarSlice from "../../../store/slice/snackbarSlice";
 
-const RoomsAssigner = () => {
+const RoomsAssigner = ({ embedded }) => {
   const dispatch = useDispatch()
   const form = useSelector((state) => state.userSlice.form)
   const rooms = useSelector((state) => state.roomsSlice.rooms);
@@ -33,7 +33,7 @@ const RoomsAssigner = () => {
             timeout: 3000,
           })
         )
-      dispatch(dialogSlice.updateActiveButton("בחירת חדרים"))
+      if(!embedded) dispatch(dialogSlice.updateActiveButton("בחירת חדרים"))
 
       } catch (error) {
         dispatch(
@@ -126,6 +126,7 @@ const RoomsAssigner = () => {
    filteredRooms={filteredRooms}
    handleRoomToggle={handleRoomToggle}
    handleCloseClicked={handleCloseClicked}
+   embedded={embedded}
    />
   );
 };

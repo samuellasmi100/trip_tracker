@@ -104,13 +104,13 @@ function FlightsView({
                  {flight?.user_classification}
                  </TableCell>
                  <TableCell className={classes.dataTableCell}>
-                 {flight?.flights === "1" ? 'כן': "לא"}
+                 {flight?.flights === "1" || flight?.passport_number || flight?.outbound_flight_date ? 'כן': "לא"}
                  </TableCell>
                  <TableCell className={classes.dataTableCell}>
-                 {flight?.flights === "1" && flight?.flying_with_us === 1 ? 'כן': flight?.flights === "0" && flight?.flying_with_us === 1 ? "כן" : "לא"}
+                 {flight?.flying_with_us === 1 ? 'כן' : "לא"}
                  </TableCell>
                  <TableCell className={classes.dataTableCell}>
-                 {flight?.flights === "1" && flight?.flights_direction === "round_trip" ? "הלוך חזור":flight.flights_direction === "one_way_outbound" ? "הלוך בלבד" : flight.flights_direction === "one_way_return" ? "חזור בלבד" : ""}
+                 {flight?.flights_direction === "round_trip" ? "הלוך חזור" : flight?.flights_direction === "one_way_outbound" ? "הלוך בלבד" : flight?.flights_direction === "one_way_return" ? "חזור בלבד" : ""}
                  </TableCell>
                  <TableCell className={classes.dataTableCell}>
                  {flight?.passport_number}

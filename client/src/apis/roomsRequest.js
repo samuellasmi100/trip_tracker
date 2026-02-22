@@ -62,5 +62,24 @@ export default {
       headers: { Authorization: token },
     });
   },
+  // Full board data: rooms + bookings (with family names) + guest assignments + all guests
+  getBoardData(token, vacationId) {
+    return Api.get(`/${END_POINT.ROOMS}/board/${vacationId}`, {
+      headers: { Authorization: token },
+    });
+  },
+  // Server-side family name search for the assignment dialog
+  searchFamilies(token, vacationId, q) {
+    return Api.get(`${END_POINT.FAMILY}/search/${vacationId}`, {
+      headers: { Authorization: token },
+      params: { q },
+    });
+  },
+  // Move a family's booking from one room to another
+  moveRoom(token, { vacationId, familyId, fromRoomId, toRoomId }) {
+    return Api.post(`/${END_POINT.USER_ROOMS}/move`, { vacationId, familyId, fromRoomId, toRoomId }, {
+      headers: { Authorization: token },
+    });
+  },
 };
 

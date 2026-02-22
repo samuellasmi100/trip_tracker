@@ -178,6 +178,22 @@ const removeAllUserAssignFromRoomId = async (familyId,vacationId,roomId) => {
 
 
 
+const moveRoom = async (vacationId, familyId, fromRoomId, toRoomId) => {
+  try {
+    await connection.executeWithParameters(
+      userRoomQuery.moveRoomBooking(vacationId),
+      [toRoomId, familyId, fromRoomId]
+    );
+    await connection.executeWithParameters(
+      userRoomQuery.moveGuestAssignments(vacationId),
+      [toRoomId, familyId, fromRoomId]
+    );
+  } catch (error) {
+    logger.error(`Error: Function:moveRoom: ${error.sqlMessage}`);
+    throw error;
+  }
+};
+
 module.exports = {
   assignMainRoom,
   getFamilyRoom,
@@ -191,5 +207,6 @@ module.exports = {
   updateStartEndAndDate,
   removeMainRoomByRoomId,
   removeAllUserAssignFromRoomId,
-  getAllChosenRoom
+  getAllChosenRoom,
+  moveRoom,
 }

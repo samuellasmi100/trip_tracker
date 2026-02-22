@@ -31,6 +31,17 @@ router.put("/:id/:vacationId", async (req, res, next) => {
   }
 });
 
+// Must be registered BEFORE /:id/... so Express matches the literal "family" segment
+router.get("/family/:familyId/:vacationId", async (req, res, next) => {
+  const { familyId, vacationId } = req.params;
+  try {
+    const response = await flightsService.getFamilyFlightsWithNames(familyId, vacationId);
+    res.send(response);
+  } catch (error) {
+    return next(error);
+  }
+});
+
 router.get("/:id/:familyId/:isInGroup/:vacationId", async (req, res, next) => {
   const vacationId = req.params.vacationId
   const userId = req.params.id

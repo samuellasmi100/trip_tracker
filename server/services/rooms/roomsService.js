@@ -26,10 +26,15 @@ const getRoomAvailableDates = async (vacationId,startDate,endDate) => {
  
 }
 
+const getBoardData = async (vacationId) => {
+    return await roomsDb.getBoardData(vacationId);
+};
+
 module.exports = {
     getAll,
     getRoomDetailsWithCounts,
     updateRoom,
     getRoomAvailable,
-    getRoomAvailableDates
+    getRoomAvailableDates,
+    getBoardData,
 }

@@ -25,6 +25,8 @@ import FlightIcon from "@mui/icons-material/Flight";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import HotelIcon from "@mui/icons-material/Hotel";
 import SettingsIcon from "@mui/icons-material/Settings";
+import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
+import ArticleIcon from "@mui/icons-material/Article";
 
 function SidebarView({
   logoutButtonFunction,
@@ -39,6 +41,7 @@ function SidebarView({
   vacationExpanded,
   toggleVacationExpanded,
   handleWidgetClick,
+  handleDirectNavClick,
   staticDialogType,
 }) {
   const classes = useStyles();
@@ -171,6 +174,28 @@ function SidebarView({
             <span className={classes.navItemLabel}>תשלומים</span>
           </div>
 
+          {/* לידים - standalone page */}
+          <div
+            className={`${classes.navItem} ${pathname === "/leads" ? classes.navItemActive : ""}`}
+            onClick={() => handleDirectNavClick("/leads")}
+          >
+            <div className={classes.navItemIcon}>
+              <PersonAddAlt1Icon style={{ fontSize: "20px" }} />
+            </div>
+            <span className={classes.navItemLabel}>לידים</span>
+          </div>
+
+          {/* מסמכים - widget */}
+          <div
+            className={`${classes.navItem} ${pathname.includes("/static") && staticDialogType === "documents" ? classes.navItemActive : ""}`}
+            onClick={() => handleWidgetClick("documents")}
+          >
+            <div className={classes.navItemIcon}>
+              <ArticleIcon style={{ fontSize: "20px" }} />
+            </div>
+            <span className={classes.navItemLabel}>מסמכים</span>
+          </div>
+
           {/* ניהול חופשה - expandable */}
           <div
             className={`${classes.expandHeader} ${
@@ -217,6 +242,17 @@ function SidebarView({
               <GroupsIcon className={classes.subMenuIcon} />
               <span>כלל האורחים</span>
             </div>
+          </div>
+
+          {/* הגדרות */}
+          <div
+            className={`${classes.navItem} ${pathname === "/settings" ? classes.navItemActive : ""}`}
+            onClick={() => handleDirectNavClick("/settings")}
+          >
+            <div className={classes.navItemIcon}>
+              <SettingsIcon style={{ fontSize: "20px" }} />
+            </div>
+            <span className={classes.navItemLabel}>הגדרות</span>
           </div>
 
           {/* תקציב */}

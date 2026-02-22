@@ -1,110 +1,87 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import FlightsView from "./Flights.view";
 import { useDispatch, useSelector } from "react-redux";
 import * as flightsSlice from "../../../store/slice/flightsSlice"
 import * as dialogSlice from "../../../store/slice/dialogSlice"
 import ApiFlights from "../../../apis/flightsRequest"
+import ApiSettings from "../../../apis/settingsRequest"
 import * as userSlice from "../../../store/slice/userSlice";
 import * as snackBarSlice from "../../../store/slice/snackbarSlice";
 
-const Flights = () => {
+const Flights = ({ embedded, saveRef }) => {
 const dispatch = useDispatch()
 const form = useSelector((state) => state.flightsSlice.form)
 const userForm = useSelector((state) => state.userSlice.form)
 const token = sessionStorage.getItem("token")
 const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
 const userClassificationType = ["MR","MRS","BABY"]
+const [familyFlights, setFamilyFlights] = useState([])
+const [flightsCompany, setFlightsCompany] = useState([])
 
   const handleInputChange = (e) => {
-    let { name, value,checked } = e.target
+    let { name, value, checked } = e.target
 
-    if (name === "birth_date") {
-      const age = calculateAge(value);
-      dispatch(flightsSlice.updateFormField({ field: "age", value: age }));
-    }
-    else if(name === "return_flight_date"){
-     const calculate = calculateAgeByFlightDate(form.birth_date,form.return_flight_date)
-     if(calculate > form.age){
-      dispatch(flightsSlice.updateFormField({ field: "age", value: calculate }));
-     }
-     dispatch(flightsSlice.updateFormField({ field: name, value }))
-    }
-    else if(name === "is_source_user"){
+    if (name === "is_source_user") {
       value = checked
-     dispatch(flightsSlice.updateFormField({ field: name, value:value }))
-    }else {
-      dispatch(flightsSlice.updateFormField({ field: name, value }))
     }
-
-    dispatch(flightsSlice.updateFormField({ field: "family_id",value:userForm.family_id }))
-    dispatch(flightsSlice.updateFormField({ field: "user_id",value:userForm.user_id}))
- 
+    dispatch(flightsSlice.updateFormField({ field: name, value }))
+    dispatch(flightsSlice.updateFormField({ field: "family_id", value: userForm.family_id }))
+    dispatch(flightsSlice.updateFormField({ field: "user_id", value: userForm.user_id }))
   };
 
-  const calculateAgeByFlightDate = (birth_date,return_flight_date) => {
-    let birthDate = new Date(birth_date);
-    let returnDate = new Date(return_flight_date);
-    
-    let age = returnDate.getFullYear() - birthDate.getFullYear();
-    
-    if (
-        returnDate.getMonth() < birthDate.getMonth() || 
-        (returnDate.getMonth() === birthDate.getMonth() && returnDate.getDate() < birthDate.getDate())
-    ) {
-        return age--;
-    }else {
-      return age
+  const saveFlightData = async () => {
+    if (form.type === "edit") {
+      await ApiFlights.updateUserFligets(token, userForm.user_id, form, vacationId);
+    } else {
+      await ApiFlights.addUserFlights(token, form, vacationId);
     }
-    
-  } 
-
-  const calculateAge = (birthDate) => {
-    const birth = new Date(birthDate);
-    const today = new Date();
-    const age = today.getFullYear() - birth.getFullYear();
-    const isBeforeBirthday = 
-      today.getMonth() < birth.getMonth() || 
-      (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate());
-  
-    return isBeforeBirthday ? age - 1 : age;
+    dispatch(flightsSlice.updateFormField({ field: "type", value: "edit" }));
+    dispatch(snackBarSlice.setSnackBar({ type: "success", message: "נתוני טיסה עודכנו בהצלחה", timeout: 3000 }));
   };
 
   const submit = async () => {
-    let response
     try {
-    if(form.type === "edit"){
-      response = await ApiFlights.updateUserFligets(token,userForm.user_id,form,vacationId)
-      dispatch(flightsSlice.updateFormField({ field: "type", value:"edit"}));
-    }else {
-      response = await ApiFlights.addUserFlights(token,form,vacationId)
-      dispatch(flightsSlice.updateFormField({ field: "type", value:"edit"}));
-    }
-     dispatch(
-      snackBarSlice.setSnackBar({
-        type: "success",
-        message: "נתוני טיסה עודכנו בהצלחה",
-        timeout: 3000,
-      })
-    )
-    if(userForm.user_type === "parent"){
-      dispatch(dialogSlice.updateActiveButton("תשלום"))
-
-    }else {
-      dispatch(dialogSlice.updateActiveButton("הערות"))
-
-    }
+      await saveFlightData();
+      if (!embedded) {
+        dispatch(dialogSlice.updateActiveButton(userForm.user_type === "parent" ? "תשלום" : "הערות"));
+      }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
+  };
 
-  }
+  const submitAndClose = async () => {
+    try {
+      await saveFlightData();
+      handleCloseClicked();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   
+  const handleCopyFromGuest = useCallback((guestFlight) => {
+    const FLIGHT_FIELDS = [
+      "outbound_flight_date", "outbound_flight_number", "outbound_airline",
+      "return_flight_date", "return_flight_number", "return_airline", "user_classification",
+    ];
+    FLIGHT_FIELDS.forEach((field) => {
+      if (guestFlight[field] != null) {
+        dispatch(flightsSlice.updateFormField({ field, value: guestFlight[field] }));
+      }
+    });
+  }, [dispatch]);
+
   const getFlightData = async () => {
 
     const userId = userForm.user_id
     let familyId = userForm.family_id
     let isInGroup = userForm.is_in_group
     try {
+      // Fetch other family members' flights for the "copy from" feature
+      const familyRes = await ApiFlights.getFamilyFlights(token, familyId, vacationId);
+      const others = (familyRes.data || []).filter((f) => f.user_id !== userId);
+      setFamilyFlights(others);
+
       let response = await ApiFlights.getUserFlightData(token,userId,familyId,isInGroup,vacationId)
 
       if(response.data[0].all_flight_data_null === 1){
@@ -130,12 +107,20 @@ const userClassificationType = ["MR","MRS","BABY"]
    dispatch(userSlice.resetForm())
    }
 
+  // Expose save for embedded mode
+  useEffect(() => {
+    if (saveRef) saveRef.current = submit;
+  });
+
   useEffect(() => {
     getFlightData()
+    ApiSettings.getFlightCompanies(token)
+      .then((res) => setFlightsCompany((res.data || []).map((c) => c.name)))
+      .catch(() => setFlightsCompany([]));
   }, [])
-  
+
   return (
-    <FlightsView handleInputChange={handleInputChange} submit={submit}  handleCloseClicked={handleCloseClicked} userClassificationType={userClassificationType}/>
+    <FlightsView handleInputChange={handleInputChange} submit={submit} submitAndClose={submitAndClose} handleCloseClicked={handleCloseClicked} userClassificationType={userClassificationType} embedded={embedded} familyFlights={familyFlights} onCopyFromGuest={handleCopyFromGuest} flightsCompany={flightsCompany}/>
   );
 };
 

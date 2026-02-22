@@ -92,6 +92,20 @@ const updateStartEndAndDate = (vacationId) => {
        SET start_date = ?, end_date = ? where family_id = ?`;
 };
 
+// Move a family's room booking to a different room
+const moveRoomBooking = (vacationId) => {
+  return `UPDATE trip_tracker_${vacationId}.room_taken
+    SET room_id = ?
+    WHERE family_id = ? AND room_id = ?`;
+};
+
+// Move all guest assignments from one room to another (for the same family)
+const moveGuestAssignments = (vacationId) => {
+  return `UPDATE trip_tracker_${vacationId}.user_room_assignments
+    SET room_id = ?
+    WHERE family_id = ? AND room_id = ?`;
+};
+
 module.exports = {
   assignMainRoom,
   getFamilyRoom,
@@ -105,5 +119,7 @@ module.exports = {
   updateStartEndAndDate,
   removeMainRoomByRoomId,
   removeAllUserAssignFromRoomId,
-  getAllChosenRoom
+  getAllChosenRoom,
+  moveRoomBooking,
+  moveGuestAssignments,
 };

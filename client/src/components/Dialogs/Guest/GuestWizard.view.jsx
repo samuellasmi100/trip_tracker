@@ -9,25 +9,31 @@ import { useStyles } from "./GuestWizard.style";
 import FamilyStep from "./steps/FamilyStep";
 import PersonalDetailsStep from "./steps/PersonalDetailsStep";
 import TripOptionsStep from "./steps/TripOptionsStep";
+import FlightDetailsStep from "./steps/FlightDetailsStep";
+import NotesStep from "./steps/NotesStep";
 
 const GuestWizardView = (props) => {
   const classes = useStyles();
   const {
     steps,
     activeStep,
-    handleNext,
-    handleBack,
+    setActiveStep,
     submit,
+    submitAndClose,
+    submitAndContinue,
     handleInputChange,
     handleCloseClicked,
     isAddFlow,
+    isAddGuest,
     isEditFlow,
+    dialogType,
   } = props;
 
+  const isAddFamily = dialogType === "addFamily";
   const isLastStep = activeStep === steps.length - 1;
   const currentStepKey = steps[activeStep]?.key;
 
-  const renderStepContent = () => {
+  const renderContent = () => {
     switch (currentStepKey) {
       case "family":
         return <FamilyStep handleInputChange={handleInputChange} />;
@@ -35,15 +41,59 @@ const GuestWizardView = (props) => {
         return <PersonalDetailsStep handleInputChange={handleInputChange} />;
       case "trip":
         return <TripOptionsStep handleInputChange={handleInputChange} />;
+      case "flights":
+        return <FlightDetailsStep />;
+      case "notes":
+        return <NotesStep />;
       default:
         return null;
     }
   };
 
+  // Side nav layout for addParent / addChild
+  if (isAddGuest) {
+    return (
+      <div className={classes.sideNavWrapper}>
+        {/* Side nav */}
+        <div className={classes.sideNav}>
+          {steps.map((step, index) => (
+            <div
+              key={step.key}
+              className={`${classes.navItem} ${activeStep === index ? classes.navItemActive : ""}`}
+              onClick={() => setActiveStep(index)}
+            >
+              <span>{step.label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Content area */}
+        <div className={classes.sideNavContentArea}>
+          <div className={classes.sideNavContentScroll}>
+            {renderContent()}
+          </div>
+
+          {/* Action buttons */}
+          <div className={classes.sideNavActions}>
+            <Button onClick={submitAndClose} className={classes.submitButton}>
+              שמור וסגור
+            </Button>
+            <Button onClick={submitAndContinue} className={classes.continueButton}>
+              שמור והמשך
+            </Button>
+            <Button onClick={handleCloseClicked} className={classes.cancelButton}>
+              ביטול
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Stepper layout for addFamily
   return (
     <div className={classes.wrapper}>
-      {/* Stepper - only show for add flows with multiple steps */}
-      {isAddFlow && steps.length > 1 && (
+      {isAddFamily && steps.length > 1 && (
         <Stepper activeStep={activeStep} alternativeLabel className={classes.stepper}>
           {steps.map((step) => (
             <Step key={step.key}>
@@ -53,32 +103,31 @@ const GuestWizardView = (props) => {
         </Stepper>
       )}
 
-      {/* Step content */}
+      {/* Content */}
       <div className={classes.stepContent}>
-        {renderStepContent()}
+        {renderContent()}
       </div>
 
       {/* Action buttons */}
       <div className={classes.actions}>
-        {/* Submit / Next button */}
-        {isLastStep || isEditFlow ? (
-          <Button onClick={submit} className={classes.submitButton}>
-            {isEditFlow ? "עדכן" : "סיום"}
-          </Button>
-        ) : (
-          <Button onClick={handleNext} className={classes.submitButton}>
-            הבא
-          </Button>
+        {isAddFamily && (
+          isLastStep ? (
+            <Button onClick={submit} className={classes.submitButton}>סיום</Button>
+          ) : (
+            <Button onClick={() => setActiveStep(activeStep + 1)} className={classes.submitButton}>הבא</Button>
+          )
         )}
 
-        {/* Back button - only on step > 0 in add flow */}
-        {isAddFlow && activeStep > 0 && (
-          <Button onClick={handleBack} className={classes.backButton}>
+        {isEditFlow && (
+          <Button onClick={submit} className={classes.submitButton}>עדכן</Button>
+        )}
+
+        {isAddFamily && activeStep > 0 && (
+          <Button onClick={() => setActiveStep(activeStep - 1)} className={classes.backButton}>
             הקודם
           </Button>
         )}
 
-        {/* Cancel button */}
         <Button onClick={handleCloseClicked} className={classes.cancelButton}>
           ביטול
         </Button>

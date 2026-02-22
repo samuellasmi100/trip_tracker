@@ -4,6 +4,17 @@ const roomsService = require("./roomsService")
 // IMPORTANT: Static-prefix routes must come before param routes (/:vacationId)
 // otherwise Express matches e.g. "/count" as /:vacationId with vacationId="count".
 
+// Full board data: rooms + bookings + guest assignments + all guests
+router.get("/board/:vacationId", async (req, res, next) => {
+  const vacationId = req.params.vacationId;
+  try {
+    const response = await roomsService.getBoardData(vacationId);
+    res.send(response);
+  } catch (error) {
+    return next(error);
+  }
+});
+
 router.get("/count/:vacationId", async (req, res, next) => {
   const vacationId = req.params.vacationId
   try {

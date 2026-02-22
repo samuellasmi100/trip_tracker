@@ -22,6 +22,14 @@ const {
   insertIncomeCategoryQuery,
   createIncomeSubCategoryTable,
   createIncomeTable,
+  createLeadsTableQuery,
+  createLeadNotesTableQuery,
+  createFamilyDocumentTypesTableQuery,
+  insertFamilyDocumentTypesQuery,
+  createFamilyDocumentsTableQuery,
+  createFamilySignaturesTableQuery,
+  createStaffTableQuery,
+  createVehiclesTableQuery,
 } = require("../query/trip_tracker_dump")
 
 const createDatabaseAndTable = async (vacationId) => {
@@ -59,6 +67,14 @@ const createDatabaseAndTable = async (vacationId) => {
     await connection.query(insertIncomeCategoryQuery)
     await connection.query(createIncomeSubCategoryTable)
     await connection.query(createIncomeTable)
+    await connection.query(createLeadsTableQuery)
+    await connection.query(createLeadNotesTableQuery)
+    await connection.query(createFamilyDocumentTypesTableQuery)
+    await connection.query(insertFamilyDocumentTypesQuery)
+    await connection.query(createFamilyDocumentsTableQuery)
+    await connection.query(createFamilySignaturesTableQuery)
+    await connection.query(createStaffTableQuery)
+    await connection.query(createVehiclesTableQuery)
     console.log('Database and table created successfully');
   } catch (error) {
     console.error('Error creating database or table:', error);

@@ -65,10 +65,19 @@ const getFlightsByFamily = async (id,vacationId) => {
   }
 }
 
+const getFamilyFlightsWithNames = async (familyId, vacationId) => {
+  try {
+    const sql = flightsQuery.getFamilyFlightsWithNames(vacationId);
+    return await connection.executeWithParameters(sql, [familyId]);
+  } catch (error) {
+    logger.error(`Error: Function:getFamilyFlightsWithNames: ${error.sqlMessage}`);
+  }
+}
+
 module.exports = {
   addFlightsDetails,
   updateFlightsDetails,
   getFlightsDetails,
-  getFlightsByFamily
-
+  getFlightsByFamily,
+  getFamilyFlightsWithNames,
 }

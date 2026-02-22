@@ -1,76 +1,63 @@
 const addFamily = (vacationId) =>{
-    return `INSERT INTO trip_tracker_${vacationId}.families (family_name,family_id) VALUES (?,?)`
+    return `INSERT INTO trip_tracker_${vacationId}.families (family_name, family_id, number_of_guests, number_of_rooms, total_amount, start_date, end_date, doc_token) VALUES (?,?,?,?,?,?,?,UUID())`
   }
-  
-  const getFamilies = (vacationId) =>{
 
- return `WITH LatestPayments AS (
-    SELECT 
-        p.family_id,
-        p.user_id,
-        SUM(p.amount_received) AS total_paid_amount,  -- Sum of all amounts where is_paid = 1
-        ROW_NUMBER() OVER (PARTITION BY p.user_id ORDER BY p.created_at DESC) AS row_num
-    FROM 
-        trip_tracker_${vacationId}.payments p
-    WHERE p.is_paid = 1  -- Only include rows where is_paid = 1
-    GROUP BY p.family_id, p.user_id
-)
-SELECT 
+  const getFamilies = (vacationId) =>{
+  return `
+SELECT
     fa.family_id,
     fa.family_name,
     gu.hebrew_first_name,
     gu.hebrew_last_name,
     gu.english_last_name,
-    gu.number_of_guests,
-    REPLACE(gu.total_amount, ',', '') as total_amount,
-    lp.total_paid_amount,  -- This will now show the total paid amount
-    (SELECT COUNT(*) 
-     FROM trip_tracker_${vacationId}.guest 
+    fa.number_of_guests,
+    fa.number_of_rooms,
+    REPLACE(fa.total_amount, ',', '') AS total_amount,
+    fa.start_date,
+    fa.end_date,
+    COALESCE(pay_agg.total_paid_amount, 0) AS total_paid_amount,
+    rt_agg.room_ids,
+    (SELECT COUNT(*)
+     FROM trip_tracker_${vacationId}.guest
      WHERE family_id = fa.family_id) AS user_in_system_count
-FROM
-    trip_tracker_${vacationId}.families fa
-LEFT JOIN
-    trip_tracker_${vacationId}.guest gu
-ON
-    fa.family_id = gu.family_id AND gu.is_main_user = 1
-LEFT JOIN
-    LatestPayments lp
-ON
-    gu.family_id = lp.family_id AND gu.user_id = lp.user_id AND lp.row_num = 1;
+FROM trip_tracker_${vacationId}.families fa
+LEFT JOIN trip_tracker_${vacationId}.guest gu
+    ON fa.family_id = gu.family_id AND gu.is_main_user = 1
+LEFT JOIN (
+    SELECT family_id, SUM(amount) AS total_paid_amount
+    FROM trip_tracker_${vacationId}.payments
+    WHERE status = 'completed'
+    GROUP BY family_id
+) pay_agg ON fa.family_id = pay_agg.family_id
+LEFT JOIN (
+    SELECT family_id, GROUP_CONCAT(room_id ORDER BY room_id) AS room_ids
+    FROM trip_tracker_${vacationId}.room_taken
+    GROUP BY family_id
+) rt_agg ON fa.family_id = rt_agg.family_id
 `
-
-
-//    return `SELECT 
-//       f.family_id,
-//       f.family_name,
-//       p.amount,
-//       p.remains_to_be_paid
-//   FROM 
-//       trip_tracker_${vacationId}.families f
-//   LEFT JOIN 
-//       (SELECT 
-//            family_id, 
-//            id, 
-//            created_at, 
-//            amount,
-//            remains_to_be_paid
-//        FROM 
-//            trip_tracker_${vacationId}.payments 
-//        WHERE 
-//            (family_id, created_at) IN 
-//            (SELECT 
-//                 family_id, 
-//                 MAX(created_at) 
-//             FROM 
-//                 trip_tracker_${vacationId}.payments 
-//             GROUP BY 
-//                 family_id)) p
-//   ON f.family_id = p.family_id`
   }
-  
+
+  const updateFamily = (vacationId) => {
+    return `UPDATE trip_tracker_${vacationId}.families SET family_name = ?, number_of_guests = ?, number_of_rooms = ?, total_amount = ?, start_date = ?, end_date = ? WHERE family_id = ?`
+  }
+
+  // Server-side family search by name (used by room board assignment dialog)
+  const searchFamilies = (vacationId) => {
+    return `SELECT
+        fa.family_id,
+        fa.family_name,
+        fa.start_date,
+        fa.end_date,
+        fa.number_of_rooms
+      FROM trip_tracker_${vacationId}.families fa
+      WHERE fa.family_name LIKE ?
+      ORDER BY fa.family_name
+      LIMIT 15`;
+  };
+
   module.exports ={
     addFamily,
     getFamilies,
+    updateFamily,
+    searchFamilies,
   }
-  
-  

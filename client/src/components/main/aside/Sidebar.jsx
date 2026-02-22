@@ -6,6 +6,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import * as authSlice from "../../../store/slice/authSlice"
 import * as staticSlice from "../../../store/slice/staticSlice"
+import * as notificationsSlice from "../../../store/slice/notificationsSlice"
+import { disconnectSocket } from "../../../utils/socketService"
 
 function Sidebar() {
   const dispatch = useDispatch();
@@ -20,6 +22,8 @@ function Sidebar() {
 
 
   const handleLogOut = () => {
+      disconnectSocket();
+      dispatch(notificationsSlice.clearNotifications());
       sessionStorage.removeItem("token");
       sessionStorage.removeItem("userData");
       delete axios.defaults.headers.common["Authorization"];
@@ -68,6 +72,10 @@ function Sidebar() {
     dispatch(staticSlice.updateDialogType(widgetName));
   }, [dispatch, navigate, location.pathname]);
 
+  const handleDirectNavClick = useCallback((path) => {
+    navigate(path);
+  }, [navigate]);
+
   return (
     <SidebarView
       logoutButtonFunction={logoutButtonFunction}
@@ -82,6 +90,7 @@ function Sidebar() {
       vacationExpanded={vacationExpanded}
       toggleVacationExpanded={toggleVacationExpanded}
       handleWidgetClick={handleWidgetClick}
+      handleDirectNavClick={handleDirectNavClick}
       staticDialogType={staticDialogType}
     />
   );

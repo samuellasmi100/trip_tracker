@@ -16,6 +16,22 @@ const createFamilyTableQuery = `
   id int NOT NULL AUTO_INCREMENT,
   family_id varchar(45) NOT NULL,
   family_name varchar(45) NOT NULL,
+  number_of_guests varchar(45) DEFAULT NULL,
+  number_of_rooms varchar(45) DEFAULT NULL,
+  number_of_suites varchar(10) DEFAULT NULL,
+  male_head varchar(45) DEFAULT NULL,
+  female_head varchar(45) DEFAULT NULL,
+  total_amount varchar(45) DEFAULT NULL,
+  total_amount_eur varchar(45) DEFAULT NULL,
+  start_date varchar(45) DEFAULT NULL,
+  end_date varchar(45) DEFAULT NULL,
+  number_of_pax_outbound varchar(10) DEFAULT NULL,
+  number_of_pax_return varchar(10) DEFAULT NULL,
+  number_of_babies varchar(10) DEFAULT NULL,
+  voucher_number varchar(20) DEFAULT NULL,
+  special_requests TEXT DEFAULT NULL,
+  doc_token VARCHAR(36) NULL,
+  signature_sent_at TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY uq_family_id (family_id)
 ) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;`;
@@ -30,7 +46,9 @@ CREATE TABLE flights (
   passport_number varchar(45) DEFAULT NULL,
   birth_date varchar(45) DEFAULT NULL,
   outbound_flight_date varchar(45) DEFAULT NULL,
+  outbound_flight_time varchar(10) DEFAULT NULL,
   return_flight_date varchar(45) DEFAULT NULL,
+  return_flight_time varchar(10) DEFAULT NULL,
   outbound_flight_number varchar(45) DEFAULT NULL,
   age varchar(45) DEFAULT NULL,
   parent_id varchar(45) DEFAULT NULL,
@@ -38,9 +56,11 @@ CREATE TABLE flights (
   family_id varchar(45) DEFAULT NULL,
   outbound_airline varchar(45) DEFAULT NULL,
   return_airline varchar(45) DEFAULT NULL,
+  seat_preference varchar(45) DEFAULT NULL,
   is_source_user tinyint DEFAULT '0',
   user_id varchar(45) DEFAULT NULL,
   user_classification VARCHAR(45) NULL DEFAULT NULL,
+  booking_reference VARCHAR(10) NULL DEFAULT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 `;
@@ -94,21 +114,27 @@ CREATE TABLE notes (
 
 const createPaymentsTableQuery = `
  CREATE TABLE payments (
-   id int NOT NULL AUTO_INCREMENT,
-   payment_date varchar(45) NOT NULL,
-   amount varchar(45) NOT NULL,
-   form_of_payment varchar(45) NOT NULL,
-   remains_to_be_paid varchar(45) DEFAULT NULL,
-   payment_currency varchar(45) NOT NULL,
-   amount_received varchar(45) DEFAULT NULL,
-   family_id varchar(45) DEFAULT NULL,
-   created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-   user_id varchar(255) DEFAULT NULL,
-   invoice tinyint DEFAULT '0',
-   is_paid tinyint DEFAULT '0',
-   updated_at varchar(455) DEFAULT NULL,
+   id                  INT NOT NULL AUTO_INCREMENT,
+   family_id           VARCHAR(45) NOT NULL,
+   user_id             VARCHAR(255) DEFAULT NULL,
+   amount              DECIMAL(10,2) NOT NULL,
+   payment_method      VARCHAR(45) NOT NULL DEFAULT 'מזומן',
+   payment_date        DATE NOT NULL,
+   notes               TEXT DEFAULT NULL,
+   receipt             TINYINT DEFAULT 0,
+   status              VARCHAR(20) NOT NULL DEFAULT 'completed',
+   payment_gateway     VARCHAR(45) DEFAULT 'manual',
+   low_profile_code    VARCHAR(255) NULL,
+   payment_url         TEXT NULL,
+   approval_number     VARCHAR(100) NULL,
+   card_last_four      VARCHAR(10) NULL,
+   card_owner_name     VARCHAR(255) NULL,
+   invoice_number      VARCHAR(100) NULL,
+   webhook_received_at TIMESTAMP NULL,
+   created_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   updated_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
    PRIMARY KEY (id)
- ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 `;
 
 const createRoomsTableQuery = `
@@ -266,6 +292,106 @@ CREATE TABLE income (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 `;
 
+const createLeadsTableQuery = `
+CREATE TABLE leads (
+  lead_id      INT NOT NULL AUTO_INCREMENT,
+  full_name    VARCHAR(100) NOT NULL,
+  phone        VARCHAR(30)  DEFAULT NULL,
+  email        VARCHAR(100) DEFAULT NULL,
+  family_size  INT          DEFAULT 1,
+  status       VARCHAR(50)  NOT NULL DEFAULT 'new_interest',
+  source       VARCHAR(50)  NOT NULL DEFAULT 'phone',
+  notes        TEXT         DEFAULT NULL,
+  referred_by  VARCHAR(100) DEFAULT NULL,
+  is_active    TINYINT(1)   NOT NULL DEFAULT 1,
+  assigned_to  INT          DEFAULT NULL,
+  created_at   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (lead_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+`;
+
+const createLeadNotesTableQuery = `
+CREATE TABLE lead_notes (
+  note_id    INT NOT NULL AUTO_INCREMENT,
+  lead_id    INT NOT NULL,
+  note_text  TEXT NOT NULL,
+  created_by INT DEFAULT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (note_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+`;
+
+const createFamilyDocumentTypesTableQuery = `
+CREATE TABLE family_document_types (
+  id         INT NOT NULL AUTO_INCREMENT,
+  type_key   VARCHAR(50)  NOT NULL,
+  label      VARCHAR(100) NOT NULL,
+  is_required TINYINT(1)  NOT NULL DEFAULT 1,
+  sort_order INT          NOT NULL DEFAULT 0,
+  created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+`;
+
+const insertFamilyDocumentTypesQuery = `
+INSERT INTO family_document_types (type_key, label, is_required, sort_order)
+VALUES ('id_passport', 'צילום תעודת זהות / דרכון', 1, 1),
+       ('flight_ticket', 'כרטיסי טיסה', 1, 2);
+`;
+
+const createFamilyDocumentsTableQuery = `
+CREATE TABLE family_documents (
+  id          INT NOT NULL AUTO_INCREMENT,
+  family_id   VARCHAR(45)  NOT NULL,
+  user_id     VARCHAR(45)  NOT NULL,
+  doc_type_id INT          NOT NULL,
+  file_name   VARCHAR(200) NOT NULL,
+  file_path   VARCHAR(500) NOT NULL,
+  uploaded_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+`;
+
+const createFamilySignaturesTableQuery = `
+CREATE TABLE family_signatures (
+  id                   INT NOT NULL AUTO_INCREMENT,
+  family_id            VARCHAR(45) NOT NULL,
+  signer_name          VARCHAR(100) NOT NULL,
+  signature_image_path VARCHAR(500) NOT NULL,
+  signed_at            TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  ip_address           VARCHAR(45) DEFAULT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+`;
+
+const createStaffTableQuery = `
+CREATE TABLE staff (
+  id           INT NOT NULL AUTO_INCREMENT,
+  name         VARCHAR(100) NOT NULL,
+  role         VARCHAR(100) DEFAULT NULL,
+  location     VARCHAR(45)  DEFAULT NULL,
+  room_number  VARCHAR(10)  DEFAULT NULL,
+  persons_count INT         DEFAULT 1,
+  notes        TEXT         DEFAULT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+`;
+
+const createVehiclesTableQuery = `
+CREATE TABLE vehicles (
+  id           INT NOT NULL AUTO_INCREMENT,
+  family_id    VARCHAR(45)  DEFAULT NULL,
+  family_name  VARCHAR(100) DEFAULT NULL,
+  vehicle_type VARCHAR(100) DEFAULT NULL,
+  seats        INT          DEFAULT NULL,
+  cost         DECIMAL(10,2) DEFAULT NULL,
+  currency     VARCHAR(10)  DEFAULT 'EUR',
+  notes        TEXT         DEFAULT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+`;
+
 module.exports = {
   dropTablesQueries,
   createFamilyTableQuery,
@@ -288,4 +414,12 @@ module.exports = {
   insertIncomeCategoryQuery,
   createIncomeSubCategoryTable,
   createIncomeTable,
+  createLeadsTableQuery,
+  createLeadNotesTableQuery,
+  createFamilyDocumentTypesTableQuery,
+  insertFamilyDocumentTypesQuery,
+  createFamilyDocumentsTableQuery,
+  createFamilySignaturesTableQuery,
+  createStaffTableQuery,
+  createVehiclesTableQuery,
 };

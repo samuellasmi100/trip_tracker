@@ -9,7 +9,7 @@ import * as flightsSlice from "../../../store/slice/flightsSlice";
 
 import ApiNotes from "../../../apis/notesRequest"
 
-const Notes = () => {
+const Notes = ({ embedded, saveRef }) => {
   const dispatch = useDispatch();
   const form = useSelector((state) => state.notesSlice.form);
   const userForm = useSelector((state) => state.userSlice.form);
@@ -37,7 +37,7 @@ const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
            timeout: 3000,
          })
          )
-         handleCloseClicked()
+         if(!embedded) handleCloseClicked()
       }else {
         dispatch(
           snackBarSlice.setSnackBar({
@@ -58,7 +58,10 @@ const handleCloseClicked = () => {
  dispatch(dialogSlice.resetState())
  dispatch(flightsSlice.resetForm())
  }
-  return <NotesView handleInputChange={handleInputChange} submit={submit}  handleCloseClicked={handleCloseClicked}/>;
+  // Expose save for embedded mode
+  if (saveRef) saveRef.current = submit;
+
+  return <NotesView handleInputChange={handleInputChange} submit={submit}  handleCloseClicked={handleCloseClicked} embedded={embedded}/>;
 };
 
 export default Notes;

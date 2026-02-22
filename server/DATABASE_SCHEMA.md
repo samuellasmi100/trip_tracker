@@ -98,6 +98,34 @@ Vacation IDs are UUIDs with hyphens replaced by underscores (e.g., `63dfd70c_645
 
 ---
 
+### `payment_provider_configs` — Cardcom / payment gateway credentials (shared DB)
+
+| Column | Type | Nullable | Key | Default | Extra |
+|---|---|---|---|---|---|
+| id | int | NO | PRI | NULL | auto_increment |
+| provider_type | varchar(45) | NO | UNI | 'cardcom' | |
+| terminal_number | varchar(100) | NO | | NULL | |
+| api_name | varchar(100) | NO | | NULL | |
+| business_name | varchar(255) | YES | | NULL | |
+| vat_number | varchar(50) | YES | | NULL | |
+| invoice_doc_type | varchar(50) | YES | | 'Receipt' | Receipt/InvoiceTax/InvoiceTaxReceipt |
+| business_type | varchar(50) | YES | | 'exempt_dealer' | exempt_dealer/authorized_dealer/company |
+| invoice_email_enabled | tinyint | YES | | 0 | |
+| invoice_notes | text | YES | | NULL | |
+| is_test_mode | tinyint | YES | | 1 | 1=test (no real charge) |
+| is_active | tinyint | YES | | 1 | |
+| created_at | timestamp | YES | | CURRENT_TIMESTAMP | |
+| updated_at | timestamp | YES | | CURRENT_TIMESTAMP | ON UPDATE |
+
+**Indexes:** PRIMARY (id), UNIQUE KEY uq_provider_type (provider_type)
+
+**Notes:**
+- Global table, not per-vacation — one config shared across all vacations
+- Created at startup by `migrateSharedDb.js` step [3]
+- UNIQUE on `provider_type` enables ON DUPLICATE KEY UPDATE upsert
+
+---
+
 ## Per-Vacation Database: `trip_tracker_{vacationId}`
 
 Each vacation gets its own database with the following 16 tables. Created via `sql/utils/createDb.js` using the schema dump in `sql/query/trip_tracker_dump.js`.
@@ -109,12 +137,35 @@ Each vacation gets its own database with the following 16 tables. Created via `s
 | id | int | NO | PRI | NULL | auto_increment |
 | family_id | varchar(45) | NO | UNI | NULL | |
 | family_name | varchar(45) | NO | | NULL | |
+| number_of_guests | varchar(45) | YES | | NULL | |
+| number_of_rooms | varchar(45) | YES | | NULL | |
+| number_of_suites | varchar(10) | YES | | NULL | suite count (migration step 23) |
+| male_head | varchar(45) | YES | | NULL | father/male head first name (step 24) |
+| female_head | varchar(45) | YES | | NULL | mother/female head first name (step 24) |
+| total_amount | varchar(45) | YES | | NULL | NIS price |
+| total_amount_eur | varchar(45) | YES | | NULL | EUR price (if applicable) |
+| start_date | varchar(45) | YES | | NULL | |
+| end_date | varchar(45) | YES | | NULL | |
+| number_of_pax_outbound | varchar(10) | YES | | NULL | persons on outbound flight |
+| number_of_pax_return | varchar(10) | YES | | NULL | persons on return flight |
+| number_of_babies | varchar(10) | YES | | NULL | infants (under 2) |
+| voucher_number | varchar(20) | YES | | NULL | receipt/acknowledgement number |
+| special_requests | text | YES | | NULL | free-text special requests |
+| doc_token | varchar(36) | YES | | NULL | |
+| signature_sent_at | timestamp | YES | | NULL | |
 
 **Indexes:** PRIMARY (id), UNIQUE uq_family_id (family_id)
 
 **Notes:**
 - `family_id` is a client-generated UUID
 - Family name is typically derived from the main guest's Hebrew name
+- Group-level fields (`number_of_guests`, `number_of_rooms`, `total_amount`, `start_date`, `end_date`) are set when the family is created and updated via the edit family dialog
+- `start_date`/`end_date` correspond to the vacation arrival/departure dates for the family group
+- `total_amount_eur` used when family price is quoted in EUR instead of NIS
+- `number_of_pax_outbound`/`number_of_pax_return` can differ (some guests arrive/depart separately)
+- `voucher_number` is a sequential receipt ID assigned per family (e.g., 1021–1102)
+- `special_requests` stores free-text notes from registration (dietary, mobility, seating, etc.)
+- Per-guest fields like `flights`, `flights_direction`, `flying_with_us` remain on the `guest` table
 
 ---
 
@@ -168,11 +219,13 @@ Each vacation gets its own database with the following 16 tables. Created via `s
 |---|---|---|---|---|---|
 | id | int | NO | PRI | NULL | auto_increment |
 | child_id | varchar(45) | YES | | NULL | |
-| validity_passport | varchar(45) | YES | | NULL | |
+| validity_passport | varchar(45) | YES | | NULL | passport expiry date |
 | passport_number | varchar(45) | YES | | NULL | |
 | birth_date | varchar(45) | YES | | NULL | |
 | outbound_flight_date | varchar(45) | YES | | NULL | |
+| outbound_flight_time | varchar(10) | YES | | NULL | e.g. "14:30" |
 | return_flight_date | varchar(45) | YES | | NULL | |
+| return_flight_time | varchar(10) | YES | | NULL | e.g. "12:50" |
 | outbound_flight_number | varchar(45) | YES | | NULL | |
 | age | varchar(45) | YES | | NULL | |
 | parent_id | varchar(45) | YES | | NULL | |
@@ -180,15 +233,19 @@ Each vacation gets its own database with the following 16 tables. Created via `s
 | family_id | varchar(45) | YES | | NULL | |
 | outbound_airline | varchar(45) | YES | | NULL | |
 | return_airline | varchar(45) | YES | | NULL | |
+| seat_preference | varchar(45) | YES | | NULL | e.g. "קידמת המטוס", "יציאת חרום" |
 | is_source_user | tinyint | YES | | 0 | |
 | user_id | varchar(45) | YES | | NULL | |
 | user_classification | varchar(45) | YES | | NULL | |
+| booking_reference | varchar(10) | YES | | NULL | PNR/booking code (e.g. U46UKJ) — migration step 25 |
 
 **Notes:**
 - `is_source_user = 1` indicates the user's own flight record (vs. inherited from parent)
 - `user_id` links to `guest.user_id`
 - `family_id` links to `families.family_id`
 - `child_id`/`parent_id` — legacy columns for parent-child flight relationships
+- `outbound_flight_time`/`return_flight_time` — departure times (e.g. "14:30")
+- `seat_preference` — special seating requests (front of plane, emergency exit row, etc.)
 
 ---
 
@@ -265,29 +322,37 @@ Each vacation gets its own database with the following 16 tables. Created via `s
 
 ---
 
-### `payments` — Payment records
+### `payments` — Payment records (redesigned 2026-02-20)
 
 | Column | Type | Nullable | Key | Default | Extra |
 |---|---|---|---|---|---|
 | id | int | NO | PRI | NULL | auto_increment |
-| payment_date | varchar(45) | NO | | NULL | |
-| amount | varchar(45) | NO | | NULL | |
-| form_of_payment | varchar(45) | NO | | NULL | |
-| remains_to_be_paid | varchar(45) | YES | | NULL | |
-| payment_currency | varchar(45) | NO | | NULL | |
-| amount_received | varchar(45) | YES | | NULL | |
-| family_id | varchar(45) | YES | | NULL | |
+| family_id | varchar(45) | NO | | NULL | |
+| user_id | varchar(255) | YES | | NULL | coordinator who logged it |
+| amount | decimal(10,2) | NO | | NULL | amount for THIS payment |
+| payment_method | varchar(45) | NO | | 'מזומן' | cash/bank_transfer/credit_card/check |
+| payment_date | date | NO | | NULL | |
+| notes | text | YES | | NULL | |
+| receipt | tinyint | YES | | 0 | 0/1 receipt issued |
+| status | varchar(20) | NO | | 'completed' | completed/pending/cancelled |
+| payment_gateway | varchar(45) | YES | | 'manual' | 'manual' or 'cardcom' |
+| low_profile_code | varchar(255) | YES | | NULL | Cardcom LowProfileCode |
+| payment_url | text | YES | | NULL | Cardcom payment page URL |
+| approval_number | varchar(100) | YES | | NULL | Cardcom approval number |
+| card_last_four | varchar(10) | YES | | NULL | Last 4 digits of card |
+| card_owner_name | varchar(255) | YES | | NULL | Card owner name |
+| invoice_number | varchar(100) | YES | | NULL | Cardcom invoice number |
+| webhook_received_at | timestamp | YES | | NULL | When Cardcom webhook arrived |
 | created_at | timestamp | YES | | CURRENT_TIMESTAMP | |
-| user_id | varchar(45) | YES | | NULL | |
-| invoice | tinyint | YES | | 0 | |
-| is_paid | tinyint | YES | | 0 | |
-| updated_at | varchar(455) | YES | | NULL | |
+| updated_at | timestamp | YES | | CURRENT_TIMESTAMP | ON UPDATE CURRENT_TIMESTAMP |
 
 **Notes:**
-- `is_paid` tracks whether the payment has been confirmed/received
-- Monetary amounts stored as varchar (not decimal)
-- `form_of_payment`: free text (e.g., "credit card", "bank transfer")
-- `family_id` + `user_id` link to guest
+- One row = one payment transaction (not an indexed flat form)
+- `amount` is DECIMAL — the amount paid in THIS transaction
+- Family's total obligation is stored in `families.total_amount`
+- Remaining balance calculated dynamically: `total_amount - SUM(amount WHERE status='completed')`
+- Old table preserved as `payments_old` (migration step 15)
+- Gateway columns added in migration step 18; new vacation DBs include them from the start
 
 ---
 
@@ -470,6 +535,45 @@ Each vacation gets its own database with the following 16 tables. Created via `s
 **Notes:**
 - Column names reuse `expenses_*` naming (from copy-paste of expenses schema)
 - `description` field is unique to income (not in expenses)
+
+---
+
+### `staff` — Staff / crew members (added migration step [21])
+
+| Column | Type | Nullable | Key | Default | Extra |
+|---|---|---|---|---|---|
+| id | int | NO | PRI | NULL | auto_increment |
+| name | varchar(100) | NO | | NULL | name or role label |
+| role | varchar(100) | YES | | NULL | e.g. "שף", "משגיח", "מנת" |
+| location | varchar(45) | YES | | NULL | ראשי / מאוריציו / בחוץ |
+| room_number | varchar(10) | YES | | NULL | room assigned (may be staff-only room) |
+| persons_count | int | YES | | 1 | number of people in this staff group |
+| notes | text | YES | | NULL | flight info, special arrangements |
+
+**Notes:**
+- Not linked to `families` — staff are separate from paying guests
+- `location`: ראשי = main hotel, מאוריציו = secondary hotel, בחוץ = external/day staff
+- Populated via Excel import from `צוות.xlsx`
+
+---
+
+### `vehicles` — Rental vehicle bookings (added migration step [22])
+
+| Column | Type | Nullable | Key | Default | Extra |
+|---|---|---|---|---|---|
+| id | int | NO | PRI | NULL | auto_increment |
+| family_id | varchar(45) | YES | | NULL | FK → families(family_id), nullable |
+| family_name | varchar(100) | YES | | NULL | denormalized for display |
+| vehicle_type | varchar(100) | YES | | NULL | e.g. "7-seat Kodiaq", "5-seat car" |
+| seats | int | YES | | NULL | seat capacity |
+| cost | decimal(10,2) | YES | | NULL | rental cost |
+| currency | varchar(10) | YES | | 'EUR' | cost currency |
+| notes | text | YES | | NULL | |
+
+**Notes:**
+- `family_id` matched from `families` by name at import time; stays NULL if no match
+- `family_name` kept for reference even when `family_id` is populated
+- Populated via Excel import from `רכבים.xlsx`
 
 ---
 

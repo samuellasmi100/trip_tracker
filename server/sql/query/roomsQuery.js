@@ -91,12 +91,61 @@ ${whereClause};
 `
 }
 
+// Simple rooms list — one row per room (no joins)
+const getBoardRooms = (vacationId) => {
+  return `SELECT rooms_id, type, floor, size, direction, base_occupancy, max_occupancy
+    FROM trip_tracker_${vacationId}.rooms
+    ORDER BY rooms_id`;
+};
+
+// All room bookings with family name
+const getBoardBookings = (vacationId) => {
+  return `SELECT
+      rt.room_id,
+      rt.family_id,
+      DATE_FORMAT(rt.start_date, '%Y-%m-%d') AS start_date,
+      DATE_FORMAT(rt.end_date,   '%Y-%m-%d') AS end_date,
+      f.family_name
+    FROM trip_tracker_${vacationId}.room_taken rt
+    JOIN trip_tracker_${vacationId}.families f ON f.family_id = rt.family_id`;
+};
+
+// All guest-to-room assignments with guest names
+const getBoardGuestAssignments = (vacationId) => {
+  return `SELECT
+      ura.room_id,
+      ura.user_id,
+      ura.family_id,
+      g.hebrew_first_name,
+      g.hebrew_last_name,
+      g.is_main_user
+    FROM trip_tracker_${vacationId}.user_room_assignments ura
+    JOIN trip_tracker_${vacationId}.guest g ON g.user_id = ura.user_id`;
+};
+
+// All guests in this vacation (for the detail panel checkboxes)
+const getBoardAllGuests = (vacationId) => {
+  return `SELECT
+      user_id,
+      family_id,
+      hebrew_first_name,
+      hebrew_last_name,
+      is_main_user,
+      user_type
+    FROM trip_tracker_${vacationId}.guest
+    ORDER BY family_id, is_main_user DESC, hebrew_first_name`;
+};
+
 module.exports = {
   ALLOWED_ROOM_COLUMNS,
   getAll,
   getRoomDetailsWithCounts,
   updateRoom,
   getRoomAvailable,
-  getUnAvailableDates
+  getUnAvailableDates,
+  getBoardRooms,
+  getBoardBookings,
+  getBoardGuestAssignments,
+  getBoardAllGuests,
 }
 

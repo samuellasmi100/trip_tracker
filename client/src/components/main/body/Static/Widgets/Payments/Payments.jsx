@@ -1,104 +1,97 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import PaymentsView from "./Payments.view";
-import * as staticSlice from "../../../../../../store/slice/staticSlice";
 import { useSelector, useDispatch } from "react-redux";
-import ApiStatic from "../../../../../../apis/staticRequest";
-import ApiUser from "../../../../../../apis/userRequest";
-import EditOrUpdateDialog from "../../EditOrUpdateDialog/MainDialog/EditOrUpdateDialog";
-import * as snackBarSlice from "../../../../../../store/slice/snackbarSlice";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
+import ApiPayments from "../../../../../../apis/paymentsRequest";
+import * as paymentsSlice from "../../../../../../store/slice/paymentsSlice";
+import PaymentDialog from "../../../../../Dialogs/Payments/Payments";
 
 const Payments = () => {
   const dispatch = useDispatch();
   const token = sessionStorage.getItem("token");
   const [searchTerm, setSearchTerm] = useState("");
   const vacationId = useSelector((state) => state.vacationSlice.vacationId);
-  const payments = useSelector((state) => state.staticSlice.mainData);
-  const detailsDialogOpen = useSelector((state) => state.staticSlice.detailsModalOpen);
-  
-  const closeDetailsModal = () => {
-    dispatch(staticSlice.closeDetailsModal());
+  const summary = useSelector((state) => state.paymentsSlice.summary);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedFamily, setSelectedFamily] = useState(null);
+
+  const getSummary = async () => {
+    try {
+      dispatch(paymentsSlice.setLoading(true));
+      const res = await ApiPayments.getSummary(token, vacationId);
+      dispatch(paymentsSlice.setSummary(res.data || []));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      dispatch(paymentsSlice.setLoading(false));
+    }
   };
 
-  const headers = [
-    "",
-    "שם",
-    "סכום עסקה",
-    "מספר תשלומים",
-    "מספר תשלומים שלא שולמו",
-    "פרטי תשלום"
-  ];
+  const handleFamilyClick = (item) => {
+    setSelectedFamily({
+      family_id:    item.familyId,
+      family_name:  item.familyName,
+      total_amount: item.totalAmount || "0",
+    });
+    setDialogOpen(true);
+  };
 
-  const filteredPayments = payments?.filter((payment) => {
-    if (searchTerm !== "") {
-      return payment.hebrew_first_name.includes(searchTerm) || payment.hebrew_last_name.includes(searchTerm) ;
-    } else {
-      return payment;
-    }
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+    setSelectedFamily(null);
+    getSummary(); // refresh totals after dialog closes
+  };
+
+  const filteredSummary = summary?.filter((item) => {
+    if (!searchTerm) return true;
+    return (item.familyName || "").includes(searchTerm);
   });
 
-
-  const handleEditClick = (payment) => {
-    dispatch(staticSlice.updateDetailsModalType("editPayments"))
-    dispatch(staticSlice.openDetailsModal())
-    dispatch(staticSlice.updateForm(payment))
-  };
-
-  const getPayments = async () => {
-    try {
-        const response = await ApiStatic.getPaymentsDetails(token,vacationId)
-        dispatch(staticSlice.updateMainData(response.data))
-    } catch (error) {
-      console.log(error)
-    }
-  }
- 
-  function exportToCSV() {
-    const headers = ["שם", "סכום עסקה","נשלחה חשבונית","נותר לתשלום"];
-    const rows = payments.map(item => [
-      `"${item?.hebrew_first_name}"`, 
-      `"${item?.amount}"`,
-      `"${item?.invoice === null || item?.invoice === 0 ? 'לא' : 'כן'}"`,
-      `"${item?.remainsToBePaid === null ? item?.default_amount : item?.remainsToBePaid}"`
-    ]);
-  
-    const csvContent = [
-      headers.join(","), 
-      ...rows.map(row => row.join(","))
-    ].join("\n");
-    
-    const csvWithBOM = "\uFEFF" + csvContent;
-
-    const blob = new Blob([csvWithBOM], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
+  const exportToCSV = () => {
+    const headers = ["שם משפחה", "סכום עסקה", "שולם", "נותר"];
+    const rows = summary.map((item) => {
+      const total     = Number(item.totalAmount || 0);
+      const paid      = Number(item.paidAmount  || 0);
+      const remaining = total - paid;
+      return [
+        `"${item.familyName}"`,
+        `"${total.toLocaleString()}"`,
+        `"${paid.toLocaleString()}"`,
+        `"${remaining.toLocaleString()}"`,
+      ];
+    });
+    const csv  = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const url  = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.href = url;
+    link.href  = url;
     link.setAttribute("download", "תשלומים.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  }
+  };
 
-  
-
-  
   useEffect(() => {
-    getPayments()
-  }, [vacationId])
+    getSummary();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vacationId]);
+
   return (
-  <>
-  <PaymentsView
-  filteredPayments={filteredPayments}
-  searchTerm={searchTerm}
-  setSearchTerm={setSearchTerm}
-  headers={headers}
-  handleExportToExcel={exportToCSV}
-  handleEditClick={handleEditClick}
-  />
-  <EditOrUpdateDialog detailsDialogOpen={detailsDialogOpen} closeDetailsModal={closeDetailsModal} />
-   </>
-  )
+    <>
+      <PaymentsView
+        filteredSummary={filteredSummary}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        onFamilyClick={handleFamilyClick}
+        handleExportToExcel={exportToCSV}
+      />
+      <PaymentDialog
+        open={dialogOpen}
+        onClose={handleDialogClose}
+        family={selectedFamily}
+        vacationId={vacationId}
+      />
+    </>
+  );
 };
 
 export default Payments;

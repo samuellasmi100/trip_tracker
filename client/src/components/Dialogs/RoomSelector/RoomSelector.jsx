@@ -8,7 +8,7 @@ import ApiRoom from "../../../apis/roomsRequest";
 import * as userSlice from "../../../store/slice/userSlice";
 import ApiRooms from "../../../apis/roomsRequest";
 
-const RoomSelector = () => {
+const RoomSelector = ({ embedded }) => {
   const token = sessionStorage.getItem("token");
   const dispatch = useDispatch();
   const rooms = useSelector((state) => state.roomsSlice.rooms);
@@ -114,10 +114,12 @@ const RoomSelector = () => {
           timeout: 3000,
         })
       );
-      if (form.flights === null) {
-        dispatch(dialogSlice.updateActiveButton("הערות"));
-      } else {
-        dispatch(dialogSlice.updateActiveButton("טיסות"));
+      if (!embedded) {
+        if (form.flights === null) {
+          dispatch(dialogSlice.updateActiveButton("הערות"));
+        } else {
+          dispatch(dialogSlice.updateActiveButton("טיסות"));
+        }
       }
     } catch (error) {
       dispatch(
@@ -215,6 +217,7 @@ const RoomSelector = () => {
       handleUserCheckboxChange={handleUserCheckboxChange}
       guestsRoomList={guestsRoomList}
       handleCloseClicked={handleCloseClicked}
+      embedded={embedded}
     />
   );
 };

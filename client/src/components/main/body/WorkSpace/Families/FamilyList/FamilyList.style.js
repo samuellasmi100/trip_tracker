@@ -130,6 +130,31 @@ export const useStyles = makeStyles((theme) => ({
     color: "#ca8a04 !important",
   },
 
+  /* ===== PAYMENT STATUS ===== */
+  paymentCell: {
+    cursor: "pointer !important",
+    "&:hover": {
+      textDecoration: "underline",
+    },
+  },
+  paymentNone: {
+    color: "#94a3b8",
+    fontStyle: "italic",
+    fontSize: "11px",
+  },
+  paymentUnpaid: {
+    backgroundColor: "#fef2f2 !important",
+    color: "#ef4444 !important",
+  },
+  paymentPartial: {
+    backgroundColor: "#fffbeb !important",
+    color: "#d97706 !important",
+  },
+  paymentPaid: {
+    backgroundColor: "#f0fdf4 !important",
+    color: "#16a34a !important",
+  },
+
   /* ===== SEARCH FIELD ===== */
   searchField: {
     "& .MuiInputBase-input": {
@@ -267,6 +292,105 @@ export const useStyles = makeStyles((theme) => ({
     fontSize: "14px !important",
     color: "#94a3b8 !important",
     fontFamily: "'Inter', sans-serif !important",
+  },
+
+  /* ===== ROOMS COLUMN ===== */
+  roomsBadge: {
+    display: "inline-block",
+    fontSize: "12px",
+    color: "#475569",
+    cursor: "default",
+  },
+  roomsBadgeHighlight: {
+    backgroundColor: "#f0fdfa",
+    color: "#0f766e !important",
+    fontWeight: 600,
+    padding: "2px 8px",
+    borderRadius: "10px",
+    border: "1px solid #99f6e4",
+  },
+
+  /* ===== EDIT FAMILY DIALOG ===== */
+  editFamilyDialogPaper: {
+    borderRadius: "14px !important",
+    minWidth: "400px !important",
+    maxWidth: "480px !important",
+    direction: "rtl",
+  },
+  editFamilyTitle: {
+    fontSize: "15px !important",
+    fontWeight: "700 !important",
+    color: "#1e293b !important",
+    textAlign: "center !important",
+    padding: "18px 24px 8px !important",
+    fontFamily: "'Inter', sans-serif !important",
+  },
+  editFamilyContent: {
+    padding: "8px 24px 16px !important",
+  },
+  editFamilyFieldGroup: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "14px",
+  },
+  editFamilyDateRow: {
+    display: "flex",
+    gap: "12px",
+    "& > *": {
+      flex: 1,
+    },
+  },
+  editFamilyFieldItem: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+  },
+  editFamilyLabel: {
+    fontSize: "12px !important",
+    fontWeight: "600 !important",
+    color: "#64748b !important",
+  },
+  editFamilyField: {
+    "& .MuiInputBase-input": {
+      fontSize: 13,
+      padding: "8px 12px",
+    },
+    "& .MuiOutlinedInput-root": {
+      borderRadius: "8px",
+      "& fieldset": { borderColor: "#e2e8f0" },
+      "&:hover fieldset": { borderColor: "#0d9488" },
+      "&.Mui-focused fieldset": { borderColor: "#0d9488" },
+    },
+  },
+  editFamilyActions: {
+    justifyContent: "center !important",
+    gap: "10px !important",
+    padding: "8px 24px 18px !important",
+  },
+  editFamilySaveBtn: {
+    background: "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%) !important",
+    color: "#ffffff !important",
+    borderRadius: "8px !important",
+    fontSize: "12px !important",
+    fontWeight: "600 !important",
+    textTransform: "none !important",
+    padding: "8px 28px !important",
+    boxShadow: "0 2px 8px rgba(13,148,136,0.25) !important",
+    "&:hover": {
+      boxShadow: "0 4px 12px rgba(13,148,136,0.35) !important",
+    },
+  },
+  editFamilyCancelBtn: {
+    backgroundColor: "#f1f5f9 !important",
+    color: "#64748b !important",
+    borderRadius: "8px !important",
+    fontSize: "12px !important",
+    fontWeight: "500 !important",
+    textTransform: "none !important",
+    padding: "8px 24px !important",
+    "&:hover": {
+      backgroundColor: "#e2e8f0 !important",
+    },
   },
 
 }));

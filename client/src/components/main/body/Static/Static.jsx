@@ -13,7 +13,7 @@ import Guests from "./Widgets/Guests/Guests";
 import Flights from "./Widgets/Flights/Flights";
 import GeneralInfo from "./Widgets/GeneralInfo/GeneralInfo";
 import Payments from "./Widgets/Payments/Payments";
-
+import Documents from "./Widgets/Documents/Documents";
 const widgetMap = {
   rooms: Rooms,
   roomsStatus: RoomsStatus,
@@ -23,6 +23,7 @@ const widgetMap = {
   flights: Flights,
   generalInformation: GeneralInfo,
   payments: Payments,
+  documents: Documents,
 };
 
 const Static = () => {

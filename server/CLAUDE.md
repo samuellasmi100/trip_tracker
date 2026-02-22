@@ -64,6 +64,10 @@ Skipping any of these three steps is a bug. New vacations and existing vacations
 
 Configured in `.env`: `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`, `REST_API_PORT`, `TOKEN_SECRET_KEY`.
 
+## Excel Data Import
+
+When importing Excel vacation data into the system, **always read `server/scripts/IMPORT_GUIDE.md` first** before writing any import code or running any script. The guide documents column mappings, family name matching rules, known edge cases, and pitfalls discovered during the Pesach 2024 import. Update the guide whenever new patterns or edge cases are discovered.
+
 ## STRICT RULES — DO NOT VIOLATE
 
 ### Never do any of the following without explicit permission:

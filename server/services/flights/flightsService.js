@@ -48,10 +48,14 @@ const getFlightsByFamily = async (id,vacationId) => {
     return await flightsDb.getFlightsByFamily(id,vacationId)
 }
 
+const getFamilyFlightsWithNames = async (familyId, vacationId) => {
+    return await flightsDb.getFamilyFlightsWithNames(familyId, vacationId);
+}
+
 module.exports = {
     addFlightsDetails,
     updateFlightsDetails,
     getFlightsDetails,
-    getFlightsByFamily
-    
+    getFlightsByFamily,
+    getFamilyFlightsWithNames,
 }

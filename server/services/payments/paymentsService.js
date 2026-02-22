@@ -1,216 +1,229 @@
 const paymentsDb = require("./paymentsDb");
+const gatewayRouter = require("../paymentGateway/gatewayRouter");
+const logger = require("../../utils/logger");
 
-const getPayments = async (id, vacationId) => {
-  return await paymentsDb.getPayments(id, vacationId);
+const getPayments       = (familyId, vacationId) => paymentsDb.getPayments(familyId, vacationId);
+const getPaymentsSummary = (vacationId)           => paymentsDb.getPaymentsSummary(vacationId);
+const addPayment        = (payment, vacationId)   => paymentsDb.addPayment(payment, vacationId);
+const updatePayment     = (payment, vacationId)   => paymentsDb.updatePayment(payment, vacationId);
+const deletePayment     = (paymentId, vacationId) => paymentsDb.deletePayment(paymentId, vacationId);
+
+// ── Provider config ──────────────────────────────────────────────────────────
+
+const getProviderConfig = () => paymentsDb.getProviderConfig();
+
+const saveProviderConfig = (data) => paymentsDb.saveProviderConfig(data);
+
+// ── Helper: resolve terminal credentials (test mode uses Cardcom test account) ──
+
+function resolveCredentials(config) {
+  if (config.is_test_mode) {
+    return { terminalNumber: '1000', apiName: 'CardTest1994' };
+  }
+  return { terminalNumber: config.terminal_number, apiName: config.api_name };
+}
+
+// ── initPaymentSession ───────────────────────────────────────────────────────
+
+const initPaymentSession = async (vacationId, params) => {
+  const config = await paymentsDb.getProviderConfig();
+  if (!config) throw new Error('Payment provider not configured');
+
+  const { familyId, userId, amount, description } = params;
+  const today = new Date().toISOString().split('T')[0];
+
+  // 1. Insert pending payment row to get a real paymentId
+  const insertResult = await paymentsDb.addPendingGatewayPayment(vacationId, {
+    familyId,
+    userId,
+    amount,
+    paymentDate: today,
+  });
+  const paymentId = insertResult.insertId;
+
+  // 2. Build URLs
+  const baseUrl = process.env.SERVER_BASE_URL || 'http://localhost:4000';
+  const clientBaseUrl = process.env.CLIENT_BASE_URL || 'http://localhost:3000';
+  const webhookUrl = `${baseUrl}/payments/webhook?vacId=${vacationId}&paymentId=${paymentId}`;
+  const successUrl = `${clientBaseUrl}/payment-success`;
+  const errorUrl   = `${clientBaseUrl}/payment-error`;
+
+  // 3. Create Cardcom iframe session
+  const creds = resolveCredentials(config);
+  const sessionResult = await gatewayRouter.initSession(creds, {
+    amount: Number(amount),
+    orderId: paymentId,
+    webhookUrl,
+    successUrl,
+    errorUrl,
+    description: description || `תשלום - ${vacationId}`,
+    isIframe: true,
+  });
+
+  if (!sessionResult.success) {
+    throw new Error(`Cardcom error (${sessionResult.responseCode}): ${sessionResult.description}`);
+  }
+
+  // 4. Store gateway data on the payment row
+  await paymentsDb.updatePaymentGatewayFields(vacationId, paymentId, {
+    paymentGateway: 'cardcom',
+    lowProfileCode: sessionResult.lowProfileCode,
+    paymentUrl: sessionResult.url,
+  });
+
+  return { url: sessionResult.url, paymentId };
 };
-const getHistoryPayments = async (id, vacationId) => {
-  return await paymentsDb.getHistoryPayments(id, vacationId);
+
+// ── createPaymentLink ────────────────────────────────────────────────────────
+
+const createPaymentLink = async (vacationId, params) => {
+  const config = await paymentsDb.getProviderConfig();
+  if (!config) throw new Error('Payment provider not configured');
+
+  const { familyId, userId, amount, description } = params;
+  const today = new Date().toISOString().split('T')[0];
+
+  const insertResult = await paymentsDb.addPendingGatewayPayment(vacationId, {
+    familyId,
+    userId,
+    amount,
+    paymentDate: today,
+  });
+  const paymentId = insertResult.insertId;
+
+  const baseUrl = process.env.SERVER_BASE_URL || 'http://localhost:4000';
+  const clientBaseUrl = process.env.CLIENT_BASE_URL || 'http://localhost:3000';
+  const webhookUrl = `${baseUrl}/payments/webhook?vacId=${vacationId}&paymentId=${paymentId}`;
+  const successUrl = `${clientBaseUrl}/payment-success`;
+  const errorUrl   = `${clientBaseUrl}/payment-error`;
+
+  const creds = resolveCredentials(config);
+  const sessionResult = await gatewayRouter.initSession(creds, {
+    amount: Number(amount),
+    orderId: paymentId,
+    webhookUrl,
+    successUrl,
+    errorUrl,
+    description: description || `תשלום - ${vacationId}`,
+    isIframe: false,
+  });
+
+  if (!sessionResult.success) {
+    throw new Error(`Cardcom error (${sessionResult.responseCode}): ${sessionResult.description}`);
+  }
+
+  await paymentsDb.updatePaymentGatewayFields(vacationId, paymentId, {
+    paymentGateway: 'cardcom',
+    lowProfileCode: sessionResult.lowProfileCode,
+    paymentUrl: sessionResult.url,
+  });
+
+  return { url: sessionResult.url, paymentId };
 };
 
-const addPayments = async (paymentDetails, vacationId) => {
-  const checkIfUserAlreadyAddedPayments = await getPayments(
-    paymentDetails.familyId,
-    vacationId
-  );
+// ── handlePaymentWebhook ─────────────────────────────────────────────────────
 
-  const plannedPayments = Number(paymentDetails.number_of_payments);
-  const existingPaymentsCount = Object.keys(paymentDetails).filter((key) =>
-    key.startsWith("id_")
-  ).length;
+const handlePaymentWebhook = async (req) => {
+  const { vacId, paymentId } = req.query;
 
-  if (checkIfUserAlreadyAddedPayments.length === 0) {
-    for (let i = 1; i <= plannedPayments; i++) {
-      const amountReceived = paymentDetails[`amountReceived_${i}`];
-      const paymentDate = paymentDetails[`paymentDate_${i}`];
-      const paymentCurrency = paymentDetails[`paymentCurrency_${i}`];
-      const formOfPayment = paymentDetails[`formOfPayment_${i}`];
-      if (amountReceived && paymentDate && paymentCurrency && formOfPayment) {
-        await paymentsDb.addPayments({
-          amountReceived,
-          amount: paymentDetails.amount,
-          formOfPayment,
-          paymentCurrency,
-          paymentDate,
-          familyId: paymentDetails.familyId,
-          userId: paymentDetails.userId,
-          invoice: paymentDetails.invoice,
-          vacationId,
+  if (!vacId || !paymentId) {
+    logger.error('Webhook: missing vacId or paymentId in query');
+    return { ok: false, reason: 'missing params' };
+  }
+
+  const config = await paymentsDb.getProviderConfig();
+  if (!config) {
+    logger.error('Webhook: no provider config found');
+    return { ok: false, reason: 'no provider config' };
+  }
+
+  const payment = await paymentsDb.getPaymentById(vacId, paymentId);
+  if (!payment) {
+    logger.error(`Webhook: payment ${paymentId} not found in vacation ${vacId}`);
+    return { ok: false, reason: 'payment not found' };
+  }
+
+  const lowProfileCode = payment.low_profile_code || req.body?.LowProfileCode;
+  if (!lowProfileCode) {
+    logger.error('Webhook: no LowProfileCode available');
+    return { ok: false, reason: 'no low profile code' };
+  }
+
+  const creds = resolveCredentials(config);
+  const verifyResult = await gatewayRouter.verifyPayment(creds, lowProfileCode);
+
+  const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+  await paymentsDb.updatePaymentGatewayFields(vacId, paymentId, {
+    status: verifyResult.success ? 'completed' : 'cancelled',
+    approvalNumber: verifyResult.approvalNumber || null,
+    cardLastFour: verifyResult.cardLastFour || null,
+    cardOwnerName: verifyResult.cardOwnerName || null,
+    invoiceNumber: verifyResult.invoiceNumber || null,
+    webhookReceivedAt: now,
+  });
+
+  if (verifyResult.success) {
+    try {
+      const { getIO } = require('../../socketServer');
+      const io = getIO();
+      if (io) {
+        io.to('coordinators').emit('payment_completed', {
+          paymentId: Number(paymentId),
+          vacationId: vacId,
+          approvalNumber: verifyResult.approvalNumber,
+          cardLastFour: verifyResult.cardLastFour,
         });
       }
-    }
-  } else {
-    if (existingPaymentsCount < plannedPayments) {
-      let newDataForMissing = false;
-      for (let i = 1; i <= plannedPayments; i++) {
-        if (!paymentDetails.hasOwnProperty(`id_${i}`)) {
-          if (
-            paymentDetails[`amountReceived_${i}`] ||
-            paymentDetails[`paymentDate_${i}`] ||
-            paymentDetails[`paymentCurrency_${i}`] ||
-            paymentDetails[`formOfPayment_${i}`]
-          ) {
-            newDataForMissing = true;
-            break;
-          }
-        }
-      }
-
-      if (newDataForMissing) {
-        for (let i = 1; i <= plannedPayments; i++) {
-          if (!paymentDetails.hasOwnProperty(`id_${i}`)) {
-            const amountReceived = paymentDetails[`amountReceived_${i}`];
-            const paymentDate = paymentDetails[`paymentDate_${i}`];
-            const paymentCurrency = paymentDetails[`paymentCurrency_${i}`];
-            const formOfPayment = paymentDetails[`formOfPayment_${i}`];
-            if (
-              amountReceived &&
-              paymentDate &&
-              paymentCurrency &&
-              formOfPayment
-            ) {
-              await paymentsDb.addPayments({
-                amountReceived,
-                paymentDate,
-                formOfPayment,
-                paymentCurrency,
-                userId: paymentDetails.userId,
-                familyId: paymentDetails.familyId,
-                amount: paymentDetails.amount,
-                vacationId,
-              });
-            }
-          }
-        }
-      } else {
-        for (let i = 1; i <= plannedPayments; i++) {
-          if (paymentDetails.hasOwnProperty(`id_${i}`)) {
-            const amountReceived = paymentDetails[`amountReceived_${i}`];
-            const paymentDate = paymentDetails[`paymentDate_${i}`];
-            const paymentCurrency = paymentDetails[`paymentCurrency_${i}`];
-            const formOfPayment = paymentDetails[`formOfPayment_${i}`];
-            const isPaid = paymentDetails[`isPaid_${i}`] === 0 ? false || aymentDetails[`isPaid_${i}`] === false: true;
-            const id = paymentDetails[`id_${i}`];
-            if (
-              amountReceived &&
-              paymentDate &&
-              paymentCurrency &&
-              formOfPayment
-            ) {
-              await paymentsDb.updatePayments({
-                paymentDate,
-                formOfPayment,
-                paymentCurrency,
-                amountReceived,
-                familyId: paymentDetails.familyId,
-                vacationId,
-                isPaid,
-                id,
-              });
-            }
-          }
-        }
-      }
-    } else {
-      for (let i = 1; i <= plannedPayments; i++) {
-        const amountReceived = paymentDetails[`amountReceived_${i}`];
-        const paymentDate = paymentDetails[`paymentDate_${i}`];
-        const paymentCurrency = paymentDetails[`paymentCurrency_${i}`];
-        const formOfPayment = paymentDetails[`formOfPayment_${i}`];
-        const isPaid = paymentDetails[`isPaid_${i}`] === 0 ||  paymentDetails[`isPaid_${i}`] === false ? false : true;
-        const id = paymentDetails[`id_${i}`];
-        if (amountReceived && paymentDate && paymentCurrency && formOfPayment) {
-          await paymentsDb.updatePayments({
-            paymentDate,
-            formOfPayment,
-            paymentCurrency,
-            amountReceived,
-            familyId: paymentDetails.familyId,
-            vacationId,
-            isPaid,
-            id,
-          });
-        }
-      }
+    } catch (socketErr) {
+      logger.error(`Webhook: socket emit failed: ${socketErr.message}`);
     }
   }
+
+  logger.info(`Webhook: payment ${paymentId} → ${verifyResult.success ? 'completed' : 'cancelled'}`);
+  return { ok: true };
 };
 
-// const addPayments = async (paymentDetails, vacationId) => {
-//     const checkIfUserAlradyaddPayments = await getPayments(paymentDetails.familyId, vacationId)
+// ── verifyPayment ────────────────────────────────────────────────────────────
 
-//     const plannedPayments = Number(paymentDetails.number_of_payments);
+const verifyPayment = async (vacationId, paymentId) => {
+  const config = await paymentsDb.getProviderConfig();
+  if (!config) throw new Error('No provider config');
 
-//     const existingPaymentsCount = Object.keys(paymentDetails)
-//         .filter(key => key.startsWith('id_'))
-//         .length;
+  const payment = await paymentsDb.getPaymentById(vacationId, paymentId);
+  if (!payment || !payment.low_profile_code) {
+    return { status: payment?.status || 'unknown' };
+  }
 
-//     if (checkIfUserAlradyaddPayments.length === 0) {
-//         for (let i = 1; i <= Number(paymentDetails.number_of_payments); i++) {
-//             const amountReceived = paymentDetails[`amountReceived_${i}`];
-//             const paymentDate = paymentDetails[`paymentDate_${i}`];
-//             const paymentCurrency = paymentDetails[`paymentCurrency_${i}`];
-//             const formOfPayment = paymentDetails[`formOfPayment_${i}`];
-//             if (amountReceived && paymentDate && paymentCurrency && formOfPayment) {
-//                 await paymentsDb.addPayments({
-//                     amountReceived,
-//                     amount: paymentDetails.amount,
-//                     formOfPayment,
-//                     paymentCurrency,
-//                     paymentDate,
-//                     familyId: paymentDetails.familyId,
-//                     userId: paymentDetails.userId,
-//                     invoice: paymentDetails.invoice,
-//                     vacationId,
-//                 });
-//             }
-//         }
-//     }else {
-//         console.log(paymentDetails)
-//         console.log(existingPaymentsCount,"existingPaymentsCount")
-//         console.log(plannedPayments,"plannedPayments")
-//         if (existingPaymentsCount < plannedPayments) {
-//             for (let i = 1; i <= plannedPayments; i++) {
-//                 if (!paymentDetails.hasOwnProperty(`id_${i}`)) {
-//                     await paymentsDb.addPayments({
-//                         amountReceived: paymentDetails[`amountReceived_${i}`],
-//                         paymentDate: paymentDetails[`paymentDate_${i}`],
-//                         formOfPayment: paymentDetails[`formOfPayment_${i}`],
-//                         paymentCurrency: paymentDetails[`paymentCurrency_${i}`],
-//                         isPaid: paymentDetails.hasOwnProperty(`isPaid_${i}`) ? paymentDetails[`isPaid_${i}`] : 0,
-//                         userId: paymentDetails.userId,
-//                         familyId: paymentDetails.familyId,
-//                         amount: paymentDetails.amount,
-//                         vacationId
-//                     });
-//                 }
-//             }
+  if (payment.status === 'completed') {
+    return { status: 'completed' };
+  }
 
-//         } else {
-//             for (let i = 1; i <= Number(paymentDetails.number_of_payments); i++) {
-//                 const amountReceived = paymentDetails[`amountReceived_${i}`];
-//                 const paymentDate = paymentDetails[`paymentDate_${i}`];
-//                 const paymentCurrency = paymentDetails[`paymentCurrency_${i}`];
-//                 const formOfPayment = paymentDetails[`formOfPayment_${i}`];
-//                 const isPaid = paymentDetails[`isPaid_${i}`] === 0 ? false : true;
-//                 const id = paymentDetails[`id_${i}`];
-//                     await paymentsDb.updatePayments({
-//                         paymentDate,
-//                         formOfPayment,
-//                         paymentCurrency,
-//                         amountReceived,
-//                         familyId: paymentDetails.familyId,
-//                         vacationId,
-//                         isPaid,
-//                         id
-//                     });
-//             }
-//         }
-//     }
+  const creds = resolveCredentials(config);
+  const result = await gatewayRouter.verifyPayment(creds, payment.low_profile_code);
 
-// }
+  if (result.success) {
+    await paymentsDb.updatePaymentGatewayFields(vacationId, paymentId, {
+      status: 'completed',
+      approvalNumber: result.approvalNumber || null,
+      cardLastFour: result.cardLastFour || null,
+      cardOwnerName: result.cardOwnerName || null,
+      invoiceNumber: result.invoiceNumber || null,
+    });
+  }
+
+  return { status: result.success ? 'completed' : payment.status };
+};
 
 module.exports = {
-  addPayments,
   getPayments,
-  getHistoryPayments,
+  getPaymentsSummary,
+  addPayment,
+  updatePayment,
+  deletePayment,
+  getProviderConfig,
+  saveProviderConfig,
+  initPaymentSession,
+  createPaymentLink,
+  handlePaymentWebhook,
+  verifyPayment,
 };

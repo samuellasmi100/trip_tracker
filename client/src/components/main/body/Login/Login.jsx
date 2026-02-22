@@ -7,6 +7,7 @@ import * as authSlice from "../../../../store/slice/authSlice";
 import * as userSlice from "../../../../store/slice/userSlice";
 import * as snackBarSlice from "../../../../store/slice/snackbarSlice";
 import axios from "axios";
+import { connectSocket } from "../../../../utils/socketService";
 
 const Login = () => {
   let navigate = useNavigate();
@@ -40,9 +41,11 @@ const Login = () => {
           })
         );
       }else {
+        const bearerToken = "Bearer " + response.data;
+        dispatch(authSlice.setUserData(bearerToken));
+        sessionStorage.setItem("token", bearerToken);
+        connectSocket(bearerToken);
         navigate("/workspace");
-        dispatch(authSlice.setUserData("Bearer " + response.data))
-        sessionStorage.setItem("token", "Bearer " + response.data);
       }
      
         

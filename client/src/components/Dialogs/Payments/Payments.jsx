@@ -1,136 +1,222 @@
-import React, { useEffect } from "react";
-import PaymentsView from "./Payments.view"
-import { useDispatch, useSelector } from "react-redux";
-import * as paymentsSlice from "../../../store/slice/paymentsSlice"
-import * as dialogSlice from "../../../store/slice/dialogSlice"
-import * as snackBarSlice from "../../../store/slice/snackbarSlice";
-import ApiPayments from "../../../apis/paymentsRequest"
-import * as userSlice from "../../../store/slice/userSlice";
+import React, { useState, useEffect } from "react";
+import PaymentsView from "./Payments.view";
+import PaymentIframeDialog from "./PaymentIframeDialog";
+import ApiPayments from "../../../apis/paymentsRequest";
+import { useSelector } from "react-redux";
+import { getSocket } from "../../../utils/socketService";
 
-const Payments = () => {
-const dispatch = useDispatch()
-const form = useSelector((state) => state.paymentsSlice.form)
-const userForm = useSelector((state) => state.userSlice.form)
-const token = sessionStorage.getItem("token")
-const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
-
-const handleInputChange = (e) => {
-  const { name, value, checked,type  } = e.target;
-  const paymentIndex = name.split('_')[1]; 
-  if (type === "checkbox") {
-    dispatch(paymentsSlice.updateFormField({ field: name, value: checked }));
-  } else {
-    if (name.startsWith("amount_")) {
-      dispatch(paymentsSlice.updateFormField({ field: `amountReceived_${paymentIndex}`, value }));
-    } else if (name.startsWith("paymentDate_")) {
-      const selectedDate = new Date(value);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      if (selectedDate < today) {
-        dispatch(
-          snackBarSlice.setSnackBar({
-            type: "warn",
-            message: "תאריך התשלום שבחרת הוא תאריך שעבר",
-            timeout: 3000,
-          })
-        );
-      }
-      dispatch(paymentsSlice.updateFormField({ field: `paymentDate_${paymentIndex}`, value }));
-    } else if (name.startsWith("formOfPayment_")) {
-      dispatch(paymentsSlice.updateFormField({ field: `formOfPayment_${paymentIndex}`, value }));
-    } else if (name.startsWith("paymentCurrency_")) {
-      dispatch(paymentsSlice.updateFormField({ field: `paymentCurrency_${paymentIndex}`, value }));
-    } else {   
-       if (name === "invoice") {
-        dispatch(paymentsSlice.updateFormField({ field: "invoice", value: checked }));
-      } else {
-        dispatch(paymentsSlice.updateFormField({ field: name, value }));
-      }
-    }
-  }
-  dispatch(paymentsSlice.updateFormField({ field: "familyId", value: userForm.family_id }));
-  dispatch(paymentsSlice.updateFormField({ field: "userId", value: userForm.user_id }));
-  dispatch(paymentsSlice.updateFormField({ field: "number_of_payments", value: userForm.number_of_payments }));
-  dispatch(paymentsSlice.updateFormField({ field: "amount", value: userForm.total_amount }));
+const EMPTY_FORM = {
+  amount: "",
+  paymentMethod: "מזומן",
+  paymentDate: new Date().toISOString().split("T")[0],
+  notes: "",
+  receipt: false,
+  status: "completed",
 };
 
+/**
+ * PaymentDialog — works in two modes:
+ *
+ *  Standalone (opened from FamilyList badge or Payments widget):
+ *    <Payments open={bool} onClose={fn} family={{ family_id, family_name, total_amount }} vacationId={str} />
+ *
+ *  Embedded (rendered as a tab inside MainDialog — no Dialog wrapper):
+ *    <Payments embedded={true} />
+ *    In this mode it reads family context from Redux (userSlice.form / vacationSlice).
+ */
+const Payments = ({ open, onClose, family: familyProp, vacationId: vacationIdProp, embedded }) => {
+  const token = sessionStorage.getItem("token");
 
-const submit = async () => {
-  try {
-    const calculateTotalAmountReceived = (data) => {
-      return Object.keys(data)
-        .filter((key) => key.startsWith("amountReceived_"))
-        .reduce((total, key) => total + parseFloat(data[key] || 0), 0);
-    };
+  // Redux selectors — only used in embedded mode
+  const reduxUserForm   = useSelector((state) => state.userSlice.form);
+  const reduxVacationId = useSelector((state) => state.vacationSlice.vacationId);
 
-    if(Number(calculateTotalAmountReceived(form) > parseInt(form.amount.replace(/,/g, "")))){
-       dispatch(
-          snackBarSlice.setSnackBar({
-            type: "error",
-            message: "הסכום שהוזן גדול מסכום העסקה",
-            timeout: 3000,
-          })
-        )
-    }else {
-      if(calculateTotalAmountReceived(form) < parseInt(form.amount.replace(/,/g, "")) ){
-        dispatch(
-          snackBarSlice.setSnackBar({
-            type: "info",
-            message: "הסכום שהוזן קטן מסכום העסקה",
-            timeout: 3000,
-          })
-        )
-      }
-     await ApiPayments.addPayments(token,form,vacationId)
-      dispatch(
-        snackBarSlice.setSnackBar({
-          type: "success",
-          message: "נתוני תשלום עודכנו בהצלחה",
-          timeout: 3000,
-        })
-      )
-      dispatch(paymentsSlice.resetForm())
-      dispatch(dialogSlice.updateActiveButton("הערות"))
-      await getPayments()
+  // Resolve family & vacationId for both modes
+  const vacationId = vacationIdProp || reduxVacationId;
+  const family = familyProp || {
+    family_id:    reduxUserForm.family_id,
+    family_name:  reduxUserForm.family_name || `${reduxUserForm.hebrew_first_name || ""} ${reduxUserForm.hebrew_last_name || ""}`.trim(),
+    total_amount: reduxUserForm.total_amount || "0",
+  };
+
+  const [payments, setPayments]     = useState([]);
+  const [loading, setLoading]       = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [form, setForm]             = useState(EMPTY_FORM);
+
+  // Gateway / iframe state
+  const [iframeOpen, setIframeOpen]         = useState(false);
+  const [iframeUrl, setIframeUrl]           = useState("");
+  const [iframePaymentId, setIframePaymentId] = useState(null);
+  const [initLoading, setInitLoading]       = useState(false);
+  const [linkLoading, setLinkLoading]       = useState(false);
+  const [linkCopied, setLinkCopied]         = useState(false);
+
+  const fetchPayments = async () => {
+    if (!family?.family_id || !vacationId) return;
+    setLoading(true);
+    try {
+      const res = await ApiPayments.getPayments(token, vacationId, family.family_id);
+      setPayments(res.data || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-     
-  } catch (error) {
-    console.log(error)
-  }
-}
+  };
 
-const getPayments = async () => {
-try {
-  const familyId = userForm.family_id;
-  let response = await ApiPayments.getPayments(token,familyId,vacationId)
-  const renameArr = response?.data?.reduce((acc, payment, index) => {
-    acc[`amountReceived_${index + 1}`] = payment.amountReceived;
-    acc[`paymentDate_${index + 1}`] = payment.paymentDate;
-    acc[`formOfPayment_${index + 1}`] = payment.formOfPayment;
-    acc[`paymentCurrency_${index + 1}`] = payment.paymentCurrency;
-    acc[`isPaid_${index + 1}`] = payment.is_paid;
-    acc[`id_${index + 1}`] = payment.id;
-    return acc;
-  }, {});
-  
-  dispatch(paymentsSlice.updateForm(renameArr));
-} catch (error) {
-  console.log(error)
-}
-}
+  // Standalone mode: fetch when dialog opens; embedded mode: fetch on mount
+  useEffect(() => {
+    if (embedded) {
+      fetchPayments();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [embedded, family?.family_id, vacationId]);
 
-const handleCloseClicked = () => {
-  dispatch(paymentsSlice.resetForm())
-  dispatch(dialogSlice.resetState())
-  dispatch(userSlice.resetForm())
- }
-useEffect(() => {
-  getPayments()
-}, [])
+  useEffect(() => {
+    if (!embedded) {
+      if (open) {
+        fetchPayments();
+        setForm(EMPTY_FORM);
+      } else {
+        setPayments([]);
+        setForm(EMPTY_FORM);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, family?.family_id]);
 
+  // Socket: refresh payments when any payment completes in this vacation
+  useEffect(() => {
+    const socket = getSocket();
+    if (!socket || !vacationId) return;
+    const handler = (data) => {
+      if (String(data.vacationId) === String(vacationId)) {
+        fetchPayments();
+      }
+    };
+    socket.on("payment_completed", handler);
+    return () => socket.off("payment_completed", handler);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vacationId]);
+
+  const handleFormChange = (field, value) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleAdd = async () => {
+    if (!form.amount || !form.paymentDate || !form.paymentMethod) return;
+    setSubmitting(true);
+    try {
+      await ApiPayments.addPayment(token, vacationId, {
+        ...form,
+        familyId: family.family_id,
+      });
+      await fetchPayments();
+      setForm(EMPTY_FORM);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (paymentId) => {
+    try {
+      await ApiPayments.deletePayment(token, vacationId, paymentId);
+      await fetchPayments();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // ── Gateway handlers ────────────────────────────────────────────────────────
+
+  const handleInitSession = async () => {
+    if (!family?.family_id || !vacationId) return;
+    setInitLoading(true);
+    try {
+      const res = await ApiPayments.initPaymentSession(token, vacationId, {
+        familyId: family.family_id,
+        amount: remaining > 0 ? remaining : (totalAmount || 100),
+        description: `תשלום - ${family.family_name}`,
+      });
+      setIframeUrl(res.data.url);
+      setIframePaymentId(res.data.paymentId);
+      setIframeOpen(true);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setInitLoading(false);
+    }
+  };
+
+  const handleCreateLink = async () => {
+    if (!family?.family_id || !vacationId) return;
+    setLinkLoading(true);
+    try {
+      const res = await ApiPayments.createPaymentLink(token, vacationId, {
+        familyId: family.family_id,
+        amount: remaining > 0 ? remaining : (totalAmount || 100),
+        description: `תשלום - ${family.family_name}`,
+      });
+      await navigator.clipboard.writeText(res.data.url);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2500);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLinkLoading(false);
+    }
+  };
+
+  const handleIframeSuccess = () => {
+    setIframeOpen(false);
+    setIframeUrl("");
+    setIframePaymentId(null);
+    fetchPayments();
+  };
+
+  const totalAmount = Number(family?.total_amount || 0);
+  const paidAmount  = payments
+    .filter((p) => p.status === "completed")
+    .reduce((sum, p) => sum + Number(p.amount || 0), 0);
+  const remaining = totalAmount - paidAmount;
 
   return (
-    <PaymentsView handleInputChange={handleInputChange} submit={submit}  handleCloseClicked={handleCloseClicked}/>
+    <>
+      <PaymentsView
+        embedded={embedded}
+        open={open}
+        onClose={onClose}
+        family={family}
+        payments={payments}
+        loading={loading}
+        form={form}
+        submitting={submitting}
+        totalAmount={totalAmount}
+        paidAmount={paidAmount}
+        remaining={remaining}
+        onFormChange={handleFormChange}
+        onAdd={handleAdd}
+        onDelete={handleDelete}
+        onInitSession={handleInitSession}
+        onCreateLink={handleCreateLink}
+        initLoading={initLoading}
+        linkLoading={linkLoading}
+        linkCopied={linkCopied}
+      />
+
+      <PaymentIframeDialog
+        open={iframeOpen}
+        onClose={() => { setIframeOpen(false); setIframeUrl(""); setIframePaymentId(null); }}
+        url={iframeUrl}
+        paymentId={iframePaymentId}
+        vacationId={vacationId}
+        familyId={family?.family_id}
+        onSuccess={handleIframeSuccess}
+      />
+    </>
   );
 };
 

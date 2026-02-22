@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Vacation from "../Vacation/Vacation";
 import Room from "../Room/Room"
 import Payment from "../Payment/Payment"
+import Lead from "../Lead/Lead"
 
 const EditOrUpdateDialog = (props) => {
   const form = useSelector((state) => state.userSlice.form)
@@ -29,7 +30,9 @@ const EditOrUpdateDialog = (props) => {
        return <Room />
     }else if(dialogType === "editPayments"){
       return <Payment />
-   }
+    }else if(dialogType === "editLead" || dialogType === "addLead"){
+      return <Lead />
+    }
 
   }
 

@@ -10,6 +10,10 @@ import authSlice from "./slice/authSlice"
 import staticSlice from "./slice/staticSlice"
 import vacationSlice from "./slice/vacationSlice"
 import budgetSlice from "./slice/budgetSlice"
+import leadsSlice from "./slice/leadsSlice"
+import notificationsSlice from "./slice/notificationsSlice"
+import documentsSlice from "./slice/documentsSlice"
+import signaturesSlice from "./slice/signaturesSlice"
 
 const createRootReducer = () =>
   combineReducers({
@@ -23,7 +27,11 @@ const createRootReducer = () =>
     authSlice:authSlice,
     staticSlice:staticSlice,
     vacationSlice:vacationSlice,
-    budgetSlice:budgetSlice
+    budgetSlice:budgetSlice,
+    leadsSlice:leadsSlice,
+    notificationsSlice:notificationsSlice,
+    documentsSlice:documentsSlice,
+    signaturesSlice:signaturesSlice,
   });
 
 export default createRootReducer;
