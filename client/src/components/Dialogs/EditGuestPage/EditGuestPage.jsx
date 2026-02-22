@@ -40,8 +40,11 @@ const EditGuestPage = ({ onClose }) => {
   const token = sessionStorage.getItem("token");
 
   const isParent = dialogType === "editParent";
+  // A guest has flights if either the "flights" toggle OR "flying_with_us" is set —
+  // imported guests sometimes have flying_with_us=1 without flights=1 being set
   const hasFlights =
-    Number(userForm.flights) === 1 || userForm.flights === true;
+    Number(userForm.flights) === 1 || userForm.flights === true ||
+    Number(userForm.flying_with_us) === 1 || userForm.flying_with_us === true;
 
   // Active section (single selection, not accordion)
   const [activeSection, setActiveSection] = useState("personal");

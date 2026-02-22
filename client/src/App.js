@@ -16,6 +16,7 @@ import Settings from "./components/main/body/Settings/Settings";
 import PublicLeadForm from "./components/public/PublicLeadForm/PublicLeadForm";
 import PublicDocumentUpload from "./components/public/PublicDocumentUpload/PublicDocumentUpload";
 import PublicSignaturePage from "./components/public/PublicSignaturePage/PublicSignaturePage";
+import PublicBookingForm from "./components/public/PublicBookingForm/PublicBookingForm";
 import * as notificationsSlice from "./store/slice/notificationsSlice";
 import * as snackBarSlice from "./store/slice/snackbarSlice";
 import { connectSocket, disconnectSocket, getSocket } from "./utils/socketService";
@@ -53,6 +54,18 @@ function App() {
           })
         );
       });
+
+      // Listen for real-time new_booking events from any vacation
+      socket.on("new_booking", (notification) => {
+        dispatch(notificationsSlice.addNotification(notification));
+        dispatch(
+          snackBarSlice.setSnackBar({
+            type: "info",
+            message: `טופס הזמנה חדש: ${notification.message || notification.title}`,
+            timeout: 5000,
+          })
+        );
+      });
     } else {
       disconnectSocket();
       dispatch(notificationsSlice.clearNotifications());
@@ -61,6 +74,7 @@ function App() {
     return () => {
       getSocket()?.off("new_lead");
       getSocket()?.off("new_signature");
+      getSocket()?.off("new_booking");
     };
   }, [token]);
 
@@ -76,6 +90,7 @@ function App() {
           <Route path="/public/leads/:vacationId" element={<PublicLeadForm />} />
           <Route path="/public/documents/:vacationId/:docToken" element={<PublicDocumentUpload />} />
           <Route path="/public/sign/:vacationId/:docToken" element={<PublicSignaturePage />} />
+          <Route path="/public/booking/:vacationId/:docToken" element={<PublicBookingForm />} />
 
           {isAuthenticated ? (
             <>

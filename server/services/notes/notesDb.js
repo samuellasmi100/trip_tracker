@@ -18,8 +18,8 @@ const getUserNotes = async (userId,vacationId) => {
   try {
     const sql = notesQuery.getUserNote(vacationId)
     const parameters = [userId]
-     await connection.executeWithParameters(sql,parameters)   
-  } catch (error) { 
+    return await connection.executeWithParameters(sql,parameters)
+  } catch (error) {
     logger.error(
       `Error: Function:getUserNotes :, ${error.sqlMessage}`,
     );

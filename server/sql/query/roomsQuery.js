@@ -98,7 +98,9 @@ const getBoardRooms = (vacationId) => {
     ORDER BY rooms_id`;
 };
 
-// All room bookings with family name
+// All room bookings with family name.
+// INNER JOIN on rooms filters out virtual room_ids (e.g. 'קסה') that have no
+// matching entry in the rooms table — keeps the board grid clean.
 const getBoardBookings = (vacationId) => {
   return `SELECT
       rt.room_id,
@@ -107,7 +109,8 @@ const getBoardBookings = (vacationId) => {
       DATE_FORMAT(rt.end_date,   '%Y-%m-%d') AS end_date,
       f.family_name
     FROM trip_tracker_${vacationId}.room_taken rt
-    JOIN trip_tracker_${vacationId}.families f ON f.family_id = rt.family_id`;
+    JOIN trip_tracker_${vacationId}.families f ON f.family_id = rt.family_id
+    JOIN trip_tracker_${vacationId}.rooms r ON r.rooms_id = rt.room_id`;
 };
 
 // All guest-to-room assignments with guest names

@@ -52,7 +52,7 @@ function Flights({ handleInputChange }) {
           label={<span className={classes.switchLabel}>חלק מקבוצה?</span>}
         />
 
-        {Boolean(form.flights) && (
+        {(Boolean(form.flights) || Boolean(form.flying_with_us)) && (
           <FormControlLabel
             control={
               <Switch
@@ -69,7 +69,7 @@ function Flights({ handleInputChange }) {
       </div>
 
       {/* Flight direction radio group */}
-      {Boolean(form.flights) && (
+      {(Boolean(form.flights) || Boolean(form.flying_with_us)) && (
         <div style={{ marginTop: "16px" }}>
           <InputLabel
             className={classes.inputLabelStyle}
@@ -79,7 +79,7 @@ function Flights({ handleInputChange }) {
           </InputLabel>
           <RadioGroup
             name="flights_direction"
-            value={form.flights_direction || ""}
+            value={form.flights_direction || "round_trip"}
             onChange={handleFlightDirectionChange}
             className={classes.radioGroup}
           >

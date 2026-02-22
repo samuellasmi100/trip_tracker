@@ -16,6 +16,7 @@ export const END_POINT = {
   DOCUMENTS:"documents",
   SIGNATURES:"signatures",
   SETTINGS:"settings",
+  BOOKINGS:"bookings",
 };
 
 // export function setAuthToken(token) {

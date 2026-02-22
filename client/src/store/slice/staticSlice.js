@@ -70,7 +70,6 @@ export const {
   resetState,
   updateDetailsModalType,
   updateMainData,
- updateMainGuests
 } = staticSlice.actions;
 
 export default staticSlice.reducer;

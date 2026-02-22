@@ -14,6 +14,7 @@ import leadsSlice from "./slice/leadsSlice"
 import notificationsSlice from "./slice/notificationsSlice"
 import documentsSlice from "./slice/documentsSlice"
 import signaturesSlice from "./slice/signaturesSlice"
+import bookingsSlice from "./slice/bookingsSlice"
 
 const createRootReducer = () =>
   combineReducers({
@@ -32,6 +33,7 @@ const createRootReducer = () =>
     notificationsSlice:notificationsSlice,
     documentsSlice:documentsSlice,
     signaturesSlice:signaturesSlice,
+    bookingsSlice:bookingsSlice,
   });
 
 export default createRootReducer;

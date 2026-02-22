@@ -57,7 +57,7 @@ const FlightsView = (props) => {
 
   const flyingWithUs =
     Number(userForm.flying_with_us) === 1 || userForm.flying_with_us === true;
-  const direction = userForm?.flights_direction;
+  const direction = userForm?.flights_direction || "round_trip";
   const showOutbound =
     direction === "round_trip" || direction === "one_way_outbound";
   const showReturn =

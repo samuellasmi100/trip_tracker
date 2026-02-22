@@ -1,12 +1,18 @@
-const addFamily = (vacationId) =>{
-    return `INSERT INTO trip_tracker_${vacationId}.families (family_name, family_id, number_of_guests, number_of_rooms, total_amount, start_date, end_date, doc_token) VALUES (?,?,?,?,?,?,?,UUID())`
-  }
+const PAGE_SIZE = 30;
 
-  const getFamilies = (vacationId) =>{
+const addFamily = (vacationId) =>{
+  return `INSERT INTO trip_tracker_${vacationId}.families (family_name, family_id, number_of_guests, number_of_rooms, total_amount, start_date, end_date, doc_token) VALUES (?,?,?,?,?,?,?,UUID())`
+}
+
+const getFamilies = (vacationId, { search = '', limit = PAGE_SIZE, offset = 0 } = {}) => {
+  const whereClause = search ? `WHERE fa.family_name LIKE ?` : '';
+  // LIMIT and OFFSET are trusted integers computed server-side — embed directly to avoid
+  // MySQL2 prepared-statement type errors with ? placeholders for LIMIT/OFFSET
   return `
 SELECT
     fa.family_id,
     fa.family_name,
+    fa.doc_token,
     gu.hebrew_first_name,
     gu.hebrew_last_name,
     gu.english_last_name,
@@ -34,30 +40,70 @@ LEFT JOIN (
     FROM trip_tracker_${vacationId}.room_taken
     GROUP BY family_id
 ) rt_agg ON fa.family_id = rt_agg.family_id
-`
-  }
+${whereClause}
+ORDER BY fa.family_name
+LIMIT ${limit} OFFSET ${offset}`;
+};
 
-  const updateFamily = (vacationId) => {
-    return `UPDATE trip_tracker_${vacationId}.families SET family_name = ?, number_of_guests = ?, number_of_rooms = ?, total_amount = ?, start_date = ?, end_date = ? WHERE family_id = ?`
-  }
+const countFamilies = (vacationId, { search = '' } = {}) => {
+  const whereClause = search ? `WHERE family_name LIKE ?` : '';
+  return `SELECT COUNT(*) AS total FROM trip_tracker_${vacationId}.families ${whereClause}`;
+};
 
-  // Server-side family search by name (used by room board assignment dialog)
-  const searchFamilies = (vacationId) => {
-    return `SELECT
-        fa.family_id,
-        fa.family_name,
-        fa.start_date,
-        fa.end_date,
-        fa.number_of_rooms
-      FROM trip_tracker_${vacationId}.families fa
-      WHERE fa.family_name LIKE ?
-      ORDER BY fa.family_name
-      LIMIT 15`;
-  };
+const getStats = (vacationId) => `
+SELECT
+  COUNT(*) AS family_count,
+  COALESCE(SUM(CAST(fa.number_of_guests AS SIGNED)), 0) AS total_guests,
+  COALESCE(SUM(
+    GREATEST(
+      CAST(COALESCE(fa.number_of_guests, 0) AS SIGNED) - CAST(COALESCE(gu_count.guest_count, 0) AS SIGNED),
+      0
+    )
+  ), 0) AS total_missing,
+  COALESCE(SUM(
+    CASE
+      WHEN fa.total_amount IS NOT NULL AND fa.total_amount != ''
+      THEN CAST(REPLACE(fa.total_amount, ',', '') AS DECIMAL(12,2)) - COALESCE(pay_agg.total_paid_amount, 0)
+      ELSE 0
+    END
+  ), 0) AS total_balance
+FROM trip_tracker_${vacationId}.families fa
+LEFT JOIN (
+  SELECT family_id, SUM(amount) AS total_paid_amount
+  FROM trip_tracker_${vacationId}.payments
+  WHERE status = 'completed'
+  GROUP BY family_id
+) pay_agg ON fa.family_id = pay_agg.family_id
+LEFT JOIN (
+  SELECT family_id, COUNT(*) AS guest_count
+  FROM trip_tracker_${vacationId}.guest
+  GROUP BY family_id
+) gu_count ON fa.family_id = gu_count.family_id`;
 
-  module.exports ={
-    addFamily,
-    getFamilies,
-    updateFamily,
-    searchFamilies,
-  }
+const updateFamily = (vacationId) => {
+  return `UPDATE trip_tracker_${vacationId}.families SET family_name = ?, number_of_guests = ?, number_of_rooms = ?, total_amount = ?, start_date = ?, end_date = ? WHERE family_id = ?`
+}
+
+// Server-side family search by name (used by room board assignment dialog)
+const searchFamilies = (vacationId) => {
+  return `SELECT
+      fa.family_id,
+      fa.family_name,
+      fa.start_date,
+      fa.end_date,
+      fa.number_of_rooms
+    FROM trip_tracker_${vacationId}.families fa
+    WHERE fa.family_name LIKE ?
+    ORDER BY fa.family_name
+    LIMIT 15`;
+};
+
+module.exports = {
+  PAGE_SIZE,
+  addFamily,
+  getFamilies,
+  countFamilies,
+  getStats,
+  updateFamily,
+  searchFamilies,
+}

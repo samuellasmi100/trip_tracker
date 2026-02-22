@@ -509,6 +509,49 @@ async function migrateVacationDb(conn, vacationId) {
     console.log(`    [25] booking_reference already exists — skip`);
   }
 
+  // ── [26] Create booking_submissions table ───────────────────────────────────
+  if (!(await tableExists(conn, db, 'booking_submissions'))) {
+    await conn.query(`
+      CREATE TABLE \`${db}\`.booking_submissions (
+        id                  INT NOT NULL AUTO_INCREMENT,
+        family_id           VARCHAR(45) NOT NULL,
+        contact_name        VARCHAR(100) DEFAULT NULL,
+        contact_phone       VARCHAR(20)  DEFAULT NULL,
+        contact_email       VARCHAR(100) DEFAULT NULL,
+        contact_address     VARCHAR(200) DEFAULT NULL,
+        payment_preference  VARCHAR(30)  DEFAULT NULL,
+        special_requests    TEXT         DEFAULT NULL,
+        submitted_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+    `);
+    console.log(`    [26] Created booking_submissions table`);
+  } else {
+    console.log(`    [26] booking_submissions already exists — skip`);
+  }
+
+  // ── [27] Create booking_guests table ────────────────────────────────────────
+  if (!(await tableExists(conn, db, 'booking_guests'))) {
+    await conn.query(`
+      CREATE TABLE \`${db}\`.booking_guests (
+        id              INT NOT NULL AUTO_INCREMENT,
+        submission_id   INT NOT NULL,
+        full_name_he    VARCHAR(100) DEFAULT NULL,
+        full_name_en    VARCHAR(100) DEFAULT NULL,
+        passport_number VARCHAR(50)  DEFAULT NULL,
+        passport_expiry VARCHAR(20)  DEFAULT NULL,
+        date_of_birth   VARCHAR(20)  DEFAULT NULL,
+        gender          VARCHAR(10)  DEFAULT NULL,
+        food_preference VARCHAR(50)  DEFAULT NULL,
+        sort_order      INT          DEFAULT 0,
+        PRIMARY KEY (id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+    `);
+    console.log(`    [27] Created booking_guests table`);
+  } else {
+    console.log(`    [27] booking_guests already exists — skip`);
+  }
+
   // ── add new steps above this line ──────────────────────────────────────────
 
   console.log(`  Done: ${db}`);

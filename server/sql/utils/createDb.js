@@ -30,6 +30,8 @@ const {
   createFamilySignaturesTableQuery,
   createStaffTableQuery,
   createVehiclesTableQuery,
+  createBookingSubmissionsTableQuery,
+  createBookingGuestsTableQuery,
 } = require("../query/trip_tracker_dump")
 
 const createDatabaseAndTable = async (vacationId) => {
@@ -75,6 +77,8 @@ const createDatabaseAndTable = async (vacationId) => {
     await connection.query(createFamilySignaturesTableQuery)
     await connection.query(createStaffTableQuery)
     await connection.query(createVehiclesTableQuery)
+    await connection.query(createBookingSubmissionsTableQuery)
+    await connection.query(createBookingGuestsTableQuery)
     console.log('Database and table created successfully');
   } catch (error) {
     console.error('Error creating database or table:', error);

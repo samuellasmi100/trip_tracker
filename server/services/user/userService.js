@@ -63,7 +63,7 @@ const getUserDetails = async (id, familyId, isIngroup, vacationId) => {
     flightsService.getFlightsDetails(id, familyId, isIngroup, vacationId),
     userRoomsService.getChosenRoom(id, vacationId),
     notesService.getUserNotes(id, vacationId),
-    paymentsService.getHistoryPayments(id, vacationId),
+    paymentsService.getPayments(familyId, vacationId),
   ]);
   let dataToReturn = {
     userDetails,

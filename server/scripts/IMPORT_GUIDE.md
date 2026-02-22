@@ -1,7 +1,10 @@
 # Excel Vacation Import Guide
 
-**Script:** `server/scripts/import_excel_pesach24.py`
-**Last updated:** Pesach 2024 import (complete, fully reconciled)
+**Scripts:**
+- `server/scripts/import_excel_pesach24.py` — Pesach 2024 (complete, fully reconciled)
+- `server/scripts/import_excel_pesach25.py` — Pesach 2025 (families + guests steps; no flights file in נרשמים folder)
+
+**Last updated:** Pesach 2025 analysis + import script created 2026-02-22
 **Rule:** Update this file every time you discover something new during an import.
 
 ---
@@ -522,6 +525,25 @@ Every room ID is validated against `rooms.rooms_id` in the DB before inserting i
 ### Vacation dates for Pesach 2024
 `start_date = 2024-04-10`, `end_date = 2024-05-02`
 
+### Vacation dates for Pesach 2025
+`start_date = 2025-04-09`, `end_date = 2025-04-21`
+
+### Families with `קסה` in Pesach 2025
+שוורץ, פרקש, אדרעי, כהן (יוסי), חרמון — plus `מלון דירות` (גשייד), `אוכל בלבד` (מזרחי), `דירה` (כהן מאוריציו, partial)
+
+### Room number formats added in Pesach 2025
+See `expand_rooms()` in import_excel_pesach25.py. All these formats are now handled:
+- Dot-shorthand: `305.6.7.8.9.10` → [305,306,307,308,309,310]
+- Bare 3-digit concatenation: `409410417512` → [409,410,417,512] (split into groups of 3)
+- Comma-shorthand: `212,13,17` → [212,213,217]
+- Multi-word non-room: `מלון דירות`, `אוכל בלבד` (matched BEFORE split)
+- Single non-room: `דירה` (added to NON_ROOM_TOKENS alongside `קסה`)
+- Mixed: `204, קסה, דירה` → room 204 + 2 location notes
+
+**Room data conflicts found in Pesach 2025 Excel** (need manual fix before or after import):
+- Room 302: assigned to both `סירקין` AND `פישל`
+- Room 410: assigned to both `הררי` (409,410,417,512) AND `בירנבוים`
+
 ---
 
 ## 6. Known Edge Cases
@@ -893,3 +915,123 @@ DELETE FROM guest   WHERE user_id = '<wrong_user_id>';
 | flights (guests step) | `user_id` (same as guest) | Created together with guest, updated together |
 | flights (flights step) | passport → `user_id`, or `(heb_last, heb_first)` → `user_id` | UPDATE only — never creates records |
 | room_taken | `ON DUPLICATE KEY UPDATE` on `(room_id)` | Safe to re-run |
+
+---
+
+## 13. Pesach 2025 — Structural Differences vs Pesach 2024
+
+### Families file changes
+| Feature | Pesach 2024 | Pesach 2025 |
+|---------|-------------|-------------|
+| File name | `כללי נרשמים.xlsx` | `נרשמים כללי.xlsx` |
+| Main sheet | `גיליון1` | `נרשמים כללי` |
+| family_name col | [2] | **[3]** (+1) |
+| male_head col | [3] | **[4]** (+1) |
+| female_head col | [4] | **[5]** (+1) |
+| room col | [11] | **[12]** (+1) |
+| room notes col | [12] (not imported) | **[13] NOW IMPORTED** → `special_requests` prefixed with `הערות חדר: ` |
+| total NIS col | [13] | **[14]** (+1) |
+| total EUR col | [14] | **[15]** (+1) |
+| USD col | absent | **[16] NEW** → stored as `מחיר $: <amount>` in `special_requests` (no DB column) |
+| phone/email/address | [19]/[22]/[23] | [21]/[24]/[25] (+2 contact offset) |
+| `טפסי לקוחות` sheet | 73 rows (voucher + notes) | **EMPTY — skip** |
+| Red detection | any cell in row | **family cell only** (col D = index 3) |
+| Red-cancelled | 7 families | 2: `פשנדזה יצחק יחיאל בלעך`, `כהנא` |
+| Total families | 97 rows | 61 rows (59 imported, 2 cancelled) |
+| Total guests (sum) | ~338 | 319 |
+
+### Guest file changes
+| Feature | Pesach 2024 | Pesach 2025 |
+|---------|-------------|-------------|
+| File name | `כלל האורחים.xlsx` | `כלל אורחי המלון כולל צוות.xlsx` |
+| Main sheet | `כליי שיוך לטיסות מעודכן 14.3.24` | `גיליון1` |
+| Cols [10]–[17] | Full flight data (dates/airlines/numbers/times) | **ABSENT** — col[10] = flag only (`V`/`X`/`הלוך בלבד!/צוות`/blank) |
+| Staff | Separate `צוות.xlsx` file | **Embedded in guest file** — skip rows where col[10]='צוות' (36 rows) |
+| flying_with_us | Set by flights step | **Set at import time** from col[10] marker |
+| `גיליון7` (seats) | 19 rows — seat preferences | **ABSENT** |
+| `גיליון3` | absent | Room+age list (not imported) |
+
+### flying_with_us logic for P25
+- `V` → 1 (charter flight)
+- `הלוך בלבד! - HISKY` → 1 (outbound charter only; מונסה חרמון family, 6 people)
+- `X` → 0 (no charter; 26 guests)
+- blank/NaN → 0 (hotel guest only; most guests)
+- `צוות` → skip (staff)
+
+### New/updated SUB_FAMILY_MAP entries for P25
+| Guest last name | → Billing family | Note |
+|-----------------|-----------------|------|
+| `ברוזה` | `ברוזה (בקר)` | Billing family has parens in name |
+| `מונסה חרמון` | `חרמון` | One-way charter guests |
+| `חרמון מונסה` | `חרמון` | Same |
+
+### New SPELLING_ALIASES for P25
+| Guest file | → Billing file |
+|-----------|---------------|
+| `אללוף` | `אלאלוף` |
+| `בירנבום` | `בירנבוים` |
+| `ווייס` | `וייס` |
+| `קרקובב` (parens content) | `הררי (קרקובר)` (typo fix) |
+
+### P25 families with room data conflicts (same room assigned twice in Excel)
+- Room 302: `סירקין` AND `פישל` — confirm with trip manager which is correct
+- Room 410: `הררי` (409,410,417,512) AND `בירנבוים` — last import write wins; fix manually
+
+### P25 guest-file block analysis — SUB_FAMILY_MAP entries (full list)
+
+Block analysis of `כלל אורחי המלון כולל צוות.xlsx` (319 non-staff guests).
+All 318 guests resolve correctly after the mappings below. 1 guest skipped.
+
+| Guest last name | → Billing family | Evidence |
+|-----------------|-----------------|---------|
+| `ברוזה` | `ברוזה (בקר)` | billing family name includes parens |
+| `מונסה חרמון` | `חרמון` | one-way HISKY charter group |
+| `חרמון מונסה` | `חרמון` | same |
+| `ברנשטיין` | `ליינר` | ביאנקה's maiden name (P24 pattern repeated) |
+| `רוזנברג` (7p) | `וולגמוט` | embedded inside וולגמוט block; וולגמוט billing=16 |
+| `ברכה וולגמוט` | `וולגמוט` | compound surname variant |
+| `טויטו` (7p) | `רוזנפלד` | immediately follows רוזנפלד block; 8+8=16 guests |
+| `דגן` (1p) | `רוזנפלד` | single guest inside טויטו/רוזנפלד block |
+| `ג'קובס` (1p) | `לוי` | appears directly before לוי block; default→לוי-מנשה |
+| `סוקניק בן דוד` | `גולדשמידט` | embedded in גולדשמידט block |
+| `מקובר` | `גולדשמידט` | embedded in גולדשמידט block |
+| `לזנובסקי-שטיינברג` | `שטיינברג` | compound surname, inside שטיינברג block |
+| `פרנקנטל - כהן` | `פרנקנטל` | ורדה (female_head) with maiden name כהן |
+| `סימן טוב` (4p) | `דותן` | embedded inside דותן block (billing=11) |
+| `מהרי אהרונסון` (6p) | `אהרונסון` | compound surname, right after אהרונסון rows |
+| `אינדורסקי` (1p) | `מרבך` | sandwiched inside מרבך block |
+| `מוסא` (1p) | `קוטאי` | inside קוטאי block; מוסא+שטרית+יפת=7=billing total |
+| `שטרית` (5p) | `קוטאי` | follows מוסא; קוטאי billing=7: 1+1+5=7 ✓ |
+| `בונפיס` (4p) | `אספיס` | after אספיס rows; 4+5=9=אספיס billing total ✓ |
+| `גרטנר בונפיס` (1p) | `אספיס` | compound surname (wife's maiden name Gartner) |
+| `אייזן` (1p) | `פישל` | second of פישל's 2-guest billing |
+| `כהן וייזר` | `כהן מאוריציו` | Mauricio's compound surname (Weizer) |
+| `רפפורט לייזרוביץ` | `כהן מאוריציו` | wife |
+| `כהן רפפורט` (3p) | `כהן מאוריציו` | children with combined surname |
+| `רפפורט הוניג` | `כהן מאוריציו` | sub-family; total block=7=billing ✓ |
+| `לאיזרוביץ ספורן` | `כהן מאוריציו` | sub-family |
+| `פאלק` | `בירנבוים` | אופירה's maiden name; billing female_head=אופירה |
+
+### P25 ambiguous families — disambiguation strategy
+
+| Family | Billing entries | Strategy |
+|--------|----------------|---------|
+| `כהן` | צביקה/רחל-חן (6p), יוסי (2p), חיים/שירה (4p) | INDIVIDUAL_OVERRIDE seeds block_ctx for first row of each group: `צבי עלי`→צביקה, `יוסף`→יוסי; חיים resolves via head match |
+| `שטרן` | אברהם (32p), משה/שרה (2p) | AMBIGUITY_PREFER→אברהם; משה and שרה resolve via head match |
+| `לוי` | דניס (2p), מנשה (6p) | דניס עמנואל resolves via head match; AMBIGUITY_PREFER→מנשה for others |
+| `פוגלר` | עידית (2p), רותי (6p) | INDIVIDUAL_OVERRIDE `דוד`→עידית; רותי resolves via head match |
+
+### P25 INDIVIDUAL_OVERRIDES
+
+| Key (raw_last, heb_first) | → (billing_family, head_hint) | Reason |
+|--------------------------|-------------------------------|--------|
+| `('כהן', 'צבי עלי')` | `('כהן', 'צביקה')` | first of כהן-צביקה 6p group; seeds block_ctx |
+| `('כהן', 'יוסף')` | `('כהן', 'יוסי')` | first of כהן-יוסי 2p group; seeds block_ctx |
+| `('פוגלר', 'דוד')` | `('פוגלר', 'עידית')` | appears before עידית; both in 2p group |
+| `('ברוזה (בקר)', 'צופיה חיה')` | `('ברוזה (בקר)', None)` | parens 'בקר' wrongly resolves to billing family 'בקר'; override to correct family |
+
+### P25 one skipped guest (expected)
+
+| Guest | Reason |
+|-------|--------|
+| `הלוי / שירה` | `הלוי מלק` not registered for P25. Skipped. Decide manually which family she belongs to and add INDIVIDUAL_OVERRIDE if needed. |

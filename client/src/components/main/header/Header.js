@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import HeaderView from "./Header.view";
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
@@ -12,9 +12,15 @@ const Header = () => {
   const vacationName = useSelector((state) => state.vacationSlice.vacationName);
   const vacationList = useSelector((state) => state.vacationSlice.vacations);
   const vacationId = useSelector((state) => state.vacationSlice.vacationId);
-  const families = useSelector((state) => state.userSlice.families);
   const location = useLocation();
   const token = sessionStorage.getItem("token");
+
+  const [stats, setStats] = useState({
+    family_count: 0,
+    total_guests: 0,
+    total_missing: 0,
+    total_balance: 0,
+  });
 
   const staticDialogType = useSelector((state) => state.staticSlice.type);
 
@@ -39,17 +45,6 @@ const Header = () => {
     return "";
   };
 
-  const familyCount = families?.length || 0;
-  const totalGuests = families?.reduce((sum, f) => sum + Number(f.number_of_guests || 0), 0) || 0;
-  const totalBalance = families?.reduce((sum, f) => {
-    if (f.total_amount === "" || f.total_amount === null) return sum;
-    return sum + (Number(f.total_amount) - Number(f.total_paid_amount || 0));
-  }, 0) || 0;
-  const totalMissing = families?.reduce((sum, f) => {
-    const m = Number(f.number_of_guests || 0) - Number(f.user_in_system_count || 0);
-    return sum + (m > 0 ? m : 0);
-  }, 0) || 0;
-
   // Fetch vacations list for the dropdown
   useEffect(() => {
     const fetchVacations = async () => {
@@ -67,32 +62,29 @@ const Header = () => {
     }
   }, []);
 
-  // Fetch families so header stats are populated on any page (not just /workspace)
+  // Fetch aggregated stats (not the full list) so header counters are accurate across all pages
   useEffect(() => {
-    const fetchFamilies = async () => {
+    const fetchStats = async () => {
       try {
-        const response = await ApiUser.getFamilyList(token, vacationId);
-        dispatch(userSlice.updateFamiliesList(response.data));
+        const response = await ApiUser.getFamilyStats(token, vacationId);
+        if (response?.data) setStats(response.data);
       } catch (error) {
         console.log(error);
       }
     };
-    if (vacationId) {
-      fetchFamilies();
-    }
+    if (vacationId) fetchStats();
   }, [vacationId]);
 
   const handleVacationChange = (e) => {
     const selected = vacationList?.find((v) => v.name === e.target.value);
     if (!selected) return;
-    // Update Redux and sessionStorage
     dispatch(vacationSlice.updateChosenVacation(selected.vacation_id));
     dispatch(vacationSlice.updateVacationName(selected.name));
     sessionStorage.setItem("vacId", selected.vacation_id);
     sessionStorage.setItem("vacName", selected.name);
-    // Clear workspace data so pages re-fetch
     dispatch(userSlice.updateFamiliesList([]));
     dispatch(userSlice.updateGuest([]));
+    setStats({ family_count: 0, total_guests: 0, total_missing: 0, total_balance: 0 });
   };
 
   return (
@@ -100,10 +92,10 @@ const Header = () => {
       vacationName={vacationName}
       vacationList={vacationList}
       pageTitle={getPageTitle()}
-      familyCount={familyCount}
-      totalGuests={totalGuests}
-      totalBalance={totalBalance}
-      totalMissing={totalMissing}
+      familyCount={stats.family_count}
+      totalGuests={stats.total_guests}
+      totalBalance={stats.total_balance}
+      totalMissing={stats.total_missing}
       handleVacationChange={handleVacationChange}
     />
   );

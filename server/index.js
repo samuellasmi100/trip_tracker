@@ -28,6 +28,8 @@ const publicDocumentsController = require("./services/documents/publicDocumentsC
 const signaturesController = require("./services/signatures/signaturesController");
 const publicSignaturesController = require("./services/signatures/publicSignaturesController");
 const settingsController = require("./services/settings/settingsController");
+const bookingsController = require("./services/bookings/bookingsController");
+const publicBookingsController = require("./services/bookings/publicBookingsController");
 
 app.use(cors());
 app.use(express.json());
@@ -37,6 +39,7 @@ app.use("/auth", authController);
 app.use("/public", publicLeadsController);
 app.use("/public", publicDocumentsController);
 app.use("/public", publicSignaturesController);
+app.use("/public", publicBookingsController);
 // Cardcom webhook — must be public (Cardcom POSTs here, no JWT)
 app.post("/payments/webhook", paymentsController.webhookHandler);
 
@@ -60,6 +63,7 @@ app.use('/notifications', notificationsController);
 app.use('/documents', documentsController);
 app.use('/signatures', signaturesController);
 app.use('/settings', settingsController);
+app.use('/bookings', bookingsController);
 
 app.use(errorHandler);
 

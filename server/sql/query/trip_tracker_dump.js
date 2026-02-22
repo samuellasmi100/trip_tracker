@@ -392,6 +392,37 @@ CREATE TABLE vehicles (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 `;
 
+const createBookingSubmissionsTableQuery = `
+CREATE TABLE booking_submissions (
+  id                 INT NOT NULL AUTO_INCREMENT,
+  family_id          VARCHAR(45)  NOT NULL,
+  contact_name       VARCHAR(100) DEFAULT NULL,
+  contact_phone      VARCHAR(20)  DEFAULT NULL,
+  contact_email      VARCHAR(100) DEFAULT NULL,
+  contact_address    VARCHAR(200) DEFAULT NULL,
+  payment_preference VARCHAR(30)  DEFAULT NULL,
+  special_requests   TEXT         DEFAULT NULL,
+  submitted_at       TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+`;
+
+const createBookingGuestsTableQuery = `
+CREATE TABLE booking_guests (
+  id              INT NOT NULL AUTO_INCREMENT,
+  submission_id   INT NOT NULL,
+  full_name_he    VARCHAR(100) DEFAULT NULL,
+  full_name_en    VARCHAR(100) DEFAULT NULL,
+  passport_number VARCHAR(50)  DEFAULT NULL,
+  passport_expiry VARCHAR(20)  DEFAULT NULL,
+  date_of_birth   VARCHAR(20)  DEFAULT NULL,
+  gender          VARCHAR(10)  DEFAULT NULL,
+  food_preference VARCHAR(50)  DEFAULT NULL,
+  sort_order      INT          DEFAULT 0,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+`;
+
 module.exports = {
   dropTablesQueries,
   createFamilyTableQuery,
@@ -422,4 +453,6 @@ module.exports = {
   createFamilySignaturesTableQuery,
   createStaffTableQuery,
   createVehiclesTableQuery,
+  createBookingSubmissionsTableQuery,
+  createBookingGuestsTableQuery,
 };

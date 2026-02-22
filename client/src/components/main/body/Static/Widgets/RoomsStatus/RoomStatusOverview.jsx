@@ -196,34 +196,6 @@ const RoomStatusOverview = ({ boardData }) => {
         />
       </Box>
 
-      {/* ── Unassigned guests ── */}
-      <SectionTitle
-        label="אורחים ללא שיבוץ לחדר"
-        count={unassignedGuests.length}
-        color="#7c3aed"
-      />
-      {unassignedGuests.length === 0 ? (
-        <Alert severity="success" sx={{ mb: 1, py: 0.5, fontSize: 12 }}>
-          כל האורחים שובצו לחדר ✓
-        </Alert>
-      ) : (
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75, mb: 1 }}>
-          {unassignedGuests.map((g) => (
-            <Chip
-              key={g.user_id}
-              label={`${g.hebrew_first_name} ${g.hebrew_last_name}`}
-              size="small"
-              sx={{
-                backgroundColor: "#f3e8ff",
-                color: "#6b21a8",
-                border: "1px solid #d8b4fe",
-                fontSize: 11,
-              }}
-            />
-          ))}
-        </Box>
-      )}
-
       {/* ── Over-capacity rooms ── */}
       <SectionTitle
         label="חדרים בעודף תפוסה"
@@ -451,36 +423,6 @@ const RoomStatusOverview = ({ boardData }) => {
                             </TableRow>
                           );
                         })}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Box>
-              )}
-
-              {/* Unassigned guests */}
-              {unassignedGuests.length > 0 && (
-                <Box sx={{ mb: 2.5 }}>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-                    <Typography sx={{ fontSize: 13, fontWeight: 700, color: "#6b21a8" }}>
-                      אורחים ללא שיבוץ לחדר
-                    </Typography>
-                    <Chip label={unassignedGuests.length} size="small" sx={{ height: 18, fontSize: 11, backgroundColor: "#f3e8ff", color: "#6b21a8" }} />
-                  </Box>
-                  <TableContainer component={Paper} elevation={0} sx={{ border: "1px solid #d8b4fe", borderRadius: "8px" }}>
-                    <Table size="small">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell sx={{ fontWeight: 700, fontSize: 12, backgroundColor: "#faf5ff" }}>משפחה</TableCell>
-                          <TableCell sx={{ fontWeight: 700, fontSize: 12, backgroundColor: "#faf5ff" }}>שם</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {unassignedGuests.map((g) => (
-                          <TableRow key={g.user_id} hover>
-                            <TableCell sx={{ fontWeight: 600 }}>{g.family_name || "—"}</TableCell>
-                            <TableCell>{g.hebrew_first_name} {g.hebrew_last_name}</TableCell>
-                          </TableRow>
-                        ))}
                       </TableBody>
                     </Table>
                   </TableContainer>

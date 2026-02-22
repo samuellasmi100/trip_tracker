@@ -22,8 +22,15 @@ export default {
       headers: { Authorization: token },
     });
   },
-  getFamilyList(token,vacationId) {
-    return Api.get(`${END_POINT.FAMILY}/${vacationId}`, {
+  getFamilyStats(token, vacationId) {
+    return Api.get(`${END_POINT.FAMILY}/${vacationId}/stats`, {
+      headers: { Authorization: token },
+    });
+  },
+  getFamilyList(token, vacationId, { page = 1, search = '' } = {}) {
+    const params = new URLSearchParams({ page });
+    if (search) params.append('search', search);
+    return Api.get(`${END_POINT.FAMILY}/${vacationId}?${params}`, {
       headers: { Authorization: token },
     });
   },

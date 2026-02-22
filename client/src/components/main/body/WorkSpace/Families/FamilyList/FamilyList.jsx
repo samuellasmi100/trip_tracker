@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import MainDialog from "../../../../../Dialogs/MainDialog/MainDialog";
 import PaymentDialog from "../../../../../Dialogs/Payments/Payments";
@@ -7,6 +7,7 @@ import ApiUser from "../../../../../../apis/userRequest"
 import ApiVacations from "../../../../../../apis/vacationRequest"
 import ApiDocuments from "../../../../../../apis/documentsRequest"
 import ApiSignatures from "../../../../../../apis/signaturesRequest"
+import ApiBookings from "../../../../../../apis/bookingsRequest"
 import FamilyListView from "./FamilyList.view";
 import * as userSlice from "../../../../../../store/slice/userSlice";
 import * as dialogSlice from "../../../../../../store/slice/dialogSlice";
@@ -18,24 +19,96 @@ import * as staticSlice from "../../../../../../store/slice/staticSlice";
 import * as vacationSlice from "../../../../../../store/slice/vacationSlice";
 import { isoToDisplay } from "../../../../../../utils/HelperFunction/formatDate";
 
+const PAGE_SIZE = 30;
+
 const FamilyList = () => {
   const vacationId = useSelector((state) => state.vacationSlice.vacationId)
   const [usersData, setUsersData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [guestsLoading, setGuestsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const dialogOpen = useSelector((state) => state.dialogSlice.open)
   const dialogType = useSelector((state) => state.dialogSlice.type)
-  const [searchTerm, setSearchTerm] = useState("");
   const token = sessionStorage.getItem('token')
   const chosenFamily = useSelector((state) => state.userSlice.family)
   const vacationsDates = useSelector((state) => state.vacationSlice.vacationsDates)
-  const [docStatusMap, setDocStatusMap] = useState({}); // familyId → { uploaded, total }
+  const [docStatusMap, setDocStatusMap] = useState({});
   const [copiedFamilyId, setCopiedFamilyId] = useState(null);
-  const [sigStatusMap, setSigStatusMap] = useState({}); // familyId → { signature_sent_at, signer_name, signed_at, doc_token, sig_id }
+  const [sigStatusMap, setSigStatusMap] = useState({});
   const [sigCopiedId, setSigCopiedId] = useState(null);
+  const [bookingStatusMap, setBookingStatusMap] = useState({});
+  const [bookingCopiedId, setBookingCopiedId] = useState(null);
+  const [selectedBooking, setSelectedBooking] = useState({ open: false, familyId: null, data: null });
 
   // Drawer state
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // Refs used by the scroll handler to avoid stale closures
+  const tableWrapRef = useRef(null);
+  const hasMoreRef = useRef(false);
+  const loadingMoreRef = useRef(false);
+  const pageRef = useRef(1);
+  const searchTermRef = useRef("");
+  const debouncedSearchTimer = useRef(null);
+
+  useEffect(() => { hasMoreRef.current = hasMore; }, [hasMore]);
+  useEffect(() => { loadingMoreRef.current = loadingMore; }, [loadingMore]);
+  useEffect(() => { pageRef.current = page; }, [page]);
+  useEffect(() => { searchTermRef.current = searchTerm; }, [searchTerm]);
+
+  // ── Core paginated loader ─────────────────────────────────────────────────
+  const loadPage = useCallback(async (pageNum, search) => {
+    if (!vacationId) return;
+    const isFirst = pageNum === 1;
+    isFirst ? setLoading(true) : setLoadingMore(true);
+    try {
+      const response = await ApiUser.getFamilyList(token, vacationId, { page: pageNum, search });
+      const { rows = [], total = 0 } = response.data;
+      const more = pageNum * PAGE_SIZE < total;
+      setHasMore(more);
+      setPage(pageNum);
+      setUsersData(prev => isFirst ? rows : [...prev, ...rows]);
+      if (isFirst) dispatch(userSlice.updateFamiliesList(rows));
+    } catch (error) {
+      console.log(error);
+    } finally {
+      isFirst ? setLoading(false) : setLoadingMore(false);
+    }
+  }, [vacationId, token]);
+
+  // ── Infinite scroll — attach once, use refs for live values ──────────────
+  useEffect(() => {
+    const el = tableWrapRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      if (
+        el.scrollHeight - el.scrollTop - el.clientHeight < 150 &&
+        hasMoreRef.current &&
+        !loadingMoreRef.current
+      ) {
+        loadPage(pageRef.current + 1, searchTermRef.current);
+      }
+    };
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  }, [loadPage]);
+
+  // ── Debounced server-side search ──────────────────────────────────────────
+  const handleSearchChange = useCallback((value) => {
+    setSearchTerm(value);
+    clearTimeout(debouncedSearchTimer.current);
+    debouncedSearchTimer.current = setTimeout(() => {
+      setUsersData([]);
+      setPage(1);
+      setHasMore(false);
+      loadPage(1, value);
+    }, 300);
+  }, [loadPage]);
 
   const closeDrawer = useCallback(() => {
     setDrawerOpen(false);
@@ -86,56 +159,34 @@ const FamilyList = () => {
     } else if (type === "parentDetails") {
       dispatch(dialogSlice.openModal())
       dispatch(userSlice.updateForm(userData))
-    }else if (type === "uploadFile") {
+    } else if (type === "uploadFile") {
       dispatch(dialogSlice.updateActiveButton("העלה קובץ"))
       dispatch(dialogSlice.openModal())
       dispatch(userSlice.updateForm(userData))
     }
-
   };
-
-  const getFamilies = async () => {
-    try {
-      if (vacationId !== "") {
-        let response = await ApiUser.getFamilyList(token, vacationId)
-        dispatch(userSlice.updateFamiliesList(response.data))
-        setUsersData(response.data)
-      }
-
-    } catch (error) {
-      console.log(error)
-    }
-  }
 
   const handleNameClick = async (user) => {
     dispatch(userSlice.updateFamily(user))
-    let family_id = user.family_id
+    dispatch(userSlice.updateGuest([]))  // clear stale guests immediately
+    setDrawerOpen(true);                 // open drawer instantly, don't wait for API
+    setGuestsLoading(true);
     try {
-      let response = await ApiUser.getUserFamilyList(token, family_id, vacationId)
-      if (response.data.length > 0) {
-        dispatch(userSlice.updateGuest(response.data))
-      } else {
-        dispatch(userSlice.updateGuest([]))
-
-      }
+      const response = await ApiUser.getUserFamilyList(token, user.family_id, vacationId)
+      dispatch(userSlice.updateGuest(response.data.length > 0 ? response.data : []))
     } catch (error) {
       console.log(error)
+    } finally {
+      setGuestsLoading(false)
     }
-    // Open drawer when family is clicked
-    setDrawerOpen(true);
   }
 
   const getChosenFamily = async () => {
+    if (!chosenFamily?.family_id) return;
     dispatch(userSlice.updateFamily(chosenFamily))
-    let family_id = chosenFamily.family_id
     try {
-      let response = await ApiUser.getUserFamilyList(token, family_id, vacationId)
-      if (response.data.length > 0) {
-        dispatch(userSlice.updateGuest(response.data))
-      } else {
-        dispatch(userSlice.updateGuest([]))
-
-      }
+      const response = await ApiUser.getUserFamilyList(token, chosenFamily.family_id, vacationId)
+      dispatch(userSlice.updateGuest(response.data.length > 0 ? response.data : []))
     } catch (error) {
       console.log(error)
     }
@@ -147,7 +198,6 @@ const FamilyList = () => {
 
   const openEditFamily = useCallback((e, user) => {
     e.stopPropagation();
-    // Find matching week from vacation dates
     const matchedWeek = vacationsDates?.find(
       (d) => d.start_date === user.start_date && d.end_date === user.end_date
     );
@@ -199,13 +249,14 @@ const FamilyList = () => {
       await ApiUser.updateFamily(token, editFamilyData, vacationId);
       setEditDialogOpen(false);
       setEditFamilyData({});
-      await getFamilies();
+      setUsersData([]);
+      loadPage(1, searchTermRef.current);
     } catch (error) {
       console.log(error);
     }
-  }, [token, editFamilyData, vacationId]);
+  }, [token, editFamilyData, vacationId, loadPage]);
 
-  const [paymentDialogOpen, setPaymentDialogOpen]     = useState(false);
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [paymentDialogFamily, setPaymentDialogFamily] = useState(null);
 
   const handlePaymentClick = useCallback((user) => {
@@ -229,9 +280,7 @@ const FamilyList = () => {
         };
       });
       setDocStatusMap(map);
-    } catch (e) {
-      // non-fatal
-    }
+    } catch (e) { /* non-fatal */ }
   }, [vacationId, token]);
 
   const fetchSigStatus = useCallback(async () => {
@@ -239,13 +288,9 @@ const FamilyList = () => {
     try {
       const res = await ApiSignatures.getAllStatus(token, vacationId);
       const map = {};
-      (res.data || []).forEach((row) => {
-        map[row.family_id] = row;
-      });
+      (res.data || []).forEach((row) => { map[row.family_id] = row; });
       setSigStatusMap(map);
-    } catch (e) {
-      // non-fatal
-    }
+    } catch (e) { /* non-fatal */ }
   }, [vacationId, token]);
 
   const handleSendSignatureLink = useCallback(async (e, user) => {
@@ -253,7 +298,6 @@ const FamilyList = () => {
     if (!vacationId) return;
     try {
       await ApiSignatures.markSent(token, vacationId, user.family_id);
-      // Update local state to reflect sent status
       setSigStatusMap((prev) => ({
         ...prev,
         [user.family_id]: {
@@ -264,7 +308,6 @@ const FamilyList = () => {
           doc_token: prev[user.family_id]?.doc_token || null,
         },
       }));
-      // Build and copy the public signature URL
       const docToken = sigStatusMap[user.family_id]?.doc_token;
       if (docToken) {
         const url = `${window.location.origin}/public/sign/${vacationId}/${docToken}`;
@@ -292,21 +335,69 @@ const FamilyList = () => {
     }
   }, [token, vacationId]);
 
-  const filteredFamilyList = usersData?.filter((user) => {
-    if (searchTerm !== "") {
-      return user.family_name.includes(searchTerm)
-    } else {
-      return user
-    }
-  }
-  );
+  const fetchBookingStatus = useCallback(async () => {
+    if (!vacationId) return;
+    try {
+      const res = await ApiBookings.getAllStatus(token, vacationId);
+      const map = {};
+      (res.data || []).forEach((row) => {
+        if (row.submission_id) {
+          map[row.family_id] = {
+            submission_id: row.submission_id,
+            contact_name: row.contact_name,
+            submitted_at: row.submitted_at,
+          };
+        }
+      });
+      setBookingStatusMap(map);
+    } catch (e) { /* non-fatal */ }
+  }, [vacationId, token]);
 
-  // Close drawer and modals when vacation changes (dropdown is in Header now)
+  const handleCopyBookingLink = useCallback(async (e, user) => {
+    e.stopPropagation();
+    const docToken = user.doc_token;
+    if (!docToken) return;
+    try {
+      const url = `${window.location.origin}/public/booking/${vacationId}/${docToken}`;
+      await navigator.clipboard.writeText(url);
+      setBookingCopiedId(user.family_id);
+      setTimeout(() => setBookingCopiedId(null), 2500);
+    } catch (err) {
+      console.error(err);
+    }
+  }, [vacationId]);
+
+  const handleViewBooking = useCallback(async (e, user) => {
+    e.stopPropagation();
+    setSelectedBooking({ open: true, familyId: user.family_id, data: null });
+    try {
+      const res = await ApiBookings.getByFamily(token, vacationId, user.family_id);
+      setSelectedBooking((prev) => ({ ...prev, data: res.data }));
+    } catch (err) {
+      console.error(err);
+    }
+  }, [token, vacationId]);
+
+  const closeBookingDialog = useCallback(() => {
+    setSelectedBooking({ open: false, familyId: null, data: null });
+  }, []);
+
+  // ── Vacation change: reset everything and reload ──────────────────────────
   useEffect(() => {
+    if (!vacationId) return;
+    setSearchTerm("");
+    setUsersData([]);
+    setPage(1);
+    setHasMore(false);
     setDrawerOpen(false);
     closeModal();
     clearModalForms();
-  }, [vacationId])
+    loadPage(1, "");
+    getChosenFamily();
+    fetchDocStatus();
+    fetchSigStatus();
+    fetchBookingStatus();
+  }, [vacationId]);
 
   // Load vacation dates for route dropdown
   useEffect(() => {
@@ -325,12 +416,18 @@ const FamilyList = () => {
     loadVacationDates();
   }, [vacationId]);
 
+  // When a dialog closes (true → false): reset to page 1 and refresh
+  const prevDialogOpen = useRef(dialogOpen);
   useEffect(() => {
-    getFamilies()
-    getChosenFamily()
-    fetchDocStatus()
-    fetchSigStatus()
-  }, [dialogOpen, vacationId])
+    if (prevDialogOpen.current === true && dialogOpen === false) {
+      setUsersData([]);
+      setPage(1);
+      setHasMore(false);
+      loadPage(1, searchTermRef.current);
+      getChosenFamily();
+    }
+    prevDialogOpen.current = dialogOpen;
+  }, [dialogOpen]);
 
   return (
     <>
@@ -338,9 +435,13 @@ const FamilyList = () => {
         handleDialogTypeOpen={handleDialogTypeOpen}
         handleNameClick={handleNameClick}
         handlePaymentClick={handlePaymentClick}
-        filteredFamilyList={filteredFamilyList}
+        families={usersData}
         searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
+        handleSearchChange={handleSearchChange}
+        loading={loading}
+        loadingMore={loadingMore}
+        guestsLoading={guestsLoading}
+        tableWrapRef={tableWrapRef}
         drawerOpen={drawerOpen}
         closeDrawer={closeDrawer}
         openEditFamily={openEditFamily}
@@ -356,6 +457,12 @@ const FamilyList = () => {
         sigStatusMap={sigStatusMap}
         sigCopiedId={sigCopiedId}
         handleSendSignatureLink={handleSendSignatureLink}
+        bookingStatusMap={bookingStatusMap}
+        bookingCopiedId={bookingCopiedId}
+        handleCopyBookingLink={handleCopyBookingLink}
+        handleViewBooking={handleViewBooking}
+        selectedBooking={selectedBooking}
+        closeBookingDialog={closeBookingDialog}
       />
       <MainDialog
         dialogType={dialogType}
@@ -364,7 +471,11 @@ const FamilyList = () => {
       />
       <PaymentDialog
         open={paymentDialogOpen}
-        onClose={() => { setPaymentDialogOpen(false); getFamilies(); }}
+        onClose={() => {
+          setPaymentDialogOpen(false);
+          setUsersData([]);
+          loadPage(1, searchTermRef.current);
+        }}
         family={paymentDialogFamily}
         vacationId={vacationId}
       />
