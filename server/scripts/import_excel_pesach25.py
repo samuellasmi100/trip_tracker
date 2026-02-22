@@ -556,10 +556,15 @@ def import_families(conn, dry_run):
         for tok in expanded:
             tok = tok.strip()
 
-            # ── Virtual rooms (e.g. קסה) → room_taken row, no rooms-table entry ──
-            # These show in the FamilyList room column but are filtered out of
-            # the room board (getBoardBookings uses INNER JOIN on rooms).
+            # ── Virtual rooms (e.g. קסה) → stub in rooms + row in room_taken ────
+            # FK constraint requires room_id to exist in rooms before room_taken.
+            # Board queries exclude non-numeric room_ids via REGEXP so the virtual
+            # room never appears as a board column, but it DOES appear in FamilyList.
             if tok in VIRTUAL_ROOMS:
+                db_exec(conn,
+                        "INSERT IGNORE INTO rooms (rooms_id, type) VALUES (%s, %s)",
+                        (tok, tok), dry_run,
+                        f"  ensure virtual room '{tok}' stub in rooms table")
                 sql_rt = """
                     INSERT INTO room_taken (family_id, room_id, start_date, end_date)
                     VALUES (%s, %s, %s, %s)

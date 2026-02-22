@@ -91,16 +91,19 @@ ${whereClause};
 `
 }
 
-// Simple rooms list — one row per room (no joins)
+// Simple rooms list — one row per room (no joins).
+// WHERE clause excludes virtual rooms (e.g. 'קסה') whose rooms_id is non-numeric.
 const getBoardRooms = (vacationId) => {
   return `SELECT rooms_id, type, floor, size, direction, base_occupancy, max_occupancy
     FROM trip_tracker_${vacationId}.rooms
+    WHERE rooms_id REGEXP '^[0-9]+'
     ORDER BY rooms_id`;
 };
 
 // All room bookings with family name.
-// INNER JOIN on rooms filters out virtual room_ids (e.g. 'קסה') that have no
-// matching entry in the rooms table — keeps the board grid clean.
+// WHERE clause excludes virtual rooms (e.g. 'קסה') whose room_id is non-numeric.
+// Virtual rooms have a stub entry in the rooms table (FK requirement) but must
+// not appear as columns on the board grid.
 const getBoardBookings = (vacationId) => {
   return `SELECT
       rt.room_id,
@@ -110,7 +113,7 @@ const getBoardBookings = (vacationId) => {
       f.family_name
     FROM trip_tracker_${vacationId}.room_taken rt
     JOIN trip_tracker_${vacationId}.families f ON f.family_id = rt.family_id
-    JOIN trip_tracker_${vacationId}.rooms r ON r.rooms_id = rt.room_id`;
+    WHERE rt.room_id REGEXP '^[0-9]+'`;
 };
 
 // All guest-to-room assignments with guest names
