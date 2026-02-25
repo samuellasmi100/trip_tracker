@@ -27,6 +27,7 @@ import HotelIcon from "@mui/icons-material/Hotel";
 import SettingsIcon from "@mui/icons-material/Settings";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import ArticleIcon from "@mui/icons-material/Article";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 
 function SidebarView({
   logoutButtonFunction,
@@ -92,6 +93,17 @@ function SidebarView({
 
         {/* Navigation section */}
         <div className={classes.navSection} style={{ flex: 1, overflowY: "auto" }}>
+
+          {/* דשבורד */}
+          <div
+            className={`${classes.navItem} ${pathname === "/dashboard" ? classes.navItemActive : ""}`}
+            onClick={() => handleDirectNavClick("/dashboard")}
+          >
+            <div className={classes.navItemIcon}>
+              <DashboardIcon style={{ fontSize: "20px" }} />
+            </div>
+            <span className={classes.navItemLabel}>דשבורד</span>
+          </div>
 
           {/* דף הבית */}
           <Link to="/workspace" style={{ textDecoration: "none" }}>

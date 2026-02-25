@@ -30,6 +30,7 @@ const publicSignaturesController = require("./services/signatures/publicSignatur
 const settingsController = require("./services/settings/settingsController");
 const bookingsController = require("./services/bookings/bookingsController");
 const publicBookingsController = require("./services/bookings/publicBookingsController");
+const dashboardController = require("./services/dashboard/dashboardController");
 
 app.use(cors());
 app.use(express.json());
@@ -64,6 +65,7 @@ app.use('/documents', documentsController);
 app.use('/signatures', signaturesController);
 app.use('/settings', settingsController);
 app.use('/bookings', bookingsController);
+app.use('/dashboard', dashboardController);
 
 app.use(errorHandler);
 

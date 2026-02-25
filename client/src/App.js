@@ -17,6 +17,7 @@ import PublicLeadForm from "./components/public/PublicLeadForm/PublicLeadForm";
 import PublicDocumentUpload from "./components/public/PublicDocumentUpload/PublicDocumentUpload";
 import PublicSignaturePage from "./components/public/PublicSignaturePage/PublicSignaturePage";
 import PublicBookingForm from "./components/public/PublicBookingForm/PublicBookingForm";
+import Dashboard from "./components/main/body/Dashboard/Dashboard";
 import * as notificationsSlice from "./store/slice/notificationsSlice";
 import * as snackBarSlice from "./store/slice/snackbarSlice";
 import { connectSocket, disconnectSocket, getSocket } from "./utils/socketService";
@@ -99,6 +100,7 @@ function App() {
               <Route path="/budgets" element={<Budgets />} />
               <Route path="/leads" element={<Leads />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/dashboard" element={<Dashboard />} />
             </>
           ) : (
             <>

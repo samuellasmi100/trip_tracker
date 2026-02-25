@@ -3,6 +3,8 @@
 **Scripts:**
 - `server/scripts/import_excel_pesach24.py` — Pesach 2024 (complete, fully reconciled)
 - `server/scripts/import_excel_pesach25.py` — Pesach 2025 (families + guests steps; no flights file in נרשמים folder)
+- `server/scripts/import_payments_pesach24.py` — Pesach 2024 client payments (תשלומים מלקוח.xlsx)
+- `server/scripts/import_budget_pesach24.py` — Pesach 2024 budget data (expenses + exchange rates + income)
 
 **Last updated:** Pesach 2025 analysis + import script created 2026-02-22
 **Rule:** Update this file every time you discover something new during an import.
@@ -880,6 +882,142 @@ WHERE g.hebrew_last_name = 'שם_משפחה';
 DELETE FROM flights WHERE user_id = '<wrong_user_id>';
 DELETE FROM guest   WHERE user_id = '<wrong_user_id>';
 -- Then re-run the import — it will INSERT correctly this time
+```
+
+---
+
+## 14. Payments File — תשלומים מלקוח.xlsx
+
+**Script:** `import_payments_pesach24.py`
+**Source:** `הנהלת חשבונות/תשלומים מלקוח.xlsx`  →  sheet `תיעוד`
+
+### Column layout (`header=0`)
+
+| col | Header | Purpose |
+|-----|--------|---------|
+| 0 | `משפחה` | Billing family name — resolution key |
+| 1 | `פרטי` | Contact first name — disambiguation hint for same-name families |
+| 2 | `סכום העסקה` | Total deal amount — optionally updates `families.total_amount` |
+| 3 | `תאריך` | Payment slot 1 — date |
+| 4 | `סכום` | Payment slot 1 — amount |
+| 5 | `צורת העברה` | Payment slot 1 — method |
+| 6 | `יצאה חשבונית` | Payment slot 1 — receipt issued (כן/לא) |
+| 7–10 | `תאריך.1` … | Payment slot 2 (same 4-col pattern) |
+| 11–14 | `תאריך.2` … | Payment slot 3 |
+| 15–18 | `תאריך.3` … | Payment slot 4 |
+| 19–22 | `תאריך.4` … | Payment slot 5 |
+| 24 | `סה"כ ייתרה` | Remaining balance — reference only, not imported |
+| 25 | (unnamed) | Free-text row notes — stored in `payments.notes` if present |
+
+### Known edge cases
+
+- **Amount without date:** Some families have an amount in a slot but no date (e.g. שטרן slots 1 and 3). These are skipped by default. Use `--date-fallback 2024-01-01` to import them with a placeholder date; they get a note `תאריך לא ידוע` in `payments.notes`.
+- **Missing total:** Some rows have no value in `סכום העסקה` (e.g. שוורץ). The families step should have already set `total_amount` from the billing file; the `--update-totals` flag won't overwrite it.
+- **Negative balance:** A negative `סה"כ ייתרה` means the family overpaid. Individual payment slots are still imported normally.
+- **Refunds:** A negative amount in a slot is imported as `status='cancelled'` with note `החזר / זיכוי`.
+
+### Payment method values seen in Pesach 2024
+
+Run with `--dry-run` to see the full list printed at the end of the diagnostic. Add any unknown values to `PAYMENT_METHOD_MAP` in the script before a live run.
+
+### Idempotency
+
+Key: `(family_id, payment_date, abs(amount))`. Safe to re-run — already-existing rows are reported as SKIPPED, not duplicated.
+
+### Usage
+
+```bash
+# 1. Dry run — no writes, shows column map + what would happen
+set PYTHONIOENCODING=utf-8 && python scripts/import_payments_pesach24.py \
+  --vacation-id ce7c7ed2_4d76_41f0_92e5_699f6082cb27 --dry-run
+
+# 2. Check SKIPPED FAMILIES report — add to INDIVIDUAL_OVERRIDES if needed
+# 3. Check "אמות שהתגלו" (method values) — add unknown ones to PAYMENT_METHOD_MAP
+# 4. Live run
+set PYTHONIOENCODING=utf-8 && python scripts/import_payments_pesach24.py \
+  --vacation-id ce7c7ed2_4d76_41f0_92e5_699f6082cb27
+
+# 5. With date fallback for slots missing a date:
+set PYTHONIOENCODING=utf-8 && python scripts/import_payments_pesach24.py \
+  --vacation-id ce7c7ed2_4d76_41f0_92e5_699f6082cb27 --date-fallback 2024-01-01
+
+# 6. Also update families.total_amount from the deal-amount column:
+... --update-totals
+```
+
+---
+
+## 15. Budget File — פסח תחשיב 24 גליון 2.xlsx
+
+**Script:** `import_budget_pesach24.py`
+
+### Steps
+
+| Step | Source | Target table | Idempotency |
+|------|--------|-------------|-------------|
+| `exchange_rates` | Hard-coded from budget sheet | `exchange_rates` | Skip if `ccy` already exists |
+| `budget` | גיליון1 right block (cols 13-18) | `expenses` | Skip per-row if sub-category already has a row |
+| `invoices` | שוק מקומי רומניה.xlsx | `expenses` | Skip entire step if שוק מקומי sub-cat already has rows |
+| `income` | DB: families.total_amount + payments sum | `income` | Skip if income_category_id=1 already has rows |
+
+### Exchange rates imported
+- `יורו` = 4.0 NIS (from budget sheet)
+- `דולר` = 3.7 NIS ("דולר לפי 3.7" column header in budget sheet)
+- `RON` = 0.8 NIS (approximate: EUR/RON ≈ 4.97 in Apr 2024)
+
+### Column layout — גיליון1 (header=None)
+
+The sheet has two side-by-side blocks. We import the **right block** only (planned vs. actual — right block is more accurate):
+
+| col | Header | Purpose |
+|-----|--------|---------|
+| 13 | `סוג הוצאה` | Expense category name — maps via `EXPENSE_NAME_MAP` → DB sub-category |
+| 14 | `מחיר יורו` | EUR amount → `expenditure` (preferred) |
+| 15 | `מחיר דולר` | USD amount → `expenditure` (if no EUR) |
+| 16 | `סה"כ שקל` | NIS total → `expenditure_ils` |
+| 17 | `שולם` | Paid amount → `is_paid=1` if non-empty |
+| 18 | `תאריך` | Payment date → `actual_payment_date` if paid |
+
+Currency priority: EUR > USD > NIS.
+
+### All 36 pre-seeded sub-categories are covered
+
+The budget sheet rows map to the pre-seeded `expenses_sub_category` rows. If any row surfaces in the SKIPPED report, add it to `EXPENSE_NAME_MAP` in the script.
+
+### Known filename quirk
+The file has a **double space** between `פסח` and `תחשיב`: `פסח  תחשיב 24 גליון 2.xlsx`. The script finds it via `glob.glob("פסח*תחשיב 24 גליון 2.xlsx")`.
+
+### Romanian invoices
+- 93 data rows, amounts in RON
+- All mapped to sub-category `שוק מקומי` (id=19, cat=1)
+- `is_paid=0` for rows flagged "לא שולם!" in notes column
+- `expenditure_ils` calculated as RON × 0.8 (approximate)
+
+### Income row
+- One aggregate row created: total of all `families.total_amount` values
+- `is_paid=1` if ≥95% of total has been received (from `payments` table)
+- `description` = `תשלומי משפחות - פסח 2024`
+
+### Usage
+
+```bash
+# 1. Dry run — verify everything before writing
+set PYTHONIOENCODING=utf-8 && python scripts/import_budget_pesach24.py \
+  --vacation-id ce7c7ed2_4d76_41f0_92e5_699f6082cb27 --dry-run
+
+# 2. Live run (all steps)
+set PYTHONIOENCODING=utf-8 && python scripts/import_budget_pesach24.py \
+  --vacation-id ce7c7ed2_4d76_41f0_92e5_699f6082cb27
+
+# 3. Individual steps
+... --steps exchange_rates
+... --steps budget
+... --steps invoices
+... --steps income
+
+# 4. Reset and re-run a step (example: invoices)
+# DELETE FROM expenses WHERE expenses_sub_category_id = 19;
+# then re-run --steps invoices
 ```
 
 ---
