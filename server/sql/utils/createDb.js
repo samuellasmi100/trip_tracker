@@ -1,90 +1,47 @@
+'use strict';
+
+/**
+ * createDb.js — creates a brand-new per-vacation `trip_tracker_<id>` database.
+ *
+ * Source of truth is migrations/schema.js (via migrations/engine.js) — the
+ * SAME definitions used by run_migration.js. A newly created vacation therefore
+ * gets every table, column, index, foreign key and seed row that an existing
+ * tenant gets after migration. (Replaces the old trip_tracker_dump.js path —
+ * that file is now unused and kept only for reference.)
+ */
 
 const mysql = require('mysql2/promise');
-const {
-  dropTablesQueries,
-  createFamilyTableQuery,
-  createFightsTableQuery,
-  createGuestTableQuery,
-  createNotesTableQuery,
-  createPaymentsTableQuery,
-  createRoomsTableQuery,
-  createUserRoomAssignmentsTableQuery,
-  insertRoomsDataQuery,
-  createRoomTakenTable,
-  createExpensesCategoryTable,
-  insertExpensesCategoryQuery,
-  createExpensesSubCategoryTable,
-  insertExpensesSubCategoryQuery,
-  createFutureExpensesTable,
-  createExpensesTable,
-  createExchangeRatesTable,
-  createIncomeCategoryTable,
-  insertIncomeCategoryQuery,
-  createIncomeSubCategoryTable,
-  createIncomeTable,
-  createLeadsTableQuery,
-  createLeadNotesTableQuery,
-  createFamilyDocumentTypesTableQuery,
-  insertFamilyDocumentTypesQuery,
-  createFamilyDocumentsTableQuery,
-  createFamilySignaturesTableQuery,
-  createStaffTableQuery,
-  createVehiclesTableQuery,
-  createBookingSubmissionsTableQuery,
-  createBookingGuestsTableQuery,
-} = require("../query/trip_tracker_dump")
+const logger = require('../../utils/logger');
+const { migrateTenantDb } = require('../../migrations/engine');
 
 const createDatabaseAndTable = async (vacationId) => {
+  const db = `trip_tracker_${vacationId}`;
   const connection = await mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
+    multipleStatements: false,
   });
 
   try {
+    // CREATE SCHEMA IF NOT EXISTS — never drops an existing schema.
+    await connection.query(`CREATE SCHEMA IF NOT EXISTS \`${db}\``);
 
-    await connection.query(`CREATE SCHEMA \`trip_tracker_${vacationId}\``);
+    // Build every table/column/index/FK + seed data from the single source
+    // of truth. Idempotent: re-running on an existing schema only ADDs.
+    await migrateTenantDb(connection, db, console.log);
 
-    // Use the created database with backticks around the schema name
-    await connection.query(`USE \`trip_tracker_${vacationId}\``);
-
-    // Create table
-    await connection.query(createFamilyTableQuery);
-    await connection.query(createFightsTableQuery);
-    await connection.query(createGuestTableQuery);
-    await connection.query(createNotesTableQuery);
-    await connection.query(createPaymentsTableQuery);
-    await connection.query(createRoomsTableQuery);
-    await connection.query(createUserRoomAssignmentsTableQuery);
-    await connection.query(insertRoomsDataQuery);
-    await connection.query(createRoomTakenTable);
-    await connection.query(createExpensesCategoryTable);
-    await connection.query(insertExpensesCategoryQuery);
-    await connection.query(createExpensesSubCategoryTable);
-    await connection.query(insertExpensesSubCategoryQuery);
-    await connection.query(createFutureExpensesTable)
-    await connection.query(createExpensesTable)
-    await connection.query(createExchangeRatesTable)
-    await connection.query(createIncomeCategoryTable)
-    await connection.query(insertIncomeCategoryQuery)
-    await connection.query(createIncomeSubCategoryTable)
-    await connection.query(createIncomeTable)
-    await connection.query(createLeadsTableQuery)
-    await connection.query(createLeadNotesTableQuery)
-    await connection.query(createFamilyDocumentTypesTableQuery)
-    await connection.query(insertFamilyDocumentTypesQuery)
-    await connection.query(createFamilyDocumentsTableQuery)
-    await connection.query(createFamilySignaturesTableQuery)
-    await connection.query(createStaffTableQuery)
-    await connection.query(createVehiclesTableQuery)
-    await connection.query(createBookingSubmissionsTableQuery)
-    await connection.query(createBookingGuestsTableQuery)
-    console.log('Database and table created successfully');
+    console.log(`Database and tables created successfully for ${db}`);
   } catch (error) {
-    console.error('Error creating database or table:', error);
+    // Do NOT swallow — the caller must know tenant creation failed so it can
+    // avoid writing a phantom trip_tracker.vacations row and return an error.
+    logger.error(
+      `Error: Function:createDatabaseAndTable (${db}): ${error.message}`
+    );
+    throw error;
   } finally {
     await connection.end();
   }
-}
+};
 
 module.exports = createDatabaseAndTable;

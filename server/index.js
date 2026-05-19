@@ -74,13 +74,13 @@ const { initSocket } = require("./socketServer");
 const server = http.createServer(app);
 initSocket(server);
 
-// ── Startup migrations ─────────────────────────────────────────────────────
-const migrateBudgetTables = require("./sql/utils/migrateBudgetTables");
-const migrateSharedDb = require("./sql/utils/migrateSharedDb");
+// ── No automatic startup migrations ────────────────────────────────────────
+// Schema changes are applied MANUALLY and intentionally via:
+//   node migrations/run_migration.js
+// (The old auto-migrations migrateSharedDb.js / migrateBudgetTables.js were
+//  absorbed into migrations/schema.js + engine.js and are no longer called.)
 
 const launchServer = async () => {
-  await migrateBudgetTables();
-  await migrateSharedDb();
   server.listen(process.env.REST_API_PORT, () =>
     console.log(`The Main Server is running on ${process.env.REST_API_PORT}`)
   );

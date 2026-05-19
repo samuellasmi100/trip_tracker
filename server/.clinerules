@@ -65,7 +65,7 @@ Client (Axios + Bearer token)
 - `server/db/connection-wrapper.js` — MySQL2 pool (execute, executeWithParameters)
 - `server/middleware/authMiddleware/checkAuthorization.js` — JWT verification
 - `server/sql/utils/createDb.js` — Per-vacation database creation
-- `server/sql/query/trip_tracker_dump.js` — Schema dump with CREATE TABLE + seed data
+- `server/migrations/schema.js` — Single source of truth: shared + per-vacation table schemas + seed data (applied by `migrations/run_migration.js`; consumed by `createDb.js`)
 - `client/src/apis/baseApi.js` — Axios instance
 - `client/src/utils/constants.js` — API endpoint paths
 - `client/src/store/` — Redux store with 11 slices

@@ -121,14 +121,14 @@ Vacation IDs are UUIDs with hyphens replaced by underscores (e.g., `63dfd70c_645
 
 **Notes:**
 - Global table, not per-vacation — one config shared across all vacations
-- Created at startup by `migrateSharedDb.js` step [3]
+- Defined in `migrations/schema.js` (`SHARED_TABLE_SCHEMAS`); applied by `node migrations/run_migration.js`
 - UNIQUE on `provider_type` enables ON DUPLICATE KEY UPDATE upsert
 
 ---
 
 ## Per-Vacation Database: `trip_tracker_{vacationId}`
 
-Each vacation gets its own database with the following 16 tables. Created via `sql/utils/createDb.js` using the schema dump in `sql/query/trip_tracker_dump.js`.
+Each vacation gets its own database with 26 tables. The schema is defined in `migrations/schema.js` (`TENANT_TABLE_SCHEMAS`, 26 tables) — the single source of truth shared by `sql/utils/createDb.js` (new vacations) and `migrations/run_migration.js` (existing vacations). The shared `trip_tracker` DB has 6 tables (`SHARED_TABLE_SCHEMAS`).
 
 ### `families` — Family groups
 
