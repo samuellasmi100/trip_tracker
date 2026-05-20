@@ -12,6 +12,7 @@ const addGuest = async (data, vacationId) => {
     logger.error(
       `Error: Function:addGuest :, ${error.sqlMessage}`,
     );
+    throw error;
   }
 }
 
@@ -56,6 +57,7 @@ const updateGuest = async (data, vacationId) => {
     logger.error(
       `Error: Function:updateGuest :, ${error.sqlMessage}`,
     );
+    throw error;
   }
 }
 
@@ -71,6 +73,7 @@ const deleteGuest = async (userId, vacationId) => {
     logger.error(
       `Error: Function:deleteGuest :, ${error.sqlMessage}`,
     );
+    throw error;
   }
 }
 
@@ -87,6 +90,7 @@ const deleteGuestFlights = async (userId, vacationId) => {
     logger.error(
       `Error: Function:deleteGuestFlights :, ${error.sqlMessage}`,
     );
+    throw error;
   }
 }
 
@@ -103,6 +107,7 @@ const deleteGuestRooms = async (userId, vacationId) => {
     logger.error(
       `Error: Function:deleteGuestRooms :, ${error.sqlMessage}`,
     );
+    throw error;
   }
 }
 
@@ -118,6 +123,7 @@ const deleteNotes = async (userId, vacationId) => {
     logger.error(
       `Error: Function:deleteNotes :, ${error.sqlMessage}`,
     );
+    throw error;
   }
 }
 
@@ -133,6 +139,7 @@ const saveRegistrationForm = async (filename, fileType, filePath, id) => {
     logger.error(
       `Error: Function:saveRegistrationForm :, ${error.sqlMessage}`,
     );
+    throw error;
   }
 }
 
@@ -148,6 +155,7 @@ const deleteFamilyGuests = async (userId, vacationId) => {
     logger.error(
       `Error: Function:deleteFamilyGuests :, ${error.sqlMessage}`,
     );
+    throw error;
   }
 }
 const deleteFamilyFlights = async (userId, vacationId) => {
@@ -162,6 +170,7 @@ const deleteFamilyFlights = async (userId, vacationId) => {
     logger.error(
       `Error: Function:deleteFamilyFlights :, ${error.sqlMessage}`,
     );
+    throw error;
   }
 }
 const deleteFamilyRooms = async (userId, vacationId) => {
@@ -176,6 +185,7 @@ const deleteFamilyRooms = async (userId, vacationId) => {
     logger.error(
       `Error: Function:deleteFamilyRooms :, ${error.sqlMessage}`,
     );
+    throw error;
   }
 }
 const deleteFamilyGuestRooms = async (userId, vacationId) => {
@@ -190,6 +200,7 @@ const deleteFamilyGuestRooms = async (userId, vacationId) => {
     logger.error(
       `Error: Function:deleteFamilyGuestRooms :, ${error.sqlMessage}`,
     );
+    throw error;
   }
 }
 const deleteFamilyNotes = async (userId, vacationId) => {
@@ -204,6 +215,7 @@ const deleteFamilyNotes = async (userId, vacationId) => {
     logger.error(
       `Error: Function:deleteFamilyNotes :, ${error.sqlMessage}`,
     );
+    throw error;
   }
 }
 const deleteFamilyPayments = async (userId, vacationId) => {
@@ -218,6 +230,7 @@ const deleteFamilyPayments = async (userId, vacationId) => {
     logger.error(
       `Error: Function:deleteFamilyPayments :, ${error.sqlMessage}`,
     );
+    throw error;
   }
 }
 const deleteFamily = async (userId, vacationId) => {
@@ -232,6 +245,7 @@ const deleteFamily = async (userId, vacationId) => {
     logger.error(
       `Error: Function:deleteFamily :, ${error.sqlMessage}`,
     );
+    throw error;
   }
 }
 module.exports = {

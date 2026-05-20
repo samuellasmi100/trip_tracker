@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import PaymentsView from "./Payments.view";
 import PaymentIframeDialog from "./PaymentIframeDialog";
 import ApiPayments from "../../../apis/paymentsRequest";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { getSocket } from "../../../utils/socketService";
+import * as snackBarSlice from "../../../store/slice/snackbarSlice";
 
 const EMPTY_FORM = {
   amount: "",
@@ -26,6 +27,7 @@ const EMPTY_FORM = {
  */
 const Payments = ({ open, onClose, family: familyProp, vacationId: vacationIdProp, embedded }) => {
   const token = sessionStorage.getItem("token");
+  const dispatch = useDispatch();
 
   // Redux selectors — only used in embedded mode
   const reduxUserForm   = useSelector((state) => state.userSlice.form);
@@ -116,6 +118,7 @@ const Payments = ({ open, onClose, family: familyProp, vacationId: vacationIdPro
       setForm(EMPTY_FORM);
     } catch (err) {
       console.error(err);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "שמירת התשלום נכשלה, נסה שוב", timeout: 4000 }));
     } finally {
       setSubmitting(false);
     }
@@ -127,6 +130,7 @@ const Payments = ({ open, onClose, family: familyProp, vacationId: vacationIdPro
       await fetchPayments();
     } catch (err) {
       console.error(err);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "מחיקת התשלום נכשלה, נסה שוב", timeout: 4000 }));
     }
   };
 
@@ -146,6 +150,7 @@ const Payments = ({ open, onClose, family: familyProp, vacationId: vacationIdPro
       setIframeOpen(true);
     } catch (err) {
       console.error(err);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "פתיחת חלון התשלום נכשלה, נסה שוב", timeout: 4000 }));
     } finally {
       setInitLoading(false);
     }
@@ -165,6 +170,7 @@ const Payments = ({ open, onClose, family: familyProp, vacationId: vacationIdPro
       setTimeout(() => setLinkCopied(false), 2500);
     } catch (err) {
       console.error(err);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "יצירת קישור התשלום נכשלה, נסה שוב", timeout: 4000 }));
     } finally {
       setLinkLoading(false);
     }

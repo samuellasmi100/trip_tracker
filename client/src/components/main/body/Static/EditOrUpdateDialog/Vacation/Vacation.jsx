@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import VacationsView from "./Vacation.view";
 import { useDispatch, useSelector } from "react-redux";
 import * as staticSlice from "../../../../../../store/slice/staticSlice"
+import * as snackBarSlice from "../../../../../../store/slice/snackbarSlice"
 import ApiVacations from "../../../../../../apis/vacationRequest"
 
 const Vacation = () => {
@@ -25,7 +26,10 @@ const Vacation = () => {
     try {
       const response = await ApiVacations.addVacation(token, form);
       dispatch(staticSlice.closeDetailsModal());
-    } catch (error) {}
+    } catch (error) {
+      console.error("Failed to add vacation", error);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "הוספת החופשה נכשלה, נסה שוב", timeout: 4000 }));
+    }
   }
 
   const handleCloseClicked = () => {

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as budgetSlice from "../../../../../store/slice/budgetSlice";
+import * as snackBarSlice from "../../../../../store/slice/snackbarSlice";
 import ApiBudgets from "../../../../../apis/budgetsRequest";
 import ExpensesTabView from "./ExpensesTab.view";
 
@@ -41,6 +42,7 @@ const ExpensesTab = ({ handleOpenEdit }) => {
       await fetchExpenses();
     } catch (error) {
       console.error("Error deleting expense:", error);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "מחיקת ההוצאה נכשלה, נסה שוב", timeout: 4000 }));
     }
   };
 
@@ -57,6 +59,7 @@ const ExpensesTab = ({ handleOpenEdit }) => {
       await fetchExpenses();
     } catch (error) {
       console.error("Error updating status:", error);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "עדכון סטטוס ההוצאה נכשל, נסה שוב", timeout: 4000 }));
     }
     setConfirmOpen(false);
     setSelectedRow(null);

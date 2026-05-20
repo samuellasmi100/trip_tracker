@@ -1,6 +1,8 @@
 'use strict';
 
 const router = require('express').Router();
+const ErrorMessage = require("../../serverLogs/errorMessage");
+const ErrorType = require("../../serverLogs/errorType");
 const path = require('path');
 const fs = require('fs');
 const signaturesService = require('./signaturesService');
@@ -130,7 +132,7 @@ router.post('/sign/:vacationId/:docToken', async (req, res, next) => {
 
     res.json({ success: true });
   } catch (error) {
-    next(error);
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle publicSignatures request", error));
   }
 });
 

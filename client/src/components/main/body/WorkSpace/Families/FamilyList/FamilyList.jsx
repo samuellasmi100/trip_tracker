@@ -17,6 +17,7 @@ import * as notesSlice from "../../../../../../store/slice/notesSlice";
 import * as paymentsSlice from "../../../../../../store/slice/paymentsSlice";
 import * as staticSlice from "../../../../../../store/slice/staticSlice";
 import * as vacationSlice from "../../../../../../store/slice/vacationSlice";
+import * as snackBarSlice from "../../../../../../store/slice/snackbarSlice";
 import { isoToDisplay } from "../../../../../../utils/HelperFunction/formatDate";
 
 const PAGE_SIZE = 30;
@@ -253,8 +254,9 @@ const FamilyList = () => {
       loadPage(1, searchTermRef.current);
     } catch (error) {
       console.log(error);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "עדכון פרטי המשפחה נכשל, נסה שוב", timeout: 4000 }));
     }
-  }, [token, editFamilyData, vacationId, loadPage]);
+  }, [token, editFamilyData, vacationId, loadPage, dispatch]);
 
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [paymentDialogFamily, setPaymentDialogFamily] = useState(null);
@@ -317,8 +319,9 @@ const FamilyList = () => {
       }
     } catch (e) {
       console.error(e);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "שליחת קישור החתימה נכשלה, נסה שוב", timeout: 4000 }));
     }
-  }, [token, vacationId, sigStatusMap]);
+  }, [token, vacationId, sigStatusMap, dispatch]);
 
   const handleCopyDocLink = useCallback(async (e, familyId) => {
     e.stopPropagation();

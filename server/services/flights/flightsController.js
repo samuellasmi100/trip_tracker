@@ -1,4 +1,6 @@
 const router = require("express").Router();
+const ErrorMessage = require("../../serverLogs/errorMessage");
+const ErrorType = require("../../serverLogs/errorType");
 const flightsService = require("./flightsService")
 const uuid = require("uuid").v4;
 
@@ -12,7 +14,7 @@ router.post("/:id", async (req, res, next) => {
     res.send("נתוני טיסה התקבלו בהצלחה")
 
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle flights request", error));
   }
 });
 
@@ -27,7 +29,7 @@ router.put("/:id/:vacationId", async (req, res, next) => {
     res.send("נתוני טיסה עודכנו בהצלחה")
 
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle flights request", error));
   }
 });
 

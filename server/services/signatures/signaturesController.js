@@ -1,6 +1,8 @@
 'use strict';
 
 const router = require('express').Router();
+const ErrorMessage = require("../../serverLogs/errorMessage");
+const ErrorType = require("../../serverLogs/errorType");
 const signaturesService = require('./signaturesService');
 
 // GET /signatures/:vacationId — all families' signature status
@@ -32,7 +34,7 @@ router.post('/send/:vacationId/:familyId', async (req, res, next) => {
     await signaturesService.setSentAt(vacationId, familyId);
     res.json({ success: true });
   } catch (error) {
-    next(error);
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle signatures request", error));
   }
 });
 
@@ -43,7 +45,7 @@ router.delete('/:vacationId/:familyId', async (req, res, next) => {
     await signaturesService.deleteSignature(vacationId, familyId);
     res.json({ success: true });
   } catch (error) {
-    next(error);
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle signatures request", error));
   }
 });
 

@@ -12,6 +12,7 @@ const addNotes = async (noteDetails,vacationId) => {
     logger.error(
       `Error: Function:addNotes :, ${error.sqlMessage}`,
     );
+    throw error;
   }
 }
 const getUserNotes = async (userId,vacationId) => {

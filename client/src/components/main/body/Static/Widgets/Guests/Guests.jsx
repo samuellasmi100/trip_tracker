@@ -105,6 +105,7 @@ const Guests = () => {
       fetchData(searchRef.current, 0, false);
     } catch (error) {
       console.log(error);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "מחיקת האורח נכשלה, נסה שוב", timeout: 4000 }));
     }
   };
 

@@ -1,34 +1,85 @@
 const userRoomsDb = require("./userRoomsDb")
+const connection = require("../../db/connection-wrapper")
+const userRoomQuery = require("../../sql/query/userRoomQuery")
 
+// Sentinel error code surfaced by assignMainRoom when a requested booking
+// would overlap an existing one in the same room. The controller maps this
+// to HTTP 409 so the client can show a specific Hebrew "room is taken" toast
+// instead of a generic failure.
+const ROOM_OVERLAP = 'ROOM_OVERLAP';
 
 const assignMainRoom = async (roomDetails, familyId, vacationId, startDate, endDate) => {
-    const checkIfUserAlreadyAssign = await userRoomsDb.getFamilyRoom(familyId, vacationId)
-    if (roomDetails.length === 0) {
-        if (checkIfUserAlreadyAssign.length > 0) {
-            await userRoomsDb.removeMainRoom(familyId, vacationId)
-            await userRoomsDb.removeAllUserAssignRoom(familyId, vacationId)
-        }
-    } else {
-        if (checkIfUserAlreadyAssign.length === 0) {
-            await Promise.all(roomDetails.map((room) => userRoomsDb.assignMainRoom(vacationId, familyId, room.rooms_id, startDate, endDate)));
-        } else {
-            const roomsToRemove = checkIfUserAlreadyAssign
-            .filter(room => !roomDetails.some(detail => detail.rooms_id === room.rooms_id))
-            .map(room => room.rooms_id);
-          const roomsToAdd = roomDetails
-            .filter(room => !checkIfUserAlreadyAssign.some(assign => assign.rooms_id === room.rooms_id))
-            .map(room => room.rooms_id);
-          if (roomsToRemove.length > 0) {
-            await Promise.all(roomsToRemove.map(roomId => userRoomsDb.removeMainRoomByRoomId(familyId, vacationId, roomId)));
-            await Promise.all(roomsToRemove.map(roomId => userRoomsDb.removeAllUserAssignFromRoomId(familyId, vacationId, roomId)));
-          }
+  // All reads + writes for this assignment happen inside one transaction:
+  // the overlap probe SELECT ... FOR UPDATE locks any colliding rows so a
+  // second concurrent request for the same room can't slip past the check
+  // between our SELECT and our INSERT.
+  return await connection.withTransaction(async (tx) => {
+    const existing = await tx.executeWithParameters(
+      userRoomQuery.getFamilyRoomIds(vacationId),
+      [familyId]
+    );
 
-          if (roomsToAdd.length > 0) {
-            await Promise.all(roomsToAdd.map(room => userRoomsDb.assignMainRoom(vacationId, familyId, room, startDate, endDate)));
-          }
-        }
+    // Empty roomDetails = "unassign this family from every room". Preserved
+    // from the previous behaviour.
+    if (roomDetails.length === 0) {
+      if (existing.length > 0) {
+        await tx.executeWithParameters(
+          userRoomQuery.removeMainRoom(vacationId),
+          [familyId]
+        );
+        await tx.executeWithParameters(
+          userRoomQuery.removeAllUserAssignRoom(vacationId),
+          [familyId]
+        );
+      }
+      return;
     }
 
+    // Diff existing vs requested — same as before, just done with the tx's
+    // own connection so the FOR UPDATE locks apply.
+    const existingIds = existing.map(r => r.rooms_id);
+    const requestedIds = roomDetails.map(d => d.rooms_id);
+    const roomsToRemove = existingIds.filter(id => !requestedIds.includes(id));
+    const roomsToAdd = requestedIds.filter(id => !existingIds.includes(id));
+
+    // 1. Overlap check for every NEW room. Rooms the family is already in are
+    //    unchanged — no point re-checking them against themselves. If any one
+    //    new room conflicts, throw before any write, so the transaction
+    //    rolls back any prior removes we may have already issued.
+    for (const roomId of roomsToAdd) {
+      const conflicts = await tx.executeWithParameters(
+        userRoomQuery.findOverlappingBookings(vacationId),
+        [roomId, startDate, endDate]
+      );
+      if (conflicts.length > 0) {
+        const err = new Error(`Room ${roomId} is already booked in the requested date range`);
+        err.code = ROOM_OVERLAP;
+        err.roomId = roomId;
+        err.conflicts = conflicts;
+        throw err;
+      }
+    }
+
+    // 2. Apply removes (sequentially, on the tx connection).
+    for (const roomId of roomsToRemove) {
+      await tx.executeWithParameters(
+        userRoomQuery.removeMainRoomByRoomId(vacationId),
+        [roomId, familyId]
+      );
+      await tx.executeWithParameters(
+        userRoomQuery.removeAllUserAssignFromRoomId(vacationId),
+        [roomId, familyId]
+      );
+    }
+
+    // 3. Apply inserts.
+    for (const roomId of roomsToAdd) {
+      await tx.executeWithParameters(
+        userRoomQuery.assignMainRoom(vacationId),
+        [familyId, roomId, startDate, endDate]
+      );
+    }
+  });
 }
 
 const assignGroupUserRoom = async (selectedRoomList) => {
@@ -104,4 +155,5 @@ module.exports = {
     updateStartEndAndDate,
     getAllChosenRoom,
     moveRoom,
+    ROOM_OVERLAP,
 }

@@ -63,6 +63,7 @@ const UploadFile = () => {
        dispatch(dialogSlice.resetState())
     } catch (error) {
       console.error('Error uploading file:', error);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "העלאת הקובץ נכשלה, נסה שוב", timeout: 4000 }));
     }
   };
   

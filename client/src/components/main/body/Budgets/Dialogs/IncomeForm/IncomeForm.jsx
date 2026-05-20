@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as budgetSlice from "../../../../../../store/slice/budgetSlice";
+import * as snackBarSlice from "../../../../../../store/slice/snackbarSlice";
 import ApiBudgets from "../../../../../../apis/budgetsRequest";
 import IncomeFormView from "./IncomeForm.view";
 
@@ -56,6 +57,7 @@ const IncomeForm = ({ closeModal }) => {
       closeModal();
     } catch (error) {
       console.error("Error submitting income:", error);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "שמירת ההכנסה נכשלה, נסה שוב", timeout: 4000 }));
     }
   };
 

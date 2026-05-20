@@ -49,7 +49,49 @@ function executeWithParameters(sql, parameters) {
   });
 }
 
+// Run `fn` inside a MySQL transaction. `fn` is called with a transaction-scoped
+// connection that exposes `executeWithParameters(sql, params)` returning rows
+// (same shape as the pool-level helper above). On any thrown error the
+// transaction is rolled back; otherwise it's committed. Always releases the
+// connection back to the pool.
+function withTransaction(fn) {
+  return new Promise((resolve, reject) => {
+    db.getConnection((err, conn) => {
+      if (err) { reject(err); return; }
+
+      const tx = {
+        executeWithParameters(sql, parameters) {
+          return new Promise((res, rej) => {
+            conn.execute(sql, parameters, (e, rows) => {
+              if (e) { rej(e); return; }
+              res(rows);
+            });
+          });
+        },
+      };
+
+      conn.beginTransaction(async (beginErr) => {
+        if (beginErr) { conn.release(); reject(beginErr); return; }
+        try {
+          const result = await fn(tx);
+          conn.commit((commitErr) => {
+            conn.release();
+            if (commitErr) reject(commitErr);
+            else resolve(result);
+          });
+        } catch (workErr) {
+          conn.rollback(() => {
+            conn.release();
+            reject(workErr);
+          });
+        }
+      });
+    });
+  });
+}
+
 module.exports = {
   execute,
   executeWithParameters,
+  withTransaction,
 };

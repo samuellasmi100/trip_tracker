@@ -1,6 +1,8 @@
 'use strict';
 
 const router = require('express').Router();
+const ErrorMessage = require("../../serverLogs/errorMessage");
+const ErrorType = require("../../serverLogs/errorType");
 const leadsDb = require('./leadsDb');
 const notificationsService = require('../notifications/notificationsService');
 const { getIO } = require('../../socketServer');
@@ -81,7 +83,7 @@ router.post('/leads/:vacationId', async (req, res, next) => {
 
     res.send({ success: true });
   } catch (error) {
-    next(error);
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle publicLeads request", error));
   }
 });
 

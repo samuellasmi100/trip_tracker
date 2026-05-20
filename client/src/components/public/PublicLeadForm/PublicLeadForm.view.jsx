@@ -3,7 +3,7 @@ import { Typography, TextField, Button, InputLabel } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { useStyles } from "./PublicLeadForm.style";
 
-function PublicLeadFormView({ form, loading, submitted, handleChange, handleSubmit }) {
+function PublicLeadFormView({ form, loading, submitted, errorMessage, handleChange, handleSubmit }) {
   const classes = useStyles();
 
   return (
@@ -112,6 +112,12 @@ function PublicLeadFormView({ form, loading, submitted, handleChange, handleSubm
             >
               {loading ? "שולח..." : "שליחה"}
             </Button>
+
+            {errorMessage && (
+              <Typography sx={{ color: "#dc2626", fontSize: 14, mt: 1, textAlign: "center" }}>
+                {errorMessage}
+              </Typography>
+            )}
 
             <Typography className={classes.footer}>
               פרטיכם ישמרו בסודיות מוחלטת

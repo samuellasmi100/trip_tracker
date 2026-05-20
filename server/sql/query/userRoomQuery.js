@@ -106,6 +106,32 @@ const moveGuestAssignments = (vacationId) => {
     WHERE family_id = ? AND room_id = ?`;
 };
 
+// Overlap probe: find any existing room_taken bookings for `?roomId` whose
+// date range collides with `?startNew .. ?endNew` under the EXCLUSIVE-end
+// (hotel turnover) convention. Touching at an endpoint is NOT overlap.
+//   NOT (existing.end_date <= start_new OR existing.start_date >= end_new)
+// FOR UPDATE locks the matching rows for the duration of the surrounding tx,
+// so two concurrent assignments racing for the same room/dates can't both
+// pass their check and then both insert.
+const findOverlappingBookings = (vacationId) => {
+  return `SELECT id, family_id, room_id,
+            DATE_FORMAT(start_date, '%Y-%m-%d') AS start_date,
+            DATE_FORMAT(end_date,   '%Y-%m-%d') AS end_date
+          FROM trip_tracker_${vacationId}.room_taken
+          WHERE room_id = ?
+            AND NOT (end_date <= ? OR start_date >= ?)
+          FOR UPDATE`;
+};
+
+// Lightweight "which rooms is this family currently in" — only the room_id is
+// needed by the assignment service. Aliased to rooms_id to match the field
+// name the service uses elsewhere.
+const getFamilyRoomIds = (vacationId) => {
+  return `SELECT room_id AS rooms_id
+          FROM trip_tracker_${vacationId}.room_taken
+          WHERE family_id = ?`;
+};
+
 module.exports = {
   assignMainRoom,
   getFamilyRoom,
@@ -122,4 +148,6 @@ module.exports = {
   getAllChosenRoom,
   moveRoomBooking,
   moveGuestAssignments,
+  findOverlappingBookings,
+  getFamilyRoomIds,
 };

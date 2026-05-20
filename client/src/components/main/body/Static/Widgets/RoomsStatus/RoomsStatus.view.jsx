@@ -46,13 +46,19 @@ function RoomsStatusView({
   // ── O(1) booking lookup: bookingMap[roomId][dateStr] = booking ─────────────
   // Replaces the previous O(bookings) linear search per cell.
   // Recomputed only when the bookings array changes.
+  //
+  // end_date is the EXCLUSIVE checkout day (hotel turnover convention):
+  // a booking 12→20 occupies the 12th through the 19th, and the 20th is
+  // free for the next family arriving that day. Mirrors the SQL overlap
+  // test in roomsQuery.getRoomAvailable / userRoomQuery.findOverlappingBookings:
+  // `NOT (end_date <= ? OR start_date >= ?)`.
   const bookingMap = useMemo(() => {
     const map = {};
     bookings.forEach((b) => {
       if (!map[b.room_id]) map[b.room_id] = {};
       const curr = new Date(b.start_date);
       const end = new Date(b.end_date);
-      while (curr <= end) {
+      while (curr < end) {
         map[b.room_id][curr.toISOString().split("T")[0]] = b;
         curr.setDate(curr.getDate() + 1);
       }

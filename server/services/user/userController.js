@@ -1,4 +1,6 @@
 const router = require("express").Router();
+const ErrorMessage = require("../../serverLogs/errorMessage");
+const ErrorType = require("../../serverLogs/errorType");
 const userService = require("./userService")
 const staticService = require("../static/staticService")
 
@@ -21,7 +23,7 @@ router.post("/:id", async (req, res, next) => {
    
        res.send(response)
     } catch (error) {
-      return next(error);
+      return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle user request", error));
     }
 });
 
@@ -46,7 +48,7 @@ router.put("/:id", async (req, res, next) => {
    const response = await userService.getFamilyMember(userData.family_id,vacationId)
    res.send(response)
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle user request", error));
   }
 });
 
@@ -73,7 +75,7 @@ router.delete("/:id/:vacationId", async (req, res, next) => {
       const mainGuests = await staticService.getMainGuests(vacationId)
       res.send({allGuests,mainGuests})
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle user request", error));
   }
 });
 
@@ -88,7 +90,7 @@ router.delete("/main/:id/:vacationId", async (req, res, next) => {
       res.send({allGuests,mainGuests})
 
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle user request", error));
   }
 })
 

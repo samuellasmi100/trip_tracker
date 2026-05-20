@@ -17,6 +17,7 @@ const addFamily = async (data,vacationId) => {
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     logger.error(`Error: Function:addFamily :, ${error.sqlMessage}`);
+    throw error;
   }
 }
 
@@ -77,6 +78,7 @@ const updateFamily = async (data, vacationId) => {
     ])
   } catch (error) {
     logger.error(`Error: Function:updateFamily :, ${error.sqlMessage}`)
+    throw error;
   }
 }
 

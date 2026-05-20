@@ -3,6 +3,7 @@ import LeadView from "./Lead.view";
 import { useSelector, useDispatch } from "react-redux";
 import * as staticSlice from "../../../../../../store/slice/staticSlice";
 import * as leadsSlice from "../../../../../../store/slice/leadsSlice";
+import * as snackBarSlice from "../../../../../../store/slice/snackbarSlice";
 import ApiLeads from "../../../../../../apis/leadsRequest";
 
 const Lead = () => {
@@ -38,6 +39,7 @@ const Lead = () => {
       dispatch(staticSlice.closeDetailsModal());
     } catch (error) {
       console.log(error);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "שמירת הליד נכשלה, נסה שוב", timeout: 4000 }));
     }
   };
 

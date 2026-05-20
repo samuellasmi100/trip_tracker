@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as budgetSlice from "../../../../../../store/slice/budgetSlice";
+import * as snackBarSlice from "../../../../../../store/slice/snackbarSlice";
 import ApiBudgets from "../../../../../../apis/budgetsRequest";
 import ExpenseFormView from "./ExpenseForm.view";
 
@@ -59,6 +60,7 @@ const ExpenseForm = ({ closeModal }) => {
       closeModal();
     } catch (error) {
       console.error("Error submitting expense:", error);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "שמירת ההוצאה נכשלה, נסה שוב", timeout: 4000 }));
     }
   };
 

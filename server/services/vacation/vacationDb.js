@@ -38,6 +38,7 @@ const addVacationDates = async (vacationId,startData,endDate,name) => {
   logger.error(
       `Error: Function:addVacationDates :, ${error.sqlMessage}`,
     );
+    throw error;
   }
 }
 

@@ -41,6 +41,7 @@ const updateRoom = async (data, vacationId) => {
     logger.error(
       `Error: Function:updateRoom :, ${error.sqlMessage}`,
     );
+    throw error;
   }
 }
 

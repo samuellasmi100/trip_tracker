@@ -1,4 +1,6 @@
 const router = require('express').Router();
+const ErrorMessage = require("../../serverLogs/errorMessage");
+const ErrorType = require("../../serverLogs/errorType");
 const leadsService = require('./leadsService');
 
 // GET /leads/summary/:vacationId
@@ -39,7 +41,7 @@ router.post('/:vacationId', async (req, res, next) => {
     const all = await leadsService.getAll(req.params.vacationId);
     res.send(all);
   } catch (error) {
-    next(error);
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle leads request", error));
   }
 });
 
@@ -50,7 +52,7 @@ router.put('/:vacationId/:leadId', async (req, res, next) => {
     const all = await leadsService.getAll(req.params.vacationId);
     res.send(all);
   } catch (error) {
-    next(error);
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle leads request", error));
   }
 });
 
@@ -66,7 +68,7 @@ router.post('/:vacationId/:leadId/notes', async (req, res, next) => {
     );
     res.send(notes);
   } catch (error) {
-    next(error);
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle leads request", error));
   }
 });
 
@@ -77,7 +79,7 @@ router.delete('/:vacationId/:leadId', async (req, res, next) => {
     const all = await leadsService.getAll(req.params.vacationId);
     res.send(all);
   } catch (error) {
-    next(error);
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle leads request", error));
   }
 });
 

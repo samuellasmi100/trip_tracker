@@ -1,6 +1,8 @@
 'use strict';
 
 const router = require('express').Router();
+const ErrorMessage = require("../../serverLogs/errorMessage");
+const ErrorType = require("../../serverLogs/errorType");
 const documentsService = require('./documentsService');
 const documentsDb = require('./documentsDb');
 
@@ -22,7 +24,7 @@ router.post('/types/:vacationId', async (req, res, next) => {
     const result = await documentsService.addDocumentType(req.params.vacationId, req.body);
     res.json({ success: true, insertId: result.insertId });
   } catch (error) {
-    next(error);
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle documents request", error));
   }
 });
 
@@ -33,7 +35,7 @@ router.delete('/types/:vacationId/:typeId', async (req, res, next) => {
     await documentsService.deleteDocumentType(vacationId, typeId);
     res.json({ success: true });
   } catch (error) {
-    next(error);
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle documents request", error));
   }
 });
 
@@ -78,7 +80,7 @@ router.delete('/:vacationId/:docId', async (req, res, next) => {
     await documentsService.deleteDocument(vacationId, docId);
     res.json({ success: true });
   } catch (error) {
-    next(error);
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle documents request", error));
   }
 });
 

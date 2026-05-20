@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import RoomView from "./Room.view";
 import * as staticSlice from "../../../../../../store/slice/staticSlice"
 import * as roomsSlice from "../../../../../../store/slice/roomsSlice"
+import * as snackBarSlice from "../../../../../../store/slice/snackbarSlice"
 import { useSelector, useDispatch } from "react-redux";
 import ApiRooms from "../../../../../../apis/roomsRequest"
 
@@ -27,6 +28,7 @@ const Room = () => {
       dispatch(staticSlice.closeDetailsModal());
     } catch (error) {
       console.log(error)
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "עדכון פרטי החדר נכשל, נסה שוב", timeout: 4000 }));
     }
   }
   const handleCloseClicked = () => {

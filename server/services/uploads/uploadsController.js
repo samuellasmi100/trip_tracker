@@ -1,4 +1,6 @@
 const router = require("express").Router();
+const ErrorMessage = require("../../serverLogs/errorMessage");
+const ErrorType = require("../../serverLogs/errorType");
 const fs = require("fs");
 const path = require("path");
 const multer = require('multer');
@@ -51,7 +53,7 @@ router.post("/:vacationId", upload.single('file'), async (req, res, next) => {
       file: req.file,
     });
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle uploads request", error));
   }
 });
 

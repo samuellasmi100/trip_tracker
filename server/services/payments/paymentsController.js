@@ -1,4 +1,6 @@
 const router = require("express").Router();
+const ErrorMessage = require("../../serverLogs/errorMessage");
+const ErrorType = require("../../serverLogs/errorType");
 const paymentsService = require("./paymentsService");
 
 // ── Provider config routes (no vacationId — register before /:vacationId) ────
@@ -19,7 +21,7 @@ router.post("/provider", async (req, res, next) => {
     await paymentsService.saveProviderConfig(req.body);
     res.json({ success: true });
   } catch (error) {
-    next(error);
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle payments request", error));
   }
 });
 
@@ -59,7 +61,7 @@ router.post("/:vacationId/init-session", async (req, res, next) => {
     );
     res.json(result);
   } catch (error) {
-    next(error);
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle payments request", error));
   }
 });
 
@@ -72,7 +74,7 @@ router.post("/:vacationId/create-link", async (req, res, next) => {
     );
     res.json(result);
   } catch (error) {
-    next(error);
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle payments request", error));
   }
 });
 
@@ -85,7 +87,7 @@ router.post("/:vacationId/verify/:id", async (req, res, next) => {
     );
     res.json(result);
   } catch (error) {
-    next(error);
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle payments request", error));
   }
 });
 
@@ -97,7 +99,7 @@ router.post("/:vacationId", async (req, res, next) => {
     const response = await paymentsService.addPayment(req.body, req.params.vacationId);
     res.json(response);
   } catch (error) {
-    next(error);
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle payments request", error));
   }
 });
 
@@ -110,7 +112,7 @@ router.put("/:vacationId/:paymentId", async (req, res, next) => {
     );
     res.json(response);
   } catch (error) {
-    next(error);
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle payments request", error));
   }
 });
 
@@ -123,7 +125,7 @@ router.delete("/:vacationId/:paymentId", async (req, res, next) => {
     );
     res.json(response);
   } catch (error) {
-    next(error);
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle payments request", error));
   }
 });
 
@@ -134,7 +136,7 @@ const webhookHandler = async (req, res, next) => {
     const result = await paymentsService.handlePaymentWebhook(req);
     res.json(result);
   } catch (error) {
-    next(error);
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle payments request", error));
   }
 };
 

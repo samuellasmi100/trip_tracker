@@ -1,6 +1,8 @@
 'use strict';
 
 const router = require('express').Router();
+const ErrorMessage = require("../../serverLogs/errorMessage");
+const ErrorType = require("../../serverLogs/errorType");
 const mysql = require('mysql2/promise');
 const bookingsService = require('./bookingsService');
 const notificationsService = require('../notifications/notificationsService');
@@ -124,7 +126,7 @@ router.post('/booking/:vacationId/:docToken', async (req, res, next) => {
 
     res.json({ success: true });
   } catch (error) {
-    next(error);
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle publicBookings request", error));
   }
 });
 

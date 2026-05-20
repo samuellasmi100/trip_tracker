@@ -1,6 +1,8 @@
 'use strict';
 
 const router = require('express').Router();
+const ErrorMessage = require("../../serverLogs/errorMessage");
+const ErrorType = require("../../serverLogs/errorType");
 const notificationsService = require('./notificationsService');
 
 // GET /notifications  — all notifications (latest 100)
@@ -19,7 +21,7 @@ router.put('/read', async (req, res, next) => {
     await notificationsService.markAllRead();
     res.send({ success: true });
   } catch (error) {
-    next(error);
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle notifications request", error));
   }
 });
 
@@ -29,7 +31,7 @@ router.delete('/:id', async (req, res, next) => {
     await notificationsService.deleteOne(req.params.id);
     res.send({ success: true });
   } catch (error) {
-    next(error);
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle notifications request", error));
   }
 });
 

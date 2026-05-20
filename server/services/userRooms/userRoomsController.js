@@ -1,5 +1,7 @@
 const router = require("express").Router();
 const userRoomsService = require("./userRoomsService")
+const ErrorMessage = require("../../serverLogs/errorMessage");
+const ErrorType = require("../../serverLogs/errorType");
 
 
 
@@ -11,7 +13,7 @@ router.post("/move", async (req, res, next) => {
     await userRoomsService.moveRoom(vacationId, familyId, fromRoomId, toRoomId);
     res.send("החדר הועבר בהצלחה");
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to move room", error));
   }
 });
 
@@ -22,12 +24,43 @@ router.post("/", async (req, res, next) => {
   const endDate = req.body.endDate
   const vacationId = req.body.vacationId
 
-  try {
-    const response = await userRoomsService.assignMainRoom(roomDetails,familyId,vacationId,startDate,endDate)
-    res.send("שיוך החדרים עבר בהצלחה")
+  // Date validation runs BEFORE we touch the DB. room_taken has start_date /
+  // end_date as DATE NOT NULL, and historically the service silently failed
+  // when given undefined/null/unparseable values. Reject early with a clear
+  // Hebrew message instead. An "unassign all" call (roomDetails empty) does
+  // not need dates, so skip the check in that case.
+  const isUnassignAll = Array.isArray(roomDetails) && roomDetails.length === 0;
+  if (!isUnassignAll) {
+    const sd = startDate ? new Date(startDate) : null;
+    const ed = endDate ? new Date(endDate) : null;
+    if (!sd || !ed || isNaN(sd.getTime()) || isNaN(ed.getTime())) {
+      return res.status(400).json({
+        error: 'INVALID_DATES',
+        message: 'תאריכי שהייה חסרים או לא תקינים',
+      });
+    }
+    if (ed.getTime() <= sd.getTime()) {
+      return res.status(400).json({
+        error: 'INVALID_RANGE',
+        message: 'תאריך סיום חייב להיות אחרי תאריך התחלה',
+      });
+    }
+  }
 
+  try {
+    await userRoomsService.assignMainRoom(roomDetails,familyId,vacationId,startDate,endDate)
+    res.send("שיוך החדרים עבר בהצלחה")
   } catch (error) {
-    return next(error);
+    // Overlap conflicts get a dedicated 409 so the client can distinguish
+    // "room already taken" from a real server failure.
+    if (error && error.code === userRoomsService.ROOM_OVERLAP) {
+      return res.status(409).json({
+        error: 'ROOM_OVERLAP',
+        roomId: error.roomId,
+        message: 'החדר כבר תפוס בתאריכים אלה',
+      });
+    }
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to assign room", error));
   }
 });
 

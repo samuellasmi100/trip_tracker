@@ -15,6 +15,7 @@ const addFlightsDetails = async (flightsData,vacationId) => {
     logger.error(
       `Error: Function:addFlightsDetails :, ${error.sqlMessage}`,
     );
+    throw error;
   }
 }
 
@@ -32,6 +33,7 @@ const updateFlightsDetails = async (flightsData,vacationId) => {
     logger.error(
       `Error: Function:updateFlightsDetails :, ${error.sqlMessage}`,
     );
+    throw error;
   }
 }
 

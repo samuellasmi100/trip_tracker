@@ -1,4 +1,6 @@
 const router = require("express").Router();
+const ErrorMessage = require("../../serverLogs/errorMessage");
+const ErrorType = require("../../serverLogs/errorType");
 const familyService = require("./familyService")
 
 router.post("/:id", async (req, res, next) => {
@@ -12,7 +14,7 @@ router.post("/:id", async (req, res, next) => {
     const response = familyService.addFamily(familyData, vacationId)
     res.send("ההוספה עברה בהצלחה")
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle family request", error));
   }
 });
 
@@ -23,7 +25,7 @@ router.put("/:id", async (req, res, next) => {
     await familyService.updateFamily(data, vacationId)
     res.send("העדכון עבר בהצלחה")
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle family request", error));
   }
 });
 

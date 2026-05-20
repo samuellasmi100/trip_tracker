@@ -1,4 +1,6 @@
 const router = require("express").Router();
+const ErrorMessage = require("../../serverLogs/errorMessage");
+const ErrorType = require("../../serverLogs/errorType");
 const budgetsService = require("./budgetsService")
 const uuid = require("uuid").v4;
 
@@ -57,7 +59,7 @@ router.get("/sub_category/:id/:category_id", async (req, res, next) => {
       res.send("response")
   
     } catch (error) {
-      return next(error);
+      return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle budgets request", error));
     }
   });
 
@@ -70,7 +72,7 @@ router.get("/sub_category/:id/:category_id", async (req, res, next) => {
      res.send("response")
  
    } catch (error) {
-     return next(error);
+     return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle budgets request", error));
    }
  });
 
@@ -82,7 +84,7 @@ router.get("/sub_category/:id/:category_id", async (req, res, next) => {
    res.send("response")
 
  } catch (error) {
-   return next(error);
+   return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle budgets request", error));
  }
 });
 
@@ -94,7 +96,7 @@ router.put("/expenses/:id", async (req, res, next) => {
    res.send("response")
 
  } catch (error) {
-   return next(error);
+   return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle budgets request", error));
  }
 });
 
@@ -107,7 +109,7 @@ router.put("/status_expenses/:id", async (req, res, next) => {
    res.send("response")
 
  } catch (error) {
-   return next(error);
+   return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle budgets request", error));
  }
 });
 
@@ -129,7 +131,7 @@ router.put("/exchange_rates/:id", async (req, res, next) => {
     const response = await budgetsService.upsertExchangeRate(vacationId, ccy, amount);
     res.send(response);
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle budgets request", error));
   }
 });
 
@@ -141,7 +143,7 @@ router.post("/category/:id", async (req, res, next) => {
     const response = await budgetsService.addCategory(vacationId, name);
     res.send(response);
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle budgets request", error));
   }
 });
 
@@ -152,7 +154,7 @@ router.put("/category/:id", async (req, res, next) => {
     const response = await budgetsService.updateCategory(vacationId, categoryId, name);
     res.send(response);
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle budgets request", error));
   }
 });
 
@@ -163,7 +165,7 @@ router.delete("/category/:id/:categoryId", async (req, res, next) => {
     const response = await budgetsService.deleteCategory(vacationId, categoryId);
     res.send(response);
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle budgets request", error));
   }
 });
 
@@ -175,7 +177,7 @@ router.post("/sub_category/:id", async (req, res, next) => {
     const response = await budgetsService.addSubCategory(vacationId, categoryId, name);
     res.send(response);
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle budgets request", error));
   }
 });
 
@@ -186,7 +188,7 @@ router.put("/sub_category/:id", async (req, res, next) => {
     const response = await budgetsService.updateSubCategory(vacationId, subCategoryId, name, categoryId);
     res.send(response);
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle budgets request", error));
   }
 });
 
@@ -198,7 +200,7 @@ router.delete("/sub_category/:id/:subCategoryId/:categoryId", async (req, res, n
     const response = await budgetsService.deleteSubCategory(vacationId, subCategoryId, categoryId);
     res.send(response);
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle budgets request", error));
   }
 });
 
@@ -220,7 +222,7 @@ router.post("/income_category/:id", async (req, res, next) => {
     const response = await budgetsService.addIncomeCategory(vacationId, name);
     res.send(response);
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle budgets request", error));
   }
 });
 
@@ -231,7 +233,7 @@ router.put("/income_category/:id", async (req, res, next) => {
     const response = await budgetsService.updateIncomeCategory(vacationId, categoryId, name);
     res.send(response);
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle budgets request", error));
   }
 });
 
@@ -242,7 +244,7 @@ router.delete("/income_category/:id/:categoryId", async (req, res, next) => {
     const response = await budgetsService.deleteIncomeCategory(vacationId, categoryId);
     res.send(response);
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle budgets request", error));
   }
 });
 
@@ -265,7 +267,7 @@ router.post("/income_sub_category/:id", async (req, res, next) => {
     const response = await budgetsService.addIncomeSubCategory(vacationId, categoryId, name);
     res.send(response);
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle budgets request", error));
   }
 });
 
@@ -276,7 +278,7 @@ router.put("/income_sub_category/:id", async (req, res, next) => {
     const response = await budgetsService.updateIncomeSubCategory(vacationId, subCategoryId, name, categoryId);
     res.send(response);
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle budgets request", error));
   }
 });
 
@@ -288,7 +290,7 @@ router.delete("/income_sub_category/:id/:subCategoryId/:categoryId", async (req,
     const response = await budgetsService.deleteIncomeSubCategory(vacationId, subCategoryId, categoryId);
     res.send(response);
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle budgets request", error));
   }
 });
 
@@ -310,7 +312,7 @@ router.post("/income/:id", async (req, res, next) => {
     await budgetsService.addIncome(vacationId, incomeDetails);
     res.send("response");
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle budgets request", error));
   }
 });
 
@@ -321,7 +323,7 @@ router.put("/income/:id", async (req, res, next) => {
     await budgetsService.updateIncome(vacationId, incomeDetails);
     res.send("response");
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle budgets request", error));
   }
 });
 
@@ -332,7 +334,7 @@ router.put("/income_status/:id", async (req, res, next) => {
     await budgetsService.updateIncomeStatus(vacationId, actionId, paymentStatus);
     res.send("response");
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle budgets request", error));
   }
 });
 
@@ -343,7 +345,7 @@ router.delete("/income/:id/:actionId", async (req, res, next) => {
     await budgetsService.deleteIncome(vacationId, actionId);
     res.send("response");
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle budgets request", error));
   }
 });
 
@@ -355,7 +357,7 @@ router.delete("/expenses/:id/:actionId", async (req, res, next) => {
     await budgetsService.deleteExpense(vacationId, actionId);
     res.send("response");
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle budgets request", error));
   }
 });
 

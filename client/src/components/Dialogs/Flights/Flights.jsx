@@ -47,6 +47,7 @@ const [flightsCompany, setFlightsCompany] = useState([])
       }
     } catch (error) {
       console.log(error);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "שמירת פרטי הטיסה נכשלה, נסה שוב", timeout: 4000 }));
     }
   };
 
@@ -56,6 +57,7 @@ const [flightsCompany, setFlightsCompany] = useState([])
       handleCloseClicked();
     } catch (error) {
       console.log(error);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "שמירת פרטי הטיסה נכשלה, נסה שוב", timeout: 4000 }));
     }
   };
   

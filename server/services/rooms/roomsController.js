@@ -1,4 +1,6 @@
 const router = require("express").Router();
+const ErrorMessage = require("../../serverLogs/errorMessage");
+const ErrorType = require("../../serverLogs/errorType");
 const roomsService = require("./roomsService")
 
 // IMPORTANT: Static-prefix routes must come before param routes (/:vacationId)
@@ -63,7 +65,7 @@ router.get("/:vacationId", async (req, res, next) => {
 router.post("/", async (req, res, next) => {
   try {
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle rooms request", error));
   }
 });
 
@@ -75,7 +77,7 @@ router.put("/:id", async (req, res, next) => {
    const response = await roomsService.getAll(vacationId)
    res.send(response)
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle rooms request", error));
   }
 });
 

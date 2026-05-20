@@ -70,6 +70,7 @@ const upsertExchangeRate = async (vacationId, ccy, amount) => {
     logger.error(
       `Error: Function:upsertExchangeRate :, ${error.sqlMessage}`,
     );
+    throw error;
   }
 }
 
@@ -90,6 +91,7 @@ const addFutureExpenses = async (vacationId, payment) => {
     logger.error(
       `Error: Function:addFutureExpenses :, ${error.sqlMessage}`,
     );
+    throw error;
   }
 }
 
@@ -126,6 +128,7 @@ const addExpenses = async (vacationId, payment) => {
     logger.error(
       `Error: Function:addExpenses :, ${error.sqlMessage}`,
     );
+    throw error;
   }
 }
 
@@ -155,6 +158,7 @@ const updateExpenses = async (vacationId, payment) => {
     logger.error(
       `Error: Function:updateExpenses :, ${error.sqlMessage}`,
     );
+    throw error;
   }
 }
 
@@ -172,6 +176,7 @@ const updateExpensesStatus = async (vacationId, expensesId,paymentStatus) => {
     logger.error(
       `Error: Function:updateExpensesStatus :, ${error.sqlMessage}`,
     );
+    throw error;
   }
 }
 
@@ -190,6 +195,7 @@ const updateFutureExpenses = async (vacationId, payment) => {
     logger.error(
       `Error: Function:updateFutureExpenses :, ${error.sqlMessage}`,
     );
+    throw error;
   }
 }
 
@@ -201,6 +207,7 @@ const addCategory = async (vacationId, name) => {
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     logger.error(`Error: Function:addCategory :, ${error.sqlMessage}`)
+    throw error;
   }
 }
 
@@ -211,6 +218,7 @@ const updateCategoryDb = async (vacationId, id, name) => {
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     logger.error(`Error: Function:updateCategory :, ${error.sqlMessage}`)
+    throw error;
   }
 }
 
@@ -221,6 +229,7 @@ const deleteCategory = async (vacationId, id) => {
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     logger.error(`Error: Function:deleteCategory :, ${error.sqlMessage}`)
+    throw error;
   }
 }
 
@@ -232,6 +241,7 @@ const addSubCategory = async (vacationId, categoryId, name) => {
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     logger.error(`Error: Function:addSubCategory :, ${error.sqlMessage}`)
+    throw error;
   }
 }
 
@@ -242,6 +252,7 @@ const updateSubCategory = async (vacationId, id, name) => {
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     logger.error(`Error: Function:updateSubCategory :, ${error.sqlMessage}`)
+    throw error;
   }
 }
 
@@ -252,6 +263,7 @@ const deleteSubCategory = async (vacationId, id) => {
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     logger.error(`Error: Function:deleteSubCategory :, ${error.sqlMessage}`)
+    throw error;
   }
 }
 
@@ -273,6 +285,7 @@ const addIncomeCategory = async (vacationId, name) => {
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     logger.error(`Error: Function:addIncomeCategory :, ${error.sqlMessage}`)
+    throw error;
   }
 }
 
@@ -283,6 +296,7 @@ const updateIncomeCategory = async (vacationId, id, name) => {
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     logger.error(`Error: Function:updateIncomeCategory :, ${error.sqlMessage}`)
+    throw error;
   }
 }
 
@@ -293,6 +307,7 @@ const deleteIncomeCategory = async (vacationId, id) => {
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     logger.error(`Error: Function:deleteIncomeCategory :, ${error.sqlMessage}`)
+    throw error;
   }
 }
 
@@ -315,6 +330,7 @@ const addIncomeSubCategory = async (vacationId, categoryId, name) => {
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     logger.error(`Error: Function:addIncomeSubCategory :, ${error.sqlMessage}`)
+    throw error;
   }
 }
 
@@ -325,6 +341,7 @@ const updateIncomeSubCategory = async (vacationId, id, name) => {
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     logger.error(`Error: Function:updateIncomeSubCategory :, ${error.sqlMessage}`)
+    throw error;
   }
 }
 
@@ -335,6 +352,7 @@ const deleteIncomeSubCategory = async (vacationId, id) => {
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     logger.error(`Error: Function:deleteIncomeSubCategory :, ${error.sqlMessage}`)
+    throw error;
   }
 }
 
@@ -357,6 +375,7 @@ const addIncome = async (vacationId, payment) => {
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     logger.error(`Error: Function:addIncome :, ${error.sqlMessage}`)
+    throw error;
   }
 }
 
@@ -383,6 +402,7 @@ const updateIncome = async (vacationId, payment) => {
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     logger.error(`Error: Function:updateIncome :, ${error.sqlMessage}`)
+    throw error;
   }
 }
 
@@ -398,6 +418,7 @@ const updateIncomeStatus = async (vacationId, actionId, paymentStatus) => {
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     logger.error(`Error: Function:updateIncomeStatus :, ${error.sqlMessage}`)
+    throw error;
   }
 }
 
@@ -408,6 +429,7 @@ const deleteIncome = async (vacationId, actionId) => {
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     logger.error(`Error: Function:deleteIncome :, ${error.sqlMessage}`)
+    throw error;
   }
 }
 
@@ -419,6 +441,7 @@ const deleteExpense = async (vacationId, actionId) => {
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     logger.error(`Error: Function:deleteExpense :, ${error.sqlMessage}`)
+    throw error;
   }
 }
 
@@ -429,6 +452,7 @@ const deleteFutureExpense = async (vacationId, actionId) => {
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     logger.error(`Error: Function:deleteFutureExpense :, ${error.sqlMessage}`)
+    throw error;
   }
 }
 

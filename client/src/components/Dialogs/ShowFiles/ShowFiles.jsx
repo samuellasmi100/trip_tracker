@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import ShowFilesView from "./ShowFiles.view";
 import * as notesSlice from "../../../store/slice/notesSlice";
 import * as dialogSlice from "../../../store/slice/dialogSlice";
+import * as snackBarSlice from "../../../store/slice/snackbarSlice";
 import ApiFile from "../../../apis/uploadFileRequest"
 import { END_POINT } from "../../../utils/constants";
 import axios from "axios";
@@ -47,10 +48,12 @@ const ShowFiles = () => {
 
     const lowercaseValue = userForm?.english_last_name?.toLowerCase();
     try {
-       ApiFile.deleteFamilyFiles(token,lowercaseValue,vacationId,file)
+       // Previously fire-and-forget — added await so a failure actually surfaces.
+       await ApiFile.deleteFamilyFiles(token,lowercaseValue,vacationId,file)
        dispatch(dialogSlice.resetState())
     } catch (error) {
       console.error(`Error deleting file: ${error.message}`);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "מחיקת הקובץ נכשלה, נסה שוב", timeout: 4000 }));
     }
   };
   

@@ -1,6 +1,8 @@
 'use strict';
 
 const router = require('express').Router();
+const ErrorMessage = require("../../serverLogs/errorMessage");
+const ErrorType = require("../../serverLogs/errorType");
 const settingsDb = require('./settingsDb');
 
 // ── Static routes (no :vacationId param) — registered FIRST ────────────────
@@ -25,7 +27,7 @@ router.post('/flight-companies', async (req, res, next) => {
     const result = await settingsDb.addFlightCompany(name.trim());
     res.status(201).json({ id: result.insertId, name: name.trim() });
   } catch (error) {
-    next(error);
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle settings request", error));
   }
 });
 
@@ -36,7 +38,7 @@ router.delete('/flight-companies/:id', async (req, res, next) => {
     await settingsDb.deleteFlightCompany(id);
     res.json({ success: true });
   } catch (error) {
-    next(error);
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle settings request", error));
   }
 });
 
@@ -61,7 +63,7 @@ router.put('/:vacationId/agreement', async (req, res, next) => {
     await settingsDb.updateAgreementText(vacationId, agreement_text);
     res.json({ success: true });
   } catch (error) {
-    next(error);
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle settings request", error));
   }
 });
 

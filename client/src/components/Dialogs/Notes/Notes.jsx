@@ -49,6 +49,7 @@ const vacationId =  useSelector((state) => state.vacationSlice.vacationId)
       }
     } catch (error) {
       console.log(error);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "שמירת ההערה נכשלה, נסה שוב", timeout: 4000 }));
     }
   };
 ;

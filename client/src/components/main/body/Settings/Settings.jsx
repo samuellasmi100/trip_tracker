@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import SettingsView from "./Settings.view";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import ApiDocuments from "../../../../apis/documentsRequest";
 import ApiSettings from "../../../../apis/settingsRequest";
 import ApiPayments from "../../../../apis/paymentsRequest";
+import * as snackBarSlice from "../../../../store/slice/snackbarSlice";
 
 const EMPTY_PROVIDER_CONFIG = {
   terminalNumber: "",
@@ -18,6 +19,7 @@ const EMPTY_PROVIDER_CONFIG = {
 };
 
 const Settings = () => {
+  const dispatch = useDispatch();
   const vacationId = useSelector((state) => state.vacationSlice.vacationId);
   const vacationName = useSelector((state) => state.vacationSlice.vacationName);
   const token = sessionStorage.getItem("token");
@@ -84,6 +86,7 @@ const Settings = () => {
       setTimeout(() => setAgreementSaved(false), 2500);
     } catch (e) {
       console.error(e);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "שמירת ההסכם נכשלה, נסה שוב", timeout: 4000 }));
     } finally {
       setSavingAgreement(false);
     }
@@ -112,6 +115,7 @@ const Settings = () => {
       await fetchDocTypes();
     } catch (e) {
       console.error(e);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "הוספת סוג המסמך נכשלה, נסה שוב", timeout: 4000 }));
     } finally {
       setAddingDocType(false);
     }
@@ -150,6 +154,7 @@ const Settings = () => {
       await fetchFlightCompanies();
     } catch (e) {
       console.error(e);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "הוספת חברת התעופה נכשלה, נסה שוב", timeout: 4000 }));
     } finally {
       setAddingCompany(false);
     }
@@ -203,6 +208,7 @@ const Settings = () => {
       setTimeout(() => setProviderSaved(false), 2500);
     } catch (e) {
       console.error(e);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "שמירת הגדרות התשלום נכשלה, נסה שוב", timeout: 4000 }));
     } finally {
       setSavingProvider(false);
     }

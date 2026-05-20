@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Box, CircularProgress, Typography, Tabs, Tab } from "@mui/material";
 import RoomsStatusView from "./RoomsStatus.view";
 import RoomDetailPanel from "./RoomDetailPanel";
@@ -8,6 +8,7 @@ import MoveRoomDialog from "./MoveRoomDialog";
 import RoomRoster from "./RoomRoster";
 import RoomStatusOverview from "./RoomStatusOverview";
 import ApiRooms from "../../../../../../apis/roomsRequest";
+import * as snackBarSlice from "../../../../../../store/slice/snackbarSlice";
 
 export const FAMILY_COLORS = [
   { bg: "#dbeafe", text: "#1d4ed8", border: "#93c5fd" },
@@ -54,6 +55,7 @@ const generateDateRange = (startDate, endDate) => {
 };
 
 const RoomsStatus = () => {
+  const dispatch = useDispatch();
   const vacationId = useSelector((s) => s.vacationSlice.vacationId);
   const vacationsDates = useSelector((s) => s.vacationSlice.vacationsDates);
   const token = sessionStorage.getItem("token");
@@ -143,6 +145,20 @@ const RoomsStatus = () => {
   }, []);
 
   const handleAssignFamily = async (familyId, roomIds, startDate, endDate) => {
+    // The server INSERTs into room_taken which has start_date/end_date as DATE
+    // NOT NULL. If the selected family doesn't have those dates set on its
+    // family record, the insert would fail — surface that up-front instead of
+    // sending a request that can only error out.
+    if (!startDate || !endDate) {
+      dispatch(
+        snackBarSlice.setSnackBar({
+          type: "error",
+          message: "למשפחה אין תאריכי שהייה — יש להגדיר תאריכים בכרטיס המשפחה לפני שיבוץ",
+          timeout: 4000,
+        })
+      );
+      return;
+    }
     try {
       const existingRoomIds = new Set(
         boardData.bookings
@@ -163,6 +179,22 @@ const RoomsStatus = () => {
       await refreshBoard();
     } catch (err) {
       console.error("Failed to assign family to rooms", err);
+      // 409 = the server detected an overlap with an existing booking in
+      // (one of) the requested rooms. Show a specific Hebrew toast so the
+      // user understands it's a conflict, not a system error.
+      const status = err?.response?.status;
+      const serverMessage = err?.response?.data?.message;
+      let message;
+      if (status === 409) {
+        message = serverMessage || "החדר כבר תפוס בתאריכים אלה";
+      } else if (status === 400) {
+        message = serverMessage || "תאריכי שהייה חסרים או לא תקינים";
+      } else {
+        message = "שיבוץ החדר נכשל — בדוק תאריכי שהייה של המשפחה ונסה שוב";
+      }
+      dispatch(
+        snackBarSlice.setSnackBar({ type: "error", message, timeout: 4000 })
+      );
     }
   };
 
@@ -176,6 +208,7 @@ const RoomsStatus = () => {
       await refreshBoard();
     } catch (err) {
       console.error("Failed to toggle guest room assignment", err);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "שיוך האורח לחדר נכשל, נסה שוב", timeout: 4000 }));
     }
   };
 

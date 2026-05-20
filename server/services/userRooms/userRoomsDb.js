@@ -3,15 +3,21 @@ const userRoomQuery = require("../../sql/query/userRoomQuery")
 const logger = require("../../utils/logger");
 
 const assignMainRoom = async (vacationId,familyId,roomId,startDate,endDate) => {
- 
+
   try {
     const sql = userRoomQuery.assignMainRoom(vacationId)
     const parameters = [familyId,roomId,startDate,endDate]
-     await connection.executeWithParameters(sql,parameters) 
-  } catch (error) { 
+     await connection.executeWithParameters(sql,parameters)
+  } catch (error) {
   logger.error(
       `Error: Function:assignMainRoom :, ${error.sqlMessage}`,
     );
+    // Re-throw so the controller's error handler sees the failure.
+    // Previously this catch silently swallowed SQL errors (e.g. NULL/undefined
+    // start_date or end_date being inserted into the NOT NULL DATE columns of
+    // room_taken), and the controller responded with success while no row was
+    // written — the user saw the dialog close but no assignment persisted.
+    throw error;
   }
 }
 

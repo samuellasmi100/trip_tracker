@@ -25,7 +25,7 @@ router.put("/", async (req, res, next) => {
   try {
    
   } catch (error) {
-    return next(error);
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle vacation request", error));
   }
 });
 

@@ -14,20 +14,25 @@ const PublicLeadForm = () => {
   });
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+    if (errorMessage) setErrorMessage("");
   };
 
   const handleSubmit = async () => {
     if (!form.full_name.trim()) return;
     setLoading(true);
+    setErrorMessage("");
     try {
       await ApiLeads.submitPublic(vacationId, form);
       setSubmitted(true);
     } catch (error) {
       console.log(error);
+      // No Redux/snackbar on public route — surface inline so the prospect knows.
+      setErrorMessage("שליחת הטופס נכשלה, נסה שוב מאוחר יותר");
     } finally {
       setLoading(false);
     }
@@ -38,6 +43,7 @@ const PublicLeadForm = () => {
       form={form}
       loading={loading}
       submitted={submitted}
+      errorMessage={errorMessage}
       handleChange={handleChange}
       handleSubmit={handleSubmit}
     />
