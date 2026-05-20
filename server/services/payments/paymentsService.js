@@ -1,5 +1,5 @@
 const paymentsDb = require("./paymentsDb");
-const gatewayRouter = require("../paymentGateway/gatewayRouter");
+const gatewayRouter = require("./gatewayRouter");
 const logger = require("../../utils/logger");
 
 const getPayments       = (familyId, vacationId) => paymentsDb.getPayments(familyId, vacationId);
