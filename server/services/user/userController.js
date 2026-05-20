@@ -42,12 +42,21 @@ router.get("/:id/:vacationId", async (req, res, next) => {
 router.put("/:id", async (req, res, next) => {
   const vacationId = req.params.id
    const userData = req.body
-  
+
   try {
    await userService.updateGuest(userData,vacationId)
    const response = await userService.getFamilyMember(userData.family_id,vacationId)
    res.send(response)
   } catch (error) {
+    // Match the assignment endpoint: bad date input gets a dedicated 400
+    // with a Hebrew message so the client can show a precise toast instead
+    // of the generic save-failed one.
+    if (error && error.code === userService.INVALID_DATES) {
+      return res.status(400).json({
+        error: 'INVALID_DATES',
+        message: 'תאריכי שהייה לא תקינים',
+      });
+    }
     return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle user request", error));
   }
 });

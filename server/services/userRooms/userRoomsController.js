@@ -2,6 +2,7 @@ const router = require("express").Router();
 const userRoomsService = require("./userRoomsService")
 const ErrorMessage = require("../../serverLogs/errorMessage");
 const ErrorType = require("../../serverLogs/errorType");
+const { parseDateLoose } = require("../../utils/dateNormalize");
 
 
 
@@ -32,31 +33,37 @@ router.post("/remove", async (req, res, next) => {
 router.post("/", async (req, res, next) => {
   const roomDetails = req.body.selectedRooms
   const familyId = req.body.familyId
-  const startDate = req.body.startDate
-  const endDate = req.body.endDate
+  let startDate = req.body.startDate
+  let endDate = req.body.endDate
   const vacationId = req.body.vacationId
 
-  // Date validation runs BEFORE we touch the DB. room_taken has start_date /
-  // end_date as DATE NOT NULL, and historically the service silently failed
-  // when given undefined/null/unparseable values. Reject early with a clear
-  // Hebrew message instead. An "unassign all" call (roomDetails empty) does
-  // not need dates, so skip the check in that case.
+  // Date validation + normalization. `families.start_date`/`end_date` are
+  // varchar(45) and the in-app GuestWizard stores them as DD/MM/YYYY (Israeli
+  // display format); Excel-imported families have ISO. `room_taken` only
+  // accepts ISO (DATE NOT NULL). parseDateLoose tolerates both incoming
+  // shapes and returns strict ISO — or null, which we map to INVALID_DATES.
+  // An "unassign all" call (roomDetails empty) doesn't need dates, so skip
+  // the check in that case.
   const isUnassignAll = Array.isArray(roomDetails) && roomDetails.length === 0;
   if (!isUnassignAll) {
-    const sd = startDate ? new Date(startDate) : null;
-    const ed = endDate ? new Date(endDate) : null;
-    if (!sd || !ed || isNaN(sd.getTime()) || isNaN(ed.getTime())) {
+    const sd = parseDateLoose(startDate);
+    const ed = parseDateLoose(endDate);
+    if (!sd || !ed) {
       return res.status(400).json({
         error: 'INVALID_DATES',
         message: 'תאריכי שהייה חסרים או לא תקינים',
       });
     }
-    if (ed.getTime() <= sd.getTime()) {
+    if (new Date(ed).getTime() <= new Date(sd).getTime()) {
       return res.status(400).json({
         error: 'INVALID_RANGE',
         message: 'תאריך סיום חייב להיות אחרי תאריך התחלה',
       });
     }
+    // Replace with the normalized ISO values for everything downstream
+    // (the overlap probe and the INSERT into room_taken).
+    startDate = sd;
+    endDate = ed;
   }
 
   try {

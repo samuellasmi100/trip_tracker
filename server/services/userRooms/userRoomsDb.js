@@ -50,13 +50,20 @@ const updateStartEndAndDate = async (vacationId,familyId,startDate,endDate) => {
     if(startDate !== undefined && endDate !== undefined){
       let sql  = userRoomQuery.updateStartEndAndDate(vacationId)
       const parameters = [startDate,endDate,familyId]
-      await connection.executeWithParameters(sql,parameters) 
+      await connection.executeWithParameters(sql,parameters)
     }
-    
-  } catch (error) { 
+
+  } catch (error) {
   logger.error(
       `Error: Function:updateStartEndAndDate :, ${error.sqlMessage}`,
     );
+    // Same fake-success bug as the assign flow: previously this caught the
+    // MySQL DATE-format / NOT-NULL error from a DD/MM/YYYY value and let the
+    // controller respond 200 while no row was updated. Surface it now —
+    // the service-layer normalizer means we should never reach the catch
+    // with a format issue, but if something else fails (lost connection,
+    // FK constraint, etc.) the client must hear about it.
+    throw error;
   }
 }
 

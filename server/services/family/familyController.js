@@ -2,14 +2,32 @@ const router = require("express").Router();
 const ErrorMessage = require("../../serverLogs/errorMessage");
 const ErrorType = require("../../serverLogs/errorType");
 const familyService = require("./familyService")
+const { parseDateLoose } = require("../../utils/dateNormalize");
 
 router.post("/:id", async (req, res, next) => {
   const vacationId = req.params.id
   const familyData = req.body.form
   familyData.familyId = req.body.newFamilyId
   familyData.familyName = familyData.family_name || (familyData.hebrew_first_name + " " + familyData.hebrew_last_name)
-  familyData.start_date = familyData.arrival_date || null
-  familyData.end_date = familyData.departure_date || null
+  // Client form sends arrival_date / departure_date as DD/MM/YYYY (the
+  // GuestWizard runs isoToDisplay over date inputs). Convert to ISO before
+  // storing so newly-created families go in as YYYY-MM-DD. Existing rows are
+  // intentionally left in their original format — the assignment endpoint's
+  // normalizer handles them at read time. An empty/missing date stores as
+  // null (the wizard allows the field to be blank); a *present* date that
+  // can't be parsed is rejected outright so we never silently store garbage.
+  const hasArrival   = familyData.arrival_date   && String(familyData.arrival_date).trim() !== "";
+  const hasDeparture = familyData.departure_date && String(familyData.departure_date).trim() !== "";
+  const isoArrival   = hasArrival   ? parseDateLoose(familyData.arrival_date)   : null;
+  const isoDeparture = hasDeparture ? parseDateLoose(familyData.departure_date) : null;
+  if ((hasArrival && !isoArrival) || (hasDeparture && !isoDeparture)) {
+    return res.status(400).json({
+      error: 'INVALID_DATES',
+      message: 'תאריכי שהייה לא תקינים',
+    });
+  }
+  familyData.start_date = isoArrival;
+  familyData.end_date = isoDeparture;
   try {
     const response = familyService.addFamily(familyData, vacationId)
     res.send("ההוספה עברה בהצלחה")
@@ -21,6 +39,23 @@ router.post("/:id", async (req, res, next) => {
 router.put("/:id", async (req, res, next) => {
   const vacationId = req.params.id
   const data = req.body
+  // FamilyList's edit dialog sends start_date / end_date in DD/MM/YYYY (the
+  // dialog runs isoToDisplay over the values). Without normalization, every
+  // edit would regress an ISO-stored row back to DD/MM/YYYY in `families`,
+  // re-fragmenting storage. Normalize symmetrically with POST: empty
+  // becomes null, present-but-unparseable is rejected with 400.
+  const hasStart = data.start_date && String(data.start_date).trim() !== "";
+  const hasEnd   = data.end_date   && String(data.end_date).trim()   !== "";
+  const isoStart = hasStart ? parseDateLoose(data.start_date) : null;
+  const isoEnd   = hasEnd   ? parseDateLoose(data.end_date)   : null;
+  if ((hasStart && !isoStart) || (hasEnd && !isoEnd)) {
+    return res.status(400).json({
+      error: 'INVALID_DATES',
+      message: 'תאריכי שהייה לא תקינים',
+    });
+  }
+  data.start_date = isoStart;
+  data.end_date = isoEnd;
   try {
     await familyService.updateFamily(data, vacationId)
     res.send("העדכון עבר בהצלחה")

@@ -4,6 +4,12 @@ const notesService = require("../notes/notesService");
 const paymentsService = require("../payments/paymentsService");
 const userDb = require("./userDb");
 const userRoomService = require("../userRooms/userRoomsService");
+const { parseDateLoose } = require("../../utils/dateNormalize");
+
+// Sentinel thrown by updateGuest when arrival/departure dates are supplied
+// but not parseable — the controller maps this to a 400 with a Hebrew
+// message instead of a generic 500.
+const INVALID_DATES = 'INVALID_DATES';
 
 const addGuest = async (data, vacationId) => {
   return await userDb.addGuest(data, vacationId);
@@ -34,11 +40,29 @@ const updateGuest = async (data, vacationId) => {
   const familyId = data.family_id;
   let startDate = data.arrival_date;
   let endDate = data.departure_date;
+
+  // Normalize the guest's arrival/departure to ISO before they reach
+  // room_taken (DATE NOT NULL). The form sends DD/MM/YYYY for in-app rows
+  // and the underlying DB function silently no-op'd on bad formats — this
+  // tightens it. Empty values stay empty; the DB-layer's existing guard
+  // skips the UPDATE when either is undefined.
+  const sd = startDate ? parseDateLoose(startDate) : null;
+  const ed = endDate   ? parseDateLoose(endDate)   : null;
+  if ((startDate && !sd) || (endDate && !ed)) {
+    const err = new Error("Invalid arrival/departure date format");
+    err.code = INVALID_DATES;
+    throw err;
+  }
+  // updateStartEndAndDate's guard requires both `!== undefined` to fire.
+  // Mirror that: only pass strings (ISO) when both parsed; otherwise pass
+  // undefined to keep the existing skip-the-UPDATE behaviour intact.
+  const sdArg = sd && ed ? sd : undefined;
+  const edArg = sd && ed ? ed : undefined;
   await userRoomService.updateStartEndAndDate(
     vacationId,
     familyId,
-    startDate,
-    endDate
+    sdArg,
+    edArg
   );
   return await userDb.updateGuest(data, vacationId);
 };
@@ -84,5 +108,6 @@ module.exports = {
   saveRegistrationForm,
   getUserDetails,
   deleteGuest,
-  deleteMainGuest
+  deleteMainGuest,
+  INVALID_DATES,
 };
