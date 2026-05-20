@@ -156,11 +156,11 @@ const AssignFamilyDialog = ({
               size="small"
               autoFocus
               InputProps={{
-                ...params.InputProps,
+                ...(params.InputProps || {}),
                 endAdornment: (
                   <>
                     {searching && <CircularProgress size={16} />}
-                    {params.InputProps.endAdornment}
+                    {params.InputProps?.endAdornment}
                   </>
                 ),
               }}
