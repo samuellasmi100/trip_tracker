@@ -17,6 +17,18 @@ router.post("/move", async (req, res, next) => {
   }
 });
 
+// Remove a single family/room pairing — frees the room for the dates the
+// family held it without touching the family's other room bookings.
+router.post("/remove", async (req, res, next) => {
+  const { vacationId, familyId, roomId } = req.body;
+  try {
+    await userRoomsService.removeFamilyFromRoom(vacationId, familyId, roomId);
+    res.send("המשפחה הוסרה מהחדר בהצלחה");
+  } catch (error) {
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to remove family from room", error));
+  }
+});
+
 router.post("/", async (req, res, next) => {
   const roomDetails = req.body.selectedRooms
   const familyId = req.body.familyId

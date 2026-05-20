@@ -81,5 +81,11 @@ export default {
       headers: { Authorization: token },
     });
   },
+  // Remove a family from a single room (frees that room for the held dates)
+  removeFamilyFromRoom(token, { vacationId, familyId, roomId }) {
+    return Api.post(`/${END_POINT.USER_ROOMS}/remove`, { vacationId, familyId, roomId }, {
+      headers: { Authorization: token },
+    });
+  },
 };
 

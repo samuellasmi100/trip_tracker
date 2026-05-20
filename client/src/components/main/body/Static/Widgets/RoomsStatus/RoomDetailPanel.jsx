@@ -11,6 +11,7 @@ const RoomDetailPanel = ({
   onClose,
   onGuestToggle,
   onMoveRoom,
+  onRemoveFromRoom,
 }) => {
   // Local pending checkbox state — userId → true/false (overrides DB state until saved)
   const [pendingChanges, setPendingChanges] = useState({});
@@ -68,6 +69,15 @@ const RoomDetailPanel = ({
     }
   };
 
+  const handleRemove = () => {
+    if (!booking) return;
+    const ok = window.confirm(
+      `להסיר את משפחת ${booking.family_name} מחדר ${booking.room_id}?`
+    );
+    if (!ok) return;
+    onRemoveFromRoom(booking.family_id, booking.room_id);
+  };
+
   const capacity = room
     ? parseInt(room.base_occupancy || 0) + parseInt(room.max_occupancy || 0)
     : 0;
@@ -96,6 +106,7 @@ const RoomDetailPanel = ({
           onSave={handleSave}
           saving={saving}
           onMoveRoom={() => onMoveRoom(booking)}
+          onRemoveFromRoom={handleRemove}
           onClose={onClose}
           familyColor={familyColor}
           capacity={capacity}

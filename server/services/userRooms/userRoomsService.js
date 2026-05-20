@@ -145,6 +145,23 @@ const moveRoom = async (vacationId, familyId, fromRoomId, toRoomId) => {
     return await userRoomsDb.moveRoom(vacationId, familyId, fromRoomId, toRoomId);
 };
 
+// Remove ONE specific room from a family. Drops the booking row in room_taken
+// and any guest assignments the family had in that room, atomically. Other
+// rooms the family holds are untouched, so this differs from the empty-array
+// "unassign all" branch of assignMainRoom.
+const removeFamilyFromRoom = async (vacationId, familyId, roomId) => {
+    return await connection.withTransaction(async (tx) => {
+        await tx.executeWithParameters(
+            userRoomQuery.removeMainRoomByRoomId(vacationId),
+            [roomId, familyId]
+        );
+        await tx.executeWithParameters(
+            userRoomQuery.removeAllUserAssignFromRoomId(vacationId),
+            [roomId, familyId]
+        );
+    });
+};
+
 module.exports = {
     assignMainRoom,
     getFamilyRoom,
@@ -155,5 +172,6 @@ module.exports = {
     updateStartEndAndDate,
     getAllChosenRoom,
     moveRoom,
+    removeFamilyFromRoom,
     ROOM_OVERLAP,
 }

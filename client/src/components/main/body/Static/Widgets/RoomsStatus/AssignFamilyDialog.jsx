@@ -65,10 +65,8 @@ const AssignFamilyDialog = ({
     return () => clearTimeout(debounceRef.current);
   }, [inputValue, token, vacationId]);
 
-  const isFamilyAlreadyInRoom = (familyId) =>
-    roomIds.some((roomId) =>
-      boardData.bookings.some((b) => b.room_id === roomId && b.family_id === familyId)
-    );
+  const isFamilyAlreadyAssigned = (familyId) =>
+    boardData.bookings.some((b) => b.family_id === familyId);
 
   const handleAssign = () => {
     if (!selectedFamily) return;
@@ -111,7 +109,7 @@ const AssignFamilyDialog = ({
           // Disable built-in client-side filtering — server handles it
           filterOptions={(x) => x}
           isOptionEqualToValue={(option, value) => option.family_id === value.family_id}
-          getOptionDisabled={(option) => isFamilyAlreadyInRoom(option.family_id)}
+          getOptionDisabled={(option) => isFamilyAlreadyAssigned(option.family_id)}
           value={selectedFamily}
           onChange={(_, newValue) => setSelectedFamily(newValue)}
           inputValue={inputValue}
@@ -130,11 +128,14 @@ const AssignFamilyDialog = ({
           // Render dropdown option with dates / "already assigned" label
           renderOption={(props, option) => {
             const { key, ...restProps } = props;
-            const disabled = isFamilyAlreadyInRoom(option.family_id);
+            const disabled = isFamilyAlreadyAssigned(option.family_id);
             return (
               <li key={key} {...restProps}>
                 <Box>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontWeight: 600, color: disabled ? "#dc2626" : undefined }}
+                  >
                     {option.family_name}
                   </Typography>
                   <Typography
@@ -142,7 +143,7 @@ const AssignFamilyDialog = ({
                     sx={{ color: disabled ? "#dc2626" : "#64748b" }}
                   >
                     {disabled
-                      ? "כבר משויך לחדר זה"
+                      ? "כבר משויך לחדר"
                       : `${option.start_date || ""} — ${option.end_date || ""}`}
                   </Typography>
                 </Box>

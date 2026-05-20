@@ -15,6 +15,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import PersonIcon from "@mui/icons-material/Person";
+import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 import BedIcon from "@mui/icons-material/Bed";
 
 const RoomDetailPanelView = ({
@@ -27,6 +28,7 @@ const RoomDetailPanelView = ({
   onSave,
   saving,
   onMoveRoom,
+  onRemoveFromRoom,
   onClose,
   familyColor,
   capacity,
@@ -163,6 +165,16 @@ const RoomDetailPanelView = ({
           sx={{ textTransform: "none", borderColor: "#94a3b8", color: "#334155" }}
         >
           העבר לחדר אחר
+        </Button>
+        <Button
+          variant="outlined"
+          size="small"
+          startIcon={<PersonRemoveIcon />}
+          onClick={onRemoveFromRoom}
+          fullWidth
+          sx={{ textTransform: "none", borderColor: "#dc2626", color: "#dc2626" }}
+        >
+          הסר מהחדר
         </Button>
       </Box>
     </Box>

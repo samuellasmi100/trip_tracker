@@ -223,6 +223,17 @@ const RoomsStatus = () => {
     }
   };
 
+  const handleRemoveFromRoom = async (familyId, roomId) => {
+    try {
+      await ApiRooms.removeFamilyFromRoom(token, { vacationId, familyId, roomId });
+      setDetailPanel({ open: false, booking: null, room: null });
+      await refreshBoard();
+    } catch (err) {
+      console.error("Failed to remove family from room", err);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "הסרת המשפחה מהחדר נכשלה, נסה שוב", timeout: 4000 }));
+    }
+  };
+
   // Show a full-screen loader while the initial board data is fetching.
   // This lives in the container (not the memoized view) so it always renders.
   const isInitialLoad = loading && boardData.rooms.length === 0;
@@ -295,6 +306,7 @@ const RoomsStatus = () => {
         onClose={() => setDetailPanel({ open: false, booking: null, room: null })}
         onGuestToggle={handleGuestToggle}
         onMoveRoom={(booking) => setMoveDialog({ open: true, booking })}
+        onRemoveFromRoom={handleRemoveFromRoom}
       />
 
       <AssignFamilyDialog
