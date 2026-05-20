@@ -1,7 +1,7 @@
 'use strict';
 
 const db = require('../../db/connection-wrapper');
-const q  = require('./dashboardQuery');
+const q  = require('../../sql/query/dashboardQuery');
 
 const getSummary = async (vacationId) => {
   // Use allSettled so a missing table (e.g. leads on old vacation) doesn't crash the whole request

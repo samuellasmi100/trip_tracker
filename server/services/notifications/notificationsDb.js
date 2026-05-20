@@ -1,7 +1,7 @@
 'use strict';
 
 const connection = require('../../db/connection-wrapper');
-const q = require('./notificationsQuery');
+const q = require('../../sql/query/notificationsQuery');
 const logger = require('../../utils/logger');
 
 const getAll = async () => {
