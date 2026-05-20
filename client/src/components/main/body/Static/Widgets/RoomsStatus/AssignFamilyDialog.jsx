@@ -148,9 +148,12 @@ const AssignFamilyDialog = ({
             const assigned = getAssignedRoomCount(option.family_id);
             const reserved = getReservedRoomCount(option);
             const disabled = isFamilyFull(option);
-            // Chip is shown only when we know the reservation count AND the
-            // family already has at least one room — otherwise it's noise.
-            const showChip = reserved !== null && assigned > 0;
+            // Chip is shown whenever we know the reservation count, even at
+            // 0/Y — so the user sees the family's full target up-front (e.g.
+            // a family reserving 2 rooms shows "0/2 חדרים" before any room
+            // is assigned). Families with no number_of_rooms value still
+            // show no chip.
+            const showChip = reserved !== null;
             const chipColor = disabled
               ? { bg: "#fee2e2", border: "#fca5a5", text: "#991b1b" }   // red — full
               : { bg: "#fef3c7", border: "#fcd34d", text: "#92400e" };  // amber — partial

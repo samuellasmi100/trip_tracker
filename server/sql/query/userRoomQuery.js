@@ -132,6 +132,20 @@ const getFamilyRoomIds = (vacationId) => {
           WHERE family_id = ?`;
 };
 
+// "What dates is this family currently holding in any of its rooms?" Used to
+// enforce the rule that a family's dates may not change while the family is
+// still assigned. Every room a family holds shares the same start/end (the
+// assign service always writes both with the family's dates), so LIMIT 1 is
+// safe. Returns an empty array when the family has no current bookings.
+const getBookingDatesForFamily = (vacationId) => {
+  return `SELECT
+            DATE_FORMAT(start_date, '%Y-%m-%d') AS start_date,
+            DATE_FORMAT(end_date,   '%Y-%m-%d') AS end_date
+          FROM trip_tracker_${vacationId}.room_taken
+          WHERE family_id = ?
+          LIMIT 1`;
+};
+
 module.exports = {
   assignMainRoom,
   getFamilyRoom,
@@ -150,4 +164,5 @@ module.exports = {
   moveGuestAssignments,
   findOverlappingBookings,
   getFamilyRoomIds,
+  getBookingDatesForFamily,
 };

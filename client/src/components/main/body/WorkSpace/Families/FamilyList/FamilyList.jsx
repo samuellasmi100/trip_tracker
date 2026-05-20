@@ -254,7 +254,20 @@ const FamilyList = () => {
       loadPage(1, searchTermRef.current);
     } catch (error) {
       console.log(error);
-      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "עדכון פרטי המשפחה נכשל, נסה שוב", timeout: 4000 }));
+      // 409 HAS_ROOM_ASSIGNMENTS = server refused because the family still
+      // holds rooms and dates would change. Surface the server's precise
+      // Hebrew message so the user knows what to do (remove rooms first).
+      const status = error?.response?.status;
+      const serverMessage = error?.response?.data?.message;
+      let message;
+      if (status === 409) {
+        message = serverMessage || "לא ניתן לשנות תאריכים כל עוד המשפחה משובצת לחדרים. יש לבטל את השיבוץ תחילה.";
+      } else if (status === 400) {
+        message = serverMessage || "תאריכי שהייה לא תקינים";
+      } else {
+        message = "עדכון פרטי המשפחה נכשל, נסה שוב";
+      }
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message, timeout: 5000 }));
     }
   }, [token, editFamilyData, vacationId, loadPage, dispatch]);
 

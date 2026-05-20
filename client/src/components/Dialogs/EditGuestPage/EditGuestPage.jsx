@@ -161,11 +161,25 @@ const EditGuestPage = ({ onClose }) => {
         })
       );
     } catch (err) {
+      // 409 = the family is still assigned to rooms and the user is trying
+      // to change arrival/departure dates. Show the specific Hebrew message
+      // pointing at the fix (remove assignments first). 400 = unparseable
+      // date format. Anything else is a generic save error.
+      const status = err?.response?.status;
+      const serverMessage = err?.response?.data?.message;
+      let message;
+      if (status === 409) {
+        message = serverMessage || "לא ניתן לשנות תאריכים כל עוד המשפחה משובצת לחדרים. יש לבטל את השיבוץ תחילה.";
+      } else if (status === 400) {
+        message = serverMessage || "תאריכי שהייה לא תקינים";
+      } else {
+        message = "שגיאה בשמירת פרטים";
+      }
       dispatch(
         snackBarSlice.setSnackBar({
           type: "error",
-          message: "שגיאה בשמירת פרטים",
-          timeout: 3000,
+          message,
+          timeout: 5000,
         })
       );
     } finally {

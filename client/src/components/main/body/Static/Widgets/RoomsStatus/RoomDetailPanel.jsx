@@ -27,12 +27,16 @@ const RoomDetailPanel = ({
   const [pendingChanges, setPendingChanges] = useState({});
   const [saving, setSaving] = useState(false);
   const [removeChoiceOpen, setRemoveChoiceOpen] = useState(false);
+  // Single-room remove confirmation. Replaces window.confirm so the prompt
+  // matches the styled multi-room dialog below.
+  const [singleRemoveOpen, setSingleRemoveOpen] = useState(false);
 
   // Reset pending changes whenever the panel opens for a new room/booking
   useEffect(() => {
     if (open) {
       setPendingChanges({});
       setRemoveChoiceOpen(false);
+      setSingleRemoveOpen(false);
     }
   }, [open, booking?.room_id, booking?.family_id]);
 
@@ -112,10 +116,14 @@ const RoomDetailPanel = ({
       setRemoveChoiceOpen(true);
       return;
     }
-    const ok = window.confirm(
-      `להסיר את משפחת ${booking.family_name} מחדר ${booking.room_id}?`
-    );
-    if (!ok) return;
+    // Single-room case: open the styled confirm dialog (same shell as the
+    // multi-room choice dialog below) instead of the browser's window.confirm.
+    setSingleRemoveOpen(true);
+  };
+
+  const handleSingleRemoveConfirm = () => {
+    setSingleRemoveOpen(false);
+    if (!booking) return;
     onRemoveFromRoom(booking.family_id, booking.room_id, "single");
   };
 
@@ -243,6 +251,77 @@ const RoomDetailPanel = ({
             sx={{ textTransform: "none", color: "#64748b", alignSelf: "flex-end" }}
           >
             ביטול
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Single-room remove confirm — replaces the previous window.confirm.
+          Same shell as the multi-room dialog above: 14px Paper, RTL,
+          PersonRemove icon + bottom-bordered title, info box, styled
+          buttons with a destructive red confirm. */}
+      <Dialog
+        open={singleRemoveOpen}
+        onClose={() => setSingleRemoveOpen(false)}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: "14px", direction: "rtl" } }}
+      >
+        <DialogTitle
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            pb: 1,
+            borderBottom: "1px solid #e2e8f0",
+          }}
+        >
+          <PersonRemoveIcon sx={{ fontSize: 20, color: "#dc2626" }} />
+          <Typography sx={{ fontSize: 15, fontWeight: 700, color: "#1e293b" }}>
+            הסרת משפחה מהחדר
+          </Typography>
+        </DialogTitle>
+        <DialogContent sx={{ pt: 2 }}>
+          {booking && (
+            <Box
+              sx={{
+                p: 1.5,
+                mb: 2,
+                backgroundColor: "#f8fafc",
+                border: "1px solid #e2e8f0",
+                borderRadius: 1,
+              }}
+            >
+              <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                משפחת {booking.family_name}
+              </Typography>
+              <Typography variant="caption" sx={{ color: "#64748b" }}>
+                החדר: {booking.room_id}
+              </Typography>
+            </Box>
+          )}
+          <Typography variant="body2" sx={{ color: "#475569" }}>
+            {booking
+              ? `להסיר את משפחת ${booking.family_name} מחדר ${booking.room_id}?`
+              : ""}
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
+          <Button
+            onClick={() => setSingleRemoveOpen(false)}
+            sx={{ textTransform: "none", color: "#64748b" }}
+          >
+            ביטול
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleSingleRemoveConfirm}
+            sx={{
+              textTransform: "none",
+              backgroundColor: "#dc2626",
+              "&:hover": { backgroundColor: "#b91c1c" },
+            }}
+          >
+            הסר
           </Button>
         </DialogActions>
       </Dialog>

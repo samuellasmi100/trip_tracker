@@ -308,7 +308,21 @@ const GuestWizard = () => {
       }
     } catch (error) {
       console.log(error);
-      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "אירעה שגיאה, נסה שנית", timeout: 3000 }));
+      // Editing arrival/departure on a guest whose family is still assigned
+      // returns 409 — show the rule's specific Hebrew message rather than
+      // the generic "אירעה שגיאה" so the user knows to remove the rooms
+      // first. 400 = unparseable date input.
+      const status = error?.response?.status;
+      const serverMessage = error?.response?.data?.message;
+      let message;
+      if (status === 409) {
+        message = serverMessage || "לא ניתן לשנות תאריכים כל עוד המשפחה משובצת לחדרים. יש לבטל את השיבוץ תחילה.";
+      } else if (status === 400) {
+        message = serverMessage || "תאריכי שהייה לא תקינים";
+      } else {
+        message = "אירעה שגיאה, נסה שנית";
+      }
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message, timeout: 5000 }));
     }
   };
 

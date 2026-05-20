@@ -191,6 +191,20 @@ const removeAllUserAssignFromRoomId = async (familyId,vacationId,roomId) => {
 
 
 
+// Reader used by the "block date change while assigned" rule. Returns the
+// dates of one of the family's current room_taken rows (every row shares
+// the same dates), or an empty array if the family is not currently
+// assigned to any room.
+const getBookingDatesForFamily = async (vacationId, familyId) => {
+  try {
+    const sql = userRoomQuery.getBookingDatesForFamily(vacationId);
+    return await connection.executeWithParameters(sql, [familyId]);
+  } catch (error) {
+    logger.error(`Error: Function:getBookingDatesForFamily :, ${error.sqlMessage}`);
+    throw error;
+  }
+};
+
 const moveRoom = async (vacationId, familyId, fromRoomId, toRoomId) => {
   try {
     await connection.executeWithParameters(
@@ -218,6 +232,7 @@ module.exports = {
   removeAllUserAssignRoom,
   getUsersChosenRoom,
   updateStartEndAndDate,
+  getBookingDatesForFamily,
   removeMainRoomByRoomId,
   removeAllUserAssignFromRoomId,
   getAllChosenRoom,

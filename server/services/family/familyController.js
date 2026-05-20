@@ -2,7 +2,13 @@ const router = require("express").Router();
 const ErrorMessage = require("../../serverLogs/errorMessage");
 const ErrorType = require("../../serverLogs/errorType");
 const familyService = require("./familyService")
+const userRoomsService = require("../userRooms/userRoomsService");
 const { parseDateLoose } = require("../../utils/dateNormalize");
+
+// Hebrew message used by BOTH PUT /family/:id and PUT /user/:id when a date
+// change is attempted while the family still has room_taken rows. The user
+// must remove the family from its rooms first.
+const ROOM_LOCK_MSG = 'לא ניתן לשנות תאריכים כל עוד המשפחה משובצת לחדרים. יש לבטל את השיבוץ תחילה.';
 
 router.post("/:id", async (req, res, next) => {
   const vacationId = req.params.id
@@ -56,6 +62,28 @@ router.put("/:id", async (req, res, next) => {
   }
   data.start_date = isoStart;
   data.end_date = isoEnd;
+
+  // Rule: do not let a family's dates be edited while it still has rooms.
+  // Probe room_taken; if a current booking exists and its dates differ from
+  // what we're about to write, 409 the request. If the new dates match what
+  // room_taken already holds, this is a no-op for dates — allow it (the user
+  // may just be editing the name / phone / counts).
+  try {
+    const bookings = await userRoomsService.getBookingDatesForFamily(vacationId, data.family_id);
+    if (bookings && bookings.length > 0) {
+      const current = bookings[0];
+      const dateChange = current.start_date !== isoStart || current.end_date !== isoEnd;
+      if (dateChange) {
+        return res.status(409).json({
+          error: 'HAS_ROOM_ASSIGNMENTS',
+          message: ROOM_LOCK_MSG,
+        });
+      }
+    }
+  } catch (error) {
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle family request", error));
+  }
+
   try {
     await familyService.updateFamily(data, vacationId)
     res.send("העדכון עבר בהצלחה")

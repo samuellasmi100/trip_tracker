@@ -11,6 +11,11 @@ const { parseDateLoose } = require("../../utils/dateNormalize");
 // message instead of a generic 500.
 const INVALID_DATES = 'INVALID_DATES';
 
+// Sentinel thrown by updateGuest when the dates would actually change while
+// the family still holds room_taken rows. Controller maps to 409 with a
+// clear Hebrew "remove the assignments first" message.
+const HAS_ROOM_ASSIGNMENTS = 'HAS_ROOM_ASSIGNMENTS';
+
 const addGuest = async (data, vacationId) => {
   return await userDb.addGuest(data, vacationId);
 };
@@ -58,6 +63,26 @@ const updateGuest = async (data, vacationId) => {
   // undefined to keep the existing skip-the-UPDATE behaviour intact.
   const sdArg = sd && ed ? sd : undefined;
   const edArg = sd && ed ? ed : undefined;
+
+  // Rule: do not let a guest edit mutate the family's room_taken dates
+  // while the family is still assigned. If both dates are supplied and they
+  // differ from what room_taken currently holds for this family, throw a
+  // sentinel that the controller turns into a 409 with a Hebrew message.
+  // If room_taken has no rows for this family, or the submitted dates match
+  // exactly what's already there, the edit goes through (the latter being a
+  // no-op for room_taken).
+  if (sdArg !== undefined && edArg !== undefined) {
+    const bookings = await userRoomService.getBookingDatesForFamily(vacationId, familyId);
+    if (bookings && bookings.length > 0) {
+      const current = bookings[0];
+      if (current.start_date !== sdArg || current.end_date !== edArg) {
+        const err = new Error("Cannot change family dates while assigned to rooms");
+        err.code = HAS_ROOM_ASSIGNMENTS;
+        throw err;
+      }
+    }
+  }
+
   await userRoomService.updateStartEndAndDate(
     vacationId,
     familyId,
@@ -110,4 +135,5 @@ module.exports = {
   deleteGuest,
   deleteMainGuest,
   INVALID_DATES,
+  HAS_ROOM_ASSIGNMENTS,
 };

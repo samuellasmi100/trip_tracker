@@ -57,6 +57,15 @@ router.put("/:id", async (req, res, next) => {
         message: 'תאריכי שהייה לא תקינים',
       });
     }
+    // 409 when the user tried to change dates while the family is still in
+    // room_taken — the client surfaces this as a distinct "remove rooms
+    // first" toast instead of a generic save-failed.
+    if (error && error.code === userService.HAS_ROOM_ASSIGNMENTS) {
+      return res.status(409).json({
+        error: 'HAS_ROOM_ASSIGNMENTS',
+        message: 'לא ניתן לשנות תאריכים כל עוד המשפחה משובצת לחדרים. יש לבטל את השיבוץ תחילה.',
+      });
+    }
     return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle user request", error));
   }
 });

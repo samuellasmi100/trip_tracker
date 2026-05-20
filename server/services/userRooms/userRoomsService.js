@@ -141,6 +141,14 @@ const getUsersChosenRoom = async (id, vacationId) => {
 const updateStartEndAndDate = (vacationId, familyId, startDate, endDate) => {
     return userRoomsDb.updateStartEndAndDate(vacationId, familyId, startDate, endDate)
 }
+
+// "What dates does this family currently hold across its rooms?" — single-row
+// probe used by the family/guest edit endpoints to enforce the
+// "no date change while assigned" rule. Returns [] when unassigned, or one
+// row with ISO-formatted start_date / end_date otherwise.
+const getBookingDatesForFamily = (vacationId, familyId) => {
+    return userRoomsDb.getBookingDatesForFamily(vacationId, familyId);
+}
 const moveRoom = async (vacationId, familyId, fromRoomId, toRoomId) => {
     return await userRoomsDb.moveRoom(vacationId, familyId, fromRoomId, toRoomId);
 };
@@ -173,5 +181,6 @@ module.exports = {
     getAllChosenRoom,
     moveRoom,
     removeFamilyFromRoom,
+    getBookingDatesForFamily,
     ROOM_OVERLAP,
 }
