@@ -18,6 +18,7 @@ import PublicDocumentUpload from "./components/public/PublicDocumentUpload/Publi
 import PublicSignaturePage from "./components/public/PublicSignaturePage/PublicSignaturePage";
 import PublicBookingForm from "./components/public/PublicBookingForm/PublicBookingForm";
 import Dashboard from "./components/main/body/Dashboard/Dashboard";
+import RequireVacation from "./components/main/RequireVacation";
 import * as notificationsSlice from "./store/slice/notificationsSlice";
 import * as snackBarSlice from "./store/slice/snackbarSlice";
 import { connectSocket, disconnectSocket, getSocket } from "./utils/socketService";
@@ -95,11 +96,11 @@ function App() {
 
           {isAuthenticated ? (
             <>
-              <Route path="/workspace" element={<FamilyList />} />
-              <Route path="/static" element={<Static />} />
-              <Route path="/budgets" element={<Budgets />} />
-              <Route path="/leads" element={<Leads />} />
-              <Route path="/settings" element={<Settings />} />
+              <Route path="/workspace" element={<RequireVacation><FamilyList /></RequireVacation>} />
+              <Route path="/static" element={<RequireVacation><Static /></RequireVacation>} />
+              <Route path="/budgets" element={<RequireVacation><Budgets /></RequireVacation>} />
+              <Route path="/leads" element={<RequireVacation><Leads /></RequireVacation>} />
+              <Route path="/settings" element={<RequireVacation><Settings /></RequireVacation>} />
               <Route path="/dashboard" element={<Dashboard />} />
             </>
           ) : (
