@@ -22,6 +22,7 @@ const RoomDetailPanelView = ({
   booking,
   room,
   allFamilyMembers,
+  guestCurrentRoomMap,
   isChecked,
   onToggle,
   hasPendingChanges,
@@ -103,6 +104,11 @@ const RoomDetailPanelView = ({
             {allFamilyMembers.map((guest) => {
               const checked = isChecked(guest.user_id);
               const wouldExceed = !checked && assignedCount >= capacity && capacity > 0;
+              const currentRoom = guestCurrentRoomMap?.[guest.user_id];
+              const placedElsewhere =
+                currentRoom !== undefined &&
+                currentRoom !== null &&
+                String(currentRoom) !== String(booking.room_id);
               return (
                 <ListItem key={guest.user_id} disablePadding sx={{ py: 0.25, px: 0.5 }}>
                   <Tooltip
@@ -123,6 +129,14 @@ const RoomDetailPanelView = ({
                         <Box>
                           <Typography variant="body2" sx={{ fontSize: 13, lineHeight: 1.3 }}>
                             {guest.hebrew_first_name} {guest.hebrew_last_name}
+                            {placedElsewhere && (
+                              <Typography
+                                component="span"
+                                sx={{ color: "#94a3b8", fontSize: 11, ml: 0.5 }}
+                              >
+                                · משובץ בחדר {currentRoom}
+                              </Typography>
+                            )}
                           </Typography>
                           {guest.is_main_user ? (
                             <Typography variant="caption" sx={{ color: "#94a3b8", fontSize: 10 }}>

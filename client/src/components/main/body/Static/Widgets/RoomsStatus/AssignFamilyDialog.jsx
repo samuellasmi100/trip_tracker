@@ -65,8 +65,25 @@ const AssignFamilyDialog = ({
     return () => clearTimeout(debounceRef.current);
   }, [inputValue, token, vacationId]);
 
-  const isFamilyAlreadyAssigned = (familyId) =>
-    boardData.bookings.some((b) => b.family_id === familyId);
+  // Count how many rooms a family currently has in room_taken (any date range)
+  const getAssignedRoomCount = (familyId) =>
+    boardData.bookings.filter((b) => b.family_id === familyId).length;
+
+  // Parse families.number_of_rooms (varchar, may be "", "0", or non-numeric).
+  // Returns a positive integer or null when the cap is unknown.
+  const getReservedRoomCount = (option) => {
+    const raw = option?.number_of_rooms;
+    const n = parseInt(raw, 10);
+    return Number.isFinite(n) && n > 0 ? n : null;
+  };
+
+  // Locked only when the family has filled its reserved count.
+  // If number_of_rooms is blank/0/unparseable, never lock.
+  const isFamilyFull = (option) => {
+    const reserved = getReservedRoomCount(option);
+    if (reserved === null) return false;
+    return getAssignedRoomCount(option.family_id) >= reserved;
+  };
 
   const handleAssign = () => {
     if (!selectedFamily) return;
@@ -109,7 +126,7 @@ const AssignFamilyDialog = ({
           // Disable built-in client-side filtering — server handles it
           filterOptions={(x) => x}
           isOptionEqualToValue={(option, value) => option.family_id === value.family_id}
-          getOptionDisabled={(option) => isFamilyAlreadyAssigned(option.family_id)}
+          getOptionDisabled={(option) => isFamilyFull(option)}
           value={selectedFamily}
           onChange={(_, newValue) => setSelectedFamily(newValue)}
           inputValue={inputValue}
@@ -128,24 +145,48 @@ const AssignFamilyDialog = ({
           // Render dropdown option with dates / "already assigned" label
           renderOption={(props, option) => {
             const { key, ...restProps } = props;
-            const disabled = isFamilyAlreadyAssigned(option.family_id);
+            const assigned = getAssignedRoomCount(option.family_id);
+            const reserved = getReservedRoomCount(option);
+            const disabled = isFamilyFull(option);
+            // Chip is shown only when we know the reservation count AND the
+            // family already has at least one room — otherwise it's noise.
+            const showChip = reserved !== null && assigned > 0;
+            const chipColor = disabled
+              ? { bg: "#fee2e2", border: "#fca5a5", text: "#991b1b" }   // red — full
+              : { bg: "#fef3c7", border: "#fcd34d", text: "#92400e" };  // amber — partial
             return (
               <li key={key} {...restProps}>
-                <Box>
-                  <Typography
-                    variant="body2"
-                    sx={{ fontWeight: 600, color: disabled ? "#dc2626" : undefined }}
-                  >
-                    {option.family_name}
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{ color: disabled ? "#dc2626" : "#64748b" }}
-                  >
-                    {disabled
-                      ? "כבר משויך לחדר"
-                      : `${option.start_date || ""} — ${option.end_date || ""}`}
-                  </Typography>
+                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1, width: "100%" }}>
+                  <Box sx={{ minWidth: 0 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: 600, color: disabled ? "#dc2626" : undefined }}
+                    >
+                      {option.family_name}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{ color: disabled ? "#dc2626" : "#64748b" }}
+                    >
+                      {disabled
+                        ? "הושלם — לא נדרשים חדרים נוספים"
+                        : `${option.start_date || ""} — ${option.end_date || ""}`}
+                    </Typography>
+                  </Box>
+                  {showChip && (
+                    <Chip
+                      label={`${assigned}/${reserved} חדרים`}
+                      size="small"
+                      sx={{
+                        height: 22,
+                        fontSize: 11,
+                        fontWeight: 600,
+                        backgroundColor: chipColor.bg,
+                        color: chipColor.text,
+                        border: `1px solid ${chipColor.border}`,
+                      }}
+                    />
+                  )}
                 </Box>
               </li>
             );

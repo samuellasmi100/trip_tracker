@@ -9,6 +9,7 @@ import RoomRoster from "./RoomRoster";
 import RoomStatusOverview from "./RoomStatusOverview";
 import ApiRooms from "../../../../../../apis/roomsRequest";
 import * as snackBarSlice from "../../../../../../store/slice/snackbarSlice";
+import { displayToIso } from "../../../../../../utils/HelperFunction/formatDate";
 
 export const FAMILY_COLORS = [
   { bg: "#dbeafe", text: "#1d4ed8", border: "#93c5fd" },
@@ -159,6 +160,13 @@ const RoomsStatus = () => {
       );
       return;
     }
+    // families.start_date / end_date are stored either as ISO (Excel-imported
+    // rows) or DD/MM/YYYY (in-app GuestWizard rows). displayToIso passes ISO
+    // through and converts DD/MM/YYYY to ISO, so the wire payload is always
+    // YYYY-MM-DD. The server has its own parseDateLoose normalizer as well
+    // — this is the belt-and-suspenders clean contract over the wire.
+    const isoStart = displayToIso(startDate);
+    const isoEnd   = displayToIso(endDate);
     try {
       const existingRoomIds = new Set(
         boardData.bookings
@@ -173,7 +181,7 @@ const RoomsStatus = () => {
           .filter((id) => !existingRoomIds.has(id))
           .map((id) => ({ rooms_id: id })),
       ];
-      await ApiRooms.assignRoom(token, allRooms, familyId, vacationId, startDate, endDate);
+      await ApiRooms.assignRoom(token, allRooms, familyId, vacationId, isoStart, isoEnd);
       setSelectedRoomIds(new Set());
       setAssignDialog({ open: false, roomIds: [] });
       await refreshBoard();
@@ -223,14 +231,21 @@ const RoomsStatus = () => {
     }
   };
 
-  const handleRemoveFromRoom = async (familyId, roomId) => {
+  const handleRemoveFromRoom = async (familyId, roomId, scope = "single") => {
     try {
-      await ApiRooms.removeFamilyFromRoom(token, { vacationId, familyId, roomId });
+      if (scope === "all") {
+        await ApiRooms.removeFamilyFromAllRooms(token, { vacationId, familyId });
+      } else {
+        await ApiRooms.removeFamilyFromRoom(token, { vacationId, familyId, roomId });
+      }
       setDetailPanel({ open: false, booking: null, room: null });
       await refreshBoard();
     } catch (err) {
       console.error("Failed to remove family from room", err);
-      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "הסרת המשפחה מהחדר נכשלה, נסה שוב", timeout: 4000 }));
+      const message = scope === "all"
+        ? "הסרת המשפחה מכל החדרים נכשלה, נסה שוב"
+        : "הסרת המשפחה מהחדר נכשלה, נסה שוב";
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message, timeout: 4000 }));
     }
   };
 

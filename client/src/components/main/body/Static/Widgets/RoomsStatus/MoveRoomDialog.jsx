@@ -79,7 +79,7 @@ const MoveRoomDialog = ({ open, booking, vacationId, token, onClose, onMove }) =
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <SwapHorizIcon sx={{ fontSize: 20, color: TEAL }} />
           <Typography sx={{ fontSize: 15, fontWeight: 700, color: "#1e293b" }}>
-            העבר לחדר אחר
+            העבר חדר זה לחדר אחר
           </Typography>
         </Box>
         <IconButton size="small" onClick={onClose}>

@@ -87,5 +87,17 @@ export default {
       headers: { Authorization: token },
     });
   },
+  // Remove a family from EVERY room they hold. Reuses the existing
+  // POST /user-rooms/ "unassign all" branch (triggered by selectedRooms: []).
+  removeFamilyFromAllRooms(token, { vacationId, familyId }) {
+    return Api.post(`${END_POINT.USER_ROOMS}`, {
+      token,
+      selectedRooms: [],
+      familyId,
+      vacationId,
+    }, {
+      headers: { Authorization: token },
+    });
+  },
 };
 
