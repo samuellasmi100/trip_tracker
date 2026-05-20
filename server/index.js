@@ -8,17 +8,17 @@ const checkAuthorizationMiddleware = require("./middleware/authMiddleware/checkA
 const path = require('path');
 
 //! services
-const userController = require("./services/user/userController");
+const userController = require("./services/users/userController");
 const roomsController = require("./services/rooms/roomsController");
 const flightsController = require("./services/flights/flightsController");
 const paymentsController = require("./services/payments/paymentsController");
 const notesController = require("./services/notes/notesController");
 const authController = require("./services/auth/authController");
-const familyController = require("./services/family/familyController");
+const familyController = require("./services/families/familyController");
 const userRoomsController = require("./services/userRooms/userRoomsController");
-const vacationsController = require("./services/vacation/vacationController");
+const vacationsController = require("./services/vacations/vacationController");
 const staticController = require("./services/static/staticController");
-const budgetController = require("./services/budget/budgetsController");
+const budgetController = require("./services/budgets/budgetsController");
 const uploadsController = require("./services/uploads/uploadsController");
 const leadsController = require("./services/leads/leadsController");
 const publicLeadsController = require("./services/leads/publicLeadsController");

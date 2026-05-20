@@ -24,7 +24,7 @@ All routes except `/auth/login` require JWT Bearer token in `Authorization` head
 | PUT | `/vacations` | — | Stub (empty handler, not implemented) |
 | GET | `/vacations/:id` | `id` = vacationId | Get all vacations list, date ranges for this vacation, and all vacation dates. Returns `{vacations, vacationsDate, allVacationDates}`. |
 
-**Controller:** `services/vacation/vacationController.js`
+**Controller:** `services/vacations/vacationController.js`
 
 ---
 
@@ -36,7 +36,7 @@ All routes except `/auth/login` require JWT Bearer token in `Authorization` head
 | GET | `/family/:id` | `id` = vacationId | Get all families with payment summary and guest counts. Complex query with CTE for paid amounts. |
 | GET | `/family/details/:id/:familyId` | `id` = userId, `familyId` = familyId | Get full user details (personal info, flights, rooms, notes, payments). |
 
-**Controller:** `services/family/familyController.js`
+**Controller:** `services/families/familyController.js`
 
 ---
 
@@ -51,7 +51,7 @@ All routes except `/auth/login` require JWT Bearer token in `Authorization` head
 | DELETE | `/user/:id/:vacationId` | `id` = userId | Delete a single guest + their flights, room assignments, and notes. Returns updated guest lists. |
 | DELETE | `/user/main/:id/:vacationId` | `id` = familyId | Delete an entire family (all guests, flights, rooms, room_taken, notes, payments, family record). Returns updated guest lists. |
 
-**Controller:** `services/user/userController.js`
+**Controller:** `services/users/userController.js`
 
 ---
 
@@ -209,7 +209,7 @@ Read-only endpoints for dashboard/report views.
 |---|---|---|---|
 | GET | `/budget/summary/:id` | `id` = vacationId | Get expense + income totals (paid, unpaid, total). |
 
-**Controller:** `services/budget/budgetsController.js`
+**Controller:** `services/budgets/budgetsController.js`
 
 ---
 
