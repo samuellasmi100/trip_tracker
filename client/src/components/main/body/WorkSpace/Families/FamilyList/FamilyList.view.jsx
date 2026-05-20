@@ -162,11 +162,11 @@ function FamilyListView(props) {
                       <TableCell className={classes.dataTableCell}>
                         {(() => {
                           const ds = docStatusMap[user.family_id];
-                          if (!ds) return null;
-                          const { uploaded, total } = ds;
+                          const uploaded = Number(ds?.uploaded) || 0;
+                          const total = Number(ds?.total) || 0;
                           const dotColor = total === 0 ? "#94a3b8" : uploaded >= total ? "#22c55e" : uploaded > 0 ? "#f59e0b" : "#ef4444";
                           return (
-                            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "6px", justifyContent: "center" }}>
                               <span style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: dotColor, display: "inline-block", flexShrink: 0 }} />
                               <span style={{ fontSize: "12px", color: "#475569" }}>{uploaded}/{total}</span>
                               <Tooltip title={copiedFamilyId === user.family_id ? "הועתק!" : "העתק קישור"}>
@@ -197,7 +197,7 @@ function FamilyListView(props) {
                           } else if (isSent) {
                             // ORANGE — sent, awaiting signature
                             return (
-                              <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: "4px", justifyContent: "center" }}>
                                 <span className={`${classes.statusBadge} ${classes.statusWarning}`}>
                                   ממתין
                                 </span>
@@ -213,7 +213,7 @@ function FamilyListView(props) {
                           } else {
                             // GRAY — not sent yet
                             return (
-                              <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: "4px", justifyContent: "center" }}>
                                 <span style={{ fontSize: "11px", color: "#94a3b8" }}>טרם נשלח</span>
                                 <Tooltip title={copied ? "הועתק!" : "שלח קישור חתימה"}>
                                   <IconButton size="small" onClick={(e) => handleSendSignatureLink(e, user)} style={{ padding: "2px" }}>
@@ -237,7 +237,7 @@ function FamilyListView(props) {
                               ? new Date(booking.submitted_at).toLocaleDateString("he-IL")
                               : "";
                             return (
-                              <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: "4px", justifyContent: "center" }}>
                                 <span className={`${classes.statusBadge} ${classes.statusOk}`}>
                                   הוגש {date}
                                 </span>
@@ -251,7 +251,7 @@ function FamilyListView(props) {
                           } else {
                             // GRAY — not submitted yet
                             return (
-                              <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: "4px", justifyContent: "center" }}>
                                 <span style={{ fontSize: "11px", color: "#94a3b8" }}>לא הוגש</span>
                                 <Tooltip title={copied ? "הועתק!" : "העתק קישור טופס"}>
                                   <IconButton size="small" onClick={(e) => handleCopyBookingLink(e, user)} style={{ padding: "2px" }}>

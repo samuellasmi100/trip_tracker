@@ -19,10 +19,17 @@ const parseDateLoose = (value) => {
   let y, m, d;
   const iso = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   const eu  = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  // Israeli dotted form — D.M.YY, DD.MM.YYYY (single-digit components OK).
+  const dot = value.match(/^(\d{1,2})\.(\d{1,2})\.(\d{2}|\d{4})$/);
   if (iso) {
     [, y, m, d] = iso;
   } else if (eu) {
     [, d, m, y] = eu;
+  } else if (dot) {
+    [, d, m, y] = dot;
+    d = d.padStart(2, '0');
+    m = m.padStart(2, '0');
+    if (y.length === 2) y = `20${y}`;
   } else {
     return null;
   }

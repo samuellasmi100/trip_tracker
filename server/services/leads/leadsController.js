@@ -13,6 +13,31 @@ router.get('/summary/:vacationId', async (req, res, next) => {
   }
 });
 
+// GET /leads/followup-due-count/:vacationId
+router.get('/followup-due-count/:vacationId', async (req, res, next) => {
+  try {
+    const count = await leadsService.getFollowupDueCount(req.params.vacationId);
+    res.send({ count });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// POST /leads/import/:vacationId  — bulk upsert from Excel; dedupe by phone
+router.post('/import/:vacationId', async (req, res, next) => {
+  try {
+    const rows = req.body?.rows;
+    if (!Array.isArray(rows)) {
+      return res.status(400).send({ message: 'rows must be an array' });
+    }
+    const result = await leadsService.importRows(req.params.vacationId, rows);
+    const all = await leadsService.getAll(req.params.vacationId);
+    res.send({ ...result, leads: all });
+  } catch (error) {
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to import leads", error));
+  }
+});
+
 // GET /leads/:vacationId/:leadId  — single lead with notes
 router.get('/:vacationId/:leadId', async (req, res, next) => {
   try {

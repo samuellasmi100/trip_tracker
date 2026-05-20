@@ -12,13 +12,10 @@ import {
 import { useStyles } from "./Lead.style";
 
 const STATUS_OPTIONS = [
-  { value: "new_interest",       label: "ליד חדש" },
-  { value: "no_answer",          label: "לא ענה" },
-  { value: "follow_up",          label: "בטיפול" },
-  { value: "meeting_scheduled",  label: "פגישה נקבעה" },
-  { value: "interested",         label: "מעוניין" },
-  { value: "registered",         label: "נרשם" },
-  { value: "not_relevant",       label: "לא רלוונטי" },
+  { value: "new_interest",  label: "חדש" },
+  { value: "follow_up",     label: "בתהליך" },
+  { value: "registered",    label: "נסגר" },
+  { value: "not_relevant",  label: "לא רלוונטי" },
 ];
 
 const SOURCE_OPTIONS = [
@@ -28,6 +25,14 @@ const SOURCE_OPTIONS = [
   { value: "social",    label: "רשתות חברתיות" },
   { value: "other",     label: "אחר" },
 ];
+
+// MySQL DATE returns either a Date object or 'YYYY-MM-DDTHH:mm:ss.000Z'.
+// The native <input type="date"> needs a plain 'YYYY-MM-DD' string.
+const toDateInput = (v) => {
+  if (!v) return "";
+  if (v instanceof Date) return v.toISOString().slice(0, 10);
+  return String(v).slice(0, 10);
+};
 
 function LeadView({ form, isEdit, handleInputChange, handleSelectChange, submit, handleCloseClicked }) {
   const classes = useStyles();
@@ -120,6 +125,87 @@ function LeadView({ form, isEdit, handleInputChange, handleSelectChange, submit,
               ))}
             </Select>
           </FormControl>
+        </div>
+      </div>
+
+      <div className={classes.fieldGroup}>
+        <div className={classes.fieldItem}>
+          <InputLabel className={classes.inputLabelStyle}>תאריך פולואפ</InputLabel>
+          <TextField
+            name="followup_date"
+            type="date"
+            className={classes.textField}
+            value={toDateInput(form.followup_date)}
+            onChange={handleInputChange}
+            size="small"
+            InputLabelProps={{ shrink: true }}
+          />
+        </div>
+        <div className={classes.fieldItem}>
+          <InputLabel className={classes.inputLabelStyle}>תאריך פתיחת ליד</InputLabel>
+          <TextField
+            name="last_contact_date"
+            type="date"
+            className={classes.textField}
+            value={toDateInput(form.last_contact_date)}
+            onChange={handleInputChange}
+            size="small"
+            InputLabelProps={{ shrink: true }}
+          />
+        </div>
+      </div>
+
+      <div className={classes.fieldGroup}>
+        <div className={classes.fieldItem}>
+          <InputLabel className={classes.inputLabelStyle}>מחיר שקיבל (₪)</InputLabel>
+          <TextField
+            name="price"
+            type="number"
+            className={classes.textField}
+            value={form.price ?? ""}
+            onChange={handleInputChange}
+            size="small"
+            inputProps={{ min: 0, step: "0.01" }}
+            placeholder="0"
+          />
+        </div>
+        <div className={classes.fieldItem}>
+          <InputLabel className={classes.inputLabelStyle}>כמות הנחה (₪)</InputLabel>
+          <TextField
+            name="discount"
+            type="number"
+            className={classes.textField}
+            value={form.discount ?? ""}
+            onChange={handleInputChange}
+            size="small"
+            inputProps={{ min: 0, step: "0.01" }}
+            placeholder="0"
+          />
+        </div>
+      </div>
+
+      <div className={classes.fieldGroup}>
+        <div className={classes.fieldItem}>
+          <InputLabel className={classes.inputLabelStyle}>השתלמות</InputLabel>
+          <TextField
+            name="training"
+            className={classes.textField}
+            value={form.training || ""}
+            onChange={handleInputChange}
+            size="small"
+            placeholder="כן / לא / שם הקורס"
+          />
+        </div>
+        <div className={classes.fieldItem}>
+          <InputLabel className={classes.inputLabelStyle}>הרכב</InputLabel>
+          <TextField
+            name="composition"
+            className={classes.textField}
+            value={form.composition || ""}
+            onChange={handleInputChange}
+            size="small"
+            placeholder='לדוגמה "זוג+4"'
+          />
         </div>
       </div>
 

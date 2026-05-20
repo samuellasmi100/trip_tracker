@@ -1,6 +1,7 @@
 const ALLOWED_LEAD_COLUMNS = [
   'full_name', 'phone', 'email', 'family_size',
   'status', 'source', 'notes', 'referred_by', 'is_active', 'assigned_to',
+  'followup_date', 'last_contact_date', 'price', 'discount', 'training', 'composition',
 ];
 
 const getAll = (vacationId) => `
@@ -39,8 +40,9 @@ const getNotesByLeadId = (vacationId) => `
 
 const create = (vacationId) => `
   INSERT INTO trip_tracker_${vacationId}.leads
-    (full_name, phone, email, family_size, status, source, notes, referred_by)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+    (full_name, phone, email, family_size, status, source, notes, referred_by,
+     followup_date, last_contact_date, price, discount, training, composition)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 `;
 
 const update = (data, vacationId) => {
@@ -62,19 +64,37 @@ const addNote = (vacationId) => `
   VALUES (?, ?, ?);
 `;
 
+const bumpUpdatedAt = (vacationId) => `
+  UPDATE trip_tracker_${vacationId}.leads
+  SET updated_at = NOW()
+  WHERE lead_id = ?;
+`;
+
 const getSummary = (vacationId) => `
   SELECT
     COUNT(*) AS total,
     SUM(is_active = 1) AS active,
     SUM(is_active = 0) AS closed,
-    SUM(status = 'new_interest')  AS new_interest,
-    SUM(status = 'no_answer')     AS no_answer,
-    SUM(status = 'follow_up')     AS follow_up,
-    SUM(status = 'meeting_scheduled') AS meeting_scheduled,
-    SUM(status = 'interested')    AS interested,
-    SUM(status = 'registered')    AS registered,
-    SUM(status = 'not_relevant')  AS not_relevant
+    SUM(status = 'new_interest') AS new_interest,
+    SUM(status = 'follow_up')    AS follow_up,
+    SUM(status = 'registered')   AS registered,
+    SUM(status = 'not_relevant') AS not_relevant
   FROM trip_tracker_${vacationId}.leads;
+`;
+
+const getFollowupDueCount = (vacationId) => `
+  SELECT COUNT(*) AS due_count
+  FROM trip_tracker_${vacationId}.leads
+  WHERE followup_date IS NOT NULL
+    AND followup_date <= CURDATE()
+    AND is_active = 1;
+`;
+
+const getByPhone = (vacationId) => `
+  SELECT *
+  FROM trip_tracker_${vacationId}.leads
+  WHERE phone = ?
+  LIMIT 1;
 `;
 
 module.exports = {
@@ -87,4 +107,7 @@ module.exports = {
   remove,
   addNote,
   getSummary,
+  getFollowupDueCount,
+  getByPhone,
+  bumpUpdatedAt,
 };

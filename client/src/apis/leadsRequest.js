@@ -39,6 +39,16 @@ export default {
       headers: { Authorization: token },
     });
   },
+  getFollowupDueCount(token, vacationId) {
+    return Api.get(`/${END_POINT.LEADS}/followup-due-count/${vacationId}`, {
+      headers: { Authorization: token },
+    });
+  },
+  importRows(token, vacationId, rows) {
+    return Api.post(`/${END_POINT.LEADS}/import/${vacationId}`, { rows }, {
+      headers: { Authorization: token },
+    });
+  },
   // Public — no auth header
   submitPublic(vacationId, data) {
     return Api.post(`/public/leads/${vacationId}`, data);

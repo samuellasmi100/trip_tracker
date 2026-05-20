@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import SidebarView from "./Sidebar.view";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,7 +7,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import * as authSlice from "../../../store/slice/authSlice"
 import * as staticSlice from "../../../store/slice/staticSlice"
 import * as notificationsSlice from "../../../store/slice/notificationsSlice"
+import * as leadsSlice from "../../../store/slice/leadsSlice"
 import { disconnectSocket } from "../../../utils/socketService"
+import ApiLeads from "../../../apis/leadsRequest"
 
 function Sidebar() {
   const dispatch = useDispatch();
@@ -19,6 +21,22 @@ function Sidebar() {
   const [guestsManagementExpanded, setGuestsManagementExpanded] = useState(false);
 
   const staticDialogType = useSelector((state) => state.staticSlice.type);
+  const vacationId = useSelector((state) => state.vacationSlice.vacationId);
+  const followupDueCount = useSelector((state) => state.leadsSlice.followupDueCount);
+
+  // Initial follow-up due count — runs when sidebar mounts and on vacation
+  // switch. Leads widget keeps it fresh on every list refresh via updateLeadsList.
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    if (!token || !vacationId) return;
+    let cancelled = false;
+    ApiLeads.getFollowupDueCount(token, vacationId)
+      .then((res) => {
+        if (!cancelled) dispatch(leadsSlice.setFollowupDueCount(res.data?.count ?? 0));
+      })
+      .catch((err) => console.log(err));
+    return () => { cancelled = true; };
+  }, [vacationId, dispatch]);
 
 
   const handleLogOut = () => {
@@ -92,6 +110,7 @@ function Sidebar() {
       handleWidgetClick={handleWidgetClick}
       handleDirectNavClick={handleDirectNavClick}
       staticDialogType={staticDialogType}
+      followupDueCount={followupDueCount}
     />
   );
 }

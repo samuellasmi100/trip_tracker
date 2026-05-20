@@ -54,6 +54,22 @@ export const useStyles = makeStyles(() => ({
       background: "linear-gradient(135deg, #0f766e 0%, #0d9488 100%) !important",
     },
   },
+  importButton: {
+    color: "#0d9488 !important",
+    fontSize: "12px !important",
+    fontWeight: "600 !important",
+    textTransform: "none !important",
+    padding: "5px 14px !important",
+    background: "#ffffff !important",
+    border: "1px solid #0d9488 !important",
+    borderRadius: "8px !important",
+    "&:hover": { background: "#f0fdfa !important" },
+    "&.Mui-disabled": { opacity: 0.6 },
+  },
+  dueRow: {
+    backgroundColor: "#fef2f2 !important",
+    "&:hover": { backgroundColor: "#fee2e2 !important" },
+  },
   statusBadge: {
     display: "inline-block",
     padding: "2px 10px",
@@ -64,13 +80,11 @@ export const useStyles = makeStyles(() => ({
   },
 }));
 
-// Status color config — mirrors wigs lead status design, adapted to vacation context
+// Status color config — mirrors wigs lead status design, adapted to vacation context.
+// Unknown statuses fall back to the gray badge in Leads.view.jsx:47.
 export const STATUS_CONFIG = {
-  new_interest:      { bg: "#eff6ff", color: "#2563eb", label: "ליד חדש" },
-  no_answer:         { bg: "#fef3c7", color: "#d97706", label: "לא ענה" },
-  follow_up:         { bg: "#fff7ed", color: "#ea580c", label: "בטיפול" },
-  meeting_scheduled: { bg: "#f0fdf4", color: "#16a34a", label: "פגישה נקבעה" },
-  interested:        { bg: "#f0fdfa", color: "#0d9488", label: "מעוניין" },
-  registered:        { bg: "#d1fae5", color: "#059669", label: "נרשם" },
-  not_relevant:      { bg: "#f1f5f9", color: "#94a3b8", label: "לא רלוונטי" },
+  new_interest: { bg: "#eff6ff", color: "#2563eb", label: "חדש" },
+  follow_up:    { bg: "#fff7ed", color: "#ea580c", label: "בתהליך" },
+  registered:   { bg: "#d1fae5", color: "#059669", label: "נסגר" },
+  not_relevant: { bg: "#f1f5f9", color: "#94a3b8", label: "לא רלוונטי" },
 };

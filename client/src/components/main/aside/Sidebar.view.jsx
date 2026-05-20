@@ -1,6 +1,7 @@
 import React from "react";
 import {
   AppBar,
+  Badge,
   IconButton,
   Typography,
 } from "@mui/material";
@@ -44,6 +45,7 @@ function SidebarView({
   handleWidgetClick,
   handleDirectNavClick,
   staticDialogType,
+  followupDueCount,
 }) {
   const classes = useStyles();
   const { pathname } = useLocation();
@@ -94,17 +96,6 @@ function SidebarView({
         {/* Navigation section */}
         <div className={classes.navSection} style={{ flex: 1, overflowY: "auto" }}>
 
-          {/* דשבורד */}
-          <div
-            className={`${classes.navItem} ${pathname === "/dashboard" ? classes.navItemActive : ""}`}
-            onClick={() => handleDirectNavClick("/dashboard")}
-          >
-            <div className={classes.navItemIcon}>
-              <DashboardIcon style={{ fontSize: "20px" }} />
-            </div>
-            <span className={classes.navItemLabel}>דשבורד</span>
-          </div>
-
           {/* דף הבית */}
           <Link to="/workspace" style={{ textDecoration: "none" }}>
             <div
@@ -118,6 +109,17 @@ function SidebarView({
               <span className={classes.navItemLabel}>דף הבית</span>
             </div>
           </Link>
+
+          {/* דשבורד */}
+          <div
+            className={`${classes.navItem} ${pathname === "/dashboard" ? classes.navItemActive : ""}`}
+            onClick={() => handleDirectNavClick("/dashboard")}
+          >
+            <div className={classes.navItemIcon}>
+              <DashboardIcon style={{ fontSize: "20px" }} />
+            </div>
+            <span className={classes.navItemLabel}>דשבורד</span>
+          </div>
 
           {/* מידע אורחים - expandable */}
           <div
@@ -205,7 +207,14 @@ function SidebarView({
             onClick={() => handleDirectNavClick("/leads")}
           >
             <div className={classes.navItemIcon}>
-              <PersonAddAlt1Icon style={{ fontSize: "20px" }} />
+              <Badge
+                badgeContent={followupDueCount}
+                color="error"
+                overlap="circular"
+                invisible={!followupDueCount}
+              >
+                <PersonAddAlt1Icon style={{ fontSize: "20px" }} />
+              </Badge>
             </div>
             <span className={classes.navItemLabel}>לידים</span>
           </div>

@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Grid,
-  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -16,29 +15,34 @@ import {
   MenuItem,
 } from "@mui/material";
 import SearchIcon from "@material-ui/icons/Search";
-import EditIcon from "@mui/icons-material/Edit";
-import NotesIcon from "@mui/icons-material/Notes";
-import DeleteIcon from "@mui/icons-material/DeleteOutline";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
 import { useStyles, STATUS_CONFIG } from "./Leads.style";
 
-const ALL_STATUSES = [
+const formatDate = (v) => {
+  if (!v) return "—";
+  const s = String(v).slice(0, 10);
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  return m ? `${m[3]}/${m[2]}/${m[1]}` : s;
+};
+
+const formatTimestamp = (v) => {
+  if (!v) return "—";
+  const d = new Date(v);
+  if (isNaN(d.getTime())) return "—";
+  return d.toLocaleDateString("he-IL", {
+    day: "2-digit", month: "2-digit", year: "numeric",
+    hour: "2-digit", minute: "2-digit",
+  });
+};
+
+const buildStatusOptions = (dueCount) => [
   { value: "all", label: "כל הסטטוסים" },
-  { value: "new_interest", label: "ליד חדש" },
-  { value: "no_answer", label: "לא ענה" },
-  { value: "follow_up", label: "בטיפול" },
-  { value: "meeting_scheduled", label: "פגישה נקבעה" },
-  { value: "interested", label: "מעוניין" },
-  { value: "registered", label: "נרשם" },
+  { value: "followup_due", label: `לפולואפ היום${dueCount ? ` (${dueCount})` : ""}` },
+  { value: "new_interest", label: "חדש" },
+  { value: "follow_up", label: "בתהליך" },
+  { value: "registered", label: "נסגר" },
   { value: "not_relevant", label: "לא רלוונטי" },
 ];
-
-const SOURCE_MAP = {
-  phone: "טלפון",
-  referral: "המלצה",
-  website: "אתר",
-  social: "רשתות חברתיות",
-  other: "אחר",
-};
 
 function StatusBadge({ status }) {
   const config = STATUS_CONFIG[status] || { bg: "#f1f5f9", color: "#64748b", label: status };
@@ -57,7 +61,18 @@ function StatusBadge({ status }) {
   );
 }
 
-const headers = ["שם", "טלפון", "גודל משפחה", "סטטוס", "מקור", "הופנה ע\"י", "הערה אחרונה", "פעולות"];
+const headers = [
+  "שם", "טלפון", "סטטוס",
+  "פולואפ", "תאריך פתיחת ליד", "תאריך עדכון אחרון",
+  "מחיר", "הנחה", "השתלמות", "הרכב",
+  "הערות",
+];
+
+const truncate = (s, max = 50) => {
+  if (!s) return "—";
+  const str = String(s);
+  return str.length > max ? `${str.slice(0, max)}…` : str;
+};
 
 function LeadsView({
   filteredLeads,
@@ -66,11 +81,16 @@ function LeadsView({
   selectedStatus,
   setSelectedStatus,
   handleAddClick,
-  handleEditClick,
-  handleNotesClick,
-  handleDeleteClick,
+  handleRowClick,
+  handleImportClick,
+  handleFileChange,
+  importing,
+  fileInputRef,
+  dueCount,
+  isDue,
 }) {
   const classes = useStyles();
+  const statusOptions = buildStatusOptions(dueCount);
 
   return (
     <Grid>
@@ -81,18 +101,35 @@ function LeadsView({
         padding: "10px 16px 8px",
         gap: "8px",
       }}>
-        <Button className={classes.addButton} onClick={handleAddClick}>
-          + הוסף ליד
-        </Button>
+        <Grid style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <Button className={classes.addButton} onClick={handleAddClick}>
+            + הוסף ליד
+          </Button>
+          <Button
+            className={classes.importButton}
+            onClick={handleImportClick}
+            disabled={importing}
+            startIcon={<UploadFileIcon style={{ fontSize: "16px" }} />}
+          >
+            {importing ? "מייבא…" : "ייבוא לידים מאקסל"}
+          </Button>
+          <input
+            type="file"
+            accept=".xlsx,.xls"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            style={{ display: "none" }}
+          />
+        </Grid>
 
         <Grid style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <FormControl size="small">
             <Select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              style={{ fontSize: 12, borderRadius: "8px", minWidth: "130px", height: "32px" }}
+              style={{ fontSize: 12, borderRadius: "8px", minWidth: "150px", height: "32px" }}
             >
-              {ALL_STATUSES.map((s) => (
+              {statusOptions.map((s) => (
                 <MenuItem key={s.value} value={s.value} style={{ fontSize: 12 }}>
                   {s.label}
                 </MenuItem>
@@ -131,42 +168,44 @@ function LeadsView({
           <TableBody className={classes.dataTableBody}>
             {filteredLeads?.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} style={{ textAlign: "center", color: "#94a3b8", fontSize: 13, padding: "32px" }}>
+                <TableCell colSpan={headers.length} style={{ textAlign: "center", color: "#94a3b8", fontSize: 13, padding: "32px" }}>
                   אין לידים להצגה
                 </TableCell>
               </TableRow>
             ) : (
-              filteredLeads?.map((lead, index) => (
-                <TableRow key={lead.lead_id || index}>
-                  <TableCell className={classes.dataTableCell}>{lead.full_name}</TableCell>
-                  <TableCell className={classes.dataTableCell}>{lead.phone || "—"}</TableCell>
-                  <TableCell className={classes.dataTableCell}>{lead.family_size || "—"}</TableCell>
-                  <TableCell className={classes.dataTableCell}>
-                    <StatusBadge status={lead.status} />
-                  </TableCell>
-                  <TableCell className={classes.dataTableCell}>
-                    {SOURCE_MAP[lead.source] || lead.source || "—"}
-                  </TableCell>
-                  <TableCell className={classes.dataTableCell}>{lead.referred_by || "—"}</TableCell>
-                  <TableCell
-                    className={classes.dataTableCell}
-                    style={{ maxWidth: "180px", whiteSpace: "normal", textAlign: "right" }}
+              filteredLeads?.map((lead, index) => {
+                const due = isDue?.(lead);
+                return (
+                  <TableRow
+                    key={lead.lead_id || index}
+                    className={due ? classes.dueRow : undefined}
+                    onClick={() => handleRowClick(lead)}
+                    style={{ cursor: "pointer" }}
                   >
-                    {lead.last_note || "—"}
-                  </TableCell>
-                  <TableCell className={classes.dataTableCell} style={{ whiteSpace: "nowrap" }}>
-                    <IconButton size="small" onClick={() => handleEditClick(lead)} title="עריכה">
-                      <EditIcon style={{ fontSize: "16px", color: "#0d9488" }} />
-                    </IconButton>
-                    <IconButton size="small" onClick={() => handleNotesClick(lead)} title="הערות">
-                      <NotesIcon style={{ fontSize: "16px", color: "#64748b" }} />
-                    </IconButton>
-                    <IconButton size="small" onClick={() => handleDeleteClick(lead)} title="מחיקה">
-                      <DeleteIcon style={{ fontSize: "16px", color: "#ef4444" }} />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))
+                    <TableCell className={classes.dataTableCell}>{lead.full_name}</TableCell>
+                    <TableCell className={classes.dataTableCell}>{lead.phone || "—"}</TableCell>
+                    <TableCell className={classes.dataTableCell}>
+                      <StatusBadge status={lead.status} />
+                    </TableCell>
+                    <TableCell className={classes.dataTableCell} style={due ? { color: "#dc2626", fontWeight: 600 } : undefined}>
+                      {formatDate(lead.followup_date)}
+                    </TableCell>
+                    <TableCell className={classes.dataTableCell}>{formatDate(lead.last_contact_date)}</TableCell>
+                    <TableCell className={classes.dataTableCell} style={{ whiteSpace: "nowrap" }}>{formatTimestamp(lead.updated_at)}</TableCell>
+                    <TableCell className={classes.dataTableCell}>{lead.price != null ? `${lead.price} ₪` : "—"}</TableCell>
+                    <TableCell className={classes.dataTableCell}>{lead.discount != null ? `${lead.discount} ₪` : "—"}</TableCell>
+                    <TableCell className={classes.dataTableCell}>{lead.training || "—"}</TableCell>
+                    <TableCell className={classes.dataTableCell}>{lead.composition || "—"}</TableCell>
+                    <TableCell
+                      className={classes.dataTableCell}
+                      style={{ maxWidth: "220px", whiteSpace: "normal", textAlign: "right" }}
+                      title={lead.last_note || lead.notes || ""}
+                    >
+                      {truncate(lead.last_note || lead.notes)}
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             )}
           </TableBody>
         </Table>

@@ -53,10 +53,10 @@ const getFlightReadiness = (vacationId) => `
 const getLeadsSummary = (vacationId) => `
   SELECT
     COUNT(*) AS total,
-    SUM(CASE WHEN status IN ('follow_up','meeting_scheduled','interested') THEN 1 ELSE 0 END) AS active,
-    SUM(CASE WHEN status = 'registered'                                   THEN 1 ELSE 0 END) AS registered,
-    SUM(CASE WHEN status IN ('new_interest','no_answer')                  THEN 1 ELSE 0 END) AS new_cold,
-    SUM(CASE WHEN status = 'not_relevant'                                 THEN 1 ELSE 0 END) AS not_relevant
+    SUM(CASE WHEN status = 'follow_up'    THEN 1 ELSE 0 END) AS active,
+    SUM(CASE WHEN status = 'registered'   THEN 1 ELSE 0 END) AS registered,
+    SUM(CASE WHEN status = 'new_interest' THEN 1 ELSE 0 END) AS new_cold,
+    SUM(CASE WHEN status = 'not_relevant' THEN 1 ELSE 0 END) AS not_relevant
   FROM \`trip_tracker_${vacationId}\`.leads
 `;
 
