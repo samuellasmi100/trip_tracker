@@ -15,8 +15,8 @@ function Sidebar() {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 1024);
-  const [linaExpanded, setLinaExpanded] = useState(false);
   const [vacationExpanded, setVacationExpanded] = useState(false);
+  const [guestsManagementExpanded, setGuestsManagementExpanded] = useState(false);
 
   const staticDialogType = useSelector((state) => state.staticSlice.type);
 
@@ -55,12 +55,12 @@ function Sidebar() {
     setSidebarOpen(false);
   }, []);
 
-  const toggleLinaExpanded = useCallback(() => {
-    setLinaExpanded((prev) => !prev);
-  }, []);
-
   const toggleVacationExpanded = useCallback(() => {
     setVacationExpanded((prev) => !prev);
+  }, []);
+
+  const toggleGuestsManagementExpanded = useCallback(() => {
+    setGuestsManagementExpanded((prev) => !prev);
   }, []);
 
   const handleWidgetClick = useCallback((widgetName) => {
@@ -85,10 +85,10 @@ function Sidebar() {
       sidebarOpen={sidebarOpen}
       toggleSidebar={toggleSidebar}
       closeSidebar={closeSidebar}
-      linaExpanded={linaExpanded}
-      toggleLinaExpanded={toggleLinaExpanded}
       vacationExpanded={vacationExpanded}
       toggleVacationExpanded={toggleVacationExpanded}
+      guestsManagementExpanded={guestsManagementExpanded}
+      toggleGuestsManagementExpanded={toggleGuestsManagementExpanded}
       handleWidgetClick={handleWidgetClick}
       handleDirectNavClick={handleDirectNavClick}
       staticDialogType={staticDialogType}

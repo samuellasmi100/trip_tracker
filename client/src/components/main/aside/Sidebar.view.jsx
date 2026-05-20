@@ -15,7 +15,6 @@ import AnalyticsIcon from "@mui/icons-material/Analytics";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import PaymentsIcon from "@mui/icons-material/Payments";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import GroupsIcon from "@mui/icons-material/Groups";
@@ -23,11 +22,12 @@ import ApartmentIcon from "@mui/icons-material/Apartment";
 import BeachAccessIcon from "@mui/icons-material/BeachAccess";
 import FlightIcon from "@mui/icons-material/Flight";
 import AssessmentIcon from "@mui/icons-material/Assessment";
-import HotelIcon from "@mui/icons-material/Hotel";
+import KingBedIcon from "@mui/icons-material/KingBed";
 import SettingsIcon from "@mui/icons-material/Settings";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import ArticleIcon from "@mui/icons-material/Article";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import BadgeIcon from "@mui/icons-material/Badge";
 
 function SidebarView({
   logoutButtonFunction,
@@ -37,10 +37,10 @@ function SidebarView({
   sidebarOpen,
   toggleSidebar,
   closeSidebar,
-  linaExpanded,
-  toggleLinaExpanded,
   vacationExpanded,
   toggleVacationExpanded,
+  guestsManagementExpanded,
+  toggleGuestsManagementExpanded,
   handleWidgetClick,
   handleDirectNavClick,
   staticDialogType,
@@ -48,8 +48,8 @@ function SidebarView({
   const classes = useStyles();
   const { pathname } = useLocation();
 
-  const linaKeys = ["rooms", "roomsStatus", "hotels"];
-  const vacationKeys = ["vacations", "generalInformation", "mainGuests", "guests"];
+  const vacationKeys = ["vacations", "rooms", "hotels"];
+  const guestsManagementKeys = ["generalInformation", "mainGuests", "guests"];
 
   return (
     <>
@@ -119,45 +119,17 @@ function SidebarView({
             </div>
           </Link>
 
-          {/* לינה - expandable */}
+          {/* סטטוס חדרים - direct link */}
           <div
-            className={`${classes.expandHeader} ${
-              pathname.includes("/static") && linaKeys.includes(staticDialogType) ? classes.expandHeaderActive : ""
+            className={`${classes.navItem} ${
+              pathname.includes("/static") && staticDialogType === "roomsStatus" ? classes.navItemActive : ""
             }`}
-            onClick={toggleLinaExpanded}
+            onClick={() => handleWidgetClick("roomsStatus")}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <div className={classes.navItemIcon}>
-                <HotelIcon style={{ fontSize: "20px" }} />
-              </div>
-              <span className={classes.navItemLabel}>לינה</span>
+            <div className={classes.navItemIcon}>
+              <KingBedIcon style={{ fontSize: "20px" }} />
             </div>
-            <ExpandMoreIcon
-              className={`${classes.expandArrow} ${linaExpanded ? classes.expandArrowOpen : ""}`}
-            />
-          </div>
-          <div className={`${classes.subMenuContainer} ${linaExpanded ? classes.subMenuOpen : ""}`}>
-            <div
-              className={`${classes.subMenuItem} ${pathname.includes("/static") && staticDialogType === "rooms" ? classes.subMenuItemActive : ""}`}
-              onClick={() => handleWidgetClick("rooms")}
-            >
-              <MeetingRoomIcon className={classes.subMenuIcon} />
-              <span>רשימת חדרים</span>
-            </div>
-            <div
-              className={`${classes.subMenuItem} ${pathname.includes("/static") && staticDialogType === "roomsStatus" ? classes.subMenuItemActive : ""}`}
-              onClick={() => handleWidgetClick("roomsStatus")}
-            >
-              <CheckCircleOutlineIcon className={classes.subMenuIcon} />
-              <span>סטטוס חדרים</span>
-            </div>
-            <div
-              className={`${classes.subMenuItem} ${pathname.includes("/static") && staticDialogType === "hotels" ? classes.subMenuItemActive : ""}`}
-              onClick={() => handleWidgetClick("hotels")}
-            >
-              <ApartmentIcon className={classes.subMenuIcon} />
-              <span>מלונות</span>
-            </div>
+            <span className={classes.navItemLabel}>סטטוס חדרים</span>
           </div>
 
           {/* טיסות - direct link */}
@@ -233,6 +205,40 @@ function SidebarView({
               <BeachAccessIcon className={classes.subMenuIcon} />
               <span>חופשות</span>
             </div>
+            <div
+              className={`${classes.subMenuItem} ${pathname.includes("/static") && staticDialogType === "rooms" ? classes.subMenuItemActive : ""}`}
+              onClick={() => handleWidgetClick("rooms")}
+            >
+              <MeetingRoomIcon className={classes.subMenuIcon} />
+              <span>רשימת חדרים</span>
+            </div>
+            <div
+              className={`${classes.subMenuItem} ${pathname.includes("/static") && staticDialogType === "hotels" ? classes.subMenuItemActive : ""}`}
+              onClick={() => handleWidgetClick("hotels")}
+            >
+              <ApartmentIcon className={classes.subMenuIcon} />
+              <span>מלונות</span>
+            </div>
+          </div>
+
+          {/* מידע אורחים - expandable */}
+          <div
+            className={`${classes.expandHeader} ${
+              pathname.includes("/static") && guestsManagementKeys.includes(staticDialogType) ? classes.expandHeaderActive : ""
+            }`}
+            onClick={toggleGuestsManagementExpanded}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <div className={classes.navItemIcon}>
+                <BadgeIcon style={{ fontSize: "20px" }} />
+              </div>
+              <span className={classes.navItemLabel}>מידע אורחים</span>
+            </div>
+            <ExpandMoreIcon
+              className={`${classes.expandArrow} ${guestsManagementExpanded ? classes.expandArrowOpen : ""}`}
+            />
+          </div>
+          <div className={`${classes.subMenuContainer} ${guestsManagementExpanded ? classes.subMenuOpen : ""}`}>
             <div
               className={`${classes.subMenuItem} ${pathname.includes("/static") && staticDialogType === "generalInformation" ? classes.subMenuItemActive : ""}`}
               onClick={() => handleWidgetClick("generalInformation")}
