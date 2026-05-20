@@ -119,6 +119,47 @@ function SidebarView({
             </div>
           </Link>
 
+          {/* מידע אורחים - expandable */}
+          <div
+            className={`${classes.expandHeader} ${
+              pathname.includes("/static") && guestsManagementKeys.includes(staticDialogType) ? classes.expandHeaderActive : ""
+            }`}
+            onClick={toggleGuestsManagementExpanded}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <div className={classes.navItemIcon}>
+                <BadgeIcon style={{ fontSize: "20px" }} />
+              </div>
+              <span className={classes.navItemLabel}>מידע אורחים</span>
+            </div>
+            <ExpandMoreIcon
+              className={`${classes.expandArrow} ${guestsManagementExpanded ? classes.expandArrowOpen : ""}`}
+            />
+          </div>
+          <div className={`${classes.subMenuContainer} ${guestsManagementExpanded ? classes.subMenuOpen : ""}`}>
+            <div
+              className={`${classes.subMenuItem} ${pathname.includes("/static") && staticDialogType === "generalInformation" ? classes.subMenuItemActive : ""}`}
+              onClick={() => handleWidgetClick("generalInformation")}
+            >
+              <AssessmentIcon className={classes.subMenuIcon} />
+              <span>מידע כולל</span>
+            </div>
+            <div
+              className={`${classes.subMenuItem} ${pathname.includes("/static") && staticDialogType === "mainGuests" ? classes.subMenuItemActive : ""}`}
+              onClick={() => handleWidgetClick("mainGuests")}
+            >
+              <PeopleAltIcon className={classes.subMenuIcon} />
+              <span>נרשמים</span>
+            </div>
+            <div
+              className={`${classes.subMenuItem} ${pathname.includes("/static") && staticDialogType === "guests" ? classes.subMenuItemActive : ""}`}
+              onClick={() => handleWidgetClick("guests")}
+            >
+              <GroupsIcon className={classes.subMenuIcon} />
+              <span>כלל האורחים</span>
+            </div>
+          </div>
+
           {/* סטטוס חדרים - direct link */}
           <div
             className={`${classes.navItem} ${
@@ -218,47 +259,6 @@ function SidebarView({
             >
               <ApartmentIcon className={classes.subMenuIcon} />
               <span>מלונות</span>
-            </div>
-          </div>
-
-          {/* מידע אורחים - expandable */}
-          <div
-            className={`${classes.expandHeader} ${
-              pathname.includes("/static") && guestsManagementKeys.includes(staticDialogType) ? classes.expandHeaderActive : ""
-            }`}
-            onClick={toggleGuestsManagementExpanded}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <div className={classes.navItemIcon}>
-                <BadgeIcon style={{ fontSize: "20px" }} />
-              </div>
-              <span className={classes.navItemLabel}>מידע אורחים</span>
-            </div>
-            <ExpandMoreIcon
-              className={`${classes.expandArrow} ${guestsManagementExpanded ? classes.expandArrowOpen : ""}`}
-            />
-          </div>
-          <div className={`${classes.subMenuContainer} ${guestsManagementExpanded ? classes.subMenuOpen : ""}`}>
-            <div
-              className={`${classes.subMenuItem} ${pathname.includes("/static") && staticDialogType === "generalInformation" ? classes.subMenuItemActive : ""}`}
-              onClick={() => handleWidgetClick("generalInformation")}
-            >
-              <AssessmentIcon className={classes.subMenuIcon} />
-              <span>מידע כולל</span>
-            </div>
-            <div
-              className={`${classes.subMenuItem} ${pathname.includes("/static") && staticDialogType === "mainGuests" ? classes.subMenuItemActive : ""}`}
-              onClick={() => handleWidgetClick("mainGuests")}
-            >
-              <PeopleAltIcon className={classes.subMenuIcon} />
-              <span>נרשמים</span>
-            </div>
-            <div
-              className={`${classes.subMenuItem} ${pathname.includes("/static") && staticDialogType === "guests" ? classes.subMenuItemActive : ""}`}
-              onClick={() => handleWidgetClick("guests")}
-            >
-              <GroupsIcon className={classes.subMenuIcon} />
-              <span>כלל האורחים</span>
             </div>
           </div>
 
