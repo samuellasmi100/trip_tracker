@@ -1,5 +1,5 @@
 const connection = require("../../db/connection-wrapper");
-const flightsQuery = require("../../sql/query/fligthsQuery")
+const flightsQuery = require("../../sql/query/flightsQuery")
 const logger = require("../../utils/logger");
 
 

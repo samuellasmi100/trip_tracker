@@ -104,8 +104,7 @@ Client (Axios + Bearer token)
 14. **Redux store** — Uses old-style `createStore` with `redux-devtools-extension` instead of RTK's `configureStore`.
 
 ### File Structure
-15. **Typo in filename** — `sql/query/fligthsQuery.js` (should be `flightsQuery`).
-16. **`files` table** — DB record tracking exists but uploads controller doesn't write to DB (only writes to disk). The `saveRegistrationForm` in userDb.js does write to DB but is never called from controllers.
+15. **`files` table** — DB record tracking exists but uploads controller doesn't write to DB (only writes to disk). The `saveRegistrationForm` in userDb.js does write to DB but is never called from controllers.
 
 ## Environment Variables (server/.env)
 

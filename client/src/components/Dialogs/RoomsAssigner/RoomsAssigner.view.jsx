@@ -13,7 +13,7 @@ import {
   FormControlLabel,
   Collapse
 } from "@mui/material";
-import { useStyles } from "./RoomaAssigner.style";
+import { useStyles } from "./RoomsAssigner.style";
 import { useSelector, useDispatch } from "react-redux";
 import * as dialogSlice from "../../../store/slice/dialogSlice";
 import DeleteIcon from '@mui/icons-material/Delete'
