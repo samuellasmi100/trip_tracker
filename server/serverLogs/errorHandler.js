@@ -1,4 +1,10 @@
 const fs = require("fs");
+const path = require("path");
+
+// Anchor the SQL error log to this module's location (server/error/) rather
+// than the process CWD, and use a space-free filename. appendFileSync creates
+// the file but NOT the directory, so the dir must be ensured first.
+const SQL_ERROR_LOG = path.join(__dirname, "..", "error", "sql_error.txt");
 
 
 let errorHandler = (e, request, response, next) => {
@@ -25,7 +31,14 @@ let errorHandler = (e, request, response, next) => {
     });
   }
   if (e.errorType.writeToFile) {
-    fs.appendFileSync("./error/sql_error .txt", e.message + "\r\n");
+    // Never let a logging failure throw out of the handler — the response has
+    // already been sent above.
+    try {
+      fs.mkdirSync(path.dirname(SQL_ERROR_LOG), { recursive: true });
+      fs.appendFileSync(SQL_ERROR_LOG, e.message + "\r\n");
+    } catch (logErr) {
+      console.error("Failed to write sql_error log:", logErr.message);
+    }
   }
 };
 module.exports = errorHandler;
