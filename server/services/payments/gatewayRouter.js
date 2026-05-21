@@ -5,7 +5,7 @@
  * Currently supports only Cardcom. Future providers (PayMe, etc.) can be added here.
  */
 
-const cardcomService = require('../cardcom/cardcomService');
+const cardcomService = require('./cardcomService');
 
 /**
  * Initiate a payment session.
