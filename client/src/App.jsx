@@ -12,7 +12,7 @@ import Sidebar from "./components/layout/Sidebar/Sidebar";
 import Login from "./components/pages/Login/Login";
 import Static from "./components/pages/Static/Static";
 import Leads from "./components/pages/Leads/Leads";
-import Settings from "./components/main/body/Settings/Settings";
+import Settings from "./components/pages/Settings/Settings";
 import PublicLeadForm from "./components/Public/PublicLeadForm/PublicLeadForm";
 import PublicDocumentUpload from "./components/Public/PublicDocumentUpload/PublicDocumentUpload";
 import PublicSignaturePage from "./components/Public/PublicSignaturePage/PublicSignaturePage";
