@@ -1,6 +1,11 @@
 const connection = require('../../db/connection-wrapper');
 const leadsQuery = require('../../sql/query/leadsQuery');
 const logger = require('../../utils/logger');
+const { toDateOnly } = require('../../utils/dateNormalize');
+
+// DATE columns — values may arrive as a full ISO datetime (the JSON round-trip
+// of a mysql2 Date) which MySQL rejects; toDateOnly reduces them to YYYY-MM-DD.
+const DATE_COLUMNS = new Set(['followup_date', 'last_contact_date']);
 
 const getAll = async (vacationId) => {
   try {
@@ -45,8 +50,8 @@ const create = async (vacationId, data) => {
       data.source || 'phone',
       data.notes || null,
       data.referred_by || null,
-      data.followup_date     || null,
-      data.last_contact_date || null,
+      toDateOnly(data.followup_date),
+      toDateOnly(data.last_contact_date),
       data.price             != null && data.price !== ''     ? data.price    : null,
       data.discount          != null && data.discount !== ''  ? data.discount : null,
       data.training          || null,
@@ -73,6 +78,7 @@ const update = async (vacationId, leadId, data) => {
       if (data[key] === undefined) continue;
       let value = data[key];
       if (value === '' && NULLABLE_ON_BLANK.has(key)) value = null;
+      if (DATE_COLUMNS.has(key)) value = toDateOnly(value);
       filteredData[key] = value;
     }
     const sql = leadsQuery.update(filteredData, vacationId);

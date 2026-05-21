@@ -50,4 +50,36 @@ const parseDateLoose = (value) => {
   return `${y}-${m}-${d}`;
 };
 
-module.exports = { parseDateLoose };
+/**
+ * toDateOnly — reduce any date-ish value to a strict `YYYY-MM-DD` string for a
+ * MySQL DATE column, or `null`.
+ *
+ * Covers the shapes parseDateLoose intentionally rejects but that still reach
+ * us in practice: a JS `Date` (mysql2 returns DATE columns as Date objects)
+ * and a full ISO datetime string like `2026-02-07T22:00:00.000Z` — what such a
+ * Date becomes after a JSON round-trip out to the client and back on an UPDATE.
+ *
+ * For those we read the *local* calendar components, i.e. the same timezone
+ * mysql2 used when it built the Date while reading the column (the pool sets no
+ * `timezone`/`dateStrings`, so it's the server's local TZ). Reversing with the
+ * same local TZ recovers the original calendar date instead of slicing the UTC
+ * instant, which would shift by a day for evening-in-UTC values. Plain date
+ * strings (YYYY-MM-DD, DD/MM/YYYY, D.M.YY) fall through to parseDateLoose for
+ * strict calendar validation.
+ */
+const toDateOnly = (value) => {
+  if (value === null || value === undefined || value === '') return null;
+
+  if (value instanceof Date || (typeof value === 'string' && value.includes('T'))) {
+    const dt = value instanceof Date ? value : new Date(value);
+    if (isNaN(dt.getTime())) return null;
+    const y = dt.getFullYear();
+    const m = String(dt.getMonth() + 1).padStart(2, '0');
+    const d = String(dt.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+
+  return parseDateLoose(String(value));
+};
+
+module.exports = { parseDateLoose, toDateOnly };
