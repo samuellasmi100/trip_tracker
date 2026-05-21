@@ -1,19 +1,19 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import * as vacationSlice from "../../../../store/slices/vacationSlice";
-import ApiVacations from "../../../../apis/vacationRequest";
+import * as vacationSlice from "../../../store/slices/vacationSlice";
+import ApiVacations from "../../../apis/vacationRequest";
 import "./Static.css";
 import { Grid } from "@mui/material";
-import Rooms from "../../../pages/Rooms/Rooms";
-import RoomsStatus from "../../../pages/RoomsStatus/RoomsStatus";
-import Vacation from "../../../pages/Vacation/Vacation";
-import MainGuests from "../../../pages/MainGuests/MainGuests";
-import Guests from "../../../pages/Guests/Guests";
-import Flights from "../../../pages/Flights/Flights";
-import GeneralInfo from "../../../pages/GeneralInfo/GeneralInfo";
-import Payments from "../../../pages/Payments/Payments";
-import Documents from "../../../pages/Documents/Documents";
+import Rooms from "../Rooms/Rooms";
+import RoomsStatus from "../RoomsStatus/RoomsStatus";
+import Vacation from "../Vacation/Vacation";
+import MainGuests from "../MainGuests/MainGuests";
+import Guests from "../Guests/Guests";
+import Flights from "../Flights/Flights";
+import GeneralInfo from "../GeneralInfo/GeneralInfo";
+import Payments from "../Payments/Payments";
+import Documents from "../Documents/Documents";
 const widgetMap = {
   rooms: Rooms,
   roomsStatus: RoomsStatus,
