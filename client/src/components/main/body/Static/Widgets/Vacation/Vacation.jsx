@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import ApiVacations from "../../../../../../apis/vacationRequest";
 import * as vacationSlice from "../../../../../../store/slices/vacationSlice"
 import * as dialogSlice from "../../../../../../store/slices/dialogSlice"
-import EditOrUpdateDialog from "../../EditOrUpdateDialog/MainDialog/EditOrUpdateDialog";
+import EditOrUpdateDialog from "../../../../../shared/EditOrUpdateDialog/MainDialog/EditOrUpdateDialog";
 
 
 const Vacation = (props) => {

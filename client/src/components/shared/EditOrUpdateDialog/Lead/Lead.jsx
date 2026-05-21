@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import LeadView from "./Lead.view";
 import { useSelector, useDispatch } from "react-redux";
-import * as staticSlice from "../../../../../../store/slices/staticSlice";
-import * as leadsSlice from "../../../../../../store/slices/leadsSlice";
-import * as snackBarSlice from "../../../../../../store/slices/snackbarSlice";
-import ApiLeads from "../../../../../../apis/leadsRequest";
+import * as staticSlice from "../../../../store/slices/staticSlice";
+import * as leadsSlice from "../../../../store/slices/leadsSlice";
+import * as snackBarSlice from "../../../../store/slices/snackbarSlice";
+import ApiLeads from "../../../../apis/leadsRequest";
 
 const Lead = () => {
   const dispatch = useDispatch();

@@ -6,7 +6,7 @@ import * as roomsSlice from "../../../../../../store/slices/roomsSlice";
 import * as staticSlice from "../../../../../../store/slices/staticSlice";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import EditOrUpdateDialog from "../../EditOrUpdateDialog/MainDialog/EditOrUpdateDialog";
+import EditOrUpdateDialog from "../../../../../shared/EditOrUpdateDialog/MainDialog/EditOrUpdateDialog";
 
 
 const Rooms = ({ handleDialogTypeOpen }) => {
