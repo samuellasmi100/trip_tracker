@@ -1,21 +1,21 @@
 import { combineReducers } from "@reduxjs/toolkit";
-import userSlice from "./slice/userSlice";
-import roomsSlice from "./slice/roomsSlice";
-import snackBarSlice from "./slice/snackbarSlice";
-import paymentsSlice from "./slice/paymentsSlice";
-import notesSlice from "./slice/notesSlice";
-import flightsSlice from "./slice/flightsSlice";
-import dialogSlice from "./slice/dialogSlice"
-import authSlice from "./slice/authSlice"
-import staticSlice from "./slice/staticSlice"
-import vacationSlice from "./slice/vacationSlice"
-import budgetSlice from "./slice/budgetSlice"
-import leadsSlice from "./slice/leadsSlice"
-import notificationsSlice from "./slice/notificationsSlice"
-import documentsSlice from "./slice/documentsSlice"
-import signaturesSlice from "./slice/signaturesSlice"
-import bookingsSlice from "./slice/bookingsSlice"
-import dashboardSlice from "./slice/dashboardSlice"
+import userSlice from "./slices/userSlice";
+import roomsSlice from "./slices/roomsSlice";
+import snackBarSlice from "./slices/snackbarSlice";
+import paymentsSlice from "./slices/paymentsSlice";
+import notesSlice from "./slices/notesSlice";
+import flightsSlice from "./slices/flightsSlice";
+import dialogSlice from "./slices/dialogSlice"
+import authSlice from "./slices/authSlice"
+import staticSlice from "./slices/staticSlice"
+import vacationSlice from "./slices/vacationSlice"
+import budgetSlice from "./slices/budgetSlice"
+import leadsSlice from "./slices/leadsSlice"
+import notificationsSlice from "./slices/notificationsSlice"
+import documentsSlice from "./slices/documentsSlice"
+import signaturesSlice from "./slices/signaturesSlice"
+import bookingsSlice from "./slices/bookingsSlice"
+import dashboardSlice from "./slices/dashboardSlice"
 
 const createRootReducer = () =>
   combineReducers({

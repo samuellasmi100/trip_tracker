@@ -11,7 +11,7 @@ import EditGuestPage from "../EditGuestPage/EditGuestPage";
 import { Button } from "@mui/material";
 import { useStyles } from "./MainDialog.style";
 
-import * as dialogSlice from "../../../store/slice/dialogSlice"
+import * as dialogSlice from "../../../store/slices/dialogSlice"
 import { useDispatch, useSelector } from "react-redux";
 import ChildDetails from "../ChildDetails/ChildDetails"
 import UploadFile from "../UploadFile/UploadFile";

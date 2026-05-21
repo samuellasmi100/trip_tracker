@@ -40,7 +40,7 @@ import { ReactComponent as EditIcon } from "../../../../../../assets/icons/edit.
 import DescriptionIcon from "@mui/icons-material/Description";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import { formatDateInput, isoToDisplay } from "../../../../../../utils/HelperFunction/formatDate";
+import { formatDateInput, isoToDisplay } from "../../../../../../utils/helpers/formatDate";
 
 function FamilyListView(props) {
   const classes = useStyles();

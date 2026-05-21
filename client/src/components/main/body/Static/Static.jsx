@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import * as vacationSlice from "../../../../store/slice/vacationSlice";
+import * as vacationSlice from "../../../../store/slices/vacationSlice";
 import ApiVacations from "../../../../apis/vacationRequest";
 import "./Static.css";
 import { Grid } from "@mui/material";

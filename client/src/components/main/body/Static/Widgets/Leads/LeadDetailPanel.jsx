@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import LeadDetailPanelView from "./LeadDetailPanel.view";
-import * as leadsSlice from "../../../../../../store/slice/leadsSlice";
-import * as snackBarSlice from "../../../../../../store/slice/snackbarSlice";
+import * as leadsSlice from "../../../../../../store/slices/leadsSlice";
+import * as snackBarSlice from "../../../../../../store/slices/snackbarSlice";
 import ApiLeads from "../../../../../../apis/leadsRequest";
 
 // Drawer-style detail panel for fast lead updates: status pills, follow-up /

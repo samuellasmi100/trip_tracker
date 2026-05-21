@@ -4,8 +4,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import ApiVacations from "../../../apis/vacationRequest";
 import ApiUser from "../../../apis/userRequest";
-import * as vacationSlice from "../../../store/slice/vacationSlice";
-import * as userSlice from "../../../store/slice/userSlice";
+import * as vacationSlice from "../../../store/slices/vacationSlice";
+import * as userSlice from "../../../store/slices/userSlice";
 
 const Header = () => {
   const dispatch = useDispatch();

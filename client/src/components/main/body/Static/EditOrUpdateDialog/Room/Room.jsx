@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import RoomView from "./Room.view";
-import * as staticSlice from "../../../../../../store/slice/staticSlice"
-import * as roomsSlice from "../../../../../../store/slice/roomsSlice"
-import * as snackBarSlice from "../../../../../../store/slice/snackbarSlice"
+import * as staticSlice from "../../../../../../store/slices/staticSlice"
+import * as roomsSlice from "../../../../../../store/slices/roomsSlice"
+import * as snackBarSlice from "../../../../../../store/slices/snackbarSlice"
 import { useSelector, useDispatch } from "react-redux";
 import ApiRooms from "../../../../../../apis/roomsRequest"
 

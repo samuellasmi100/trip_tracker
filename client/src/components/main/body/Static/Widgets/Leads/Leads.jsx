@@ -4,9 +4,9 @@ import LeadsView from "./Leads.view";
 import LeadDetailPanel from "./LeadDetailPanel";
 import EditOrUpdateDialog from "../../EditOrUpdateDialog/MainDialog/EditOrUpdateDialog";
 import { useDispatch, useSelector } from "react-redux";
-import * as leadsSlice from "../../../../../../store/slice/leadsSlice";
-import * as staticSlice from "../../../../../../store/slice/staticSlice";
-import * as snackBarSlice from "../../../../../../store/slice/snackbarSlice";
+import * as leadsSlice from "../../../../../../store/slices/leadsSlice";
+import * as staticSlice from "../../../../../../store/slices/staticSlice";
+import * as snackBarSlice from "../../../../../../store/slices/snackbarSlice";
 import ApiLeads from "../../../../../../apis/leadsRequest";
 
 // ─── Excel import helpers ───────────────────────────────────────────────────

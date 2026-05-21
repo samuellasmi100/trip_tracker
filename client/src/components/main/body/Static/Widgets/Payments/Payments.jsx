@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import PaymentsView from "./Payments.view";
 import { useSelector, useDispatch } from "react-redux";
 import ApiPayments from "../../../../../../apis/paymentsRequest";
-import * as paymentsSlice from "../../../../../../store/slice/paymentsSlice";
+import * as paymentsSlice from "../../../../../../store/slices/paymentsSlice";
 import PaymentDialog from "../../../../../Dialogs/Payments/Payments";
 
 const Payments = () => {

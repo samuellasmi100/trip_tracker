@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import GuestsView from "./Guests.view";
-import * as staticSlice from "../../../../../../store/slice/staticSlice";
+import * as staticSlice from "../../../../../../store/slices/staticSlice";
 import { useSelector, useDispatch } from "react-redux";
 import ApiStatic from "../../../../../../apis/staticRequest";
 import ApiUser from "../../../../../../apis/userRequest";
 import EditOrUpdateDialog from "../../EditOrUpdateDialog/MainDialog/EditOrUpdateDialog";
-import * as snackBarSlice from "../../../../../../store/slice/snackbarSlice";
+import * as snackBarSlice from "../../../../../../store/slices/snackbarSlice";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 

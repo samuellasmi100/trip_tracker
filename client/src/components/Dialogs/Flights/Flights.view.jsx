@@ -17,7 +17,7 @@ import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 import FlightLandIcon from "@mui/icons-material/FlightLand";
 import { useStyles } from "./Flights.style";
 import { useSelector } from "react-redux";
-import { formatDateInput, isoToDisplay } from "../../../utils/HelperFunction/formatDate";
+import { formatDateInput, isoToDisplay } from "../../../utils/helpers/formatDate";
 
 const FlightsView = (props) => {
   const {

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import RoomsView from "./RoomSelector.view";
 import { useDispatch, useSelector } from "react-redux";
-import * as roomsSlice from "../../../store/slice/roomsSlice";
-import * as snackBarSlice from "../../../store/slice/snackbarSlice";
-import * as dialogSlice from "../../../store/slice/dialogSlice";
+import * as roomsSlice from "../../../store/slices/roomsSlice";
+import * as snackBarSlice from "../../../store/slices/snackbarSlice";
+import * as dialogSlice from "../../../store/slices/dialogSlice";
 import ApiRoom from "../../../apis/roomsRequest";
-import * as userSlice from "../../../store/slice/userSlice";
+import * as userSlice from "../../../store/slices/userSlice";
 import ApiRooms from "../../../apis/roomsRequest";
 
 const RoomSelector = ({ embedded }) => {

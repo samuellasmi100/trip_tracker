@@ -11,8 +11,8 @@ import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 import FlightLandIcon from "@mui/icons-material/FlightLand";
 import { useStyles } from "../GuestWizard.style";
 import { useSelector, useDispatch } from "react-redux";
-import * as flightsSlice from "../../../../store/slice/flightsSlice";
-import { formatDateInput, isoToDisplay } from "../../../../utils/HelperFunction/formatDate";
+import * as flightsSlice from "../../../../store/slices/flightsSlice";
+import { formatDateInput, isoToDisplay } from "../../../../utils/helpers/formatDate";
 import ApiSettings from "../../../../apis/settingsRequest";
 
 function FlightDetailsStep() {

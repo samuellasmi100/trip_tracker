@@ -4,16 +4,16 @@ import ApiUser from "../../../apis/userRequest";
 import ApiVacations from "../../../apis/vacationRequest";
 import ApiFlights from "../../../apis/flightsRequest";
 import ApiNotes from "../../../apis/notesRequest";
-import * as flightsSlice from "../../../store/slice/flightsSlice";
-import * as notesSlice from "../../../store/slice/notesSlice";
+import * as flightsSlice from "../../../store/slices/flightsSlice";
+import * as notesSlice from "../../../store/slices/notesSlice";
 import { useDispatch, useSelector } from "react-redux";
-import * as snackBarSlice from "../../../store/slice/snackbarSlice";
-import * as userSlice from "../../../store/slice/userSlice";
-import * as dialogSlice from "../../../store/slice/dialogSlice";
-import * as vacationSlice from "../../../store/slice/vacationSlice";
+import * as snackBarSlice from "../../../store/slices/snackbarSlice";
+import * as userSlice from "../../../store/slices/userSlice";
+import * as dialogSlice from "../../../store/slices/dialogSlice";
+import * as vacationSlice from "../../../store/slices/vacationSlice";
 import { v4 as uuidv4 } from "uuid";
-import calculateAge from "../../../utils/HelperFunction/calculateAge";
-import { isoToDisplay } from "../../../utils/HelperFunction/formatDate";
+import calculateAge from "../../../utils/helpers/calculateAge";
+import { isoToDisplay } from "../../../utils/helpers/formatDate";
 
 const GuestWizard = () => {
   const dispatch = useDispatch();

@@ -4,7 +4,7 @@ import PaymentIframeDialog from "./PaymentIframeDialog";
 import ApiPayments from "../../../apis/paymentsRequest";
 import { useSelector, useDispatch } from "react-redux";
 import { getSocket } from "../../../utils/socketService";
-import * as snackBarSlice from "../../../store/slice/snackbarSlice";
+import * as snackBarSlice from "../../../store/slices/snackbarSlice";
 
 const EMPTY_FORM = {
   amount: "",

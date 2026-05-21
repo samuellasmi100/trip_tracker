@@ -1,10 +1,10 @@
 import React, { useState,useEffect } from "react";
 import VacationView from "./Vacation.view";
-import * as staticSlice from "../../../../../../store/slice/staticSlice";
+import * as staticSlice from "../../../../../../store/slices/staticSlice";
 import { useSelector, useDispatch } from "react-redux";
 import ApiVacations from "../../../../../../apis/vacationRequest";
-import * as vacationSlice from "../../../../../../store/slice/vacationSlice"
-import * as dialogSlice from "../../../../../../store/slice/dialogSlice"
+import * as vacationSlice from "../../../../../../store/slices/vacationSlice"
+import * as dialogSlice from "../../../../../../store/slices/dialogSlice"
 import EditOrUpdateDialog from "../../EditOrUpdateDialog/MainDialog/EditOrUpdateDialog";
 
 

@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { useStyles } from "../GuestWizard.style";
 import { useSelector, useDispatch } from "react-redux";
-import * as notesSlice from "../../../../store/slice/notesSlice";
+import * as notesSlice from "../../../../store/slices/notesSlice";
 
 const CategoryNotes = [
   { categoryName: "חדרים", id: 1 },

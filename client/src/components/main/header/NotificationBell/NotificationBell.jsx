@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import NotificationBellView from "./NotificationBell.view";
 import { useDispatch, useSelector } from "react-redux";
-import * as notificationsSlice from "../../../../store/slice/notificationsSlice";
+import * as notificationsSlice from "../../../../store/slices/notificationsSlice";
 import ApiNotifications from "../../../../apis/notificationsRequest";
 
 const NotificationBell = () => {

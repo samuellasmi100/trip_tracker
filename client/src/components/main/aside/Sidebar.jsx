@@ -4,10 +4,10 @@ import SidebarView from "./Sidebar.view";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
-import * as authSlice from "../../../store/slice/authSlice"
-import * as staticSlice from "../../../store/slice/staticSlice"
-import * as notificationsSlice from "../../../store/slice/notificationsSlice"
-import * as leadsSlice from "../../../store/slice/leadsSlice"
+import * as authSlice from "../../../store/slices/authSlice"
+import * as staticSlice from "../../../store/slices/staticSlice"
+import * as notificationsSlice from "../../../store/slices/notificationsSlice"
+import * as leadsSlice from "../../../store/slices/leadsSlice"
 import { disconnectSocket } from "../../../utils/socketService"
 import ApiLeads from "../../../apis/leadsRequest"
 

@@ -9,16 +9,16 @@ import ApiDocuments from "../../../../../../apis/documentsRequest"
 import ApiSignatures from "../../../../../../apis/signaturesRequest"
 import ApiBookings from "../../../../../../apis/bookingsRequest"
 import FamilyListView from "./FamilyList.view";
-import * as userSlice from "../../../../../../store/slice/userSlice";
-import * as dialogSlice from "../../../../../../store/slice/dialogSlice";
-import * as flightsSlice from "../../../../../../store/slice/flightsSlice";
-import * as roomsSlice from "../../../../../../store/slice/roomsSlice";
-import * as notesSlice from "../../../../../../store/slice/notesSlice";
-import * as paymentsSlice from "../../../../../../store/slice/paymentsSlice";
-import * as staticSlice from "../../../../../../store/slice/staticSlice";
-import * as vacationSlice from "../../../../../../store/slice/vacationSlice";
-import * as snackBarSlice from "../../../../../../store/slice/snackbarSlice";
-import { isoToDisplay } from "../../../../../../utils/HelperFunction/formatDate";
+import * as userSlice from "../../../../../../store/slices/userSlice";
+import * as dialogSlice from "../../../../../../store/slices/dialogSlice";
+import * as flightsSlice from "../../../../../../store/slices/flightsSlice";
+import * as roomsSlice from "../../../../../../store/slices/roomsSlice";
+import * as notesSlice from "../../../../../../store/slices/notesSlice";
+import * as paymentsSlice from "../../../../../../store/slices/paymentsSlice";
+import * as staticSlice from "../../../../../../store/slices/staticSlice";
+import * as vacationSlice from "../../../../../../store/slices/vacationSlice";
+import * as snackBarSlice from "../../../../../../store/slices/snackbarSlice";
+import { isoToDisplay } from "../../../../../../utils/helpers/formatDate";
 
 const PAGE_SIZE = 30;
 

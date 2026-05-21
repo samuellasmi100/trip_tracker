@@ -1,12 +1,12 @@
 import React, { useEffect,useState } from "react";
 import RoomsView from "./RoomsAssigner.view"
 import { useDispatch, useSelector } from "react-redux";
-import * as roomsSlice from "../../../store/slice/roomsSlice"
-import * as snackbarSlice from "../../../store/slice/snackbarSlice"
-import * as dialogSlice from "../../../store/slice/dialogSlice"
+import * as roomsSlice from "../../../store/slices/roomsSlice"
+import * as snackbarSlice from "../../../store/slices/snackbarSlice"
+import * as dialogSlice from "../../../store/slices/dialogSlice"
 import ApiRooms from "../../../apis/roomsRequest"
-import * as userSlice from "../../../store/slice/userSlice";
-import * as snackBarSlice from "../../../store/slice/snackbarSlice";
+import * as userSlice from "../../../store/slices/userSlice";
+import * as snackBarSlice from "../../../store/slices/snackbarSlice";
 
 const RoomsAssigner = ({ embedded }) => {
   const dispatch = useDispatch()

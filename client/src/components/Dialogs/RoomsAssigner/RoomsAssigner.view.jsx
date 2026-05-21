@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { useStyles } from "./RoomsAssigner.style";
 import { useSelector, useDispatch } from "react-redux";
-import * as dialogSlice from "../../../store/slice/dialogSlice";
+import * as dialogSlice from "../../../store/slices/dialogSlice";
 import DeleteIcon from '@mui/icons-material/Delete'
 
 

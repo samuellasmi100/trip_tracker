@@ -1,11 +1,11 @@
 import React, { useState,useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import NotesView from "./Notes.view";
-import * as notesSlice from "../../../store/slice/notesSlice";
-import * as dialogSlice from "../../../store/slice/dialogSlice";
-import * as userSlice from "../../../store/slice/userSlice";
-import * as snackBarSlice from "../../../store/slice/snackbarSlice";
-import * as flightsSlice from "../../../store/slice/flightsSlice";
+import * as notesSlice from "../../../store/slices/notesSlice";
+import * as dialogSlice from "../../../store/slices/dialogSlice";
+import * as userSlice from "../../../store/slices/userSlice";
+import * as snackBarSlice from "../../../store/slices/snackbarSlice";
+import * as flightsSlice from "../../../store/slices/flightsSlice";
 
 import ApiNotes from "../../../apis/notesRequest"
 

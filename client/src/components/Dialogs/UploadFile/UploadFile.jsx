@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import UploadFileView from "./UploadFile.view";
-import * as notesSlice from "../../../store/slice/notesSlice";
-import * as dialogSlice from "../../../store/slice/dialogSlice";
-import * as snackBarSlice from "../../../store/slice/snackbarSlice";
+import * as notesSlice from "../../../store/slices/notesSlice";
+import * as dialogSlice from "../../../store/slices/dialogSlice";
+import * as snackBarSlice from "../../../store/slices/snackbarSlice";
 import ApiFile from "../../../apis/uploadFileRequest"
 
 

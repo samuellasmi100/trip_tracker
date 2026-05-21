@@ -13,14 +13,14 @@ import Login from "./components/main/body/Login/Login";
 import Static from "./components/main/body/Static/Static";
 import Leads from "./components/main/body/Static/Widgets/Leads/Leads";
 import Settings from "./components/main/body/Settings/Settings";
-import PublicLeadForm from "./components/public/PublicLeadForm/PublicLeadForm";
-import PublicDocumentUpload from "./components/public/PublicDocumentUpload/PublicDocumentUpload";
-import PublicSignaturePage from "./components/public/PublicSignaturePage/PublicSignaturePage";
-import PublicBookingForm from "./components/public/PublicBookingForm/PublicBookingForm";
+import PublicLeadForm from "./components/Public/PublicLeadForm/PublicLeadForm";
+import PublicDocumentUpload from "./components/Public/PublicDocumentUpload/PublicDocumentUpload";
+import PublicSignaturePage from "./components/Public/PublicSignaturePage/PublicSignaturePage";
+import PublicBookingForm from "./components/Public/PublicBookingForm/PublicBookingForm";
 import Dashboard from "./components/main/body/Dashboard/Dashboard";
 import RequireVacation from "./components/main/RequireVacation";
-import * as notificationsSlice from "./store/slice/notificationsSlice";
-import * as snackBarSlice from "./store/slice/snackbarSlice";
+import * as notificationsSlice from "./store/slices/notificationsSlice";
+import * as snackBarSlice from "./store/slices/snackbarSlice";
 import { connectSocket, disconnectSocket, getSocket } from "./utils/socketService";
 
 function App() {

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import ReservationView from "./Reservation.view";
 import { useDispatch, useSelector } from "react-redux";
-import * as userSlice from "../../../store/slice/userSlice";
-import * as dialogSlice from "../../../store/slice/dialogSlice";
-import * as vacationSlice from "../../../store/slice/vacationSlice";
+import * as userSlice from "../../../store/slices/userSlice";
+import * as dialogSlice from "../../../store/slices/dialogSlice";
+import * as vacationSlice from "../../../store/slices/vacationSlice";
 import ApiUser from "../../../apis/userRequest";
-import * as snackBarSlice from "../../../store/slice/snackbarSlice";
+import * as snackBarSlice from "../../../store/slices/snackbarSlice";
 import ApiVacations  from "../../../apis/vacationRequest"
 import moment from "moment";
 

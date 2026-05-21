@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { useStyles } from "../GuestWizard.style";
 import { useSelector } from "react-redux";
-import { formatDateInput, isoToDisplay } from "../../../../utils/HelperFunction/formatDate";
+import { formatDateInput, isoToDisplay } from "../../../../utils/helpers/formatDate";
 
 function TripOptionsStep({ handleInputChange }) {
   const classes = useStyles();

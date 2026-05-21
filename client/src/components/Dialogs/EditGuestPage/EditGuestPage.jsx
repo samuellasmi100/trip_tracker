@@ -22,10 +22,10 @@ import NotesContainer from "../Notes/Notes";
 import ApiUser from "../../../apis/userRequest";
 
 // Redux
-import * as userSlice from "../../../store/slice/userSlice";
-import * as snackBarSlice from "../../../store/slice/snackbarSlice";
+import * as userSlice from "../../../store/slices/userSlice";
+import * as snackBarSlice from "../../../store/slices/snackbarSlice";
 
-import calculateAge from "../../../utils/HelperFunction/calculateAge";
+import calculateAge from "../../../utils/helpers/calculateAge";
 
 const EditGuestPage = ({ onClose }) => {
   const classes = useStyles();

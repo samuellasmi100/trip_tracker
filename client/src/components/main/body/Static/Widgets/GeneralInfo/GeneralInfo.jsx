@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import GeneralInfoView from "./GeneralInfo.view";
-import * as staticSlice from "../../../../../../store/slice/staticSlice";
+import * as staticSlice from "../../../../../../store/slices/staticSlice";
 import { useSelector, useDispatch } from "react-redux";
 import ApiStatic from "../../../../../../apis/staticRequest";
 import EditOrUpdateDialog from "../../EditOrUpdateDialog/MainDialog/EditOrUpdateDialog";

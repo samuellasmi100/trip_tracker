@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PaymentView from "./Payment.view";
-import * as staticSlice from "../../../../../../store/slice/staticSlice";
+import * as staticSlice from "../../../../../../store/slices/staticSlice";
 import { useSelector, useDispatch } from "react-redux";
 import ApiPayments from "../../../../../../apis/paymentsRequest";
 

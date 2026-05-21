@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useCallback } from "react";
 import FlightsView from "./Flights.view";
 import { useDispatch, useSelector } from "react-redux";
-import * as flightsSlice from "../../../store/slice/flightsSlice"
-import * as dialogSlice from "../../../store/slice/dialogSlice"
+import * as flightsSlice from "../../../store/slices/flightsSlice"
+import * as dialogSlice from "../../../store/slices/dialogSlice"
 import ApiFlights from "../../../apis/flightsRequest"
 import ApiSettings from "../../../apis/settingsRequest"
-import * as userSlice from "../../../store/slice/userSlice";
-import * as snackBarSlice from "../../../store/slice/snackbarSlice";
+import * as userSlice from "../../../store/slices/userSlice";
+import * as snackBarSlice from "../../../store/slices/snackbarSlice";
 
 const Flights = ({ embedded, saveRef }) => {
 const dispatch = useDispatch()

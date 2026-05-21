@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import * as budgetSlice from "../../../../../store/slice/budgetSlice";
-import * as snackBarSlice from "../../../../../store/slice/snackbarSlice";
+import * as budgetSlice from "../../../../../store/slices/budgetSlice";
+import * as snackBarSlice from "../../../../../store/slices/snackbarSlice";
 import ApiBudgets from "../../../../../apis/budgetsRequest";
 import IncomeTabView from "./IncomeTab.view";
 

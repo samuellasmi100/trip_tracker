@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import ApiDocuments from "../../../../apis/documentsRequest";
 import ApiSettings from "../../../../apis/settingsRequest";
 import ApiPayments from "../../../../apis/paymentsRequest";
-import * as snackBarSlice from "../../../../store/slice/snackbarSlice";
+import * as snackBarSlice from "../../../../store/slices/snackbarSlice";
 
 const EMPTY_PROVIDER_CONFIG = {
   terminalNumber: "",

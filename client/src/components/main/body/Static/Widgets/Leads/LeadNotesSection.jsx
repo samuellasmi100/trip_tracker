@@ -3,7 +3,7 @@ import { Typography, TextField, Button } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useDispatch } from "react-redux";
 import ApiLeads from "../../../../../../apis/leadsRequest";
-import * as leadsSlice from "../../../../../../store/slice/leadsSlice";
+import * as leadsSlice from "../../../../../../store/slices/leadsSlice";
 
 const useStyles = makeStyles(() => ({
   list: {

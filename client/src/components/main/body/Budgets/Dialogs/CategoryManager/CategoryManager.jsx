@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import * as budgetSlice from "../../../../../../store/slice/budgetSlice";
+import * as budgetSlice from "../../../../../../store/slices/budgetSlice";
 import ApiBudgets from "../../../../../../apis/budgetsRequest";
 import CategoryManagerView from "./CategoryManager.view";
 
