@@ -36,11 +36,11 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import SearchIcon from "@material-ui/icons/Search";
 import GroupsIcon from "@mui/icons-material/Groups";
 import CloseIcon from "@mui/icons-material/Close";
-import { ReactComponent as EditIcon } from "../../../../../../assets/icons/edit.svg";
+import { ReactComponent as EditIcon } from "../../../assets/icons/edit.svg";
 import DescriptionIcon from "@mui/icons-material/Description";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import { formatDateInput, isoToDisplay } from "../../../../../../utils/helpers/formatDate";
+import { formatDateInput, isoToDisplay } from "../../../utils/helpers/formatDate";
 
 function FamilyListView(props) {
   const classes = useStyles();

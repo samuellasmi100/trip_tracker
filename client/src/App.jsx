@@ -6,7 +6,7 @@ import { Route, Routes, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import "moment/locale/en-gb";
-import FamilyList from "./components/main/body/WorkSpace/Families/FamilyList/FamilyList";
+import FamilyList from "./components/pages/FamilyList/FamilyList";
 import Header from "./components/layout/Header/Header";
 import Sidebar from "./components/layout/Sidebar/Sidebar";
 import Login from "./components/pages/Login/Login";
