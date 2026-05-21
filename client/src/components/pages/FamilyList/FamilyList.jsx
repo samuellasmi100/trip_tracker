@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import MainDialog from "../../Dialogs/MainDialog/MainDialog";
-import PaymentDialog from "../../Dialogs/Payments/Payments";
+import MainDialog from "../../shared/MainDialog/MainDialog";
+import PaymentDialog from "../../shared/Payments/Payments";
 import { useDispatch, useSelector } from "react-redux";
 import ApiUser from "../../../apis/userRequest"
 import ApiVacations from "../../../apis/vacationRequest"
