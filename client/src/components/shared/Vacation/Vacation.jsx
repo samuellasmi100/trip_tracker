@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import VacationsView from "./Vacation.view";
 import { useDispatch, useSelector } from "react-redux";
-import * as staticSlice from "../../../../store/slices/staticSlice"
-import * as snackBarSlice from "../../../../store/slices/snackbarSlice"
-import ApiVacations from "../../../../apis/vacationRequest"
+import * as staticSlice from "../../../store/slices/staticSlice"
+import * as snackBarSlice from "../../../store/slices/snackbarSlice"
+import ApiVacations from "../../../apis/vacationRequest"
 
 const Vacation = () => {
   const dispatch = useDispatch()

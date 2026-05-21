@@ -4,7 +4,7 @@ import * as staticSlice from "../../../store/slices/staticSlice";
 import { useSelector, useDispatch } from "react-redux";
 import ApiStatic from "../../../apis/staticRequest";
 import ApiUser from "../../../apis/userRequest";
-import EditOrUpdateDialog from "../../shared/EditOrUpdateDialog/MainDialog/EditOrUpdateDialog";
+import EditOrUpdateDialog from "../../shared/EditDialog/EditOrUpdateDialog";
 import * as snackBarSlice from "../../../store/slices/snackbarSlice";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";

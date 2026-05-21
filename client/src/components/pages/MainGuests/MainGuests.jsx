@@ -3,7 +3,7 @@ import MainGuestsView from "./MainGuests.view";
 import * as staticSlice from "../../../store/slices/staticSlice";
 import { useSelector, useDispatch } from "react-redux";
 import ApiStatic from "../../../apis/staticRequest";
-import EditOrUpdateDialog from "../../shared/EditOrUpdateDialog/MainDialog/EditOrUpdateDialog";
+import EditOrUpdateDialog from "../../shared/EditDialog/EditOrUpdateDialog";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import ApiUser from "../../../apis/userRequest";
