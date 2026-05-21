@@ -6,14 +6,14 @@ import ApiVacations from "../../../../apis/vacationRequest";
 import "./Static.css";
 import { Grid } from "@mui/material";
 import Rooms from "../../../pages/Rooms/Rooms";
-import RoomsStatus from "./Widgets/RoomsStatus/RoomsStatus";
+import RoomsStatus from "../../../pages/RoomsStatus/RoomsStatus";
 import Vacation from "../../../pages/Vacation/Vacation";
 import MainGuests from "../../../pages/MainGuests/MainGuests";
 import Guests from "../../../pages/Guests/Guests";
 import Flights from "../../../pages/Flights/Flights";
 import GeneralInfo from "../../../pages/GeneralInfo/GeneralInfo";
 import Payments from "../../../pages/Payments/Payments";
-import Documents from "./Widgets/Documents/Documents";
+import Documents from "../../../pages/Documents/Documents";
 const widgetMap = {
   rooms: Rooms,
   roomsStatus: RoomsStatus,

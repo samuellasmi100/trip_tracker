@@ -13,7 +13,7 @@ import {
   Box,
   Chip,
 } from "@mui/material";
-import ApiRooms from "../../../../../../apis/roomsRequest";
+import ApiRooms from "../../../apis/roomsRequest";
 
 const AssignFamilyDialog = ({
   open,

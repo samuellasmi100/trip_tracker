@@ -7,9 +7,9 @@ import AssignFamilyDialog from "./AssignFamilyDialog";
 import MoveRoomDialog from "./MoveRoomDialog";
 import RoomRoster from "./RoomRoster";
 import RoomStatusOverview from "./RoomStatusOverview";
-import ApiRooms from "../../../../../../apis/roomsRequest";
-import * as snackBarSlice from "../../../../../../store/slices/snackbarSlice";
-import { displayToIso } from "../../../../../../utils/helpers/formatDate";
+import ApiRooms from "../../../apis/roomsRequest";
+import * as snackBarSlice from "../../../store/slices/snackbarSlice";
+import { displayToIso } from "../../../utils/helpers/formatDate";
 
 export const FAMILY_COLORS = [
   { bg: "#dbeafe", text: "#1d4ed8", border: "#93c5fd" },

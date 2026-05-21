@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import CloseIcon from "@mui/icons-material/Close";
-import ApiRooms from "../../../../../../apis/roomsRequest";
+import ApiRooms from "../../../apis/roomsRequest";
 
 const TEAL = "#0891b2";
 

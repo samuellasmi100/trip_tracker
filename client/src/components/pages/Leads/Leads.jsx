@@ -2,12 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import * as XLSX from "xlsx";
 import LeadsView from "./Leads.view";
 import LeadDetailPanel from "./LeadDetailPanel";
-import EditOrUpdateDialog from "../../../../../shared/EditOrUpdateDialog/MainDialog/EditOrUpdateDialog";
+import EditOrUpdateDialog from "../../shared/EditOrUpdateDialog/MainDialog/EditOrUpdateDialog";
 import { useDispatch, useSelector } from "react-redux";
-import * as leadsSlice from "../../../../../../store/slices/leadsSlice";
-import * as staticSlice from "../../../../../../store/slices/staticSlice";
-import * as snackBarSlice from "../../../../../../store/slices/snackbarSlice";
-import ApiLeads from "../../../../../../apis/leadsRequest";
+import * as leadsSlice from "../../../store/slices/leadsSlice";
+import * as staticSlice from "../../../store/slices/staticSlice";
+import * as snackBarSlice from "../../../store/slices/snackbarSlice";
+import ApiLeads from "../../../apis/leadsRequest";
 
 // ─── Excel import helpers ───────────────────────────────────────────────────
 

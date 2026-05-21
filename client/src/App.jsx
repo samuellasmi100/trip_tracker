@@ -11,7 +11,7 @@ import Header from "./components/layout/Header/Header";
 import Sidebar from "./components/layout/Sidebar/Sidebar";
 import Login from "./components/main/body/Login/Login";
 import Static from "./components/main/body/Static/Static";
-import Leads from "./components/main/body/Static/Widgets/Leads/Leads";
+import Leads from "./components/pages/Leads/Leads";
 import Settings from "./components/main/body/Settings/Settings";
 import PublicLeadForm from "./components/Public/PublicLeadForm/PublicLeadForm";
 import PublicDocumentUpload from "./components/Public/PublicDocumentUpload/PublicDocumentUpload";

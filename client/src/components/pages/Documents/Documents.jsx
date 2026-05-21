@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import DocumentsView from "./Documents.view";
-import ApiDocuments from "../../../../../../apis/documentsRequest";
-import * as documentsSlice from "../../../../../../store/slices/documentsSlice";
+import ApiDocuments from "../../../apis/documentsRequest";
+import * as documentsSlice from "../../../store/slices/documentsSlice";
 
 const Documents = () => {
   const dispatch = useDispatch();
