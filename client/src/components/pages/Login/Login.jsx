@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import LoginView from "./Login.view";
-import ApiUser from "../../../../apis/userRequest";
+import ApiUser from "../../../apis/userRequest";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import * as authSlice from "../../../../store/slices/authSlice";
-import * as userSlice from "../../../../store/slices/userSlice";
-import * as snackBarSlice from "../../../../store/slices/snackbarSlice";
+import * as authSlice from "../../../store/slices/authSlice";
+import * as userSlice from "../../../store/slices/userSlice";
+import * as snackBarSlice from "../../../store/slices/snackbarSlice";
 import axios from "axios";
-import { connectSocket } from "../../../../utils/socketService";
+import { connectSocket } from "../../../utils/socketService";
 
 const Login = () => {
   let navigate = useNavigate();

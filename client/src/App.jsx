@@ -9,7 +9,7 @@ import "moment/locale/en-gb";
 import FamilyList from "./components/main/body/WorkSpace/Families/FamilyList/FamilyList";
 import Header from "./components/layout/Header/Header";
 import Sidebar from "./components/layout/Sidebar/Sidebar";
-import Login from "./components/main/body/Login/Login";
+import Login from "./components/pages/Login/Login";
 import Static from "./components/pages/Static/Static";
 import Leads from "./components/pages/Leads/Leads";
 import Settings from "./components/main/body/Settings/Settings";

@@ -10,7 +10,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import avimorLogo from "../../../../assets/icons/avimor-logo.png";
+import avimorLogo from "../../../assets/icons/avimor-logo.png";
 import { useStyles } from "./Login.style";
 import "./Login.css";
 
