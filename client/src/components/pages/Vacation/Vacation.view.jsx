@@ -18,7 +18,7 @@ import { useStyles } from "./Vacation.style";
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import "./Vacation.css"
-import { ReactComponent as EditIcon } from "../../../../../../assets/icons/edit.svg";
+import { ReactComponent as EditIcon } from "../../../assets/icons/edit.svg";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import SearchIcon from "@material-ui/icons/Search";
 import moment from "moment";

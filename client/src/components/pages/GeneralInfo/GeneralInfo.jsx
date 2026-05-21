@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import GeneralInfoView from "./GeneralInfo.view";
-import * as staticSlice from "../../../../../../store/slices/staticSlice";
+import * as staticSlice from "../../../store/slices/staticSlice";
 import { useSelector, useDispatch } from "react-redux";
-import ApiStatic from "../../../../../../apis/staticRequest";
-import EditOrUpdateDialog from "../../../../../shared/EditOrUpdateDialog/MainDialog/EditOrUpdateDialog";
+import ApiStatic from "../../../apis/staticRequest";
+import EditOrUpdateDialog from "../../shared/EditOrUpdateDialog/MainDialog/EditOrUpdateDialog";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 

@@ -6,7 +6,7 @@ import {
 } from "@mui/material";
 import { useStyles } from "./GeneralInfo.style";
 import React from "react";
-import { ReactComponent as DownloadIcon } from "../../../../../../assets/icons/download.svg";
+import { ReactComponent as DownloadIcon } from "../../../assets/icons/download.svg";
 import SearchIcon from "@material-ui/icons/Search";
 import RefreshIcon from "@mui/icons-material/Refresh";
 

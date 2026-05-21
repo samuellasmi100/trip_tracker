@@ -14,7 +14,7 @@ import {
 import { useStyles } from "./Payments.style";
 import React from "react";
 import SearchIcon from "@material-ui/icons/Search";
-import { ReactComponent as DownloadIcon } from "../../../../../../assets/icons/download.svg";
+import { ReactComponent as DownloadIcon } from "../../../assets/icons/download.svg";
 
 function PaymentsView({ filteredSummary, searchTerm, setSearchTerm, onFamilyClick, handleExportToExcel }) {
   const classes = useStyles();

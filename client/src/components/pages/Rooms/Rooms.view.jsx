@@ -14,9 +14,9 @@ import {
 
 import React from "react";
 import { useStyles } from "./Rooms.style";
-import { ReactComponent as EditIcon } from "../../../../../../assets/icons/edit.svg";
+import { ReactComponent as EditIcon } from "../../../assets/icons/edit.svg";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
-import { ReactComponent as DownloadIcon } from "../../../../../../assets/icons/download.svg";
+import { ReactComponent as DownloadIcon } from "../../../assets/icons/download.svg";
 import SearchIcon from "@material-ui/icons/Search";
 
 function StaticView({

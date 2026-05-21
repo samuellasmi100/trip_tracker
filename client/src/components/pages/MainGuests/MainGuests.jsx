@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import GuestsView from "./Guests.view";
-import * as staticSlice from "../../../../../../store/slices/staticSlice";
+import MainGuestsView from "./MainGuests.view";
+import * as staticSlice from "../../../store/slices/staticSlice";
 import { useSelector, useDispatch } from "react-redux";
-import ApiStatic from "../../../../../../apis/staticRequest";
-import ApiUser from "../../../../../../apis/userRequest";
-import EditOrUpdateDialog from "../../../../../shared/EditOrUpdateDialog/MainDialog/EditOrUpdateDialog";
-import * as snackBarSlice from "../../../../../../store/slices/snackbarSlice";
+import ApiStatic from "../../../apis/staticRequest";
+import EditOrUpdateDialog from "../../shared/EditOrUpdateDialog/MainDialog/EditOrUpdateDialog";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import ApiUser from "../../../apis/userRequest";
+import * as snackBarSlice from "../../../store/slices/snackbarSlice";
 
 const LIMIT = 50;
 
-const Guests = () => {
+const MainGuests = () => {
   const dispatch = useDispatch();
   const token = sessionStorage.getItem("token");
   const vacationId = useSelector((state) => state.vacationSlice.vacationId);
@@ -31,6 +31,7 @@ const Guests = () => {
   const searchRef = useRef("");
   const sentinelRef = useRef(null);
 
+  // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 400);
     return () => clearTimeout(timer);
@@ -41,7 +42,7 @@ const Guests = () => {
     loadingRef.current = true;
     setLoading(true);
     try {
-      const res = await ApiStatic.getGuests(token, vacationId, searchTerm, LIMIT, currentOffset);
+      const res = await ApiStatic.getMainGuests(token, vacationId, searchTerm, LIMIT, currentOffset);
       const { data, hasMore: more } = res.data;
       setRows(prev => append ? [...prev, ...data] : data);
       hasMoreRef.current = more;
@@ -55,6 +56,7 @@ const Guests = () => {
     }
   }, [token, vacationId]);
 
+  // Reset + refetch on vacation change or search change
   useEffect(() => {
     searchRef.current = debouncedSearch;
     offsetRef.current = 0;
@@ -64,6 +66,7 @@ const Guests = () => {
     fetchData(debouncedSearch, 0, false);
   }, [vacationId, debouncedSearch, fetchData]);
 
+  // Infinite scroll sentinel
   useEffect(() => {
     const el = sentinelRef.current;
     if (!el) return;
@@ -81,23 +84,19 @@ const Guests = () => {
   const handleDeleteButtonClick = (user) => { setSelectedUser(user); setOpen(true); };
 
   const headers = [
-    "", "שם פרטי בעברית", "שם משפחה בעברית", "שם פרטי באנגלית", "שם משפחה באנגלית",
-    "גיל", "מספר זהות", "מספר טלפון", "אימייל", "משתמש ראשי", "משויך לחדר", "מחק",
+    "", "שם משפחה", "כמות נרשמים", "נמצאים במערכת", "חסרים", "מספר טלפון", "אימייל", "מספר זהות", "מחק",
   ];
 
   const handleDeleteClick = async () => {
     try {
-      if (selectedUser.is_main_user === 1) {
-        await ApiUser.deleteMainGuests(token, selectedUser.family_id, vacationId);
-      } else {
-        await ApiUser.deleteGuests(token, selectedUser.user_id, vacationId);
-      }
+      await ApiUser.deleteMainGuests(token, selectedUser.family_id, vacationId);
       setOpen(false);
       dispatch(snackBarSlice.setSnackBar({
         type: "success",
         message: `${selectedUser.hebrew_first_name} ${selectedUser.hebrew_last_name} נמחק בהצלחה`,
         timeout: 3000,
       }));
+      // Refetch from scratch
       offsetRef.current = 0;
       hasMoreRef.current = true;
       setRows([]);
@@ -105,42 +104,40 @@ const Guests = () => {
       fetchData(searchRef.current, 0, false);
     } catch (error) {
       console.log(error);
-      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "מחיקת האורח נכשלה, נסה שוב", timeout: 4000 }));
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "מחיקת המשפחה נכשלה, נסה שוב", timeout: 4000 }));
     }
   };
 
   const handleExportToExcel = () => {
     const transformedData = rows.map((row) => ({
-      "שם פרטי בעברית": row.hebrew_first_name,
-      "שם משפחה בעברית": row.hebrew_last_name,
-      "שם פרטי באנגלית": row.english_first_name,
-      "שם משפחה באנגלית": row.english_last_name,
-      "גיל": row.age !== null ? row.age : "",
-      "מספר זהות": row.identity_id,
+      "שם משפחה": row.family_name,
+      "כמות נרשמים": row.number_of_guests,
+      "נמצאים במערכת": row.user_in_system_count,
+      "חסרים": Math.max(Number(row.number_of_guests) - Number(row.user_in_system_count), 0) || "",
       "מספר טלפון": row.phone_a || "",
-      "אימייל": row.email,
-      "משויך לחדר": row.room_id,
+      "אימייל": row.email || "",
+      "מספר זהות": row.identity_id || "",
     }));
-    const hebrewHeaders = ["שם פרטי בעברית","שם משפחה בעברית","שם פרטי באנגלית","שם משפחה באנגלית","גיל","מספר זהות","מספר טלפון","אימייל","משויך לחדר"];
+    const hebrewHeaders = ["שם משפחה","כמות נרשמים","נמצאים במערכת","חסרים","מספר טלפון","אימייל","מספר זהות"];
     const ws = XLSX.utils.json_to_sheet(transformedData);
     XLSX.utils.sheet_add_aoa(ws, [hebrewHeaders], { origin: "A1" });
     ws["!dir"] = "rtl";
     ws["!cols"] = hebrewHeaders.map(() => ({ wch: 20 }));
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "כלל האורחים");
+    XLSX.utils.book_append_sheet(wb, ws, "נרשמים");
     const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-    saveAs(new Blob([excelBuffer], { type: "application/octet-stream" }), "כלל האורחים.xlsx");
+    saveAs(new Blob([excelBuffer], { type: "application/octet-stream" }), "נרשמים.xlsx");
   };
 
   return (
     <>
-      <GuestsView
+      <MainGuestsView
         rows={rows}
         search={search}
         setSearch={setSearch}
         headers={headers}
-        handleDeleteButtonClick={handleDeleteButtonClick}
         handleExportToExcel={handleExportToExcel}
+        handleDeleteButtonClick={handleDeleteButtonClick}
         selectedUser={selectedUser}
         handleClose={handleClose}
         open={open}
@@ -154,4 +151,4 @@ const Guests = () => {
   );
 };
 
-export default Guests;
+export default MainGuests;

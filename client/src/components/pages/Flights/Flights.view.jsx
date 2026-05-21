@@ -16,7 +16,7 @@ import {
 
 import { useStyles } from "./Flights.style";
 import React  from "react";
-import { ReactComponent as DownloadIcon } from "../../../../../../assets/icons/download.svg";
+import { ReactComponent as DownloadIcon } from "../../../assets/icons/download.svg";
 import SearchIcon from "@material-ui/icons/Search";
 
 function FlightsView({ 

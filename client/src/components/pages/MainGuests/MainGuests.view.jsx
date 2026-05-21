@@ -9,7 +9,7 @@ import React from "react";
 import "./MainGuests.css";
 import SearchIcon from "@material-ui/icons/Search";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { ReactComponent as DownloadIcon } from "../../../../../../assets/icons/download.svg";
+import { ReactComponent as DownloadIcon } from "../../../assets/icons/download.svg";
 
 function MainGuestsView({
   rows, search, setSearch, headers,

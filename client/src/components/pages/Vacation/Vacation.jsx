@@ -1,11 +1,11 @@
 import React, { useState,useEffect } from "react";
 import VacationView from "./Vacation.view";
-import * as staticSlice from "../../../../../../store/slices/staticSlice";
+import * as staticSlice from "../../../store/slices/staticSlice";
 import { useSelector, useDispatch } from "react-redux";
-import ApiVacations from "../../../../../../apis/vacationRequest";
-import * as vacationSlice from "../../../../../../store/slices/vacationSlice"
-import * as dialogSlice from "../../../../../../store/slices/dialogSlice"
-import EditOrUpdateDialog from "../../../../../shared/EditOrUpdateDialog/MainDialog/EditOrUpdateDialog";
+import ApiVacations from "../../../apis/vacationRequest";
+import * as vacationSlice from "../../../store/slices/vacationSlice"
+import * as dialogSlice from "../../../store/slices/dialogSlice"
+import EditOrUpdateDialog from "../../shared/EditOrUpdateDialog/MainDialog/EditOrUpdateDialog";
 
 
 const Vacation = (props) => {
