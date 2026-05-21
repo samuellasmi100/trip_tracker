@@ -17,7 +17,7 @@ import PublicLeadForm from "./components/Public/PublicLeadForm/PublicLeadForm";
 import PublicDocumentUpload from "./components/Public/PublicDocumentUpload/PublicDocumentUpload";
 import PublicSignaturePage from "./components/Public/PublicSignaturePage/PublicSignaturePage";
 import PublicBookingForm from "./components/Public/PublicBookingForm/PublicBookingForm";
-import Dashboard from "./components/main/body/Dashboard/Dashboard";
+import Dashboard from "./components/pages/Dashboard/Dashboard";
 import RequireVacation from "./components/layout/RequireVacation/RequireVacation";
 import * as notificationsSlice from "./store/slices/notificationsSlice";
 import * as snackBarSlice from "./store/slices/snackbarSlice";

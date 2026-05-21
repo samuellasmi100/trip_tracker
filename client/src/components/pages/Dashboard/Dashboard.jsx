@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
-import dashboardRequest from "../../../../apis/dashboardRequest";
-import * as dashboardSlice from "../../../../store/slices/dashboardSlice";
+import dashboardRequest from "../../../apis/dashboardRequest";
+import * as dashboardSlice from "../../../store/slices/dashboardSlice";
 import DashboardView from "./Dashboard.view";
 
 const ZERO = {
