@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { useStyles } from "./UnifiedTable.style";
 import StatusChip from "./StatusChip";
-import { ReactComponent as EditIcon } from "../../../../../assets/icons/edit.svg";
+import { ReactComponent as EditIcon } from "../../../../assets/icons/edit.svg";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 

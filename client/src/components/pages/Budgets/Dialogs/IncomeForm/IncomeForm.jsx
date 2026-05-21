@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import * as budgetSlice from "../../../../../../store/slices/budgetSlice";
-import * as snackBarSlice from "../../../../../../store/slices/snackbarSlice";
-import ApiBudgets from "../../../../../../apis/budgetsRequest";
+import * as budgetSlice from "../../../../../store/slices/budgetSlice";
+import * as snackBarSlice from "../../../../../store/slices/snackbarSlice";
+import ApiBudgets from "../../../../../apis/budgetsRequest";
 import IncomeFormView from "./IncomeForm.view";
 
 const IncomeForm = ({ closeModal }) => {

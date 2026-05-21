@@ -1,7 +1,7 @@
 import React from "react";
 import { Select, MenuItem, OutlinedInput } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import * as budgetSlice from "../../../../../store/slices/budgetSlice";
+import * as budgetSlice from "../../../../store/slices/budgetSlice";
 
 const StatusFilter = () => {
   const dispatch = useDispatch();

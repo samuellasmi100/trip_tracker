@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Typography, TextField, Button } from "@mui/material";
-import ApiBudgets from "../../../../../../apis/budgetsRequest";
+import ApiBudgets from "../../../../../apis/budgetsRequest";
 import { useStyles } from "./ExchangeRateManager.style";
 
 const ExchangeRateManager = ({ closeModal }) => {

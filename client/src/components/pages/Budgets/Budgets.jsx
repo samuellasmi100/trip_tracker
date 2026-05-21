@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import * as budgetSlice from "../../../../store/slices/budgetSlice";
+import * as budgetSlice from "../../../store/slices/budgetSlice";
 import BudgetsView from "./Budgets.view";
 
 const Budgets = () => {

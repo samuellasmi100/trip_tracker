@@ -2,7 +2,7 @@ import React from "react";
 import { TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { useDispatch, useSelector } from "react-redux";
-import * as budgetSlice from "../../../../../store/slices/budgetSlice";
+import * as budgetSlice from "../../../../store/slices/budgetSlice";
 
 const SearchBar = () => {
   const dispatch = useDispatch();

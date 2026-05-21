@@ -1,7 +1,7 @@
 import "./App.css";
 import { Grid } from "@mui/material";
 import SnackBar from "./components/SnackBar/SnackBar";
-import Budgets from "./components/main/body/Budgets/Budgets";
+import Budgets from "./components/pages/Budgets/Budgets";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";

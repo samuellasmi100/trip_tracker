@@ -1,48 +1,48 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import * as budgetSlice from "../../../../../store/slices/budgetSlice";
-import * as snackBarSlice from "../../../../../store/slices/snackbarSlice";
-import ApiBudgets from "../../../../../apis/budgetsRequest";
-import ExpensesTabView from "./ExpensesTab.view";
+import * as budgetSlice from "../../../../store/slices/budgetSlice";
+import * as snackBarSlice from "../../../../store/slices/snackbarSlice";
+import ApiBudgets from "../../../../apis/budgetsRequest";
+import IncomeTabView from "./IncomeTab.view";
 
-const ExpensesTab = ({ handleOpenEdit }) => {
+const IncomeTab = ({ handleOpenEdit }) => {
   const dispatch = useDispatch();
   const token = sessionStorage.getItem("token");
   const vacationId = useSelector((state) => state.vacationSlice.vacationId);
-  const expenses = useSelector((state) => state.budgetSlice.expenses);
+  const income = useSelector((state) => state.budgetSlice.income);
   const searchTerm = useSelector((state) => state.budgetSlice.searchTerm);
   const statusFilter = useSelector((state) => state.budgetSlice.statusFilter);
   const dialogOpen = useSelector((state) => state.budgetSlice.dialogOpen);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
 
-  const fetchExpenses = async () => {
+  const fetchIncome = async () => {
     if (!vacationId) return;
     try {
-      const response = await ApiBudgets.getExpenses(token, vacationId);
-      dispatch(budgetSlice.setExpenses(response.data));
+      const response = await ApiBudgets.getIncome(token, vacationId);
+      dispatch(budgetSlice.setIncome(response.data));
     } catch (error) {
-      console.error("Error fetching expenses:", error);
+      console.error("Error fetching income:", error);
     }
   };
 
   useEffect(() => {
-    fetchExpenses();
+    fetchIncome();
   }, [vacationId]);
 
   useEffect(() => {
     if (!dialogOpen) {
-      fetchExpenses();
+      fetchIncome();
     }
   }, [dialogOpen]);
 
   const handleDelete = async (actionId) => {
     try {
-      await ApiBudgets.deleteExpense(token, vacationId, actionId);
-      await fetchExpenses();
+      await ApiBudgets.deleteIncome(token, vacationId, actionId);
+      await fetchIncome();
     } catch (error) {
-      console.error("Error deleting expense:", error);
-      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "מחיקת ההוצאה נכשלה, נסה שוב", timeout: 4000 }));
+      console.error("Error deleting income:", error);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "מחיקת ההכנסה נכשלה, נסה שוב", timeout: 4000 }));
     }
   };
 
@@ -55,11 +55,11 @@ const ExpensesTab = ({ handleOpenEdit }) => {
     if (!selectedRow) return;
     try {
       const newStatus = selectedRow.is_paid === 1 ? false : true;
-      await ApiBudgets.updateExpensesStatus(token, selectedRow.action_id, newStatus, vacationId);
-      await fetchExpenses();
+      await ApiBudgets.updateIncomeStatus(token, selectedRow.action_id, newStatus, vacationId);
+      await fetchIncome();
     } catch (error) {
-      console.error("Error updating status:", error);
-      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "עדכון סטטוס ההוצאה נכשל, נסה שוב", timeout: 4000 }));
+      console.error("Error updating income status:", error);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "עדכון סטטוס ההכנסה נכשל, נסה שוב", timeout: 4000 }));
     }
     setConfirmOpen(false);
     setSelectedRow(null);
@@ -70,8 +70,8 @@ const ExpensesTab = ({ handleOpenEdit }) => {
     setSelectedRow(null);
   };
 
-  const filteredExpenses = useMemo(() => {
-    let result = expenses || [];
+  const filteredIncome = useMemo(() => {
+    let result = income || [];
     if (searchTerm) {
       result = result.filter(
         (e) =>
@@ -92,11 +92,11 @@ const ExpensesTab = ({ handleOpenEdit }) => {
       });
     }
     return result;
-  }, [expenses, searchTerm, statusFilter]);
+  }, [income, searchTerm, statusFilter]);
 
   return (
-    <ExpensesTabView
-      expenses={filteredExpenses}
+    <IncomeTabView
+      income={filteredIncome}
       handleOpenEdit={handleOpenEdit}
       handleDelete={handleDelete}
       handleStatusToggle={handleStatusToggle}
@@ -108,4 +108,4 @@ const ExpensesTab = ({ handleOpenEdit }) => {
   );
 };
 
-export default ExpensesTab;
+export default IncomeTab;
