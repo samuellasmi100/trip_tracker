@@ -16,7 +16,7 @@ import LinkIcon from "@mui/icons-material/Link";
 import FolderOpenIcon from "@mui/icons-material/FolderOpen";
 import CheckIcon from "@mui/icons-material/Check";
 import { useStyles } from "./Documents.style";
-import DocumentsDetailPanel from "./DocumentsDetailPanel";
+import DocumentsDetailPanel from "./DocumentsDetailPanel/DocumentsDetailPanel";
 
 function DocumentsView({
   familiesStatus,

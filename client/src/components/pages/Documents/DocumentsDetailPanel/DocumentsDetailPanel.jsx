@@ -9,8 +9,8 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DescriptionIcon from "@mui/icons-material/Description";
-import { useStyles } from "./Documents.style";
-import ApiDocuments from "../../../apis/documentsRequest";
+import { useStyles } from "../Documents.style";
+import ApiDocuments from "../../../../apis/documentsRequest";
 
 function DocumentsDetailPanel({ open, onClose, family, vacationId, token, onDocDeleted }) {
   const classes = useStyles();
