@@ -22,7 +22,7 @@ const getAll = (vacationId) => `
       LIMIT 1
     ) AS last_note_at
   FROM trip_tracker_${vacationId}.leads l
-  ORDER BY l.updated_at DESC;
+  ORDER BY COALESCE(l.updated_at, l.created_at) DESC;
 `;
 
 const getById = (vacationId) => `

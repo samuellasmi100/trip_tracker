@@ -446,7 +446,13 @@ const TENANT_TABLE_SCHEMAS = {
       { name: 'training',          definition: 'varchar(50) DEFAULT NULL' },
       { name: 'composition',       definition: 'varchar(45) DEFAULT NULL' },
       { name: 'created_at',        definition: 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP' },
-      { name: 'updated_at',        definition: 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP' },
+      // updated_at = "last genuinely edited". Intentionally NULLable with NO
+      // default and NO `ON UPDATE` so a never-edited lead stays empty; the app
+      // sets it explicitly (leadsQuery.update / bumpUpdatedAt) only on a real
+      // edit. NOTE: engine.js is ADD-only and never MODIFYs existing columns,
+      // so this affects new tenant DBs only — existing DBs are converged by the
+      // one-time scripts/fix_leads_updated_at.js.
+      { name: 'updated_at',        definition: 'timestamp NULL DEFAULT NULL' },
     ],
   },
 
