@@ -77,18 +77,6 @@ function LeadView({ form, isEdit, handleInputChange, handleSelectChange, submit,
             placeholder="example@mail.com"
           />
         </div>
-        <div className={classes.fieldItem}>
-          <InputLabel className={classes.inputLabelStyle}>גודל משפחה</InputLabel>
-          <TextField
-            name="family_size"
-            type="number"
-            className={classes.textField}
-            value={form.family_size || ""}
-            onChange={handleInputChange}
-            size="small"
-            inputProps={{ min: 1 }}
-          />
-        </div>
       </div>
 
       <div className={classes.fieldGroup}>
@@ -141,18 +129,20 @@ function LeadView({ form, isEdit, handleInputChange, handleSelectChange, submit,
             InputLabelProps={{ shrink: true }}
           />
         </div>
-        <div className={classes.fieldItem}>
-          <InputLabel className={classes.inputLabelStyle}>תאריך פתיחת ליד</InputLabel>
-          <TextField
-            name="last_contact_date"
-            type="date"
-            className={classes.textField}
-            value={toDateInput(form.last_contact_date)}
-            onChange={handleInputChange}
-            size="small"
-            InputLabelProps={{ shrink: true }}
-          />
-        </div>
+        {isEdit && (
+          <div className={classes.fieldItem}>
+            <InputLabel className={classes.inputLabelStyle}>תאריך פתיחת ליד</InputLabel>
+            <TextField
+              name="last_contact_date"
+              type="date"
+              className={classes.textField}
+              value={toDateInput(form.last_contact_date)}
+              size="small"
+              InputLabelProps={{ shrink: true }}
+              InputProps={{ readOnly: true }}
+            />
+          </div>
+        )}
       </div>
 
       <div className={classes.fieldGroup}>

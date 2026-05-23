@@ -76,9 +76,16 @@ export const useStyles = makeStyles(() => ({
     color: "#475569 !important",
     "&:hover": { background: "#f1f5f9 !important" },
   },
+  // Active status pill: solid fill in the app's teal (same as the primary
+  // עריכה מלאה / הוסף buttons) + white text, so the current status is obvious
+  // and on-theme. !important is required because the base .pill background/
+  // colour are also !important (a plain inline style cannot override them).
   pillActive: {
+    background: "#0d9488 !important",
+    color: "#ffffff !important",
     border: "1px solid transparent !important",
-    boxShadow: "0 2px 6px rgba(0,0,0,0.08) !important",
+    boxShadow: "0 1px 4px rgba(0,0,0,0.15) !important",
+    "&:hover": { background: "#0d9488 !important" },
   },
   dateRow: {
     display: "grid",
@@ -141,26 +148,4 @@ export const useStyles = makeStyles(() => ({
     alignItems: "center",
     gap: "8px",
   },
-  fullEditLink: {
-    fontSize: "13px !important",
-    fontWeight: "600 !important",
-    color: "#0d9488 !important",
-    textTransform: "none !important",
-    "&:hover": { background: "#f0fdfa !important" },
-  },
-  deleteAction: {
-    fontSize: "13px !important",
-    fontWeight: "600 !important",
-    color: "#dc2626 !important",
-    textTransform: "none !important",
-    "&:hover": { background: "#fef2f2 !important" },
-  },
 }));
-
-// Mirrors STATUS_CONFIG colors so an active pill picks up the status's badge color.
-export const PILL_COLORS = {
-  new_interest: { bg: "#eff6ff", color: "#2563eb" },
-  follow_up:    { bg: "#fff7ed", color: "#ea580c" },
-  registered:   { bg: "#d1fae5", color: "#059669" },
-  not_relevant: { bg: "#f1f5f9", color: "#475569" },
-};

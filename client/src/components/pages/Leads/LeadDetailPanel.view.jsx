@@ -15,7 +15,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import PhoneIcon from "@mui/icons-material/Phone";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutline";
-import { useStyles, PILL_COLORS } from "./LeadDetailPanel.style";
+import { useStyles } from "./LeadDetailPanel.style";
 import { STATUS_CONFIG } from "./Leads.style";
 import LeadNotesSection from "./LeadNotesSection/LeadNotesSection";
 
@@ -124,12 +124,10 @@ const LeadDetailPanelView = ({
               <div className={classes.statusPills}>
                 {STATUS_PILLS.map((p) => {
                   const active = lead.status === p.value;
-                  const c = PILL_COLORS[p.value] || {};
                   return (
                     <Button
                       key={p.value}
-                      className={`${classes.pill} ${active ? classes.pillActive : ""}`}
-                      style={active ? { background: c.bg, color: c.color } : undefined}
+                      className={active ? `${classes.pill} ${classes.pillActive}` : classes.pill}
                       onClick={() => onStatusChange(p.value)}
                       disabled={active}
                     >
@@ -164,9 +162,9 @@ const LeadDetailPanelView = ({
                     fullWidth
                     size="small"
                     value={toDateInput(lead.last_contact_date)}
-                    onChange={(e) => onDateChange("last_contact_date", e.target.value)}
                     className={classes.dateField}
                     InputLabelProps={{ shrink: true }}
+                    InputProps={{ readOnly: true }}
                   />
                 </div>
               </div>
@@ -183,7 +181,7 @@ const LeadDetailPanelView = ({
               <Typography className={classes.sectionLabel}>פרטים</Typography>
               <div className={classes.detailsGrid}>
                 <div className={classes.detailItem}>
-                  <Typography className={classes.detailKey}>מחיר</Typography>
+                  <Typography className={classes.detailKey}>מחיר שקיבל</Typography>
                   <Typography className={classes.detailValue}>{formatPriceDisplay(lead.price)}</Typography>
                 </div>
                 <div className={classes.detailItem}>
@@ -201,10 +199,6 @@ const LeadDetailPanelView = ({
                 <div className={classes.detailItem}>
                   <Typography className={classes.detailKey}>מקור</Typography>
                   <Typography className={classes.detailValue}>{SOURCE_LABEL[lead.source] || lead.source || "—"}</Typography>
-                </div>
-                <div className={classes.detailItem}>
-                  <Typography className={classes.detailKey}>גודל משפחה</Typography>
-                  <Typography className={classes.detailValue}>{lead.family_size || "—"}</Typography>
                 </div>
                 {lead.email && (
                   <div className={`${classes.detailItem} ${classes.detailFull}`}>
@@ -225,16 +219,31 @@ const LeadDetailPanelView = ({
           {/* Footer */}
           <div className={classes.footer}>
             <Button
-              className={classes.deleteAction}
+              variant="outlined"
               startIcon={<DeleteIcon style={{ fontSize: "16px" }} />}
               onClick={onRequestDelete}
+              sx={{
+                textTransform: "none",
+                fontWeight: 700,
+                color: "#dc2626",
+                borderColor: "#dc2626",
+                "&:hover": { borderColor: "#b91c1c", backgroundColor: "#fef2f2" },
+                "& .MuiButton-startIcon": { marginInlineStart: 0, marginInlineEnd: "8px" },
+              }}
             >
               מחק ליד
             </Button>
             <Button
-              className={classes.fullEditLink}
+              variant="contained"
               startIcon={<EditIcon style={{ fontSize: "16px" }} />}
               onClick={onOpenFullEdit}
+              sx={{
+                textTransform: "none",
+                fontWeight: 700,
+                backgroundColor: "#0d9488",
+                "&:hover": { backgroundColor: "#0f766e" },
+                "& .MuiButton-startIcon": { marginInlineStart: 0, marginInlineEnd: "8px" },
+              }}
             >
               עריכה מלאה
             </Button>

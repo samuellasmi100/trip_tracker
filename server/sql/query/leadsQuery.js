@@ -38,11 +38,14 @@ const getNotesByLeadId = (vacationId) => `
   ORDER BY created_at ASC;
 `;
 
+// last_contact_date powers the "תאריך פתיחת ליד" display. COALESCE(?, CURDATE())
+// defaults it to today when none is supplied (manual / public create) while
+// leaving an imported Excel date untouched, so the field is never empty.
 const create = (vacationId) => `
   INSERT INTO trip_tracker_${vacationId}.leads
     (full_name, phone, email, family_size, status, source, notes, referred_by,
      followup_date, last_contact_date, price, discount, training, composition)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, COALESCE(?, CURDATE()), ?, ?, ?, ?);
 `;
 
 const update = (data, vacationId) => {
