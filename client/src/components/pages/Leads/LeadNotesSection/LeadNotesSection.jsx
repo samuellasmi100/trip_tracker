@@ -76,7 +76,7 @@ const formatDate = (dateStr) => {
   });
 };
 
-// Notes list + composer used by both LeadNotesDialog and LeadDetailPanel.
+// Notes list + composer used by LeadDetailPanel.
 // Fetches the audit-trail notes via ApiLeads.getById; adds via ApiLeads.addNote.
 const LeadNotesSection = ({ lead, vacationId }) => {
   const classes = useStyles();
