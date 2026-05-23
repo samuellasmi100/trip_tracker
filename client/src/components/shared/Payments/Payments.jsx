@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PaymentsView from "./Payments.view";
-import PaymentIframeDialog from "./PaymentIframeDialog";
+import PaymentIframeDialog from "./PaymentIframeDialog/PaymentIframeDialog";
 import ApiPayments from "../../../apis/paymentsRequest";
 import { useSelector, useDispatch } from "react-redux";
 import { getSocket } from "../../../utils/socketService";

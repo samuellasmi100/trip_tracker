@@ -8,8 +8,8 @@ import {
   Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { getSocket } from "../../../utils/socketService";
-import ApiPayments from "../../../apis/paymentsRequest";
+import { getSocket } from "../../../../utils/socketService";
+import ApiPayments from "../../../../apis/paymentsRequest";
 
 /**
  * PaymentIframeDialog
