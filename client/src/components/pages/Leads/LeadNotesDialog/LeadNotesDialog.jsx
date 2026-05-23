@@ -2,7 +2,7 @@ import React from "react";
 import { Dialog, IconButton, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { makeStyles } from "@mui/styles";
-import LeadNotesSection from "./LeadNotesSection";
+import LeadNotesSection from "../LeadNotesSection/LeadNotesSection";
 
 const useStyles = makeStyles(() => ({
   header: {

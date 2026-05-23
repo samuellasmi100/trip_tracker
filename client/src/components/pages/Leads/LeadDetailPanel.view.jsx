@@ -17,7 +17,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutline";
 import { useStyles, PILL_COLORS } from "./LeadDetailPanel.style";
 import { STATUS_CONFIG } from "./Leads.style";
-import LeadNotesSection from "./LeadNotesSection";
+import LeadNotesSection from "./LeadNotesSection/LeadNotesSection";
 
 const STATUS_PILLS = [
   { value: "new_interest", label: "חדש" },
