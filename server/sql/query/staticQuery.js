@@ -1,3 +1,13 @@
+// These date columns are varchar and hold a MIX of formats: ISO (YYYY-MM-DD) for
+// bulk-imported rows, and DD/MM/YYYY for anything saved through the Guest/Flights
+// editors (formatDateInput produces DD/MM/YYYY). Plain DATE_FORMAT returns NULL on
+// the DD/MM/YYYY strings, which is why such cells render blank. This helper renders
+// EITHER stored format as DD/MM/YYYY; genuinely unparseable values still yield NULL.
+const dmy = (col) => `COALESCE(
+        DATE_FORMAT(STR_TO_DATE(${col}, '%d/%m/%Y'), '%d/%m/%Y'),
+        DATE_FORMAT(STR_TO_DATE(${col}, '%Y-%m-%d'), '%d/%m/%Y')
+    )`;
+
 const getMainGuests = (vacationId, limit, offset) => {
     return `SELECT
     fa.family_id,
@@ -119,24 +129,24 @@ const getVacationDetails = (vacationId, limit, offset) => {
 //     on g.user_id = p.user_id;  
 // `
 
-return `SELECT 
+return `SELECT
     g.hebrew_first_name,
     g.hebrew_last_name,
     g.english_first_name,
     g.english_last_name,
     g.is_main_user,
     g.user_id,
-    g.family_id, 
-    DATE_FORMAT(f.validity_passport, '%d/%m/%Y') AS validity_passport, 
+    g.family_id,
+    ${dmy('f.validity_passport')} AS validity_passport,
     f.passport_number,
-    DATE_FORMAT(f.birth_date, '%d/%m/%Y') AS birth_date, 
-    DATE_FORMAT(f.outbound_flight_date, '%d/%m/%Y') AS outbound_flight_date, 
-    DATE_FORMAT(f.return_flight_date, '%d/%m/%Y') AS return_flight_date, 
-    f.outbound_flight_number, 
-    f.return_flight_number, 
-    f.outbound_airline, 
-    f.return_airline, 
-    f.is_source_user, 
+    ${dmy('f.birth_date')} AS birth_date,
+    ${dmy('f.outbound_flight_date')} AS outbound_flight_date,
+    ${dmy('f.return_flight_date')} AS return_flight_date,
+    f.outbound_flight_number,
+    f.return_flight_number,
+    f.outbound_airline,
+    f.return_airline,
+    f.is_source_user,
     f.user_classification,
     f.age,
     g.is_main_user,
@@ -147,25 +157,33 @@ return `SELECT
     g.age AS default_age,
     g.number_of_guests,
     g.number_of_rooms,
-    g.total_amount,
+    fa.total_amount,
     ura.room_id,
     g.week_chosen,
-    CONCAT(
-        DATE_FORMAT(STR_TO_DATE(SUBSTRING_INDEX(g.date_chosen, '/', 1), '%Y-%m-%d'), '%d/%m/%Y'),
-        ' - ',
-        DATE_FORMAT(STR_TO_DATE(SUBSTRING_INDEX(g.date_chosen, '/', -1), '%Y-%m-%d'), '%d/%m/%Y')
-    ) AS date_chosen,
-    DATE_FORMAT(g.birth_date, '%d/%m/%Y') AS defaule_birth_date,
+    -- date_chosen is stored by the editor as "departure/arrival", each side DD/MM/YYYY,
+    -- so the whole string is DD/MM/YYYY/DD/MM/YYYY (6 slash-parts). Take the last 3
+    -- parts (arrival) and first 3 parts (departure) and show arrival - departure.
+    CASE
+        WHEN g.date_chosen IS NULL OR g.date_chosen = '' THEN NULL
+        ELSE CONCAT(
+            SUBSTRING_INDEX(g.date_chosen, '/', -3),
+            ' - ',
+            SUBSTRING_INDEX(g.date_chosen, '/', 3)
+        )
+    END AS date_chosen,
+    ${dmy('g.birth_date')} AS defaule_birth_date,
     g.phone_a,
     g.phone_b,
     g.email,
     g.identity_id,
     p.form_of_payment,
-    COALESCE(CAST(NULLIF(REPLACE(g.total_amount, ',', ''), '') AS DECIMAL(10,2)), 0)
+    COALESCE(CAST(NULLIF(REPLACE(fa.total_amount, ',', ''), '') AS DECIMAL(10,2)), 0)
         - COALESCE(p.total_paid, 0) AS remains_to_be_paid,
     NULL AS payment_currency
 FROM
     trip_tracker_${vacationId}.guest g
+LEFT JOIN
+    trip_tracker_${vacationId}.families fa ON g.family_id = fa.family_id
 LEFT JOIN
     trip_tracker_${vacationId}.user_room_assignments ura ON g.user_id = ura.user_id
 LEFT JOIN
