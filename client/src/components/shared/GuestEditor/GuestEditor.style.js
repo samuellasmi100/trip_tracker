@@ -177,4 +177,63 @@ export const useStyles = makeStyles(() => ({
     color: "#475569 !important",
     marginBottom: "20px !important",
   },
+
+  /* ===== SAVE-ON-EXIT WARNING DIALOG ===== */
+  warningDialogPaper: {
+    borderRadius: "14px !important",
+    padding: "8px !important",
+    minWidth: "360px !important",
+    direction: "rtl",
+  },
+  warningTitle: {
+    fontSize: "14px !important",
+    fontWeight: "600 !important",
+    color: "#1e293b !important",
+    textAlign: "center !important",
+    padding: "16px 24px 8px !important",
+  },
+  warningText: {
+    fontSize: "13px !important",
+    color: "#64748b !important",
+    textAlign: "center !important",
+  },
+  warningActions: {
+    justifyContent: "center !important",
+    gap: "10px !important",
+    padding: "8px 24px 16px !important",
+    flexWrap: "wrap",
+  },
+  warningSaveBtn: {
+    background: "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%) !important",
+    color: "#ffffff !important",
+    borderRadius: "8px !important",
+    fontSize: "12px !important",
+    fontWeight: "600 !important",
+    textTransform: "none !important",
+    padding: "7px 20px !important",
+  },
+  warningExitBtn: {
+    backgroundColor: "#ef4444 !important",
+    color: "#ffffff !important",
+    borderRadius: "8px !important",
+    fontSize: "12px !important",
+    fontWeight: "600 !important",
+    textTransform: "none !important",
+    padding: "7px 20px !important",
+    "&:hover": {
+      backgroundColor: "#dc2626 !important",
+    },
+  },
+  warningCancelBtn: {
+    backgroundColor: "#f1f5f9 !important",
+    color: "#64748b !important",
+    borderRadius: "8px !important",
+    fontSize: "12px !important",
+    fontWeight: "500 !important",
+    textTransform: "none !important",
+    padding: "7px 20px !important",
+    "&:hover": {
+      backgroundColor: "#e2e8f0 !important",
+    },
+  },
 }));

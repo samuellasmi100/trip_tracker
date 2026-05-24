@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Button, Typography } from "@mui/material";
+import React, { useState, useEffect, useRef } from "react";
+import { Button, Typography, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import { useStyles } from "./GuestEditor.style";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -30,14 +30,32 @@ import { v4 as uuidv4 } from "uuid";
 import calculateAge from "../../../utils/helpers/calculateAge";
 import { isoToDisplay } from "../../../utils/helpers/formatDate";
 
+// Fields the editor can change, per entity — used for the close-time dirty diff.
+const USER_FIELDS = [
+  "hebrew_first_name", "hebrew_last_name", "english_first_name", "english_last_name",
+  "birth_date", "identity_id", "email", "address", "phone_a", "phone_b",
+  "flights", "flying_with_us", "is_in_group", "flights_direction",
+  "week_chosen", "arrival_date", "departure_date",
+];
+const FLIGHT_FIELDS = [
+  "passport_number", "validity_passport", "user_classification",
+  "outbound_flight_number", "outbound_airline", "outbound_flight_date",
+  "return_flight_number", "return_airline", "return_flight_date",
+  "is_source_user",
+];
+
+// Normalise for comparison so null/undefined/blank and 1-vs-"1" don't read as
+// changes. A field-level diff (rather than whole-object JSON.stringify) avoids
+// the key-order / injected-key noise that made the old dirty check misfire.
+const norm = (v) => (v === null || v === undefined ? "" : String(v).trim());
+const diffFields = (fields, a = {}, b = {}) => fields.some((f) => norm(a[f]) !== norm(b[f]));
+
 // Unified Add/Edit Guest editor (Direction B).
-//   Phase 1: shell (side-nav + panes), for addParent/addChild/editParent/editChild.
-//   Phase 2: one global save (saveAll) persisting user+flights+notes from Redux,
-//            and all panes mounted once (show/hide) so flights loads a single time
-//            and switching sections never reloads or loses unsaved edits.
-// Still to come: conditional flights (P3), corrected dirty tracking + the
-// 3-option save-on-exit dialog wired to saveAll (P4), completeness chips (P5).
-// addFamily intentionally stays on GuestWizard.
+//   P1 shell · P2 one global save + load-once panes · P3 conditional flights.
+//   P4 (here): correct dirty tracking — section switching is always free; we only
+//   prompt on close, and only when a real change exists. The baseline snapshot is
+//   captured AFTER async data settles (flights load / add prefill), so the load
+//   itself never reads as a change. Exit dialog offers שמור וצא / צא בלי לשמור / ביטול.
 const GuestEditor = ({ onClose }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -57,9 +75,7 @@ const GuestEditor = ({ onClose }) => {
     Number(userForm.flights) === 1 || userForm.flights === true ||
     Number(userForm.flying_with_us) === 1 || userForm.flying_with_us === true;
 
-  // Flights section only exists when the guest actually has flights. The toggle
-  // lives in the trip step (add) / personal toggles (edit); hasFlights is
-  // reactive, so the nav item appears/disappears as it's switched.
+  // Flights section only exists when the guest actually has flights.
   const sections = isAdd
     ? [
         { key: "personal", title: "פרטים אישיים" },
@@ -75,6 +91,12 @@ const GuestEditor = ({ onClose }) => {
 
   const [activeSection, setActiveSection] = useState("personal");
   const [saving, setSaving] = useState(false);
+  const [showExitDialog, setShowExitDialog] = useState(false);
+
+  // Dirty-tracking baseline. Captured once async data has settled (see effect).
+  const snapshotRef = useRef(null);
+  const initialFlyingRef = useRef(undefined); // did the guest start with flights?
+  const [prefillDone, setPrefillDone] = useState(!isAdd); // edit needs no prefill
 
   // If flights is toggled off while its pane is active, fall back to personal.
   useEffect(() => {
@@ -109,6 +131,7 @@ const GuestEditor = ({ onClose }) => {
       });
     }
     if (familyDetails?.family_id) dispatch(userSlice.updateFormField({ field: "family_id", value: familyDetails.family_id }));
+    setPrefillDone(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dialogType]);
 
@@ -127,6 +150,38 @@ const GuestEditor = ({ onClose }) => {
     getVacations();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // ── Capture the dirty baseline once everything has loaded ──────────────────
+  // edit-with-flights waits for the flight row to load (flightsForm.type set);
+  // add waits for prefill. Capturing too early is exactly what made the old
+  // check think an untouched guest was dirty.
+  useEffect(() => {
+    if (snapshotRef.current) return;
+    if (initialFlyingRef.current === undefined) {
+      if (isAdd) {
+        initialFlyingRef.current = false;
+      } else if (userForm.user_id) {
+        initialFlyingRef.current =
+          Number(userForm.flying_with_us) === 1 || userForm.flying_with_us === true ||
+          Number(userForm.flights) === 1 || userForm.flights === true;
+      } else {
+        return; // wait for the guest to populate
+      }
+    }
+    const flightsReady = !initialFlyingRef.current || Boolean(flightsForm.type);
+    if (prefillDone && flightsReady) {
+      snapshotRef.current = { user: { ...userForm }, flights: { ...flightsForm }, notes: { ...notesForm } };
+    }
+  }, [isAdd, prefillDone, userForm, flightsForm, notesForm]);
+
+  const isDirty = () => {
+    const s = snapshotRef.current;
+    if (!s) return false; // baseline not established yet → nothing to lose
+    if (diffFields(USER_FIELDS, s.user, userForm)) return true;
+    if (diffFields(FLIGHT_FIELDS, s.flights, flightsForm)) return true;
+    if (norm(s.notes.note) !== norm(notesForm.note)) return true;
+    return false;
+  };
 
   // ── Shared field change handler (superset of both old handlers) ────────────
   const handleInputChange = (e) => {
@@ -194,9 +249,7 @@ const GuestEditor = ({ onClose }) => {
   };
 
   // ── Single global save: persists user + flights + notes from Redux ─────────
-  // Returns the guest's user_id on success, or null if validation blocked it.
   const saveAll = async () => {
-    // Validation (parent identity_id is mandatory; child add checks duplicates)
     if ((dialogType === "addParent" || dialogType === "editParent") && (!userForm.identity_id || String(userForm.identity_id).trim() === "")) {
       dispatch(snackBarSlice.setSnackBar({ type: "error", message: "מספר תעודת זהות הוא חובה", timeout: 3000 }));
       return null;
@@ -209,21 +262,17 @@ const GuestEditor = ({ onClose }) => {
     const familyId = userForm.family_id || familyDetails?.family_id;
     const userId = isAdd ? uuidv4() : userForm.user_id;
 
-    // 1) Guest record
     if (isAdd) {
       await ApiUser.addUser(token, userForm, familyId, userId, vacationId);
     } else {
       await ApiUser.updateUser(token, userForm, vacationId);
     }
 
-    // 2) Flights — only for flying guests
     if (isAdd) {
       if (userForm.flights && Object.keys(flightsForm).length > 0) {
         await ApiFlights.addUserFlights(token, { ...flightsForm, family_id: familyId, user_id: userId }, vacationId);
       }
     } else if (hasFlights && flightsForm.type) {
-      // flightsForm.type is set by the flights pane once its row has loaded —
-      // gates the save so an early click can't overwrite real data with blanks.
       if (flightsForm.type === "edit") {
         await ApiFlights.updateUserFligets(token, userId, flightsForm, vacationId);
       } else {
@@ -231,7 +280,6 @@ const GuestEditor = ({ onClose }) => {
       }
     }
 
-    // 3) Notes — only when something was written
     if (notesForm.note && notesForm.note.trim() !== "") {
       await ApiNotes.addNotes(token, { ...notesForm, family_id: familyId, user_id: userId }, vacationId);
     }
@@ -250,12 +298,14 @@ const GuestEditor = ({ onClose }) => {
     try {
       setSaving(true);
       const userId = await saveAll();
-      if (userId === null) return;
+      if (userId === null) return false;
       dispatch(snackBarSlice.setSnackBar({ type: "success", message: successMessage(), timeout: 3000 }));
       resetAndClose();
+      return true;
     } catch (error) {
       console.log(error);
       dispatch(snackBarSlice.setSnackBar({ type: "error", message: saveErrorMessage(error), timeout: 5000 }));
+      return false;
     } finally {
       setSaving(false);
     }
@@ -271,6 +321,9 @@ const GuestEditor = ({ onClose }) => {
       dispatch(userSlice.updateFormField({ field: "user_id", value: userId }));
       dispatch(flightsSlice.resetForm());
       dispatch(notesSlice.resetForm());
+      // Re-establish the dirty baseline for the new edit session.
+      snapshotRef.current = null;
+      initialFlyingRef.current = undefined;
       dispatch(dialogSlice.updateDialogType(dialogType === "addParent" ? "editParent" : "editChild"));
       setActiveSection("personal");
     } catch (error) {
@@ -279,6 +332,22 @@ const GuestEditor = ({ onClose }) => {
     } finally {
       setSaving(false);
     }
+  };
+
+  // ── Close flow (prompt only when there are unsaved changes) ────────────────
+  const handleCloseRequest = () => {
+    if (isDirty()) setShowExitDialog(true);
+    else resetAndClose();
+  };
+
+  const exitSaveAndClose = async () => {
+    setShowExitDialog(false);
+    await saveAndClose(); // closes on success; stays open (with toast) on failure
+  };
+
+  const exitDiscard = () => {
+    setShowExitDialog(false);
+    resetAndClose();
   };
 
   // ── Section content ─────────────────────────────────────────────────────────
@@ -326,8 +395,7 @@ const GuestEditor = ({ onClose }) => {
         {/* ===== CONTENT AREA ===== */}
         <div className={classes.contentArea}>
           <div className={classes.contentScroll}>
-            {/* All panes mounted once; only the active one is shown. Keeps flight
-                data loaded a single time and preserves unsaved edits across switches. */}
+            {/* All panes mounted once; only the active one is shown. */}
             {sections.map((section) => (
               <div key={section.key} style={{ display: activeSection === section.key ? "block" : "none" }}>
                 {renderSectionBody(section.key)}
@@ -345,12 +413,36 @@ const GuestEditor = ({ onClose }) => {
                 שמור והמשך
               </Button>
             )}
-            <Button className={classes.cancelBtn} onClick={resetAndClose} disabled={saving}>
+            <Button className={classes.cancelBtn} onClick={handleCloseRequest} disabled={saving}>
               ביטול
             </Button>
           </div>
         </div>
       </div>
+
+      {/* ===== SAVE-ON-EXIT WARNING ===== */}
+      <Dialog
+        open={showExitDialog}
+        onClose={() => setShowExitDialog(false)}
+        PaperProps={{ className: classes.warningDialogPaper }}
+        style={{ zIndex: 1700 }}
+      >
+        <DialogTitle className={classes.warningTitle}>שינויים שלא נשמרו</DialogTitle>
+        <DialogContent>
+          <Typography className={classes.warningText}>יש שינויים שלא נשמרו, מה תרצה לעשות?</Typography>
+        </DialogContent>
+        <DialogActions className={classes.warningActions}>
+          <Button onClick={exitSaveAndClose} className={classes.warningSaveBtn} disabled={saving}>
+            שמור וצא
+          </Button>
+          <Button onClick={exitDiscard} className={classes.warningExitBtn} disabled={saving}>
+            צא בלי לשמור
+          </Button>
+          <Button onClick={() => setShowExitDialog(false)} className={classes.warningCancelBtn} disabled={saving}>
+            ביטול
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

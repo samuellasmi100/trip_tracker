@@ -19,11 +19,17 @@ const MainDialogView = (props) => {
   const classes = useStyles();
   const headerContent = handleButtonHeader();
 
+  // Guest add/edit flows manage their own close (with an unsaved-changes prompt),
+  // so backdrop/Esc must not close them directly.
+  const isGuestEditorFlow =
+    dialogType === "addParent" || dialogType === "addChild" ||
+    dialogType === "editParent" || dialogType === "editChild";
+
   return (
     <Dialog
       open={dialogOpen}
       classes={{ paper: classes.dialog }}
-      onClose={(dialogType === "editParent" || dialogType === "editChild") ? undefined : closeModal}
+      onClose={isGuestEditorFlow ? undefined : closeModal}
       style={{ zIndex: 1600 }}>
       {headerContent && (
         <Grid>
