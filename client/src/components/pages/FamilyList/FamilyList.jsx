@@ -83,6 +83,24 @@ const FamilyList = () => {
     }
   }, [vacationId, token]);
 
+  // Background refresh after a dialog closes: swap fresh page-1 rows in place
+  // WITHOUT blanking the table or flipping the loading spinner, so the main page
+  // doesn't flash/jump. React reconciles by key, so unchanged rows stay put and
+  // only changed values (e.g. a family's guest count) update quietly.
+  const silentRefresh = useCallback(async () => {
+    if (!vacationId) return;
+    try {
+      const response = await ApiUser.getFamilyList(token, vacationId, { page: 1, search: searchTermRef.current });
+      const { rows = [], total = 0 } = response.data;
+      setHasMore(PAGE_SIZE < total);
+      setPage(1);
+      setUsersData(rows);
+      dispatch(userSlice.updateFamiliesList(rows));
+    } catch (error) {
+      console.log(error);
+    }
+  }, [vacationId, token, dispatch]);
+
   // ── Infinite scroll — attach once, use refs for live values ──────────────
   useEffect(() => {
     const el = tableWrapRef.current;
@@ -510,10 +528,7 @@ const FamilyList = () => {
   const prevDialogOpen = useRef(dialogOpen);
   useEffect(() => {
     if (prevDialogOpen.current === true && dialogOpen === false) {
-      setUsersData([]);
-      setPage(1);
-      setHasMore(false);
-      loadPage(1, searchTermRef.current);
+      silentRefresh();
       getChosenFamily();
     }
     prevDialogOpen.current = dialogOpen;
