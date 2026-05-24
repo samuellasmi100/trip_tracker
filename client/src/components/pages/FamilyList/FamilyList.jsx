@@ -19,6 +19,7 @@ import * as staticSlice from "../../../store/slices/staticSlice";
 import * as vacationSlice from "../../../store/slices/vacationSlice";
 import * as snackBarSlice from "../../../store/slices/snackbarSlice";
 import { isoToDisplay } from "../../../utils/helpers/formatDate";
+import { v4 as uuidv4 } from "uuid";
 
 const PAGE_SIZE = 30;
 
@@ -152,8 +153,6 @@ const FamilyList = () => {
       dispatch(userSlice.updateForm(userData))
       dispatch(userSlice.updateChild(userData))
       dispatch(dialogSlice.openModal())
-    } else if (type === "addFamily") {
-      dispatch(dialogSlice.openModal())
     } else if (type === "childDetails") {
       dispatch(dialogSlice.openModal())
       dispatch(userSlice.updateForm(userData))
@@ -270,6 +269,81 @@ const FamilyList = () => {
       dispatch(snackBarSlice.setSnackBar({ type: "error", message, timeout: 5000 }));
     }
   }, [token, editFamilyData, vacationId, loadPage, dispatch]);
+
+  // Add family dialog state — reuses the edit-family dialog layout.
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [addFamilyData, setAddFamilyData] = useState({});
+
+  const openAddFamily = useCallback(() => {
+    setAddFamilyData({});
+    setAddDialogOpen(true);
+  }, []);
+
+  const closeAddDialog = useCallback(() => {
+    setAddDialogOpen(false);
+    setAddFamilyData({});
+  }, []);
+
+  const handleAddFamilyChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setAddFamilyData((prev) => ({ ...prev, [name]: value }));
+  }, []);
+
+  const handleAddWeekChange = useCallback((e) => {
+    const value = e.target.value;
+    const found = vacationsDates?.find((d) => d.name === value);
+    if (found && found.name !== "חריגים") {
+      setAddFamilyData((prev) => ({
+        ...prev,
+        week_chosen: value,
+        start_date: isoToDisplay(found.start_date) || "",
+        end_date: isoToDisplay(found.end_date) || "",
+      }));
+    } else {
+      setAddFamilyData((prev) => ({
+        ...prev,
+        week_chosen: value,
+        start_date: "",
+        end_date: "",
+      }));
+    }
+  }, [vacationsDates]);
+
+  const handleAddFamilySubmit = useCallback(async () => {
+    if (!addFamilyData.family_name || addFamilyData.family_name.trim() === "") {
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "שם משפחה / קבוצה הוא חובה", timeout: 3000 }));
+      return;
+    }
+    try {
+      const newFamilyId = uuidv4();
+      // The add (POST) endpoint reads dates from arrival_date/departure_date and
+      // converts them to start_date/end_date server-side, so map the dialog's
+      // start_date/end_date back to those keys before sending.
+      const form = {
+        family_name: addFamilyData.family_name,
+        number_of_guests: addFamilyData.number_of_guests || "",
+        number_of_rooms: addFamilyData.number_of_rooms || "",
+        total_amount: addFamilyData.total_amount || "",
+        week_chosen: addFamilyData.week_chosen || "",
+        arrival_date: addFamilyData.start_date || "",
+        departure_date: addFamilyData.end_date || "",
+      };
+      await ApiUser.addFamily(token, form, newFamilyId, vacationId);
+      setAddDialogOpen(false);
+      setAddFamilyData({});
+      setUsersData([]);
+      loadPage(1, searchTermRef.current);
+      dispatch(snackBarSlice.setSnackBar({ type: "success", message: "משפחה נוספה בהצלחה", timeout: 3000 }));
+    } catch (error) {
+      console.log(error);
+      const status = error?.response?.status;
+      const serverMessage = error?.response?.data?.message;
+      const message = status === 400
+        ? (serverMessage || "תאריכי שהייה לא תקינים")
+        : "הוספת המשפחה נכשלה, נסה שוב";
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message, timeout: 5000 }));
+    }
+  }, [token, addFamilyData, vacationId, loadPage, dispatch]);
 
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [paymentDialogFamily, setPaymentDialogFamily] = useState(null);
@@ -467,6 +541,13 @@ const FamilyList = () => {
         handleEditFamilySubmit={handleEditFamilySubmit}
         handleEditWeekChange={handleEditWeekChange}
         closeEditDialog={closeEditDialog}
+        openAddFamily={openAddFamily}
+        addDialogOpen={addDialogOpen}
+        addFamilyData={addFamilyData}
+        handleAddFamilyChange={handleAddFamilyChange}
+        handleAddFamilySubmit={handleAddFamilySubmit}
+        handleAddWeekChange={handleAddWeekChange}
+        closeAddDialog={closeAddDialog}
         docStatusMap={docStatusMap}
         copiedFamilyId={copiedFamilyId}
         handleCopyDocLink={handleCopyDocLink}

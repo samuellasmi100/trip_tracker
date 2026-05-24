@@ -1,6 +1,5 @@
 import React from "react";
 import MainDialogView from "./MainDialog.view";
-import GuestWizard from "../Guest/GuestWizard";
 import GuestEditor from "../GuestEditor/GuestEditor";
 import { Button } from "@mui/material";
 import { useStyles } from "./MainDialog.style";
@@ -22,9 +21,8 @@ const MainDialog = (props) => {
     closeModal
   } = props;
 
-  // addFamily keeps the legacy stepper wizard; every guest add/edit flow uses
-  // the unified GuestEditor (Direction B: side-nav + panes).
-  const isAddFamilyFlow = dialogType === "addFamily";
+  // All guest add/edit flows use the unified GuestEditor (Direction B). Family
+  // creation/editing is handled by the dialogs in FamilyList, not here.
   const isGuestEditorFlow =
     dialogType === "addParent" || dialogType === "addChild" ||
     dialogType === "editParent" || dialogType === "editChild";
@@ -38,8 +36,6 @@ const MainDialog = (props) => {
       return <ChildDetails />
     } else if (dialogType === "uploadFile") {
       return activeButton === "העלה קובץ" ? <UploadFile /> : <ShowFiles />
-    } else if (isAddFamilyFlow) {
-      return <GuestWizard />
     } else if (isGuestEditorFlow) {
       return <GuestEditor onClose={closeModal} />
     }

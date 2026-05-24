@@ -64,6 +64,13 @@ function FamilyListView(props) {
     handleEditFamilySubmit,
     handleEditWeekChange,
     closeEditDialog,
+    openAddFamily,
+    addDialogOpen,
+    addFamilyData = {},
+    handleAddFamilyChange,
+    handleAddFamilySubmit,
+    handleAddWeekChange,
+    closeAddDialog,
     docStatusMap = {},
     copiedFamilyId,
     handleCopyDocLink,
@@ -85,6 +92,12 @@ function FamilyListView(props) {
 
   const handleDateFieldChange = (e) => {
     handleEditFamilyChange({
+      target: { name: e.target.name, value: formatDateInput(e.target.value) },
+    });
+  };
+
+  const handleAddDateFieldChange = (e) => {
+    handleAddFamilyChange({
       target: { name: e.target.name, value: formatDateInput(e.target.value) },
     });
   };
@@ -118,7 +131,7 @@ function FamilyListView(props) {
                 }}
               />
             </FormControl>
-            <IconButton size="small" onClick={() => handleDialogTypeOpen("addFamily")}>
+            <IconButton size="small" onClick={openAddFamily}>
               <AddBoxIcon style={{ color: "#0d9488", fontSize: "24px" }} />
             </IconButton>
           </div>
@@ -660,6 +673,128 @@ function FamilyListView(props) {
             שמור
           </Button>
           <Button className={classes.editFamilyCancelBtn} onClick={closeEditDialog}>
+            ביטול
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* ===== ADD FAMILY DIALOG (same layout as edit) ===== */}
+      <Dialog
+        open={addDialogOpen}
+        onClose={closeAddDialog}
+        PaperProps={{ className: classes.editFamilyDialogPaper }}
+        style={{ zIndex: 1600 }}
+      >
+        <DialogTitle className={classes.editFamilyTitle}>הוספת משפחה / קבוצה</DialogTitle>
+        <DialogContent className={classes.editFamilyContent}>
+          <div className={classes.editFamilyFieldGroup}>
+            <div className={classes.editFamilyFieldItem}>
+              <InputLabel className={classes.editFamilyLabel}>שם משפחה / קבוצה</InputLabel>
+              <TextField
+                name="family_name"
+                value={addFamilyData.family_name || ""}
+                onChange={handleAddFamilyChange}
+                size="small"
+                fullWidth
+                className={classes.editFamilyField}
+              />
+            </div>
+            <div className={classes.editFamilyFieldItem}>
+              <InputLabel className={classes.editFamilyLabel}>כמות נופשים</InputLabel>
+              <TextField
+                name="number_of_guests"
+                value={addFamilyData.number_of_guests || ""}
+                onChange={handleAddFamilyChange}
+                size="small"
+                fullWidth
+                className={classes.editFamilyField}
+              />
+            </div>
+            <div className={classes.editFamilyFieldItem}>
+              <InputLabel className={classes.editFamilyLabel}>כמות חדרים</InputLabel>
+              <TextField
+                name="number_of_rooms"
+                value={addFamilyData.number_of_rooms || ""}
+                onChange={handleAddFamilyChange}
+                size="small"
+                fullWidth
+                className={classes.editFamilyField}
+              />
+            </div>
+            <div className={classes.editFamilyFieldItem}>
+              <InputLabel className={classes.editFamilyLabel}>סכום עסקה</InputLabel>
+              <TextField
+                name="total_amount"
+                value={addFamilyData.total_amount || ""}
+                onChange={handleAddFamilyChange}
+                size="small"
+                fullWidth
+                className={classes.editFamilyField}
+              />
+            </div>
+            <div className={classes.editFamilyFieldItem}>
+              <InputLabel className={classes.editFamilyLabel}>בחירת מסלול</InputLabel>
+              <Select
+                name="week_chosen"
+                value={addFamilyData.week_chosen || ""}
+                onChange={handleAddWeekChange}
+                input={<OutlinedInput className={classes.editFamilyField} />}
+                displayEmpty
+                renderValue={(value) => value || "בחר..."}
+                size="small"
+                fullWidth
+                MenuProps={{
+                  style: { zIndex: 1700 },
+                  PaperProps: {
+                    sx: {
+                      bgcolor: "#ffffff",
+                      borderRadius: "8px",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                      border: "1px solid #e2e8f0",
+                    },
+                  },
+                }}
+              >
+                {vacationsDates?.map((type) => (
+                  <MenuItem key={type.name} value={type.name}>{type.name}</MenuItem>
+                ))}
+              </Select>
+            </div>
+            <div className={classes.editFamilyDateRow}>
+              <div className={classes.editFamilyFieldItem}>
+                <InputLabel className={classes.editFamilyLabel}>תאריך התחלה</InputLabel>
+                <TextField
+                  name="start_date"
+                  value={isoToDisplay(addFamilyData.start_date) || ""}
+                  onChange={handleAddDateFieldChange}
+                  size="small"
+                  fullWidth
+                  disabled={addFamilyData.week_chosen !== "חריגים"}
+                  className={classes.editFamilyField}
+                  placeholder="DD/MM/YYYY"
+                />
+              </div>
+              <div className={classes.editFamilyFieldItem}>
+                <InputLabel className={classes.editFamilyLabel}>תאריך סיום</InputLabel>
+                <TextField
+                  name="end_date"
+                  value={isoToDisplay(addFamilyData.end_date) || ""}
+                  onChange={handleAddDateFieldChange}
+                  size="small"
+                  fullWidth
+                  disabled={addFamilyData.week_chosen !== "חריגים"}
+                  className={classes.editFamilyField}
+                  placeholder="DD/MM/YYYY"
+                />
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+        <DialogActions className={classes.editFamilyActions}>
+          <Button className={classes.editFamilySaveBtn} onClick={handleAddFamilySubmit}>
+            הוסף
+          </Button>
+          <Button className={classes.editFamilyCancelBtn} onClick={closeAddDialog}>
             ביטול
           </Button>
         </DialogActions>
