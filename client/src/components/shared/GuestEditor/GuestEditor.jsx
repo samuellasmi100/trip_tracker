@@ -29,6 +29,7 @@ import * as snackBarSlice from "../../../store/slices/snackbarSlice";
 import { v4 as uuidv4 } from "uuid";
 import calculateAge from "../../../utils/helpers/calculateAge";
 import { isoToDisplay } from "../../../utils/helpers/formatDate";
+import { getGuestCompleteness } from "../../../utils/helpers/guestCompleteness";
 
 // Fields the editor can change, per entity — used for the close-time dirty diff.
 const USER_FIELDS = [
@@ -74,6 +75,11 @@ const GuestEditor = ({ onClose }) => {
   const hasFlights =
     Number(userForm.flights) === 1 || userForm.flights === true ||
     Number(userForm.flying_with_us) === 1 || userForm.flying_with_us === true;
+
+  // Live completeness for the nav chips + overall badge. Personal fields come
+  // from userForm; flight fields from flightsForm (authoritative once loaded),
+  // so they're merged into one object for the check.
+  const completeness = getGuestCompleteness({ ...userForm, ...flightsForm });
 
   // Flights section only exists when the guest actually has flights.
   const sections = isAdd
@@ -381,15 +387,26 @@ const GuestEditor = ({ onClose }) => {
       <div className={classes.layoutWrapper}>
         {/* ===== SIDE NAV ===== */}
         <div className={classes.sideNav}>
-          {sections.map((section) => (
-            <div
-              key={section.key}
-              className={`${classes.navItem} ${activeSection === section.key ? classes.navItemActive : ""}`}
-              onClick={() => setActiveSection(section.key)}
-            >
-              <span>{section.title}</span>
-            </div>
-          ))}
+          {sections.map((section) => {
+            const sec = completeness.bySection[section.key];
+            return (
+              <div
+                key={section.key}
+                className={`${classes.navItem} ${activeSection === section.key ? classes.navItemActive : ""}`}
+                onClick={() => setActiveSection(section.key)}
+              >
+                <span>{section.title}</span>
+                {sec && (
+                  <span
+                    className={`${classes.navChip} ${sec.complete ? classes.navChipComplete : classes.navChipIncomplete}`}
+                    title={sec.complete ? "הושלם" : `חסרים ${sec.missingCount}`}
+                  >
+                    {sec.complete ? "✓" : sec.missingCount}
+                  </span>
+                )}
+              </div>
+            );
+          })}
         </div>
 
         {/* ===== CONTENT AREA ===== */}
@@ -416,6 +433,14 @@ const GuestEditor = ({ onClose }) => {
             <Button className={classes.cancelBtn} onClick={handleCloseRequest} disabled={saving}>
               ביטול
             </Button>
+
+            <span
+              className={`${classes.overallBadge} ${completeness.status === "complete" ? classes.overallComplete : classes.overallIncomplete}`}
+            >
+              {completeness.status === "complete"
+                ? "✓ מוכן להנפקת כרטיס"
+                : `חסרים ${completeness.missing.length} שדות`}
+            </span>
           </div>
         </div>
       </div>

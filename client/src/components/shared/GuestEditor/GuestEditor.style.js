@@ -51,6 +51,7 @@ export const useStyles = makeStyles(() => ({
   navItem: {
     display: "flex",
     alignItems: "center",
+    justifyContent: "space-between",
     gap: "8px",
     padding: "11px 16px",
     cursor: "pointer",
@@ -81,6 +82,48 @@ export const useStyles = makeStyles(() => ({
       borderRightColor: "transparent !important",
       borderBottomColor: "#0d9488 !important",
     },
+  },
+
+  /* ===== COMPLETENESS CHIPS ===== */
+  navChip: {
+    minWidth: "18px",
+    height: "18px",
+    padding: "0 5px",
+    borderRadius: "9px",
+    fontSize: "11px",
+    fontWeight: 700,
+    lineHeight: "18px",
+    textAlign: "center",
+    flexShrink: 0,
+  },
+  navChipComplete: {
+    backgroundColor: "#dcfce7",
+    color: "#16a34a",
+  },
+  navChipIncomplete: {
+    backgroundColor: "#fef3c7",
+    color: "#b45309",
+  },
+  overallBadge: {
+    marginInlineStart: "auto",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "5px",
+    padding: "4px 12px",
+    borderRadius: "12px",
+    fontSize: "12px",
+    fontWeight: 600,
+    whiteSpace: "nowrap",
+  },
+  overallComplete: {
+    backgroundColor: "#f0fdf4",
+    color: "#16a34a",
+    border: "1px solid #bbf7d0",
+  },
+  overallIncomplete: {
+    backgroundColor: "#fffbeb",
+    color: "#b45309",
+    border: "1px solid #fde68a",
   },
 
   /* ===== CONTENT AREA ===== */

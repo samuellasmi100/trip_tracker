@@ -34,31 +34,33 @@ export function getGuestCompleteness(guest = {}) {
   const flyingWithUs =
     Number(guest.flying_with_us) === 1 || guest.flying_with_us === true;
 
-  // [label, value] pairs. A field is satisfied when its value isFilled().
+  // [label, value, section] triples. A field is satisfied when value isFilled().
+  // The section tag buckets each requirement so the editor can show per-section
+  // chips ("personal" vs "flights") without coupling to the Hebrew labels.
   const required = [
-    ["תעודת זהות", guest.identity_id],
-    ["שם פרטי בעברית", guest.hebrew_first_name],
-    ["שם משפחה בעברית", guest.hebrew_last_name],
-    ["שם פרטי באנגלית", guest.english_first_name],
-    ["שם משפחה באנגלית", guest.english_last_name],
+    ["תעודת זהות", guest.identity_id, "personal"],
+    ["שם פרטי בעברית", guest.hebrew_first_name, "personal"],
+    ["שם משפחה בעברית", guest.hebrew_last_name, "personal"],
+    ["שם פרטי באנגלית", guest.english_first_name, "personal"],
+    ["שם משפחה באנגלית", guest.english_last_name, "personal"],
   ];
 
   if (flyingWithUs) {
     required.push(
-      ["מספר דרכון", guest.passport_number],
-      ["תוקף דרכון", guest.validity_passport],
-      ["סיווג", guest.user_classification],
+      ["מספר דרכון", guest.passport_number, "flights"],
+      ["תוקף דרכון", guest.validity_passport, "flights"],
+      ["סיווג", guest.user_classification, "flights"],
     );
 
     const outbound = [
-      ["מספר טיסת הלוך", guest.outbound_flight_number],
-      ["חברת תעופה הלוך", guest.outbound_airline],
-      ["תאריך טיסת הלוך", guest.outbound_flight_date],
+      ["מספר טיסת הלוך", guest.outbound_flight_number, "flights"],
+      ["חברת תעופה הלוך", guest.outbound_airline, "flights"],
+      ["תאריך טיסת הלוך", guest.outbound_flight_date, "flights"],
     ];
     const ret = [
-      ["מספר טיסת חזור", guest.return_flight_number],
-      ["חברת תעופה חזור", guest.return_airline],
-      ["תאריך טיסת חזור", guest.return_flight_date],
+      ["מספר טיסת חזור", guest.return_flight_number, "flights"],
+      ["חברת תעופה חזור", guest.return_airline, "flights"],
+      ["תאריך טיסת חזור", guest.return_flight_date, "flights"],
     ];
 
     const dir = String(guest.flights_direction || "").trim();
@@ -68,7 +70,7 @@ export function getGuestCompleteness(guest = {}) {
     // therefore still surface missing flight legs, not skip them: flag the
     // direction itself AND fall back to requiring BOTH legs. Only an explicit
     // one-way value narrows the requirement to a single leg.
-    if (!dir) required.push(["כיוון טיסה", ""]);
+    if (!dir) required.push(["כיוון טיסה", "", "flights"]);
 
     const needOutbound = dir !== "one_way_return";
     const needReturn = dir !== "one_way_outbound";
@@ -85,7 +87,18 @@ export function getGuestCompleteness(guest = {}) {
   else if (filled === 0) status = "empty";
   else status = "partial";
 
-  return { status, missing, total, filled };
+  // Per-section breakdown for the editor's nav chips.
+  const bySection = {};
+  for (const [, value, section] of required) {
+    if (!bySection[section]) bySection[section] = { total: 0, missingCount: 0, complete: true };
+    bySection[section].total += 1;
+    if (!isFilled(value)) {
+      bySection[section].missingCount += 1;
+      bySection[section].complete = false;
+    }
+  }
+
+  return { status, missing, total, filled, bySection };
 }
 
 export default getGuestCompleteness;
