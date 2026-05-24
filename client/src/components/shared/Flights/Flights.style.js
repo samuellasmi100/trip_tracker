@@ -3,16 +3,16 @@ import { makeStyles } from "@mui/styles";
 export const useStyles = makeStyles((theme) => ({
   inputLabelStyle: {
     color: "#475569 !important",
-    fontSize: "12.5px !important",
+    fontSize: "11.5px !important",
     fontWeight: "500 !important",
-    marginBottom: "6px",
+    marginBottom: "4px",
   },
   textField: {
     "& .MuiInputBase-input": {
       color: "#1e293b",
-      fontSize: 14,
-      padding: "10px 14px",
-      height: "22px",
+      fontSize: 13,
+      padding: "7px 12px",
+      height: "20px",
     },
     "& .MuiOutlinedInput-root": {
       borderRadius: "8px",
@@ -33,11 +33,11 @@ export const useStyles = makeStyles((theme) => ({
     },
   },
   selectOutline: {
-    height: "42px",
+    height: "36px",
     "&.MuiOutlinedInput-root": {
       borderRadius: "8px",
       color: "#1e293b !important",
-      fontSize: "14px",
+      fontSize: "13px",
       backgroundColor: "#ffffff",
       "& .MuiOutlinedInput-notchedOutline": {
         borderColor: "#e2e8f0",
@@ -67,14 +67,14 @@ export const useStyles = makeStyles((theme) => ({
     backgroundColor: "#f8fafc",
     borderRadius: "12px",
     border: "1px solid #e2e8f0",
-    padding: "24px 28px",
-    marginBottom: "20px",
+    padding: "18px 22px",
+    marginBottom: "16px",
   },
   sectionTitle: {
-    fontSize: "13px !important",
+    fontSize: "12.5px !important",
     fontWeight: "600 !important",
     color: "#475569 !important",
-    marginBottom: "20px !important",
+    marginBottom: "14px !important",
     display: "flex",
     alignItems: "center",
     gap: "8px",
@@ -82,7 +82,7 @@ export const useStyles = makeStyles((theme) => ({
   fieldGroup: {
     display: "grid",
     gridTemplateColumns: "1fr 1fr",
-    gap: "20px 24px",
+    gap: "14px 18px",
     "@media (max-width: 600px)": {
       gridTemplateColumns: "1fr",
     },
@@ -90,7 +90,7 @@ export const useStyles = makeStyles((theme) => ({
   fieldGroupThreeCol: {
     display: "grid",
     gridTemplateColumns: "1fr 1fr 1fr",
-    gap: "20px 24px",
+    gap: "14px 18px",
     "@media (max-width: 700px)": {
       gridTemplateColumns: "1fr 1fr",
     },

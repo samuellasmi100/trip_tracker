@@ -5,7 +5,8 @@ import { makeStyles } from "@mui/styles";
 export const useStyles = makeStyles((theme) => ({
   dialog: {
     minWidth: "720px",
-    maxWidth: "95vw",
+    maxWidth: "900px",
+    width: "100%",
     maxHeight: "90vh",
     color: "#1e293b !important",
     backgroundColor: "#ffffff !important",
