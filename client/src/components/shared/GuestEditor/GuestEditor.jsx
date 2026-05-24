@@ -81,19 +81,15 @@ const GuestEditor = ({ onClose }) => {
   // so they're merged into one object for the check.
   const completeness = getGuestCompleteness({ ...userForm, ...flightsForm });
 
-  // Flights section only exists when the guest actually has flights.
-  const sections = isAdd
-    ? [
-        { key: "personal", title: "פרטים אישיים" },
-        { key: "trip", title: "פרטי נסיעה" },
-        ...(hasFlights ? [{ key: "flights", title: "פרטי טיסה" }] : []),
-        { key: "notes", title: "הערות" },
-      ]
-    : [
-        { key: "personal", title: "פרטים אישיים" },
-        ...(hasFlights ? [{ key: "flights", title: "טיסות" }] : []),
-        { key: "notes", title: "הערות" },
-      ];
+  // Same section model for add and edit. The נסיעה pane holds the flight toggles
+  // (their logical home), so the flights section only exists when the guest has
+  // flights — hasFlights is reactive, so the nav item appears/disappears live.
+  const sections = [
+    { key: "personal", title: "פרטים אישיים" },
+    { key: "trip", title: "פרטי נסיעה" },
+    ...(hasFlights ? [{ key: "flights", title: "טיסות" }] : []),
+    { key: "notes", title: "הערות" },
+  ];
 
   const [activeSection, setActiveSection] = useState("personal");
   const [saving, setSaving] = useState(false);
@@ -360,19 +356,18 @@ const GuestEditor = ({ onClose }) => {
   const renderSectionBody = (key) => {
     switch (key) {
       case "personal":
+        return <PersonalDetailsStep handleInputChange={handleInputChange} />;
+      case "trip":
+        // Add: full trip step (route/dates + toggles). Edit: just the flight
+        // toggles (route/dates are edited via the family dialog).
         return isAdd ? (
-          <PersonalDetailsStep handleInputChange={handleInputChange} />
+          <TripOptionsStep handleInputChange={handleInputChange} />
         ) : (
           <>
-            <PersonalDetailsStep handleInputChange={handleInputChange} cardLayout />
-            <div className={classes.togglesCard}>
-              <Typography className={classes.togglesTitle}>טיסות ואפשרויות</Typography>
-              <FlightToggles handleInputChange={handleInputChange} />
-            </div>
+            <Typography className={classes.togglesTitle}>טיסות ואפשרויות</Typography>
+            <FlightToggles handleInputChange={handleInputChange} />
           </>
         );
-      case "trip":
-        return <TripOptionsStep handleInputChange={handleInputChange} />;
       case "flights":
         return isAdd ? <FlightDetailsStep /> : <FlightsContainer embedded />;
       case "notes":

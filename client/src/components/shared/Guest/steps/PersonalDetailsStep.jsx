@@ -12,7 +12,10 @@ import { useSelector } from "react-redux";
 
 const AREA_CODES = ["050", "052", "053", "054", "058", "+44", "+1081"];
 
-function PersonalDetailsStep({ handleInputChange, cardLayout }) {
+// Compact personal pane (Direction B): one pane, lightweight text group-labels
+// (no bordered sub-cards), denser responsive grid. Flight toggles live in the
+// נסיעה pane, not here.
+function PersonalDetailsStep({ handleInputChange }) {
   const classes = useStyles();
   const form = useSelector((state) => state.userSlice.form);
   const inputRefs = useRef([]);
@@ -49,127 +52,94 @@ function PersonalDetailsStep({ handleInputChange, cardLayout }) {
     },
   };
 
-  // Card layout for edit mode — separate cards per group
-  if (cardLayout) {
-    return (
-      <>
-        {/* Names card */}
-        <div className={classes.sectionCard}>
-          <Typography className={classes.sectionTitle}>שמות</Typography>
-          <div className={classes.fieldGroup}>
-            <div className={classes.fieldItem}>
-              <InputLabel className={classes.inputLabelStyle}>שם פרטי בעברית</InputLabel>
-              <TextField name="hebrew_first_name" value={form.hebrew_first_name || ""} className={classes.textField} onChange={handleInputChange} size="small" inputRef={(el) => (inputRefs.current[0] = el)} onKeyDown={(e) => handleKeyDown(e, 0)} />
-            </div>
-            <div className={classes.fieldItem}>
-              <InputLabel className={classes.inputLabelStyle}>שם משפחה בעברית</InputLabel>
-              <TextField name="hebrew_last_name" value={form.hebrew_last_name || ""} className={classes.textField} onChange={handleInputChange} size="small" inputRef={(el) => (inputRefs.current[1] = el)} onKeyDown={(e) => handleKeyDown(e, 1)} />
-            </div>
-            <div className={classes.fieldItem}>
-              <InputLabel className={classes.inputLabelStyle}>שם פרטי באנגלית</InputLabel>
-              <TextField name="english_first_name" value={form.english_first_name || ""} className={classes.textField} onChange={handleInputChange} size="small" inputRef={(el) => (inputRefs.current[2] = el)} onKeyDown={(e) => handleKeyDown(e, 2)} />
-            </div>
-            <div className={classes.fieldItem}>
-              <InputLabel className={classes.inputLabelStyle}>שם משפחה באנגלית</InputLabel>
-              <TextField name="english_last_name" value={form.english_last_name || ""} className={classes.textField} onChange={handleInputChange} size="small" inputRef={(el) => (inputRefs.current[3] = el)} onKeyDown={(e) => handleKeyDown(e, 3)} />
-            </div>
-          </div>
-        </div>
+  const textField = (name, label, refIndex, extra = {}) => (
+    <div className={classes.fieldItem}>
+      <InputLabel className={classes.inputLabelStyle}>{label}</InputLabel>
+      <TextField
+        name={name}
+        value={form[name] || ""}
+        className={classes.textField}
+        onChange={handleInputChange}
+        size="small"
+        inputRef={(el) => (inputRefs.current[refIndex] = el)}
+        onKeyDown={(e) => handleKeyDown(e, refIndex)}
+        {...extra}
+      />
+    </div>
+  );
 
-        {/* Personal info card */}
-        <div className={classes.sectionCard}>
-          <Typography className={classes.sectionTitle}>פרטים אישיים</Typography>
-          <div className={classes.fieldGroup}>
-            <div className={classes.fieldItem}>
-              <InputLabel className={classes.inputLabelStyle}>תאריך לידה</InputLabel>
-              <TextField name="birth_date" value={form.birth_date || ""} className={classes.textField} onChange={handleBirthDateChange} size="small" placeholder="DD/MM/YYYY" inputRef={(el) => (inputRefs.current[4] = el)} onKeyDown={(e) => handleKeyDown(e, 4)} />
-            </div>
-            <div className={classes.fieldItem}>
-              <InputLabel className={classes.inputLabelStyle}>גיל</InputLabel>
-              <TextField name="age" value={form.age || ""} className={classes.textField} disabled size="small" />
-            </div>
-            <div className={classes.fieldItem}>
-              <InputLabel className={classes.inputLabelStyle}>מספר זהות</InputLabel>
-              <TextField name="identity_id" value={form.identity_id || ""} className={classes.textField} onChange={handleInputChange} size="small" inputRef={(el) => (inputRefs.current[5] = el)} onKeyDown={(e) => handleKeyDown(e, 5)} />
-            </div>
-            <div className={classes.fieldItem}>
-              <InputLabel className={classes.inputLabelStyle}>אימייל</InputLabel>
-              <TextField name="email" value={form.email || ""} className={classes.textField} onChange={handleInputChange} size="small" inputRef={(el) => (inputRefs.current[6] = el)} onKeyDown={(e) => handleKeyDown(e, 6)} />
-            </div>
-          </div>
-        </div>
-
-        {/* Contact card */}
-        <div className={classes.sectionCard}>
-          <Typography className={classes.sectionTitle}>פרטי קשר</Typography>
-          <div className={classes.fieldGroup}>
-            <div className={classes.fieldItem}>
-              <InputLabel className={classes.inputLabelStyle}>כתובת מלאה</InputLabel>
-              <TextField name="address" value={form.address || ""} className={classes.textField} onChange={handleInputChange} size="small" inputRef={(el) => (inputRefs.current[7] = el)} onKeyDown={(e) => handleKeyDown(e, 7)} />
-            </div>
-            <div className={classes.fieldItem}>
-              <InputLabel className={classes.inputLabelStyle}>מספר טלפון</InputLabel>
-              <div className={classes.phoneRow}>
-                <TextField name="phone_b" value={form.phone_b || ""} className={classes.phoneField} onChange={handleInputChange} size="small" placeholder="1234567" inputRef={(el) => (inputRefs.current[8] = el)} onKeyDown={(e) => handleKeyDown(e, 8)} />
-                <Select name="phone_a" value={form.phone_a || ""} onChange={handleInputChange} input={<OutlinedInput className={classes.areaCodeSelect} />} displayEmpty renderValue={(value) => value || "קידומת"} MenuProps={phoneMenuProps}>
-                  {AREA_CODES.map((code) => (
-                    <MenuItem key={code} value={code} className={classes.menuItem}>{code}</MenuItem>
-                  ))}
-                </Select>
-              </div>
-            </div>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  // Default: single card (add mode)
   return (
-    <div className={classes.sectionCard}>
-      <Typography className={classes.sectionTitle}>פרטים אישיים</Typography>
-      <div className={classes.fieldGroup}>
-        <div className={classes.fieldItem}>
-          <InputLabel className={classes.inputLabelStyle}>שם פרטי בעברית</InputLabel>
-          <TextField name="hebrew_first_name" value={form.hebrew_first_name || ""} className={classes.textField} onChange={handleInputChange} size="small" inputRef={(el) => (inputRefs.current[0] = el)} onKeyDown={(e) => handleKeyDown(e, 0)} />
-        </div>
-        <div className={classes.fieldItem}>
-          <InputLabel className={classes.inputLabelStyle}>שם משפחה בעברית</InputLabel>
-          <TextField name="hebrew_last_name" value={form.hebrew_last_name || ""} className={classes.textField} onChange={handleInputChange} size="small" inputRef={(el) => (inputRefs.current[1] = el)} onKeyDown={(e) => handleKeyDown(e, 1)} />
-        </div>
-        <div className={classes.fieldItem}>
-          <InputLabel className={classes.inputLabelStyle}>שם פרטי באנגלית</InputLabel>
-          <TextField name="english_first_name" value={form.english_first_name || ""} className={classes.textField} onChange={handleInputChange} size="small" inputRef={(el) => (inputRefs.current[2] = el)} onKeyDown={(e) => handleKeyDown(e, 2)} />
-        </div>
-        <div className={classes.fieldItem}>
-          <InputLabel className={classes.inputLabelStyle}>שם משפחה באנגלית</InputLabel>
-          <TextField name="english_last_name" value={form.english_last_name || ""} className={classes.textField} onChange={handleInputChange} size="small" inputRef={(el) => (inputRefs.current[3] = el)} onKeyDown={(e) => handleKeyDown(e, 3)} />
-        </div>
+    <div className={classes.compactSection}>
+      {/* Names */}
+      <Typography className={classes.groupLabel}>שמות</Typography>
+      <div className={classes.compactGrid}>
+        {textField("hebrew_first_name", "שם פרטי בעברית", 0)}
+        {textField("hebrew_last_name", "שם משפחה בעברית", 1)}
+        {textField("english_first_name", "שם פרטי באנגלית", 2)}
+        {textField("english_last_name", "שם משפחה באנגלית", 3)}
+      </div>
+
+      {/* Personal */}
+      <Typography className={classes.groupLabel}>פרטים אישיים</Typography>
+      <div className={classes.compactGrid}>
         <div className={classes.fieldItem}>
           <InputLabel className={classes.inputLabelStyle}>תאריך לידה</InputLabel>
-          <TextField name="birth_date" value={form.birth_date || ""} className={classes.textField} onChange={handleBirthDateChange} size="small" placeholder="DD/MM/YYYY" inputRef={(el) => (inputRefs.current[4] = el)} onKeyDown={(e) => handleKeyDown(e, 4)} />
+          <TextField
+            name="birth_date"
+            value={form.birth_date || ""}
+            className={classes.textField}
+            onChange={handleBirthDateChange}
+            size="small"
+            placeholder="DD/MM/YYYY"
+            inputRef={(el) => (inputRefs.current[4] = el)}
+            onKeyDown={(e) => handleKeyDown(e, 4)}
+          />
         </div>
         <div className={classes.fieldItem}>
           <InputLabel className={classes.inputLabelStyle}>גיל</InputLabel>
           <TextField name="age" value={form.age || ""} className={classes.textField} disabled size="small" />
         </div>
-        <div className={classes.fieldItem}>
-          <InputLabel className={classes.inputLabelStyle}>מספר זהות</InputLabel>
-          <TextField name="identity_id" value={form.identity_id || ""} className={classes.textField} onChange={handleInputChange} size="small" inputRef={(el) => (inputRefs.current[5] = el)} onKeyDown={(e) => handleKeyDown(e, 5)} />
-        </div>
-        <div className={classes.fieldItem}>
-          <InputLabel className={classes.inputLabelStyle}>אימייל</InputLabel>
-          <TextField name="email" value={form.email || ""} className={classes.textField} onChange={handleInputChange} size="small" inputRef={(el) => (inputRefs.current[6] = el)} onKeyDown={(e) => handleKeyDown(e, 6)} />
-        </div>
-        <div className={classes.fieldItem}>
+        {textField("identity_id", "מספר זהות", 5)}
+        {textField("email", "אימייל", 6)}
+      </div>
+
+      {/* Contact */}
+      <Typography className={classes.groupLabel}>פרטי קשר</Typography>
+      <div className={classes.compactGrid}>
+        <div className={classes.compactItemFull}>
           <InputLabel className={classes.inputLabelStyle}>כתובת מלאה</InputLabel>
-          <TextField name="address" value={form.address || ""} className={classes.textField} onChange={handleInputChange} size="small" inputRef={(el) => (inputRefs.current[7] = el)} onKeyDown={(e) => handleKeyDown(e, 7)} />
+          <TextField
+            name="address"
+            value={form.address || ""}
+            className={classes.textField}
+            onChange={handleInputChange}
+            size="small"
+            inputRef={(el) => (inputRefs.current[7] = el)}
+            onKeyDown={(e) => handleKeyDown(e, 7)}
+          />
         </div>
-        <div className={classes.fieldItem}>
+        <div className={classes.compactItemFull}>
           <InputLabel className={classes.inputLabelStyle}>מספר טלפון</InputLabel>
           <div className={classes.phoneRow}>
-            <TextField name="phone_b" value={form.phone_b || ""} className={classes.phoneField} onChange={handleInputChange} size="small" placeholder="1234567" inputRef={(el) => (inputRefs.current[8] = el)} onKeyDown={(e) => handleKeyDown(e, 8)} />
-            <Select name="phone_a" value={form.phone_a || ""} onChange={handleInputChange} input={<OutlinedInput className={classes.areaCodeSelect} />} displayEmpty renderValue={(value) => value || "קידומת"} MenuProps={phoneMenuProps}>
+            <TextField
+              name="phone_b"
+              value={form.phone_b || ""}
+              className={classes.phoneField}
+              onChange={handleInputChange}
+              size="small"
+              placeholder="1234567"
+              inputRef={(el) => (inputRefs.current[8] = el)}
+              onKeyDown={(e) => handleKeyDown(e, 8)}
+            />
+            <Select
+              name="phone_a"
+              value={form.phone_a || ""}
+              onChange={handleInputChange}
+              input={<OutlinedInput className={classes.areaCodeSelect} />}
+              displayEmpty
+              renderValue={(value) => value || "קידומת"}
+              MenuProps={phoneMenuProps}
+            >
               {AREA_CODES.map((code) => (
                 <MenuItem key={code} value={code} className={classes.menuItem}>{code}</MenuItem>
               ))}

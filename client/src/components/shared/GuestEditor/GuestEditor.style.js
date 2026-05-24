@@ -207,13 +207,7 @@ export const useStyles = makeStyles(() => ({
     },
   },
 
-  /* Toggles card used inside the personal pane (edit flow) */
-  togglesCard: {
-    backgroundColor: "#f8fafc",
-    borderRadius: "12px",
-    border: "1px solid #e2e8f0",
-    padding: "24px 28px",
-  },
+  /* Label above the flight toggles in the נסיעה pane (edit flow) */
   togglesTitle: {
     fontSize: "13px !important",
     fontWeight: "600 !important",

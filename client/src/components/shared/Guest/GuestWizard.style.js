@@ -184,6 +184,42 @@ export const useStyles = makeStyles((theme) => ({
     gridColumn: "1 / -1",
   },
 
+  /* ===== COMPACT PANE (denser, label-grouped, no sub-cards) ===== */
+  compactSection: {
+    display: "flex",
+    flexDirection: "column",
+  },
+  // Lightweight text label that replaces a bordered sub-card heading.
+  groupLabel: {
+    fontSize: "11.5px !important",
+    fontWeight: "600 !important",
+    color: "#0f766e !important",
+    letterSpacing: "0.03em",
+    marginTop: "20px !important",
+    marginBottom: "10px !important",
+    "&:first-child": {
+      marginTop: "0 !important",
+    },
+  },
+  // Denser responsive grid: 2 columns, 3 on wide screens, 1 when narrow.
+  compactGrid: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: "12px 18px",
+    "@media (min-width: 880px)": {
+      gridTemplateColumns: "1fr 1fr 1fr",
+    },
+    "@media (max-width: 600px)": {
+      gridTemplateColumns: "1fr",
+    },
+  },
+  compactItemFull: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "6px",
+    gridColumn: "1 / -1",
+  },
+
   /* ===== LABELS ===== */
   inputLabelStyle: {
     color: "#475569 !important",
