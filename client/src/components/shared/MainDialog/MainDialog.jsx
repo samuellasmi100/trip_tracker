@@ -1,12 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import MainDialogView from "./MainDialog.view";
 import GuestWizard from "../Guest/GuestWizard";
-import RoomSelector from "../RoomSelector/RoomSelector";
-import RoomsAssigner from "../RoomsAssigner/RoomsAssigner";
-import Payments from "../Payments/Payments";
-import Flights from "../Flights/Flights";
-import Reservation from "../Reservation/Reservation";
-import Notes from "../Notes/Notes"
 import GuestEditor from "../GuestEditor/GuestEditor";
 import { Button } from "@mui/material";
 import { useStyles } from "./MainDialog.style";
@@ -18,7 +12,6 @@ import UploadFile from "../UploadFile/UploadFile";
 import ShowFiles from "../ShowFiles/ShowFiles";
 
 const MainDialog = (props) => {
-  const form = useSelector((state) => state.userSlice.form)
   const activeButton = useSelector((state) => state.dialogSlice.activeButton)
   const classes = useStyles();
   const dialogType = useSelector((state) => state.dialogSlice.type);
@@ -29,7 +22,7 @@ const MainDialog = (props) => {
     closeModal
   } = props;
 
-  // addFamily keeps the legacy stepper wizard; every guest add/edit flow now uses
+  // addFamily keeps the legacy stepper wizard; every guest add/edit flow uses
   // the unified GuestEditor (Direction B: side-nav + panes).
   const isAddFamilyFlow = dialogType === "addFamily";
   const isGuestEditorFlow =
@@ -41,87 +34,32 @@ const MainDialog = (props) => {
   }
 
   const handleDataView = () => {
-    if(dialogType === "childDetails" || dialogType === "parentDetails"){
+    if (dialogType === "childDetails" || dialogType === "parentDetails") {
       return <ChildDetails />
-    }else if(dialogType === "uploadFile"){
-      if( activeButton === "העלה קובץ"){
-        return <UploadFile />
-      }else {
-        return <ShowFiles />
-      }
-    } else if(isAddFamilyFlow){
-      // Family creation keeps its own stepper
+    } else if (dialogType === "uploadFile") {
+      return activeButton === "העלה קובץ" ? <UploadFile /> : <ShowFiles />
+    } else if (isAddFamilyFlow) {
       return <GuestWizard />
-    } else if(isGuestEditorFlow){
-      // Unified add/edit guest editor
+    } else if (isGuestEditorFlow) {
       return <GuestEditor onClose={closeModal} />
-    } else{
-       if (activeButton === "פרטים אישיים") {
-        return <GuestWizard />
-      } else if (activeButton === "פרטי הזמנה" || activeButton === "פרטי נסיעה" ) {
-        return <Reservation />
-      } else if (activeButton === "הקצאת חדרים") {
-        return <RoomsAssigner />
-      }else if(activeButton === "בחירת חדרים"){
-        return <RoomSelector />
-      } else if (activeButton === "טיסות") {
-        return <Flights  />
-      } else if (activeButton === "תשלום") {
-        return <Payments />
-      } else if (activeButton === "הערות") {
-        return <Notes />
-      }
     }
-
+    return null;
   }
 
   const handleButtonHeader = () => {
-    // Wizard and editor flows handle their own navigation — no header buttons
-    if(isAddFamilyFlow || isGuestEditorFlow){
-      return null;
-    }
-    if(dialogType === "childDetails" || dialogType === "parentDetails"){
-      return null;
-    }else if(dialogType === "uploadFile"){
-      return ["העלה קובץ","הצג קבצים שהועלו",]
-      .map((label) => (
+    // Only the upload-file dialog still uses header tabs; all other flows manage
+    // their own navigation.
+    if (dialogType === "uploadFile") {
+      return ["העלה קובץ", "הצג קבצים שהועלו"].map((label) => (
         <Button
           key={label}
           className={`${classes.navButton} ${activeButton === label ? "active" : ""}`}
           onClick={() => handleButtonClick(label)}>
           {label}
         </Button>
-       ))
-    }else {
-        if(form.user_type === "client"){
-          return (Number(form.flights) === 1
-          ?  ["פרטים אישיים","פרטי נסיעה", "בחירת חדרים", "טיסות", "הערות"]
-          :  ["פרטים אישיים","פרטי נסיעה", "בחירת חדרים", "הערות"]
-        ).map((label) => (
-          <Button
-            key={label}
-            className={`${classes.navButton} ${activeButton === label ? "active" : ""}`}
-            onClick={() => handleButtonClick(label)}>
-            {label}
-          </Button>
-         ))
-        }else {
-          return (Number(form.flights) === 1
-            ?  ["פרטים אישיים","פרטי הזמנה","הקצאת חדרים","בחירת חדרים", "טיסות", "תשלום", "הערות"]
-            :  ["פרטים אישיים","פרטי הזמנה", "הקצאת חדרים", "בחירת חדרים","תשלום", "הערות"]
-          ).map((label) => (
-            <Button
-              key={label}
-              className={`${classes.navButton} ${activeButton === label ? "active" : ""}`}
-              onClick={() => handleButtonClick(label)}>
-              {label}
-            </Button>
-          ))
-        }
-
-
+      ))
     }
-
+    return null;
   }
 
   return (

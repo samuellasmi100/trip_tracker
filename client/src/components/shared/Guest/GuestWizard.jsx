@@ -2,133 +2,30 @@ import React, { useState, useEffect } from "react";
 import GuestWizardView from "./GuestWizard.view";
 import ApiUser from "../../../apis/userRequest";
 import ApiVacations from "../../../apis/vacationRequest";
-import ApiFlights from "../../../apis/flightsRequest";
-import ApiNotes from "../../../apis/notesRequest";
-import * as flightsSlice from "../../../store/slices/flightsSlice";
-import * as notesSlice from "../../../store/slices/notesSlice";
 import { useDispatch, useSelector } from "react-redux";
 import * as snackBarSlice from "../../../store/slices/snackbarSlice";
 import * as userSlice from "../../../store/slices/userSlice";
 import * as dialogSlice from "../../../store/slices/dialogSlice";
 import * as vacationSlice from "../../../store/slices/vacationSlice";
 import { v4 as uuidv4 } from "uuid";
-import calculateAge from "../../../utils/helpers/calculateAge";
 import { isoToDisplay } from "../../../utils/helpers/formatDate";
 
+// Family / group creation wizard (addFamily only). Guest add/edit now lives in
+// the unified GuestEditor; this stepper just creates the family shell.
 const GuestWizard = () => {
   const dispatch = useDispatch();
-  const dialogType = useSelector((state) => state.dialogSlice.type);
   const form = useSelector((state) => state.userSlice.form);
-  const familyDetails = useSelector((state) => state.userSlice.family);
-  const guests = useSelector((state) => state.userSlice.guests);
   const token = sessionStorage.getItem("token");
   const vacationId = useSelector((state) => state.vacationSlice.vacationId);
   const vacationsDates = useSelector((state) => state.vacationSlice.vacationsDates);
-  const flightsForm = useSelector((state) => state.flightsSlice.form);
-  const notesForm = useSelector((state) => state.notesSlice.form);
 
-  // Determine steps based on dialog type
-  const isAddFamily = dialogType === "addFamily";
-  const isAddGuest = dialogType === "addParent" || dialogType === "addChild";
-  const isAddFlow = isAddFamily || isAddGuest;
-  const isEditFlow = dialogType === "editParent" || dialogType === "editChild";
-
-  // Step definitions
-  const getSteps = () => {
-    if (isAddFamily) {
-      return [
-        { key: "family", label: "פרטי משפחה" },
-        { key: "trip", label: "פרטי הזמנה" },
-      ];
-    }
-    if (isEditFlow) {
-      return [{ key: "personal", label: "פרטים אישיים" }];
-    }
-    // addParent / addChild: 4 tabs
-    return [
-      { key: "personal", label: "פרטים אישיים" },
-      { key: "trip", label: "פרטי נסיעה" },
-      { key: "flights", label: "פרטי טיסה" },
-      { key: "notes", label: "הערות" },
-    ];
-  };
-
-  const steps = getSteps();
+  const steps = [
+    { key: "family", label: "פרטי משפחה" },
+    { key: "trip", label: "פרטי הזמנה" },
+  ];
   const [activeStep, setActiveStep] = useState(0);
 
-  // Pre-fill form with family data when adding a member
-  useEffect(() => {
-    if (dialogType === "addParent" || dialogType === "addChild") {
-      const mainUser = guests?.find(g => g.is_main_user === 1 || g.is_main_user === true);
-
-      if (mainUser) {
-        const tripFields = [
-          'week_chosen', 'number_of_guests', 'number_of_rooms',
-          'flights', 'flying_with_us', 'flights_direction',
-        ];
-        tripFields.forEach(field => {
-          if (mainUser[field] !== undefined && mainUser[field] !== null && mainUser[field] !== '') {
-            dispatch(userSlice.updateFormField({ field, value: mainUser[field] }));
-          }
-        });
-        // Convert dates from ISO if needed
-        if (mainUser.arrival_date) {
-          dispatch(userSlice.updateFormField({ field: 'arrival_date', value: isoToDisplay(mainUser.arrival_date) }));
-        }
-        if (mainUser.departure_date) {
-          dispatch(userSlice.updateFormField({ field: 'departure_date', value: isoToDisplay(mainUser.departure_date) }));
-        }
-        if (mainUser.date_chosen) {
-          dispatch(userSlice.updateFormField({ field: 'date_chosen', value: mainUser.date_chosen }));
-        }
-      } else if (familyDetails) {
-        if (familyDetails.start_date) {
-          dispatch(userSlice.updateFormField({ field: 'arrival_date', value: isoToDisplay(familyDetails.start_date) }));
-        }
-        if (familyDetails.end_date) {
-          dispatch(userSlice.updateFormField({ field: 'departure_date', value: isoToDisplay(familyDetails.end_date) }));
-        }
-        if (familyDetails.start_date && familyDetails.end_date) {
-          dispatch(userSlice.updateFormField({ field: 'date_chosen', value: `${isoToDisplay(familyDetails.end_date)}/${isoToDisplay(familyDetails.start_date)}` }));
-        }
-        // Match family dates to find the route name
-        if (vacationsDates?.length > 0 && familyDetails.start_date) {
-          const matchedWeek = vacationsDates.find(
-            (d) => d.start_date === familyDetails.start_date && d.end_date === familyDetails.end_date
-          );
-          if (matchedWeek) {
-            dispatch(userSlice.updateFormField({ field: 'week_chosen', value: matchedWeek.name }));
-          }
-        }
-        ['number_of_guests', 'number_of_rooms'].forEach(field => {
-          if (familyDetails[field]) {
-            dispatch(userSlice.updateFormField({ field, value: familyDetails[field] }));
-          }
-        });
-      }
-
-      if (familyDetails?.family_id) {
-        dispatch(userSlice.updateFormField({ field: 'family_id', value: familyDetails.family_id }));
-      }
-    }
-  }, [dialogType]);
-
-  // Match week_chosen when vacationsDates loads (may arrive after pre-fill)
-  useEffect(() => {
-    if ((dialogType === "addParent" || dialogType === "addChild") && !form.week_chosen && form.arrival_date && vacationsDates?.length > 0) {
-      // Try matching with both ISO and display formats
-      const matchedWeek = vacationsDates.find(
-        (d) => d.start_date === form.arrival_date && d.end_date === form.departure_date
-      ) || vacationsDates.find(
-        (d) => isoToDisplay(d.start_date) === form.arrival_date && isoToDisplay(d.end_date) === form.departure_date
-      );
-      if (matchedWeek) {
-        dispatch(userSlice.updateFormField({ field: 'week_chosen', value: matchedWeek.name }));
-      }
-    }
-  }, [vacationsDates]);
-
-  // Load vacations dates for trip step
+  // Load vacation dates for the route dropdown in the trip step
   useEffect(() => {
     const getVacations = async () => {
       try {
@@ -141,29 +38,20 @@ const GuestWizard = () => {
       }
     };
     getVacations();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleInputChange = (e) => {
-    let { name, value, checked } = e.target;
-    let family_id = isAddFamily ? form.family_id : familyDetails.family_id;
-
-    if (name === "flights_direction") {
-      dispatch(userSlice.updateFormField({ field: "flights_direction", value: checked ? value : "" }));
-    } else if (name === "birth_date") {
-      const age = calculateAge(value);
-      dispatch(userSlice.updateFormField({ field: "age", value: age }));
-      dispatch(userSlice.updateFormField({ field: name, value }));
-    } else if (name === "flights" || name === "flying_with_us" || name === "is_in_group") {
-      dispatch(userSlice.updateFormField({ field: name, value: checked }));
-    } else if (name === "week_chosen") {
-      const findVacationDateDetails = vacationsDates?.find((key) => key.name === value);
-      if (findVacationDateDetails && findVacationDateDetails.name !== "חריגים") {
-        const arrDisplay = isoToDisplay(findVacationDateDetails.start_date);
-        const depDisplay = isoToDisplay(findVacationDateDetails.end_date);
-        dispatch(userSlice.updateFormField({ field: "arrival_date", value: arrDisplay }));
-        dispatch(userSlice.updateFormField({ field: "departure_date", value: depDisplay }));
+    const { name, value } = e.target;
+    if (name === "week_chosen") {
+      const found = vacationsDates?.find((k) => k.name === value);
+      if (found && found.name !== "חריגים") {
+        const arr = isoToDisplay(found.start_date);
+        const dep = isoToDisplay(found.end_date);
+        dispatch(userSlice.updateFormField({ field: "arrival_date", value: arr }));
+        dispatch(userSlice.updateFormField({ field: "departure_date", value: dep }));
         dispatch(userSlice.updateFormField({ field: "week_chosen", value }));
-        dispatch(userSlice.updateFormField({ field: "date_chosen", value: `${depDisplay}/${arrDisplay}` }));
+        dispatch(userSlice.updateFormField({ field: "date_chosen", value: `${dep}/${arr}` }));
       } else {
         dispatch(userSlice.updateFormField({ field: "week_chosen", value }));
         dispatch(userSlice.updateFormField({ field: "arrival_date", value: "" }));
@@ -176,70 +64,28 @@ const GuestWizard = () => {
     } else {
       dispatch(userSlice.updateFormField({ field: name, value }));
     }
-
-    if (family_id) {
-      dispatch(userSlice.updateFormField({ field: "family_id", value: family_id }));
-    }
-    dispatch(userSlice.updateFormField({ field: "userType", value: dialogType }));
   };
 
-  // Core save logic for addParent/addChild — returns the new userId
-  const saveGuest = async () => {
-    if (dialogType === "addParent") {
-      if (!form.identity_id || form.identity_id === "") {
-        dispatch(snackBarSlice.setSnackBar({ type: "error", message: "מספר תעודת זהות הוא חובה", timeout: 3000 }));
-        return null;
-      }
-      const newUserId = uuidv4();
-      await ApiUser.addUser(token, form, form.family_id, newUserId, vacationId);
-      // Save flight data
-      if (Object.keys(flightsForm).length > 0 && form.flights) {
-        const flightData = { ...flightsForm, family_id: form.family_id, user_id: newUserId };
-        await ApiFlights.addUserFlights(token, flightData, vacationId);
-      }
-      // Save notes
-      if (notesForm.note && notesForm.note.trim() !== "") {
-        const noteData = { ...notesForm, family_id: form.family_id, user_id: newUserId };
-        await ApiNotes.addNotes(token, noteData, vacationId);
-      }
-      await getUsers();
-      return newUserId;
-    } else if (dialogType === "addChild") {
-      const checkIfUserAlreadyExist = guests.some((user) => user.identity_id === form.identity_id);
-      if (checkIfUserAlreadyExist) {
-        dispatch(snackBarSlice.setSnackBar({ type: "error", message: "מספר תעודת זהות זה כבר נמצא במערכת", timeout: 3000 }));
-        return null;
-      }
-      const newUserId = uuidv4();
-      await ApiUser.addUser(token, form, form.family_id, newUserId, vacationId);
-      // Save flight data
-      if (Object.keys(flightsForm).length > 0 && form.flights) {
-        const flightData = { ...flightsForm, family_id: form.family_id, user_id: newUserId };
-        await ApiFlights.addUserFlights(token, flightData, vacationId);
-      }
-      // Save notes
-      if (notesForm.note && notesForm.note.trim() !== "") {
-        const noteData = { ...notesForm, family_id: form.family_id, user_id: newUserId };
-        await ApiNotes.addNotes(token, noteData, vacationId);
-      }
-      dispatch(userSlice.updateFormField({ field: "family_id", value: form.family_id }));
-      dispatch(userSlice.updateFormField({ field: "user_id", value: newUserId }));
-      await getUsers();
-      return newUserId;
-    }
-    return null;
-  };
-
-  // Save & Close — save guest then close dialog
-  const submitAndClose = async () => {
+  const submit = async () => {
     try {
-      const newUserId = await saveGuest();
-      if (newUserId === null) return; // validation failed
-      const successMsg = dialogType === "addParent" ? "אורח נוסף בהצלחה" : "בן משפחה נוסף בהצלחה";
-      dispatch(snackBarSlice.setSnackBar({ type: "success", message: successMsg, timeout: 3000 }));
+      if (!form.family_name || form.family_name.trim() === "") {
+        dispatch(snackBarSlice.setSnackBar({ type: "error", message: "שם משפחה / קבוצה הוא חובה", timeout: 3000 }));
+        return;
+      }
+      const newFamilyId = uuidv4();
+      await ApiUser.addFamily(token, form, newFamilyId, vacationId);
+      dispatch(userSlice.updateFormField({ field: "family_id", value: newFamilyId }));
+      dispatch(userSlice.updateFamily({
+        family_id: newFamilyId,
+        family_name: form.family_name,
+        number_of_guests: form.number_of_guests,
+        number_of_rooms: form.number_of_rooms,
+        total_amount: form.total_amount,
+        start_date: form.arrival_date,
+        end_date: form.departure_date,
+      }));
+      dispatch(snackBarSlice.setSnackBar({ type: "success", message: "משפחה נוספה בהצלחה", timeout: 3000 }));
       dispatch(userSlice.resetForm());
-      dispatch(flightsSlice.resetForm());
-      dispatch(notesSlice.resetForm());
       dispatch(dialogSlice.resetState());
     } catch (error) {
       console.log(error);
@@ -247,104 +93,9 @@ const GuestWizard = () => {
     }
   };
 
-  // Save & Continue — save guest then switch to edit mode
-  const submitAndContinue = async () => {
-    try {
-      const newUserId = await saveGuest();
-      if (newUserId === null) return; // validation failed
-      const successMsg = dialogType === "addParent" ? "אורח נוסף בהצלחה" : "בן משפחה נוסף בהצלחה";
-      dispatch(snackBarSlice.setSnackBar({ type: "success", message: successMsg, timeout: 3000 }));
-      dispatch(flightsSlice.resetForm());
-      dispatch(notesSlice.resetForm());
-      if (dialogType === "addParent") {
-        dispatch(dialogSlice.updateDialogType("editParent"));
-        dispatch(dialogSlice.updateActiveButton("פרטי הזמנה"));
-      } else {
-        dispatch(dialogSlice.updateDialogType("editChild"));
-        dispatch(dialogSlice.updateActiveButton("פרטי נסיעה"));
-      }
-    } catch (error) {
-      console.log(error);
-      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "אירעה שגיאה, נסה שנית", timeout: 3000 }));
-    }
-  };
-
-  // Submit for addFamily and edit flows
-  const submit = async () => {
-    try {
-      if (dialogType === "addFamily") {
-        if (!form.family_name || form.family_name.trim() === "") {
-          dispatch(snackBarSlice.setSnackBar({ type: "error", message: "שם משפחה / קבוצה הוא חובה", timeout: 3000 }));
-          return;
-        }
-        const newFamilyId = uuidv4();
-        await ApiUser.addFamily(token, form, newFamilyId, vacationId);
-        dispatch(userSlice.updateFormField({ field: "family_id", value: newFamilyId }));
-        dispatch(userSlice.updateFamily({
-          family_id: newFamilyId,
-          family_name: form.family_name,
-          number_of_guests: form.number_of_guests,
-          number_of_rooms: form.number_of_rooms,
-          total_amount: form.total_amount,
-          start_date: form.arrival_date,
-          end_date: form.departure_date,
-        }));
-        dispatch(snackBarSlice.setSnackBar({ type: "success", message: "משפחה נוספה בהצלחה", timeout: 3000 }));
-        dispatch(userSlice.resetForm());
-        dispatch(dialogSlice.resetState());
-      } else if (dialogType === "editParent" || dialogType === "editChild") {
-        if (dialogType === "editParent" && (!form.identity_id || form.identity_id === "")) {
-          dispatch(snackBarSlice.setSnackBar({ type: "error", message: "מספר תעודת זהות הוא חובה", timeout: 3000 }));
-          return;
-        }
-        await ApiUser.updateUser(token, form, vacationId);
-        await getUsers();
-        dispatch(snackBarSlice.setSnackBar({ type: "success", message: "נתוני אורח עודכנו בהצלחה", timeout: 3000 }));
-        if (dialogType === "editParent") {
-          dispatch(dialogSlice.updateActiveButton("פרטי הזמנה"));
-        } else {
-          dispatch(dialogSlice.updateActiveButton("פרטי נסיעה"));
-        }
-      }
-    } catch (error) {
-      console.log(error);
-      // Editing arrival/departure on a guest whose family is still assigned
-      // returns 409 — show the rule's specific Hebrew message rather than
-      // the generic "אירעה שגיאה" so the user knows to remove the rooms
-      // first. 400 = unparseable date input.
-      const status = error?.response?.status;
-      const serverMessage = error?.response?.data?.message;
-      let message;
-      if (status === 409) {
-        message = serverMessage || "לא ניתן לשנות תאריכים כל עוד המשפחה משובצת לחדרים. יש לבטל את השיבוץ תחילה.";
-      } else if (status === 400) {
-        message = serverMessage || "תאריכי שהייה לא תקינים";
-      } else {
-        message = "אירעה שגיאה, נסה שנית";
-      }
-      dispatch(snackBarSlice.setSnackBar({ type: "error", message, timeout: 5000 }));
-    }
-  };
-
   const handleCloseClicked = () => {
     dispatch(userSlice.resetForm());
-    dispatch(flightsSlice.resetForm());
-    dispatch(notesSlice.resetForm());
     dispatch(dialogSlice.resetState());
-  };
-
-  const getUsers = async () => {
-    let family_id = form.family_id;
-    try {
-      let response = await ApiUser.getUserFamilyList(token, family_id, vacationId);
-      if (response.data.length > 0) {
-        dispatch(userSlice.updateGuest(response.data));
-      } else {
-        dispatch(userSlice.updateGuest([]));
-      }
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   return (
@@ -353,14 +104,8 @@ const GuestWizard = () => {
       activeStep={activeStep}
       setActiveStep={setActiveStep}
       submit={submit}
-      submitAndClose={submitAndClose}
-      submitAndContinue={submitAndContinue}
       handleInputChange={handleInputChange}
       handleCloseClicked={handleCloseClicked}
-      isAddFlow={isAddFlow}
-      isAddGuest={isAddGuest}
-      isEditFlow={isEditFlow}
-      dialogType={dialogType}
     />
   );
 };
