@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Typography } from "@mui/material";
 import { useStyles } from "./GuestEditor.style";
 import { useDispatch, useSelector } from "react-redux";
@@ -30,12 +30,14 @@ import { v4 as uuidv4 } from "uuid";
 import calculateAge from "../../../utils/helpers/calculateAge";
 import { isoToDisplay } from "../../../utils/helpers/formatDate";
 
-// Unified Add/Edit Guest editor (Direction B, Phase 1 — the shell).
-// One component, one side-nav + pane shell, for addParent/addChild/editParent/
-// editChild. Phase 1 keeps the existing section components and per-flow save
-// logic wired as-is so behaviour is unchanged; later phases add the single
-// global save (P2), conditional flights (P3), corrected dirty tracking (P4),
-// and completeness chips (P5). addFamily intentionally stays on GuestWizard.
+// Unified Add/Edit Guest editor (Direction B).
+//   Phase 1: shell (side-nav + panes), for addParent/addChild/editParent/editChild.
+//   Phase 2: one global save (saveAll) persisting user+flights+notes from Redux,
+//            and all panes mounted once (show/hide) so flights loads a single time
+//            and switching sections never reloads or loses unsaved edits.
+// Still to come: conditional flights (P3), corrected dirty tracking + the
+// 3-option save-on-exit dialog wired to saveAll (P4), completeness chips (P5).
+// addFamily intentionally stays on GuestWizard.
 const GuestEditor = ({ onClose }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -51,7 +53,9 @@ const GuestEditor = ({ onClose }) => {
   const token = sessionStorage.getItem("token");
 
   const isAdd = dialogType === "addParent" || dialogType === "addChild";
-  const isEdit = dialogType === "editParent" || dialogType === "editChild";
+  const hasFlights =
+    Number(userForm.flights) === 1 || userForm.flights === true ||
+    Number(userForm.flying_with_us) === 1 || userForm.flying_with_us === true;
 
   const sections = isAdd
     ? [
@@ -68,10 +72,6 @@ const GuestEditor = ({ onClose }) => {
 
   const [activeSection, setActiveSection] = useState("personal");
   const [saving, setSaving] = useState(false);
-
-  // Save refs exposed by the embedded edit-flow containers
-  const flightsSaveRef = useRef(null);
-  const notesSaveRef = useRef(null);
 
   // ── Add flow: prefill trip fields from the main user / family ──────────────
   useEffect(() => {
@@ -185,9 +185,11 @@ const GuestEditor = ({ onClose }) => {
     else dispatch(dialogSlice.resetState());
   };
 
-  // ── Add flow save (batch: user + flights + notes) ──────────────────────────
-  const saveNewGuest = async () => {
-    if (dialogType === "addParent" && (!userForm.identity_id || userForm.identity_id === "")) {
+  // ── Single global save: persists user + flights + notes from Redux ─────────
+  // Returns the guest's user_id on success, or null if validation blocked it.
+  const saveAll = async () => {
+    // Validation (parent identity_id is mandatory; child add checks duplicates)
+    if ((dialogType === "addParent" || dialogType === "editParent") && (!userForm.identity_id || String(userForm.identity_id).trim() === "")) {
       dispatch(snackBarSlice.setSnackBar({ type: "error", message: "מספר תעודת זהות הוא חובה", timeout: 3000 }));
       return null;
     }
@@ -195,71 +197,74 @@ const GuestEditor = ({ onClose }) => {
       dispatch(snackBarSlice.setSnackBar({ type: "error", message: "מספר תעודת זהות זה כבר נמצא במערכת", timeout: 3000 }));
       return null;
     }
-    const newUserId = uuidv4();
-    await ApiUser.addUser(token, userForm, userForm.family_id, newUserId, vacationId);
-    if (Object.keys(flightsForm).length > 0 && userForm.flights) {
-      await ApiFlights.addUserFlights(token, { ...flightsForm, family_id: userForm.family_id, user_id: newUserId }, vacationId);
+
+    const familyId = userForm.family_id || familyDetails?.family_id;
+    const userId = isAdd ? uuidv4() : userForm.user_id;
+
+    // 1) Guest record
+    if (isAdd) {
+      await ApiUser.addUser(token, userForm, familyId, userId, vacationId);
+    } else {
+      await ApiUser.updateUser(token, userForm, vacationId);
     }
+
+    // 2) Flights — only for flying guests
+    if (isAdd) {
+      if (userForm.flights && Object.keys(flightsForm).length > 0) {
+        await ApiFlights.addUserFlights(token, { ...flightsForm, family_id: familyId, user_id: userId }, vacationId);
+      }
+    } else if (hasFlights && flightsForm.type) {
+      // flightsForm.type is set by the flights pane once its row has loaded —
+      // gates the save so an early click can't overwrite real data with blanks.
+      if (flightsForm.type === "edit") {
+        await ApiFlights.updateUserFligets(token, userId, flightsForm, vacationId);
+      } else {
+        await ApiFlights.addUserFlights(token, { ...flightsForm, family_id: familyId, user_id: userId }, vacationId);
+      }
+    }
+
+    // 3) Notes — only when something was written
     if (notesForm.note && notesForm.note.trim() !== "") {
-      await ApiNotes.addNotes(token, { ...notesForm, family_id: userForm.family_id, user_id: newUserId }, vacationId);
+      await ApiNotes.addNotes(token, { ...notesForm, family_id: familyId, user_id: userId }, vacationId);
     }
+
     await refreshGuests();
-    return newUserId;
+    return userId;
   };
 
-  const addSaveAndClose = async () => {
+  const successMessage = () => {
+    if (dialogType === "addParent") return "אורח נוסף בהצלחה";
+    if (dialogType === "addChild") return "בן משפחה נוסף בהצלחה";
+    return "נתוני אורח נשמרו";
+  };
+
+  const saveAndClose = async () => {
     try {
       setSaving(true);
-      const newUserId = await saveNewGuest();
-      if (newUserId === null) return;
-      dispatch(snackBarSlice.setSnackBar({ type: "success", message: dialogType === "addParent" ? "אורח נוסף בהצלחה" : "בן משפחה נוסף בהצלחה", timeout: 3000 }));
+      const userId = await saveAll();
+      if (userId === null) return;
+      dispatch(snackBarSlice.setSnackBar({ type: "success", message: successMessage(), timeout: 3000 }));
       resetAndClose();
     } catch (error) {
       console.log(error);
-      dispatch(snackBarSlice.setSnackBar({ type: "error", message: saveErrorMessage(error), timeout: 4000 }));
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: saveErrorMessage(error), timeout: 5000 }));
     } finally {
       setSaving(false);
     }
   };
 
-  const addSaveAndContinue = async () => {
+  // Add only: save then stay open in edit mode for the just-created guest.
+  const saveAndContinue = async () => {
     try {
       setSaving(true);
-      const newUserId = await saveNewGuest();
-      if (newUserId === null) return;
-      dispatch(snackBarSlice.setSnackBar({ type: "success", message: dialogType === "addParent" ? "אורח נוסף בהצלחה" : "בן משפחה נוסף בהצלחה", timeout: 3000 }));
-      // Switch into edit mode for the just-created guest
-      dispatch(userSlice.updateFormField({ field: "user_id", value: newUserId }));
+      const userId = await saveAll();
+      if (userId === null) return;
+      dispatch(snackBarSlice.setSnackBar({ type: "success", message: successMessage(), timeout: 3000 }));
+      dispatch(userSlice.updateFormField({ field: "user_id", value: userId }));
       dispatch(flightsSlice.resetForm());
       dispatch(notesSlice.resetForm());
       dispatch(dialogSlice.updateDialogType(dialogType === "addParent" ? "editParent" : "editChild"));
       setActiveSection("personal");
-    } catch (error) {
-      console.log(error);
-      dispatch(snackBarSlice.setSnackBar({ type: "error", message: saveErrorMessage(error), timeout: 4000 }));
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  // ── Edit flow save (current section — interim; P2 makes it one global save) ──
-  const saveActiveSection = async () => {
-    if (activeSection === "personal") {
-      await ApiUser.updateUser(token, userForm, vacationId);
-      await refreshGuests();
-      dispatch(snackBarSlice.setSnackBar({ type: "success", message: "פרטים אישיים נשמרו", timeout: 2000 }));
-    } else if (activeSection === "flights" && flightsSaveRef.current) {
-      await flightsSaveRef.current();
-    } else if (activeSection === "notes" && notesSaveRef.current) {
-      await notesSaveRef.current();
-    }
-  };
-
-  const editSave = async (thenClose) => {
-    try {
-      setSaving(true);
-      await saveActiveSection();
-      if (thenClose) resetAndClose();
     } catch (error) {
       console.log(error);
       dispatch(snackBarSlice.setSnackBar({ type: "error", message: saveErrorMessage(error), timeout: 5000 }));
@@ -269,7 +274,7 @@ const GuestEditor = ({ onClose }) => {
   };
 
   // ── Section content ─────────────────────────────────────────────────────────
-  const renderSectionContent = (key) => {
+  const renderSectionBody = (key) => {
     switch (key) {
       case "personal":
         return isAdd ? (
@@ -286,9 +291,9 @@ const GuestEditor = ({ onClose }) => {
       case "trip":
         return <TripOptionsStep handleInputChange={handleInputChange} />;
       case "flights":
-        return isAdd ? <FlightDetailsStep /> : <FlightsContainer embedded saveRef={flightsSaveRef} />;
+        return isAdd ? <FlightDetailsStep /> : <FlightsContainer embedded />;
       case "notes":
-        return isAdd ? <NotesStep /> : <NotesContainer embedded saveRef={notesSaveRef} />;
+        return isAdd ? <NotesStep /> : <NotesContainer embedded />;
       default:
         return null;
     }
@@ -312,35 +317,29 @@ const GuestEditor = ({ onClose }) => {
 
         {/* ===== CONTENT AREA ===== */}
         <div className={classes.contentArea}>
-          <div className={classes.contentScroll}>{renderSectionContent(activeSection)}</div>
+          <div className={classes.contentScroll}>
+            {/* All panes mounted once; only the active one is shown. Keeps flight
+                data loaded a single time and preserves unsaved edits across switches. */}
+            {sections.map((section) => (
+              <div key={section.key} style={{ display: activeSection === section.key ? "block" : "none" }}>
+                {renderSectionBody(section.key)}
+              </div>
+            ))}
+          </div>
 
           {/* Action buttons */}
           <div className={classes.sectionActions}>
-            {isAdd ? (
-              <>
-                <Button className={classes.primaryBtn} onClick={addSaveAndClose} disabled={saving}>
-                  שמור וסגור
-                </Button>
-                <Button className={classes.secondaryBtn} onClick={addSaveAndContinue} disabled={saving}>
-                  שמור והמשך
-                </Button>
-                <Button className={classes.cancelBtn} onClick={resetAndClose}>
-                  ביטול
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button className={classes.primaryBtn} onClick={() => editSave(true)} disabled={saving}>
-                  שמור וסגור
-                </Button>
-                <Button className={classes.secondaryBtn} onClick={() => editSave(false)} disabled={saving}>
-                  שמור
-                </Button>
-                <Button className={classes.cancelBtn} onClick={resetAndClose}>
-                  ביטול
-                </Button>
-              </>
+            <Button className={classes.primaryBtn} onClick={saveAndClose} disabled={saving}>
+              שמור וסגור
+            </Button>
+            {isAdd && (
+              <Button className={classes.secondaryBtn} onClick={saveAndContinue} disabled={saving}>
+                שמור והמשך
+              </Button>
             )}
+            <Button className={classes.cancelBtn} onClick={resetAndClose} disabled={saving}>
+              ביטול
+            </Button>
           </div>
         </div>
       </div>
