@@ -57,21 +57,29 @@ const GuestEditor = ({ onClose }) => {
     Number(userForm.flights) === 1 || userForm.flights === true ||
     Number(userForm.flying_with_us) === 1 || userForm.flying_with_us === true;
 
+  // Flights section only exists when the guest actually has flights. The toggle
+  // lives in the trip step (add) / personal toggles (edit); hasFlights is
+  // reactive, so the nav item appears/disappears as it's switched.
   const sections = isAdd
     ? [
         { key: "personal", title: "פרטים אישיים" },
         { key: "trip", title: "פרטי נסיעה" },
-        { key: "flights", title: "פרטי טיסה" },
+        ...(hasFlights ? [{ key: "flights", title: "פרטי טיסה" }] : []),
         { key: "notes", title: "הערות" },
       ]
     : [
         { key: "personal", title: "פרטים אישיים" },
-        { key: "flights", title: "טיסות" },
+        ...(hasFlights ? [{ key: "flights", title: "טיסות" }] : []),
         { key: "notes", title: "הערות" },
       ];
 
   const [activeSection, setActiveSection] = useState("personal");
   const [saving, setSaving] = useState(false);
+
+  // If flights is toggled off while its pane is active, fall back to personal.
+  useEffect(() => {
+    if (!hasFlights && activeSection === "flights") setActiveSection("personal");
+  }, [hasFlights, activeSection]);
 
   // ── Add flow: prefill trip fields from the main user / family ──────────────
   useEffect(() => {

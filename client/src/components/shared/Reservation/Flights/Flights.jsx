@@ -79,7 +79,7 @@ function Flights({ handleInputChange }) {
           </InputLabel>
           <RadioGroup
             name="flights_direction"
-            value={form.flights_direction || "round_trip"}
+            value={form.flights_direction || ""}
             onChange={handleFlightDirectionChange}
             className={classes.radioGroup}
           >
