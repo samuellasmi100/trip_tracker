@@ -70,7 +70,7 @@ function PersonalDetailsStep({ handleInputChange }) {
 
   return (
     <div className={classes.compactSection}>
-      {/* Names */}
+      {/* Names — Hebrew row, then English row */}
       <Typography className={classes.groupLabel}>שמות</Typography>
       <div className={classes.compactGrid}>
         {textField("hebrew_first_name", "שם פרטי בעברית", 0)}
@@ -79,45 +79,11 @@ function PersonalDetailsStep({ handleInputChange }) {
         {textField("english_last_name", "שם משפחה באנגלית", 3)}
       </div>
 
-      {/* Personal */}
-      <Typography className={classes.groupLabel}>פרטים אישיים</Typography>
-      <div className={classes.compactGrid}>
-        <div className={classes.fieldItem}>
-          <InputLabel className={classes.inputLabelStyle}>תאריך לידה</InputLabel>
-          <TextField
-            name="birth_date"
-            value={form.birth_date || ""}
-            className={classes.textField}
-            onChange={handleBirthDateChange}
-            size="small"
-            placeholder="DD/MM/YYYY"
-            inputRef={(el) => (inputRefs.current[4] = el)}
-            onKeyDown={(e) => handleKeyDown(e, 4)}
-          />
-        </div>
-        <div className={classes.fieldItem}>
-          <InputLabel className={classes.inputLabelStyle}>גיל</InputLabel>
-          <TextField name="age" value={form.age || ""} className={classes.textField} disabled size="small" />
-        </div>
-        {textField("identity_id", "מספר זהות", 5)}
-        {textField("email", "אימייל", 6)}
-      </div>
-
-      {/* Contact */}
+      {/* Contact — email + address, then phone */}
       <Typography className={classes.groupLabel}>פרטי קשר</Typography>
       <div className={classes.compactGrid}>
-        <div className={classes.compactItemFull}>
-          <InputLabel className={classes.inputLabelStyle}>כתובת מלאה</InputLabel>
-          <TextField
-            name="address"
-            value={form.address || ""}
-            className={classes.textField}
-            onChange={handleInputChange}
-            size="small"
-            inputRef={(el) => (inputRefs.current[7] = el)}
-            onKeyDown={(e) => handleKeyDown(e, 7)}
-          />
-        </div>
+        {textField("email", "אימייל", 4)}
+        {textField("address", "כתובת מלאה", 5)}
         <div className={classes.compactItemFull}>
           <InputLabel className={classes.inputLabelStyle}>מספר טלפון</InputLabel>
           <div className={classes.phoneRow}>
@@ -128,8 +94,8 @@ function PersonalDetailsStep({ handleInputChange }) {
               onChange={handleInputChange}
               size="small"
               placeholder="1234567"
-              inputRef={(el) => (inputRefs.current[8] = el)}
-              onKeyDown={(e) => handleKeyDown(e, 8)}
+              inputRef={(el) => (inputRefs.current[6] = el)}
+              onKeyDown={(e) => handleKeyDown(e, 6)}
             />
             <Select
               name="phone_a"
@@ -146,6 +112,29 @@ function PersonalDetailsStep({ handleInputChange }) {
             </Select>
           </div>
         </div>
+      </div>
+
+      {/* Personal — birth date + age, then ID */}
+      <Typography className={classes.groupLabel}>פרטים אישיים</Typography>
+      <div className={classes.compactGrid}>
+        <div className={classes.fieldItem}>
+          <InputLabel className={classes.inputLabelStyle}>תאריך לידה</InputLabel>
+          <TextField
+            name="birth_date"
+            value={form.birth_date || ""}
+            className={classes.textField}
+            onChange={handleBirthDateChange}
+            size="small"
+            placeholder="DD/MM/YYYY"
+            inputRef={(el) => (inputRefs.current[7] = el)}
+            onKeyDown={(e) => handleKeyDown(e, 7)}
+          />
+        </div>
+        <div className={classes.fieldItem}>
+          <InputLabel className={classes.inputLabelStyle}>גיל</InputLabel>
+          <TextField name="age" value={form.age || ""} className={classes.textField} disabled size="small" />
+        </div>
+        {textField("identity_id", "מספר זהות", 8)}
       </div>
     </div>
   );

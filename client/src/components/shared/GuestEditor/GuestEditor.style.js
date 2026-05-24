@@ -105,7 +105,6 @@ export const useStyles = makeStyles(() => ({
     color: "#b45309",
   },
   overallBadge: {
-    marginInlineStart: "auto",
     display: "inline-flex",
     alignItems: "center",
     gap: "5px",
@@ -152,14 +151,21 @@ export const useStyles = makeStyles(() => ({
   },
 
   /* ===== ACTION BUTTON BAR ===== */
+  // RTL: badge sits at the start (right), the button group at the end (left).
   sectionActions: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "flex-start",
-    gap: "10px",
+    justifyContent: "space-between",
+    gap: "12px",
+    flexWrap: "wrap",
     padding: "12px 22px",
     borderTop: "1px solid #f1f5f9",
     flexShrink: 0,
+  },
+  footerButtons: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
   },
   primaryBtn: {
     background: "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%) !important",

@@ -201,14 +201,12 @@ export const useStyles = makeStyles((theme) => ({
       marginTop: "0 !important",
     },
   },
-  // Denser responsive grid: 2 columns, 3 on wide screens, 1 when narrow.
+  // Two-column responsive grid (collapses to one column when narrow) so the
+  // intended field pairings per row hold.
   compactGrid: {
     display: "grid",
     gridTemplateColumns: "1fr 1fr",
     gap: "12px 18px",
-    "@media (min-width: 880px)": {
-      gridTemplateColumns: "1fr 1fr 1fr",
-    },
     "@media (max-width: 600px)": {
       gridTemplateColumns: "1fr",
     },

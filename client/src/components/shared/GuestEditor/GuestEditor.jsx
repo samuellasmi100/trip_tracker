@@ -415,20 +415,8 @@ const GuestEditor = ({ onClose }) => {
             ))}
           </div>
 
-          {/* Action buttons */}
+          {/* Footer: completeness badge on the right, actions on the left (RTL) */}
           <div className={classes.sectionActions}>
-            <Button className={classes.primaryBtn} onClick={saveAndClose} disabled={saving}>
-              שמור וסגור
-            </Button>
-            {isAdd && (
-              <Button className={classes.secondaryBtn} onClick={saveAndContinue} disabled={saving}>
-                שמור והמשך
-              </Button>
-            )}
-            <Button className={classes.cancelBtn} onClick={handleCloseRequest} disabled={saving}>
-              ביטול
-            </Button>
-
             <span
               className={`${classes.overallBadge} ${completeness.status === "complete" ? classes.overallComplete : classes.overallIncomplete}`}
             >
@@ -436,6 +424,20 @@ const GuestEditor = ({ onClose }) => {
                 ? "✓ מוכן להנפקת כרטיס"
                 : `חסרים ${completeness.missing.length} שדות`}
             </span>
+
+            <div className={classes.footerButtons}>
+              <Button className={classes.primaryBtn} onClick={saveAndClose} disabled={saving}>
+                שמור וסגור
+              </Button>
+              {isAdd && (
+                <Button className={classes.secondaryBtn} onClick={saveAndContinue} disabled={saving}>
+                  שמור והמשך
+                </Button>
+              )}
+              <Button className={classes.cancelBtn} onClick={handleCloseRequest} disabled={saving}>
+                ביטול
+              </Button>
+            </div>
           </div>
         </div>
       </div>
