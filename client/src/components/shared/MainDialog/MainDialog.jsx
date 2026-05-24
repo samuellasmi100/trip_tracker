@@ -7,7 +7,7 @@ import Payments from "../Payments/Payments";
 import Flights from "../Flights/Flights";
 import Reservation from "../Reservation/Reservation";
 import Notes from "../Notes/Notes"
-import EditGuestPage from "../EditGuestPage/EditGuestPage";
+import GuestEditor from "../GuestEditor/GuestEditor";
 import { Button } from "@mui/material";
 import { useStyles } from "./MainDialog.style";
 
@@ -29,10 +29,12 @@ const MainDialog = (props) => {
     closeModal
   } = props;
 
-  // Add flows use the wizard (self-contained stepper, no external nav buttons needed)
-  const isWizardFlow = dialogType === "addFamily" || dialogType === "addParent" || dialogType === "addChild";
-  // Edit flows use the single-page EditGuestPage (no tabs)
-  const isEditFlow = dialogType === "editParent" || dialogType === "editChild";
+  // addFamily keeps the legacy stepper wizard; every guest add/edit flow now uses
+  // the unified GuestEditor (Direction B: side-nav + panes).
+  const isAddFamilyFlow = dialogType === "addFamily";
+  const isGuestEditorFlow =
+    dialogType === "addParent" || dialogType === "addChild" ||
+    dialogType === "editParent" || dialogType === "editChild";
 
   const handleButtonClick = async (buttonName) => {
     dispatch(dialogSlice.updateActiveButton(buttonName))
@@ -47,12 +49,12 @@ const MainDialog = (props) => {
       }else {
         return <ShowFiles />
       }
-    } else if(isWizardFlow){
-      // Wizard handles its own steps internally
+    } else if(isAddFamilyFlow){
+      // Family creation keeps its own stepper
       return <GuestWizard />
-    } else if(isEditFlow){
-      // Single scrollable page with all sections
-      return <EditGuestPage onClose={closeModal} />
+    } else if(isGuestEditorFlow){
+      // Unified add/edit guest editor
+      return <GuestEditor onClose={closeModal} />
     } else{
        if (activeButton === "פרטים אישיים") {
         return <GuestWizard />
@@ -74,8 +76,8 @@ const MainDialog = (props) => {
   }
 
   const handleButtonHeader = () => {
-    // Wizard and edit flows handle their own navigation — no header buttons
-    if(isWizardFlow || isEditFlow){
+    // Wizard and editor flows handle their own navigation — no header buttons
+    if(isAddFamilyFlow || isGuestEditorFlow){
       return null;
     }
     if(dialogType === "childDetails" || dialogType === "parentDetails"){
