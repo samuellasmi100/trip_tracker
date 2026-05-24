@@ -24,19 +24,36 @@ function Sidebar() {
   const vacationId = useSelector((state) => state.vacationSlice.vacationId);
   const followupDueCount = useSelector((state) => state.leadsSlice.followupDueCount);
 
-  // Initial follow-up due count — runs when sidebar mounts and on vacation
-  // switch. Leads widget keeps it fresh on every list refresh via updateLeadsList.
-  useEffect(() => {
+  // Follow-up due count. The server query is date-relative (followup_date <=
+  // CURDATE()), so we must refetch whenever the app could have crossed midnight
+  // while open — i.e. when the secretary returns to the tab. Leads widget keeps
+  // it fresh on every list refresh via updateLeadsList.
+  const refreshDueCount = useCallback(() => {
     const token = sessionStorage.getItem("token");
     if (!token || !vacationId) return;
-    let cancelled = false;
     ApiLeads.getFollowupDueCount(token, vacationId)
-      .then((res) => {
-        if (!cancelled) dispatch(leadsSlice.setFollowupDueCount(res.data?.count ?? 0));
-      })
+      .then((res) => dispatch(leadsSlice.setFollowupDueCount(res.data?.count ?? 0)))
       .catch((err) => console.log(err));
-    return () => { cancelled = true; };
   }, [vacationId, dispatch]);
+
+  // Runs on sidebar mount and on vacation switch.
+  useEffect(() => {
+    refreshDueCount();
+  }, [refreshDueCount]);
+
+  // Refetch when she returns to the app (tab becomes visible / window refocused),
+  // so a badge left open overnight picks up followups that became due at midnight.
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === "visible") refreshDueCount();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", refreshDueCount);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", refreshDueCount);
+    };
+  }, [refreshDueCount]);
 
 
   const handleLogOut = () => {
