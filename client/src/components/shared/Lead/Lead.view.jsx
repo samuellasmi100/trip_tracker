@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { useStyles } from "./Lead.style";
 import { toLocalYMD } from "../../../utils/helpers/formatDate";
+import { formatMoneyInput, stripMoney } from "../../../utils/helpers/formatMoney";
 
 const STATUS_OPTIONS = [
   { value: "new_interest",  label: "חדש" },
@@ -32,23 +33,13 @@ const SOURCE_OPTIONS = [
 // Local YYYY-MM-DD so a UTC-serialized DATE doesn't display a day early.
 const toDateInput = toLocalYMD;
 
-// Group the integer part with thousands separators for readable money entry,
-// preserving any decimal the user is mid-typing (e.g. "1000." / "1000.5").
-const formatMoneyInput = (v) => {
-  if (v === null || v === undefined || v === "") return "";
-  const [intPart, ...rest] = String(v).split(".");
-  const grouped = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  return rest.length ? `${grouped}.${rest.join("")}` : grouped;
-};
-
 function LeadView({ form, isEdit, handleInputChange, handleSelectChange, submit, handleCloseClicked }) {
   const classes = useStyles();
 
-  // Strip separators (and any non-numeric) before storing, so the DB gets a
-  // clean number while the field shows grouped digits.
+  // Strip separators before storing, so the DB gets a clean number while the
+  // field shows grouped digits.
   const handleMoneyChange = (e) => {
-    const clean = e.target.value.replace(/[^\d.]/g, "");
-    handleInputChange({ target: { name: e.target.name, value: clean } });
+    handleInputChange({ target: { name: e.target.name, value: stripMoney(e.target.value) } });
   };
 
   return (

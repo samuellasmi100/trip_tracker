@@ -41,6 +41,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { formatDateInput, isoToDisplay } from "../../../utils/helpers/formatDate";
 import { getGuestCompleteness } from "../../../utils/helpers/guestCompleteness";
+import { formatMoneyInput, stripMoney } from "../../../utils/helpers/formatMoney";
 
 function FamilyListView(props) {
   const classes = useStyles();
@@ -100,6 +101,15 @@ function FamilyListView(props) {
     handleAddFamilyChange({
       target: { name: e.target.name, value: formatDateInput(e.target.value) },
     });
+  };
+
+  // Money fields: show grouped digits, store a clean number.
+  const handleEditMoneyChange = (e) => {
+    handleEditFamilyChange({ target: { name: e.target.name, value: stripMoney(e.target.value) } });
+  };
+
+  const handleAddMoneyChange = (e) => {
+    handleAddFamilyChange({ target: { name: e.target.name, value: stripMoney(e.target.value) } });
   };
 
   const isParentIdExist = guests.some((key) => key.is_main_user);
@@ -603,11 +613,12 @@ function FamilyListView(props) {
               <InputLabel className={classes.editFamilyLabel}>סכום עסקה</InputLabel>
               <TextField
                 name="total_amount"
-                value={editFamilyData.total_amount || ""}
-                onChange={handleEditFamilyChange}
+                value={formatMoneyInput(editFamilyData.total_amount)}
+                onChange={handleEditMoneyChange}
                 size="small"
                 fullWidth
                 className={classes.editFamilyField}
+                inputProps={{ inputMode: "decimal" }}
               />
             </div>
             <div className={classes.editFamilyFieldItem}>
@@ -725,11 +736,12 @@ function FamilyListView(props) {
               <InputLabel className={classes.editFamilyLabel}>סכום עסקה</InputLabel>
               <TextField
                 name="total_amount"
-                value={addFamilyData.total_amount || ""}
-                onChange={handleAddFamilyChange}
+                value={formatMoneyInput(addFamilyData.total_amount)}
+                onChange={handleAddMoneyChange}
                 size="small"
                 fullWidth
                 className={classes.editFamilyField}
+                inputProps={{ inputMode: "decimal" }}
               />
             </div>
             <div className={classes.editFamilyFieldItem}>
