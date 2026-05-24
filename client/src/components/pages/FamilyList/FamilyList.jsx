@@ -267,8 +267,7 @@ const FamilyList = () => {
       await ApiUser.updateFamily(token, editFamilyData, vacationId);
       setEditDialogOpen(false);
       setEditFamilyData({});
-      setUsersData([]);
-      loadPage(1, searchTermRef.current);
+      silentRefresh();
     } catch (error) {
       console.log(error);
       // 409 HAS_ROOM_ASSIGNMENTS = server refused because the family still
@@ -286,7 +285,7 @@ const FamilyList = () => {
       }
       dispatch(snackBarSlice.setSnackBar({ type: "error", message, timeout: 5000 }));
     }
-  }, [token, editFamilyData, vacationId, loadPage, dispatch]);
+  }, [token, editFamilyData, vacationId, silentRefresh, dispatch]);
 
   // Add family dialog state — reuses the edit-family dialog layout.
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -349,8 +348,7 @@ const FamilyList = () => {
       await ApiUser.addFamily(token, form, newFamilyId, vacationId);
       setAddDialogOpen(false);
       setAddFamilyData({});
-      setUsersData([]);
-      loadPage(1, searchTermRef.current);
+      silentRefresh();
       dispatch(snackBarSlice.setSnackBar({ type: "success", message: "משפחה נוספה בהצלחה", timeout: 3000 }));
     } catch (error) {
       console.log(error);
@@ -361,7 +359,7 @@ const FamilyList = () => {
         : "הוספת המשפחה נכשלה, נסה שוב";
       dispatch(snackBarSlice.setSnackBar({ type: "error", message, timeout: 5000 }));
     }
-  }, [token, addFamilyData, vacationId, loadPage, dispatch]);
+  }, [token, addFamilyData, vacationId, silentRefresh, dispatch]);
 
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [paymentDialogFamily, setPaymentDialogFamily] = useState(null);
@@ -585,8 +583,7 @@ const FamilyList = () => {
         open={paymentDialogOpen}
         onClose={() => {
           setPaymentDialogOpen(false);
-          setUsersData([]);
-          loadPage(1, searchTermRef.current);
+          silentRefresh();
         }}
         family={paymentDialogFamily}
         vacationId={vacationId}
