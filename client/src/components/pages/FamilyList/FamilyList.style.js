@@ -271,8 +271,29 @@ export const useStyles = makeStyles((theme) => ({
   /* ===== DRAWER BODY ===== */
   drawerBody: {
     flex: 1,
-    overflowY: "auto",
     minHeight: 0,
+    display: "flex",
+    flexDirection: "column",
+    padding: "12px",
+    overflow: "hidden",
+  },
+  // Bordered card that closes the guest table off on all sides, matching the
+  // main page's tableCard treatment. overflow:hidden clips the rounded corners;
+  // the inner scroll wrap is the actual scroll container so stickyHeader works.
+  drawerTableCard: {
+    flex: 1,
+    minHeight: 0,
+    display: "flex",
+    flexDirection: "column",
+    border: "1px solid #e2e8f0",
+    borderRadius: "10px",
+    overflow: "hidden",
+    backgroundColor: "#ffffff",
+  },
+  drawerTableScroll: {
+    flex: 1,
+    minHeight: 0,
+    overflow: "auto",
   },
   drawerGuestTable: {
     "& .MuiTableCell-root": {

@@ -25,11 +25,25 @@ gu.age,
 gu.birth_date,
 gu.flying_with_us,
 gu.number_of_payments,
-gu.user_id,gu.is_main_user,gu.user_type,gu.is_in_group,gu.arrival_date,gu.departure_date,gu.address
-FROM trip_tracker_${vacationId}.families fa join trip_tracker_${vacationId}.guest gu
-left join trip_tracker_${vacationId}.user_room_assignments urs
-on urs.user_id = gu.user_id
-on fa.family_id = gu.family_id where gu.family_id = ?`;
+gu.user_id,gu.is_main_user,gu.user_type,gu.is_in_group,gu.arrival_date,gu.departure_date,gu.address,
+f.passport_number,
+f.validity_passport,
+f.user_classification,
+f.outbound_flight_number,
+f.outbound_airline,
+f.outbound_flight_date,
+f.return_flight_number,
+f.return_airline,
+f.return_flight_date
+FROM trip_tracker_${vacationId}.families fa
+join trip_tracker_${vacationId}.guest gu on fa.family_id = gu.family_id
+left join trip_tracker_${vacationId}.user_room_assignments urs on urs.user_id = gu.user_id
+left join (
+  select fl.* from trip_tracker_${vacationId}.flights fl
+  join (select user_id, max(id) as max_id from trip_tracker_${vacationId}.flights group by user_id) m
+    on fl.id = m.max_id
+) f on f.user_id = gu.user_id
+where gu.family_id = ?`;
 };
 
 const getFamilyMember = (vacationId) => {
@@ -73,7 +87,20 @@ on fa.family_id = gu.family_id where gu.user_id= ?`;
 };
 
 const updateGuest = (userData, id, vacationId) => {
+  // Strip fields that getFamilyGuests JOINs in for display but that don't live on
+  // the guest table — writing them here would be an "Unknown column" error.
+  // room_id comes from user_room_assignments; the flight fields from the flights
+  // table (their own edit flow saves them via the flights endpoints).
   delete userData.room_id
+  delete userData.passport_number
+  delete userData.validity_passport
+  delete userData.user_classification
+  delete userData.outbound_flight_number
+  delete userData.outbound_airline
+  delete userData.outbound_flight_date
+  delete userData.return_flight_number
+  delete userData.return_airline
+  delete userData.return_flight_date
   return `UPDATE trip_tracker_${vacationId}.guest SET ${Object.keys(userData)
     .map((key) => `${key}=?`)
     .join(",")}

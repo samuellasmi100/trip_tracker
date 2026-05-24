@@ -36,11 +36,11 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import SearchIcon from "@material-ui/icons/Search";
 import GroupsIcon from "@mui/icons-material/Groups";
 import CloseIcon from "@mui/icons-material/Close";
-import { ReactComponent as EditIcon } from "../../../assets/icons/edit.svg";
-import DescriptionIcon from "@mui/icons-material/Description";
+import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { formatDateInput, isoToDisplay } from "../../../utils/helpers/formatDate";
+import { getGuestCompleteness } from "../../../utils/helpers/guestCompleteness";
 
 function FamilyListView(props) {
   const classes = useStyles();
@@ -368,6 +368,8 @@ function FamilyListView(props) {
               <CircularProgress size={28} style={{ color: "#0d9488" }} />
             </div>
           ) : family.family_id !== undefined && guests?.length > 0 ? (
+            <div className={classes.drawerTableCard}>
+            <div className={classes.drawerTableScroll}>
             <TableContainer>
               <Table size="small" stickyHeader className={classes.drawerGuestTable}>
                 <TableHead>
@@ -389,30 +391,49 @@ function FamilyListView(props) {
                       </TableCell>
                       <TableCell className={classes.dataTableCell}>{user.room_id}</TableCell>
                       <TableCell className={classes.dataTableCell}>
-                        <IconButton size="small" onClick={() => handleDialogTypeOpen(user.is_main_user ? "editParent" : "editChild", user)}>
-                          <EditIcon />
-                        </IconButton>
+                        <Tooltip title="ערוך">
+                          <IconButton size="small" onClick={() => handleDialogTypeOpen(user.is_main_user ? "editParent" : "editChild", user)}>
+                            <EditOutlinedIcon style={{ color: "#64748b", fontSize: "18px" }} />
+                          </IconButton>
+                        </Tooltip>
                       </TableCell>
                       <TableCell className={classes.dataTableCell}>
-                        <IconButton size="small" onClick={() => handleDialogTypeOpen(user.is_main_user ? "parentDetails" : "childDetails", user)}>
-                          <DescriptionIcon style={{ color: "#f59e0b", fontSize: "20px" }} />
-                        </IconButton>
+                        <Tooltip title="פרטים">
+                          <IconButton size="small" onClick={() => handleDialogTypeOpen(user.is_main_user ? "parentDetails" : "childDetails", user)}>
+                            <DescriptionOutlinedIcon style={{ color: "#64748b", fontSize: "18px" }} />
+                          </IconButton>
+                        </Tooltip>
                       </TableCell>
                       <TableCell className={classes.dataTableCell}>
-                        <IconButton size="small" onClick={() => handleDialogTypeOpen(user.is_main_user ? "parentDetails" : "childDetails", user)}>
-                          <CheckCircleIcon
-                            style={{
-                              color: user.is_main_user ? "#22c55e" : user.address !== null ? "#f59e0b" : "#ef4444",
-                              fontSize: "22px",
-                            }}
-                          />
-                        </IconButton>
+                        {(() => {
+                          const { status, missing } = getGuestCompleteness(user);
+                          const color = status === "complete" ? "#22c55e" : status === "partial" ? "#f59e0b" : "#ef4444";
+                          const tooltip = status === "complete" ? (
+                            "כל הפרטים הנדרשים מולאו"
+                          ) : (
+                            <div style={{ direction: "rtl", textAlign: "right" }}>
+                              <div style={{ fontWeight: 700, marginBottom: 4 }}>חסר למילוי:</div>
+                              {missing.map((m) => (
+                                <div key={m}>• {m}</div>
+                              ))}
+                            </div>
+                          );
+                          return (
+                            <Tooltip title={tooltip} arrow placement="top">
+                              <IconButton size="small" onClick={() => handleDialogTypeOpen(user.is_main_user ? "parentDetails" : "childDetails", user)}>
+                                <CheckCircleIcon style={{ color, fontSize: "22px" }} />
+                              </IconButton>
+                            </Tooltip>
+                          );
+                        })()}
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
             </TableContainer>
+            </div>
+            </div>
           ) : (
             <div className={classes.drawerEmpty}>
               <GroupsIcon style={{ fontSize: "40px", color: "#e2e8f0" }} />
