@@ -8,6 +8,7 @@ import * as leadsSlice from "../../../store/slices/leadsSlice";
 import * as staticSlice from "../../../store/slices/staticSlice";
 import * as snackBarSlice from "../../../store/slices/snackbarSlice";
 import ApiLeads from "../../../apis/leadsRequest";
+import { toLocalYMD, todayLocalYMD } from "../../../utils/helpers/formatDate";
 
 // ─── Excel import helpers ───────────────────────────────────────────────────
 
@@ -184,6 +185,16 @@ const parseLeadsWorkbook = async (file) => {
   return out;
 };
 
+// Edit form: the DB returns DECIMAL as e.g. "100000.00". Reduce price/discount
+// to a clean number string ("100000", "100000.5") when loading a lead to edit,
+// so the money inputs don't show a trailing .00; formatMoneyInput (in the form)
+// then adds the thousands separators. Live typing is unaffected.
+const cleanMoney = (v) => {
+  if (v === null || v === undefined || v === "") return v;
+  const n = Number(v);
+  return Number.isNaN(n) ? v : String(n);
+};
+
 // ─── Component ──────────────────────────────────────────────────────────────
 
 const Leads = () => {
@@ -212,11 +223,11 @@ const Leads = () => {
     getAllLeads();
   }, [vacationId]);
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayLocalYMD();
   const isDue = (lead) =>
     lead.followup_date &&
     Number(lead.is_active) === 1 &&
-    String(lead.followup_date).slice(0, 10) <= today;
+    toLocalYMD(lead.followup_date) <= today;
 
   const filteredLeads = leads?.filter((lead) => {
     const matchesSearch =
@@ -289,7 +300,11 @@ const Leads = () => {
   };
 
   const handleEditClick = (lead) => {
-    dispatch(staticSlice.updateForm(lead));
+    dispatch(staticSlice.updateForm({
+      ...lead,
+      price: cleanMoney(lead.price),
+      discount: cleanMoney(lead.discount),
+    }));
     dispatch(staticSlice.updateDetailsModalType("editLead"));
     dispatch(staticSlice.openDetailsModal());
   };

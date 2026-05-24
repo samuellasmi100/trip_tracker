@@ -17,12 +17,14 @@ import {
 import SearchIcon from "@material-ui/icons/Search";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import { useStyles, STATUS_CONFIG } from "./Leads.style";
+import { toLocalYMD } from "../../../utils/helpers/formatDate";
 
+// Local YYYY-MM-DD (no UTC day-shift) shown as DD/MM/YYYY.
 const formatDate = (v) => {
-  if (!v) return "—";
-  const s = String(v).slice(0, 10);
-  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  return m ? `${m[3]}/${m[2]}/${m[1]}` : s;
+  const s = toLocalYMD(v);
+  if (!s) return "—";
+  const [y, m, d] = s.split("-");
+  return `${d}/${m}/${y}`;
 };
 
 const formatTimestamp = (v) => {
@@ -33,6 +35,15 @@ const formatTimestamp = (v) => {
     day: "2-digit", month: "2-digit", year: "numeric",
     hour: "2-digit", minute: "2-digit",
   });
+};
+
+// Money for display: thousands separators, drop trailing .00 when whole (e.g.
+// "12000.00" -> "12,000"). Keeps the ₪ symbol; "—" when empty.
+const formatMoney = (v) => {
+  if (v === null || v === undefined || v === "") return "—";
+  const n = Number(v);
+  if (Number.isNaN(n)) return "—";
+  return `${n.toLocaleString("he-IL", { maximumFractionDigits: 2 })} ₪`;
 };
 
 const buildStatusOptions = (dueCount) => [
@@ -192,8 +203,8 @@ function LeadsView({
                     </TableCell>
                     <TableCell className={classes.dataTableCell}>{formatDate(lead.last_contact_date)}</TableCell>
                     <TableCell className={classes.dataTableCell} style={{ whiteSpace: "nowrap" }}>{formatTimestamp(lead.updated_at)}</TableCell>
-                    <TableCell className={classes.dataTableCell}>{lead.price != null ? `${lead.price} ₪` : "—"}</TableCell>
-                    <TableCell className={classes.dataTableCell}>{lead.discount != null ? `${lead.discount} ₪` : "—"}</TableCell>
+                    <TableCell className={classes.dataTableCell}>{formatMoney(lead.price)}</TableCell>
+                    <TableCell className={classes.dataTableCell}>{formatMoney(lead.discount)}</TableCell>
                     <TableCell className={classes.dataTableCell}>{lead.training || "—"}</TableCell>
                     <TableCell className={classes.dataTableCell}>{lead.composition || "—"}</TableCell>
                     <TableCell

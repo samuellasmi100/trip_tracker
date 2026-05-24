@@ -15,9 +15,11 @@ import CloseIcon from "@mui/icons-material/Close";
 import PhoneIcon from "@mui/icons-material/Phone";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutline";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useStyles } from "./LeadDetailPanel.style";
 import { STATUS_CONFIG } from "./Leads.style";
 import LeadNotesSection from "./LeadNotesSection/LeadNotesSection";
+import { toLocalYMD } from "../../../utils/helpers/formatDate";
 
 const STATUS_PILLS = [
   { value: "new_interest", label: "חדש" },
@@ -34,13 +36,17 @@ const SOURCE_LABEL = {
   other: "אחר",
 };
 
-const toDateInput = (v) => {
-  if (!v) return "";
-  if (v instanceof Date) return v.toISOString().slice(0, 10);
-  return String(v).slice(0, 10);
-};
+// Local YYYY-MM-DD so a UTC-serialized DATE doesn't display a day early.
+const toDateInput = toLocalYMD;
 
-const formatPriceDisplay = (v) => (v != null ? `${v} ₪` : "—");
+// Thousands separators, drop trailing .00 when whole (e.g. "12000.00" ->
+// "12,000"). Keeps the ₪ symbol; "—" when empty.
+const formatPriceDisplay = (v) => {
+  if (v === null || v === undefined || v === "") return "—";
+  const n = Number(v);
+  if (Number.isNaN(n)) return "—";
+  return `${n.toLocaleString("he-IL", { maximumFractionDigits: 2 })} ₪`;
+};
 
 const formatTimestamp = (v) => {
   if (!v) return null;
@@ -74,6 +80,7 @@ const LeadDetailPanelView = ({
   onClose,
   onStatusChange,
   onDateChange,
+  onMarkHandled,
   onOpenFullEdit,
   followupOverdue,
   confirmDeleteOpen,
@@ -154,6 +161,24 @@ const LeadDetailPanelView = ({
                     className={`${classes.dateField} ${followupOverdue ? classes.dateFieldOverdue : ""}`}
                     InputLabelProps={{ shrink: true }}
                   />
+                  {lead.followup_date && (
+                    <Button
+                      size="small"
+                      startIcon={<CheckCircleIcon style={{ fontSize: 16 }} />}
+                      onClick={onMarkHandled}
+                      sx={{
+                        mt: 0.75,
+                        textTransform: "none",
+                        fontSize: 12,
+                        fontWeight: 600,
+                        color: "#0d9488",
+                        "&:hover": { backgroundColor: "#f0fdfa" },
+                        "& .MuiButton-startIcon": { marginInlineStart: 0, marginInlineEnd: "4px" },
+                      }}
+                    >
+                      סמן כטופל
+                    </Button>
+                  )}
                 </div>
                 <div>
                   <Typography className={classes.dateLabel}>תאריך פתיחת ליד</Typography>

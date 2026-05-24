@@ -10,6 +10,7 @@ import {
   FormControl,
 } from "@mui/material";
 import { useStyles } from "./Lead.style";
+import { toLocalYMD } from "../../../utils/helpers/formatDate";
 
 const STATUS_OPTIONS = [
   { value: "new_interest",  label: "חדש" },
@@ -28,14 +29,27 @@ const SOURCE_OPTIONS = [
 
 // MySQL DATE returns either a Date object or 'YYYY-MM-DDTHH:mm:ss.000Z'.
 // The native <input type="date"> needs a plain 'YYYY-MM-DD' string.
-const toDateInput = (v) => {
-  if (!v) return "";
-  if (v instanceof Date) return v.toISOString().slice(0, 10);
-  return String(v).slice(0, 10);
+// Local YYYY-MM-DD so a UTC-serialized DATE doesn't display a day early.
+const toDateInput = toLocalYMD;
+
+// Group the integer part with thousands separators for readable money entry,
+// preserving any decimal the user is mid-typing (e.g. "1000." / "1000.5").
+const formatMoneyInput = (v) => {
+  if (v === null || v === undefined || v === "") return "";
+  const [intPart, ...rest] = String(v).split(".");
+  const grouped = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return rest.length ? `${grouped}.${rest.join("")}` : grouped;
 };
 
 function LeadView({ form, isEdit, handleInputChange, handleSelectChange, submit, handleCloseClicked }) {
   const classes = useStyles();
+
+  // Strip separators (and any non-numeric) before storing, so the DB gets a
+  // clean number while the field shows grouped digits.
+  const handleMoneyChange = (e) => {
+    const clean = e.target.value.replace(/[^\d.]/g, "");
+    handleInputChange({ target: { name: e.target.name, value: clean } });
+  };
 
   return (
     <Grid className={classes.wrapper}>
@@ -150,12 +164,12 @@ function LeadView({ form, isEdit, handleInputChange, handleSelectChange, submit,
           <InputLabel className={classes.inputLabelStyle}>מחיר שקיבל (₪)</InputLabel>
           <TextField
             name="price"
-            type="number"
+            type="text"
             className={classes.textField}
-            value={form.price ?? ""}
-            onChange={handleInputChange}
+            value={formatMoneyInput(form.price)}
+            onChange={handleMoneyChange}
             size="small"
-            inputProps={{ min: 0, step: "0.01" }}
+            inputProps={{ inputMode: "decimal" }}
             placeholder="0"
           />
         </div>
@@ -163,12 +177,12 @@ function LeadView({ form, isEdit, handleInputChange, handleSelectChange, submit,
           <InputLabel className={classes.inputLabelStyle}>כמות הנחה (₪)</InputLabel>
           <TextField
             name="discount"
-            type="number"
+            type="text"
             className={classes.textField}
-            value={form.discount ?? ""}
-            onChange={handleInputChange}
+            value={formatMoneyInput(form.discount)}
+            onChange={handleMoneyChange}
             size="small"
-            inputProps={{ min: 0, step: "0.01" }}
+            inputProps={{ inputMode: "decimal" }}
             placeholder="0"
           />
         </div>

@@ -4,6 +4,7 @@ import { makeStyles } from "@mui/styles";
 import { useDispatch } from "react-redux";
 import ApiLeads from "../../../../apis/leadsRequest";
 import * as leadsSlice from "../../../../store/slices/leadsSlice";
+import * as snackBarSlice from "../../../../store/slices/snackbarSlice";
 
 const useStyles = makeStyles(() => ({
   list: {
@@ -102,6 +103,7 @@ const LeadNotesSection = ({ lead, vacationId }) => {
       const response = await ApiLeads.addNote(token, vacationId, lead.lead_id, newNote.trim());
       setNotes(response.data);
       setNewNote("");
+      dispatch(snackBarSlice.setSnackBar({ type: "success", message: "ההערה נוספה בהצלחה", timeout: 3000 }));
       // Refresh the leads list so the main table reflects the new last_note +
       // the bumped updated_at (the panel re-derives from the slice).
       try {
@@ -112,6 +114,7 @@ const LeadNotesSection = ({ lead, vacationId }) => {
       }
     } catch (error) {
       console.log(error);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "הוספת ההערה נכשלה, נסה שוב", timeout: 4000 }));
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { toLocalYMD, todayLocalYMD } from "../../utils/helpers/formatDate";
 
 export const leadsSlice = createSlice({
   name: "leadsSlice",
@@ -12,12 +13,12 @@ export const leadsSlice = createSlice({
     updateLeadsList: (state, action) => {
       state.leads = action.payload;
       // Recompute due count from the list so the badge stays in sync after edits.
-      const today = new Date().toISOString().slice(0, 10);
+      // LOCAL dates so a follow-up set for tomorrow isn't counted as due today.
+      const today = todayLocalYMD();
       state.followupDueCount = (action.payload || []).filter((l) => {
         if (!l.followup_date) return false;
         if (Number(l.is_active) !== 1) return false;
-        const d = String(l.followup_date).slice(0, 10);
-        return d <= today;
+        return toLocalYMD(l.followup_date) <= today;
       }).length;
     },
     setSelectedLead: (state, action) => {
