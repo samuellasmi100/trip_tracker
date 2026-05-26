@@ -19,8 +19,12 @@ const HEADER_MAP = {
   "שם פרטי":          "first_name",
   "שם משפחה":         "last_name",
   "טלפון הפונה":       "phone",
+  // Email column header — the abbreviation marker is the Hebrew gershayim
+  // (U+05F4) in most Excel files but typists sometimes use a straight ASCII
+  // double quote (U+0022). normalizeHeaderText folds U+05F4 → " so either
+  // variant lands on this same key.
+  'דוא"ל הפונה':       "email",
   "סטטוס ראשי":        "status_he",
-  "תאריך קשר אחרון":   "last_contact_date",
   "פולאפ ל":           "followup_date",
   "מחיר שקיבל":        "price",
   "כמות הנחה":         "discount",
@@ -35,9 +39,13 @@ const HEADER_MAP = {
 // LRE/RLE/PDF/LRO/RLO (U+202A–U+202E), LRI/RLI/FSI/PDI (U+2066–U+2069),
 // and BOM (U+FEFF).
 const INVISIBLE_RE = /[​-‏‪-‮⁦-⁩﻿]/g;
+// Fold Hebrew gershayim (U+05F4) → " and geresh (U+05F3) → ' so abbreviations
+// like דוא״ל / דוא"ל both normalize to the same key in HEADER_MAP.
 const normalizeHeaderText = (s) =>
   String(s ?? "")
     .replace(INVISIBLE_RE, "")
+    .replace(/״/g, '"')
+    .replace(/׳/g, "'")
     .replace(/\s+/g, " ")
     .trim();
 
@@ -172,10 +180,10 @@ const parseLeadsWorkbook = async (file) => {
     out.push({
       full_name:         fullName,
       phone:             phone,
+      email:             cleanString(m.email),
       status:            STATUS_MAP[statusHe] || "new_interest",
       notes:             cleanString(m.notes),
       followup_date:     parseExcelDate(m.followup_date),
-      last_contact_date: parseExcelDate(m.last_contact_date),
       price:             parseNumber(m.price),
       discount:          parseNumber(m.discount),
       training:          cleanString(m.training),
@@ -208,6 +216,8 @@ const Leads = () => {
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedLeadId, setSelectedLeadId] = useState(null);
   const [importing, setImporting] = useState(false);
+  const [deleteAllOpen, setDeleteAllOpen] = useState(false);
+  const [deletingAll, setDeletingAll] = useState(false);
   const fileInputRef = useRef(null);
 
   const getAllLeads = async () => {
@@ -244,6 +254,16 @@ const Leads = () => {
   });
 
   const dueCount = leads?.filter(isDue).length || 0;
+
+  // Live status breakdown derived from the Redux list — updates for free on
+  // every create/update/delete/import. Order matches the visual strip.
+  const statusCounts = {
+    total:        leads?.length || 0,
+    new_interest: leads?.filter((l) => l.status === "new_interest").length || 0,
+    follow_up:    leads?.filter((l) => l.status === "follow_up").length || 0,
+    registered:   leads?.filter((l) => l.status === "registered").length || 0,
+    not_relevant: leads?.filter((l) => l.status === "not_relevant").length || 0,
+  };
 
   const handleImportClick = () => {
     if (!vacationId) {
@@ -329,6 +349,31 @@ const Leads = () => {
     dispatch(staticSlice.closeDetailsModal());
   };
 
+  // Bulk wipe — invoked from the styled confirm dialog. Server returns the
+  // (now empty) updated list, same pattern as the single-lead delete.
+  const handleDeleteAllConfirm = async () => {
+    setDeletingAll(true);
+    try {
+      const response = await ApiLeads.deleteAll(token, vacationId);
+      dispatch(leadsSlice.updateLeadsList(response.data));
+      dispatch(snackBarSlice.setSnackBar({
+        type: "success",
+        message: "כל הלידים נמחקו",
+        timeout: 4000,
+      }));
+      setDeleteAllOpen(false);
+    } catch (error) {
+      console.log(error);
+      dispatch(snackBarSlice.setSnackBar({
+        type: "error",
+        message: "מחיקת כל הלידים נכשלה, נסה שוב",
+        timeout: 4000,
+      }));
+    } finally {
+      setDeletingAll(false);
+    }
+  };
+
   return (
     <>
       <LeadsView
@@ -345,6 +390,12 @@ const Leads = () => {
         fileInputRef={fileInputRef}
         dueCount={dueCount}
         isDue={isDue}
+        statusCounts={statusCounts}
+        onRequestDeleteAll={() => setDeleteAllOpen(true)}
+        deleteAllOpen={deleteAllOpen}
+        deletingAll={deletingAll}
+        onCancelDeleteAll={() => setDeleteAllOpen(false)}
+        onConfirmDeleteAll={handleDeleteAllConfirm}
       />
 
       <EditOrUpdateDialog

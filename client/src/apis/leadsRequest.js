@@ -39,6 +39,11 @@ export default {
       headers: { Authorization: token },
     });
   },
+  deleteAll(token, vacationId) {
+    return Api.delete(`/${END_POINT.LEADS}/${vacationId}`, {
+      headers: { Authorization: token },
+    });
+  },
   getFollowupDueCount(token, vacationId) {
     return Api.get(`/${END_POINT.LEADS}/followup-due-count/${vacationId}`, {
       headers: { Authorization: token },

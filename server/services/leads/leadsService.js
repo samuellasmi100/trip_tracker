@@ -1,11 +1,11 @@
 const leadsDb = require('./leadsDb');
 
 // Columns the importer is allowed to diff/update from a row.
-// Excludes free-text-only fields the file doesn't carry (email, family_size,
+// Excludes free-text-only fields the file doesn't carry (family_size,
 // referred_by, assigned_to) so we never blank them on update.
 const IMPORTABLE_COLUMNS = [
-  'full_name', 'phone', 'status', 'notes',
-  'followup_date', 'last_contact_date',
+  'full_name', 'phone', 'email', 'status', 'notes',
+  'followup_date',
   'price', 'discount', 'training', 'composition',
 ];
 
@@ -20,6 +20,25 @@ const normalizePhone = (raw) => {
   return digits;
 };
 
+// Normalize full name for the phone-less fallback match: strip invisible
+// BiDi / zero-width characters Excel sneaks into RTL cells, collapse internal
+// whitespace, trim. Hebrew is caseless, no case-fold needed. Returns null on
+// an empty result so callers can short-circuit instead of bucketing on "".
+const INVISIBLE_NAME_RE = /[​-‏‪-‮⁦-⁩﻿]/g;
+const normalizeName = (raw) => {
+  if (raw == null) return null;
+  const s = String(raw).replace(INVISIBLE_NAME_RE, '').replace(/\s+/g, ' ').trim();
+  return s || null;
+};
+
+// Normalize email for the second-tier match: strip invisibles, trim, lowercase.
+// Returns null on empty so callers short-circuit instead of bucketing on "".
+const normalizeEmail = (raw) => {
+  if (raw == null) return null;
+  const s = String(raw).replace(INVISIBLE_NAME_RE, '').trim().toLowerCase();
+  return s || null;
+};
+
 // Compare a file value vs a DB value for a column. Empty-from-file means
 // "no information" — we do NOT treat that as a change.
 const valuesEqual = (col, fileVal, dbVal) => {
@@ -28,12 +47,16 @@ const valuesEqual = (col, fileVal, dbVal) => {
   if (col === 'price' || col === 'discount') {
     return Number(fileVal) === Number(dbVal);
   }
-  if (col === 'followup_date' || col === 'last_contact_date') {
+  if (col === 'followup_date') {
     // DB returns a Date object or 'YYYY-MM-DD' string depending on driver.
     const dbStr = dbVal instanceof Date
       ? dbVal.toISOString().slice(0, 10)
       : String(dbVal).slice(0, 10);
     return String(fileVal) === dbStr;
+  }
+  if (col === 'email') {
+    // Case-insensitive so a re-import with mixed-case email doesn't churn.
+    return String(fileVal).trim().toLowerCase() === String(dbVal).trim().toLowerCase();
   }
   return String(fileVal).trim() === String(dbVal).trim();
 };
@@ -73,6 +96,10 @@ const remove = async (vacationId, leadId) => {
   return await leadsDb.remove(vacationId, leadId);
 };
 
+const removeAll = async (vacationId) => {
+  return await leadsDb.removeAll(vacationId);
+};
+
 const addNote = async (vacationId, leadId, noteText, createdBy) => {
   await leadsDb.addNote(vacationId, leadId, noteText, createdBy);
   return await leadsDb.getNotesByLeadId(vacationId, leadId);
@@ -87,12 +114,43 @@ const importRows = async (vacationId, rows) => {
     throw new Error('rows must be an array');
   }
 
-  // Index existing leads by normalized phone for O(1) dedupe.
   const existing = await leadsDb.getAll(vacationId);
+
+  // Three-tier dedupe index, built from current DB state:
+  //   phoneIndex         — normalized phone → lead (one-to-one; phone is the
+  //                        strongest unique key when present).
+  //   emailIndex         — normalized email → leads (one-to-many; rarely
+  //                        shared, but family members occasionally do, so we
+  //                        keep a bucket and refuse to auto-merge when >1).
+  //                        Includes leads regardless of whether they have a
+  //                        phone — email is strong enough for cross-phone
+  //                        matching, gated by the phone-conflict check below.
+  //   noPhoneNameIndex   — normalized full name → leads with no phone
+  //                        (one-to-many; phone-less name collisions across
+  //                        different families are common — we refuse to merge
+  //                        across phone presence to avoid false positives).
   const phoneIndex = new Map();
+  const emailIndex = new Map();
+  const noPhoneNameIndex = new Map();
   for (const lead of existing) {
-    const norm = normalizePhone(lead.phone);
-    if (norm) phoneIndex.set(norm, lead);
+    const normPhone = normalizePhone(lead.phone);
+    if (normPhone) {
+      phoneIndex.set(normPhone, lead);
+    }
+    const normEmail = normalizeEmail(lead.email);
+    if (normEmail) {
+      const bucket = emailIndex.get(normEmail);
+      if (bucket) bucket.push(lead);
+      else emailIndex.set(normEmail, [lead]);
+    }
+    if (!normPhone) {
+      const normName = normalizeName(lead.full_name);
+      if (normName) {
+        const bucket = noPhoneNameIndex.get(normName);
+        if (bucket) bucket.push(lead);
+        else noPhoneNameIndex.set(normName, [lead]);
+      }
+    }
   }
 
   let created = 0;
@@ -108,22 +166,78 @@ const importRows = async (vacationId, rows) => {
       continue;
     }
 
-    const match = row.phone ? phoneIndex.get(row.phone) : null;
+    // Three-tier match:
+    //   1. phone           — strong unique key when present.
+    //   2. email           — strong; runs after phone fails (whether or not
+    //                        the row has a phone). Phone-conflict guard
+    //                        prevents auto-merging "same email, different
+    //                        phone" into the wrong record.
+    //   3. name (no-phone) — last resort for phone-less rows only.
+    // Each tier uses the same safety pattern: bucket-size-1 → match; bucket
+    // >1 → prefer an __fromImport entry so in-file duplicates dedupe but
+    // pre-existing ambiguous data isn't auto-merged.
+    const rowEmail = normalizeEmail(row.email);
+    const pickFromBucket = (bucket) => {
+      if (!bucket) return null;
+      if (bucket.length === 1) return bucket[0];
+      return bucket.find((l) => l.__fromImport) || null;
+    };
+    const phoneConflict = (lead) =>
+      !!row.phone && !!normalizePhone(lead.phone) && normalizePhone(lead.phone) !== row.phone;
+
+    let match = null;
+    if (row.phone) {
+      match = phoneIndex.get(row.phone) || null;
+    }
+    if (!match && rowEmail) {
+      const candidate = pickFromBucket(emailIndex.get(rowEmail));
+      if (candidate && !phoneConflict(candidate)) match = candidate;
+    }
+    if (!match && !row.phone) {
+      const nameKey = normalizeName(row.full_name);
+      const bucket = nameKey ? noPhoneNameIndex.get(nameKey) : null;
+      match = pickFromBucket(bucket);
+    }
 
     if (!match) {
-      await leadsDb.create(vacationId, {
+      const payload = {
         full_name: row.full_name || row.phone || 'ללא שם',
         phone: row.phone,
+        email: row.email || null,
         status: row.status || 'new_interest',
         source: 'phone',
         notes: row.notes || null,
         followup_date:     row.followup_date     || null,
-        last_contact_date: row.last_contact_date || null,
         price:    row.price    ?? null,
         discount: row.discount ?? null,
         training:    row.training    || null,
         composition: row.composition || null,
-      });
+      };
+      const result = await leadsDb.create(vacationId, payload);
+
+      // Register the new lead in every in-memory index whose key it carries,
+      // so subsequent rows in the same file dedupe against it instead of
+      // INSERTing a duplicate. __fromImport tags it as "created this run",
+      // which the email/name matchers use to allow merging even when the
+      // pre-existing bucket was ambiguous.
+      const synthetic = { ...payload, lead_id: result.insertId, __fromImport: true };
+      if (row.phone) {
+        phoneIndex.set(row.phone, synthetic);
+      }
+      const synthEmail = normalizeEmail(synthetic.email);
+      if (synthEmail) {
+        const bucket = emailIndex.get(synthEmail);
+        if (bucket) bucket.push(synthetic);
+        else emailIndex.set(synthEmail, [synthetic]);
+      }
+      if (!row.phone) {
+        const normName = normalizeName(synthetic.full_name);
+        if (normName) {
+          const bucket = noPhoneNameIndex.get(normName);
+          if (bucket) bucket.push(synthetic);
+          else noPhoneNameIndex.set(normName, [synthetic]);
+        }
+      }
       created += 1;
       continue;
     }
@@ -146,7 +260,13 @@ const importRows = async (vacationId, rows) => {
     if (diff.status === 'registered' || diff.status === 'not_relevant') {
       diff.is_active = 0;
     }
-    await leadsDb.update(vacationId, match.lead_id, diff);
+    // Re-imports must NOT bump updated_at — that timestamp is reserved for
+    // genuine in-app edits (manual edit, status pill, date change, note).
+    await leadsDb.update(vacationId, match.lead_id, diff, { bumpUpdatedAt: false });
+    // Reflect the write on the in-memory match so later rows in the same file
+    // diff against the up-to-date state (avoids re-applying the same change
+    // and avoids overwriting a row1 change with row2's stale comparison).
+    Object.assign(match, diff);
     updated += 1;
   }
 
@@ -160,6 +280,7 @@ module.exports = {
   create,
   update,
   remove,
+  removeAll,
   addNote,
   getFollowupDueCount,
   importRows,

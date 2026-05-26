@@ -108,4 +108,16 @@ router.delete('/:vacationId/:leadId', async (req, res, next) => {
   }
 });
 
+// DELETE /leads/:vacationId  — bulk wipe every lead (and every note) for one
+// vacation. Scoped to this vacation only; transactional in leadsDb.removeAll.
+router.delete('/:vacationId', async (req, res, next) => {
+  try {
+    await leadsService.removeAll(req.params.vacationId);
+    const all = await leadsService.getAll(req.params.vacationId);
+    res.send(all);
+  } catch (error) {
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle leads request", error));
+  }
+});
+
 module.exports = router;

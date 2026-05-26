@@ -1,7 +1,7 @@
 const ALLOWED_LEAD_COLUMNS = [
   'full_name', 'phone', 'email', 'family_size',
   'status', 'source', 'notes', 'referred_by', 'is_active', 'assigned_to',
-  'followup_date', 'last_contact_date', 'price', 'discount', 'training', 'composition',
+  'followup_date', 'price', 'discount', 'training', 'composition',
 ];
 
 const getAll = (vacationId) => `
@@ -38,28 +38,42 @@ const getNotesByLeadId = (vacationId) => `
   ORDER BY created_at ASC;
 `;
 
-// last_contact_date powers the "תאריך פתיחת ליד" display. COALESCE(?, CURDATE())
-// defaults it to today when none is supplied (manual / public create) while
-// leaving an imported Excel date untouched, so the field is never empty.
 const create = (vacationId) => `
   INSERT INTO trip_tracker_${vacationId}.leads
     (full_name, phone, email, family_size, status, source, notes, referred_by,
-     followup_date, last_contact_date, price, discount, training, composition)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, COALESCE(?, CURDATE()), ?, ?, ?, ?);
+     followup_date, price, discount, training, composition)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 `;
 
-const update = (data, vacationId) => {
+// bumpUpdatedAt=false suppresses the "updated_at = NOW()" clause — used by the
+// Excel importer so a re-import never overwrites a lead's "last genuinely edited"
+// timestamp. Every other caller (manual edits, status pills, date changes,
+// mark-handled) keeps the default true.
+const update = (data, vacationId, { bumpUpdatedAt = true } = {}) => {
   const safeKeys = Object.keys(data).filter(k => ALLOWED_LEAD_COLUMNS.includes(k));
   if (safeKeys.length === 0) throw new Error('No valid columns to update');
+  const setClause = safeKeys.map(k => `\`${k}\` = ?`).join(', ');
+  const updatedAtClause = bumpUpdatedAt ? ', updated_at = NOW()' : '';
   return `
     UPDATE trip_tracker_${vacationId}.leads
-    SET ${safeKeys.map(k => `\`${k}\` = ?`).join(', ')}, updated_at = NOW()
+    SET ${setClause}${updatedAtClause}
     WHERE lead_id = ?;
   `;
 };
 
 const remove = (vacationId) => `
   DELETE FROM trip_tracker_${vacationId}.leads WHERE lead_id = ?;
+`;
+
+// Bulk wipe for the "delete all leads" admin action. lead_notes has no FK
+// cascade to leads, so the caller must wipe notes first in the same
+// transaction to avoid orphan rows.
+const removeAll = (vacationId) => `
+  DELETE FROM trip_tracker_${vacationId}.leads;
+`;
+
+const removeAllNotes = (vacationId) => `
+  DELETE FROM trip_tracker_${vacationId}.lead_notes;
 `;
 
 const addNote = (vacationId) => `
@@ -108,6 +122,8 @@ module.exports = {
   create,
   update,
   remove,
+  removeAll,
+  removeAllNotes,
   addNote,
   getSummary,
   getFollowupDueCount,

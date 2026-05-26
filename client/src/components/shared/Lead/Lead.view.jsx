@@ -134,20 +134,6 @@ function LeadView({ form, isEdit, handleInputChange, handleSelectChange, submit,
             InputLabelProps={{ shrink: true }}
           />
         </div>
-        {isEdit && (
-          <div className={classes.fieldItem}>
-            <InputLabel className={classes.inputLabelStyle}>תאריך פתיחת ליד</InputLabel>
-            <TextField
-              name="last_contact_date"
-              type="date"
-              className={classes.textField}
-              value={toDateInput(form.last_contact_date)}
-              size="small"
-              InputLabelProps={{ shrink: true }}
-              InputProps={{ readOnly: true }}
-            />
-          </div>
-        )}
       </div>
 
       <div className={classes.fieldGroup}>

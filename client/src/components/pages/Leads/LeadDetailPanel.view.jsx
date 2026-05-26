@@ -180,18 +180,6 @@ const LeadDetailPanelView = ({
                     </Button>
                   )}
                 </div>
-                <div>
-                  <Typography className={classes.dateLabel}>תאריך פתיחת ליד</Typography>
-                  <TextField
-                    type="date"
-                    fullWidth
-                    size="small"
-                    value={toDateInput(lead.last_contact_date)}
-                    className={classes.dateField}
-                    InputLabelProps={{ shrink: true }}
-                    InputProps={{ readOnly: true }}
-                  />
-                </div>
               </div>
             </section>
 
