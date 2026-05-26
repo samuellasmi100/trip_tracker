@@ -10,9 +10,18 @@
  * HARD RULES — never violated by this engine:
  *   - Only CREATE TABLE (for missing tables) and ALTER TABLE ... ADD
  *     (for missing columns / indexes / foreign keys).
- *   - NEVER DROP TABLE, DROP COLUMN, DELETE, TRUNCATE, RENAME, or MODIFY.
+ *   - NEVER DROP TABLE, DROP COLUMN, DELETE, TRUNCATE, or RENAME.
  *   - Seed data is inserted ONLY into a table this run just created.
  *   - Anything in the DB but not in schema.js is REPORTED, never touched.
+ *
+ * NARROW EXCEPTION — TENANT_COLUMN_FIXUPS:
+ *   schema.js exports an explicit allowlist of column-definition fixups
+ *   (nullability / DEFAULT / ON UPDATE on existing timestamp columns) used to
+ *   converge legacy tenants whose columns predate the current definition.
+ *   The engine ONLY MODIFY's columns listed in that allowlist, and ONLY when
+ *   the live definition violates the entry's `require` shape — so a tenant
+ *   already at the target is a no-op. Metadata-only: no rename, no type
+ *   change, no data touched.
  *
  * Every action is logged. A per-run summary counter is returned.
  */
@@ -186,12 +195,54 @@ async function applySchema(conn, db, schemas, order, log, stats) {
 function newStats() {
   return {
     tablesCreated: 0, columnsAdded: 0, indexesAdded: 0,
-    fksAdded: 0, seeded: 0, extrasReported: 0,
+    fksAdded: 0, seeded: 0, columnsFixed: 0, extrasReported: 0,
   };
 }
 
+// ─── tenant column fixups (narrow, allowlisted MODIFY) ───────────────────────
+// Reads each entry from TENANT_COLUMN_FIXUPS and only issues ALTER MODIFY when
+// the live column violates the entry's `require` shape. Idempotent.
+async function applyTenantColumnFixups(conn, db, fixups, log, stats) {
+  for (const fixup of fixups || []) {
+    if (!await tableExists(conn, db, fixup.table)) continue;
+
+    const [rows] = await conn.query(
+      `SELECT IS_NULLABLE, COLUMN_DEFAULT, EXTRA
+         FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?`,
+      [db, fixup.table, fixup.column]
+    );
+    // Column missing → ADD-only path will create it on a later iteration of
+    // ensureTable (already converged to targetDefinition by definition). No
+    // fixup needed.
+    if (rows.length === 0) continue;
+
+    const c = rows[0];
+    const isNullable  = c.IS_NULLABLE === 'YES';
+    const hasDefault  = c.COLUMN_DEFAULT !== null && c.COLUMN_DEFAULT !== undefined;
+    const hasOnUpdate = /on update/i.test(c.EXTRA || '');
+
+    const req = fixup.require || {};
+    const violates =
+      (req.nullable   && !isNullable) ||
+      (req.noDefault  && hasDefault)  ||
+      (req.noOnUpdate && hasOnUpdate);
+
+    if (!violates) continue;
+
+    await conn.query(
+      `ALTER TABLE \`${db}\`.\`${fixup.table}\` ` +
+      `MODIFY \`${fixup.column}\` ${fixup.targetDefinition}`
+    );
+    log(`    ~ MODIFIED ${fixup.table}.${fixup.column} → ${fixup.targetDefinition}`);
+    if (fixup.reason) log(`      reason: ${fixup.reason}`);
+    stats.columnsFixed++;
+  }
+}
+
 const { SHARED_TABLE_SCHEMAS, SHARED_TABLE_ORDER,
-        TENANT_TABLE_SCHEMAS, TENANT_TABLE_ORDER } = require('./schema');
+        TENANT_TABLE_SCHEMAS, TENANT_TABLE_ORDER,
+        TENANT_COLUMN_FIXUPS } = require('./schema');
 
 /** Sync the shared `trip_tracker` database. */
 async function migrateSharedDb(conn, log = console.log, stats = newStats()) {
@@ -204,6 +255,9 @@ async function migrateSharedDb(conn, log = console.log, stats = newStats()) {
 async function migrateTenantDb(conn, db, log = console.log, stats = newStats()) {
   log(`\n  Tenant DB: ${db}`);
   await applySchema(conn, db, TENANT_TABLE_SCHEMAS, TENANT_TABLE_ORDER, log, stats);
+  // After ADD-only sync, run any narrow column fixups (e.g. converge
+  // leads.updated_at on legacy tenants). No-op on already-converged tenants.
+  await applyTenantColumnFixups(conn, db, TENANT_COLUMN_FIXUPS, log, stats);
   return stats;
 }
 

@@ -19,6 +19,10 @@
  *   - ADD and ALTER ADD only. Never DROP TABLE / DROP COLUMN / DELETE / TRUNCATE / RENAME.
  *   - Columns/tables found in the DB but NOT here are REPORTED, never removed.
  *   - Seed data is inserted ONLY when a table is freshly created (never overwrites).
+ *   - Narrow, ALLOWLISTED exception: TENANT_COLUMN_FIXUPS (defined at the bottom
+ *     of this file) lets specific column definitions be MODIFY'd to converge
+ *     legacy tenants. Metadata-only (nullability / DEFAULT / ON UPDATE on
+ *     existing columns) — no data, no rename, no type change. Idempotent.
  */
 
 const ENGINE_AI   = 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci';
@@ -449,9 +453,10 @@ const TENANT_TABLE_SCHEMAS = {
       // updated_at = "last genuinely edited". Intentionally NULLable with NO
       // default and NO `ON UPDATE` so a never-edited lead stays empty; the app
       // sets it explicitly (leadsQuery.update / bumpUpdatedAt) only on a real
-      // edit. NOTE: engine.js is ADD-only and never MODIFYs existing columns,
-      // so this affects new tenant DBs only — existing DBs are converged by the
-      // one-time scripts/fix_leads_updated_at.js.
+      // edit. Legacy tenants whose column still has the old DEFAULT
+      // CURRENT_TIMESTAMP / ON UPDATE CURRENT_TIMESTAMP definition are
+      // converged on `run_migration.js` via TENANT_COLUMN_FIXUPS below
+      // (metadata-only ALTER MODIFY, idempotent).
       { name: 'updated_at',        definition: 'timestamp NULL DEFAULT NULL' },
     ],
   },
@@ -618,9 +623,41 @@ const TENANT_TABLE_ORDER = [
   'files',
 ];
 
+// ─── TENANT COLUMN FIXUPS ─────────────────────────────────────────────────────
+// Narrow allowlist of MODIFY operations that converge legacy tenants whose
+// columns still have an older definition the application no longer wants.
+// Engine policy: only the entries listed here may MODIFY a column, and only
+// when the live column actually violates the `require` shape (so it's
+// idempotent — a converged tenant is a no-op).
+//
+// What each entry means:
+//   table, column     — which column to inspect (per-tenant DB).
+//   require           — current-state assertions; if any fails, run the MODIFY.
+//     nullable:true     → IS_NULLABLE must be 'YES'
+//     noDefault:true    → COLUMN_DEFAULT must be NULL
+//     noOnUpdate:true   → EXTRA must not contain "on update"
+//   targetDefinition  — the exact column definition to apply via ALTER MODIFY.
+//   reason            — human-readable note (logged at run time).
+//
+// Add a new entry ONLY for a column whose final state cannot be reached by
+// ADD-only migrations. Keep the scope narrow — this is metadata-only, never
+// touches row data and never renames/drops/retypes.
+const TENANT_COLUMN_FIXUPS = [
+  {
+    table: 'leads',
+    column: 'updated_at',
+    require: { nullable: true, noDefault: true, noOnUpdate: true },
+    targetDefinition: 'timestamp NULL DEFAULT NULL',
+    reason: 'updated_at must reflect only genuine in-app edits — drop the legacy '
+          + 'DEFAULT CURRENT_TIMESTAMP / ON UPDATE CURRENT_TIMESTAMP so the importer '
+          + '(which already opts out via bumpUpdatedAt:false) cannot auto-bump it.',
+  },
+];
+
 module.exports = {
   SHARED_TABLE_SCHEMAS,
   SHARED_TABLE_ORDER,
   TENANT_TABLE_SCHEMAS,
   TENANT_TABLE_ORDER,
+  TENANT_COLUMN_FIXUPS,
 };

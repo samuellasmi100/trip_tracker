@@ -14,8 +14,10 @@
  *   2. Discovers every `trip_tracker_<id>` schema and syncs each one.
  *
  * HARD RULES (enforced in engine.js): ADD / ALTER ADD only. Never DROP TABLE,
- * DROP COLUMN, DELETE, TRUNCATE, RENAME or MODIFY. Extra DB objects not in
- * schema.js are reported, never removed.
+ * DROP COLUMN, DELETE, TRUNCATE, or RENAME. Narrow allowlisted exception:
+ * TENANT_COLUMN_FIXUPS (in schema.js) lets specific column definitions be
+ * MODIFY'd to converge legacy tenants — metadata-only, idempotent. Extra DB
+ * objects not in schema.js are reported, never removed.
  *
  * To change the schema: edit migrations/schema.js, then run this script.
  */
@@ -64,10 +66,11 @@ async function run() {
       `  indexes added:    ${stats.indexesAdded}\n` +
       `  foreign keys add: ${stats.fksAdded}\n` +
       `  tables seeded:    ${stats.seeded}\n` +
+      `  columns fixed:    ${stats.columnsFixed} (narrow MODIFY for legacy tenants)\n` +
       `  extras reported:  ${stats.extrasReported} (left as-is, never dropped)`
     );
     if (stats.tablesCreated + stats.columnsAdded + stats.indexesAdded +
-        stats.fksAdded + stats.seeded === 0) {
+        stats.fksAdded + stats.seeded + stats.columnsFixed === 0) {
       console.log('  Everything was already up-to-date.');
     }
   } catch (err) {
