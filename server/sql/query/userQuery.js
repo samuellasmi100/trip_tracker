@@ -159,9 +159,19 @@ const deleteFamily = (vacationId) => {
   return `DELETE FROM trip_tracker_${vacationId}.families WHERE family_id = ?;`;
 };
 
+// Demotes every other guest in the family — used inside the same transaction
+// as an addGuest INSERT or an updateGuest UPDATE that's setting is_main_user=1.
+// The user_id <> ? exclusion is a no-op for the add case (the new row doesn't
+// exist yet) and protects the row being updated in the update case.
+const clearOtherMainUsers = (vacationId) =>
+  `UPDATE trip_tracker_${vacationId}.guest
+   SET is_main_user = 0
+   WHERE family_id = ? AND user_id <> ?`;
+
 module.exports = {
   updateGuest,
   addGuest,
+  clearOtherMainUsers,
   getFamilyGuests,
   getFamilyMember,
   getParentFamilyMember,

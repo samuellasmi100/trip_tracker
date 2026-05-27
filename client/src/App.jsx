@@ -17,6 +17,7 @@ import PublicLeadForm from "./components/Public/PublicLeadForm/PublicLeadForm";
 import PublicDocumentUpload from "./components/Public/PublicDocumentUpload/PublicDocumentUpload";
 import PublicSignaturePage from "./components/Public/PublicSignaturePage/PublicSignaturePage";
 import PublicBookingForm from "./components/Public/PublicBookingForm/PublicBookingForm";
+import PublicRegistration from "./components/Public/PublicRegistration/PublicRegistration";
 import Dashboard from "./components/pages/Dashboard/Dashboard";
 import RequireVacation from "./components/layout/RequireVacation/RequireVacation";
 import * as notificationsSlice from "./store/slices/notificationsSlice";
@@ -28,55 +29,67 @@ function App() {
   const token = useSelector((state) => state.authSlice.token);
   const isAuthenticated = token !== null && token !== undefined && token !== "";
 
-  // Reconnect socket on page refresh (token from sessionStorage via Redux initial state)
+  // Reconnect socket on page refresh (token from sessionStorage via Redux initial state).
+  //
+  // Handlers are captured as named consts so the cleanup can call
+  // `socket.off(event, handler)` with a specific reference, instead of
+  // `socket.off(event)` which removes EVERY listener for that event —
+  // that's a footgun any time another component (e.g. FamilyList)
+  // subscribes to the same event.
   useEffect(() => {
-    if (token) {
-      const socket = connectSocket(token);
-
-      // Listen for real-time new_lead events from any vacation
-      socket.on("new_lead", (notification) => {
-        dispatch(notificationsSlice.addNotification(notification));
-        dispatch(
-          snackBarSlice.setSnackBar({
-            type: "info",
-            message: `ליד חדש: ${notification.message || notification.title}`,
-            timeout: 5000,
-          })
-        );
-      });
-
-      // Listen for real-time new_signature events from any vacation
-      socket.on("new_signature", (notification) => {
-        dispatch(notificationsSlice.addNotification(notification));
-        dispatch(
-          snackBarSlice.setSnackBar({
-            type: "success",
-            message: `חתימה חדשה: ${notification.message || notification.title}`,
-            timeout: 5000,
-          })
-        );
-      });
-
-      // Listen for real-time new_booking events from any vacation
-      socket.on("new_booking", (notification) => {
-        dispatch(notificationsSlice.addNotification(notification));
-        dispatch(
-          snackBarSlice.setSnackBar({
-            type: "info",
-            message: `טופס הזמנה חדש: ${notification.message || notification.title}`,
-            timeout: 5000,
-          })
-        );
-      });
-    } else {
+    if (!token) {
       disconnectSocket();
       dispatch(notificationsSlice.clearNotifications());
+      return;
     }
 
+    const socket = connectSocket(token);
+
+    const onNewLead = (notification) => {
+      dispatch(notificationsSlice.addNotification(notification));
+      dispatch(snackBarSlice.setSnackBar({
+        type: "info",
+        message: `ליד חדש: ${notification.message || notification.title}`,
+        timeout: 5000,
+      }));
+    };
+    const onNewSignature = (notification) => {
+      dispatch(notificationsSlice.addNotification(notification));
+      dispatch(snackBarSlice.setSnackBar({
+        type: "success",
+        message: `חתימה חדשה: ${notification.message || notification.title}`,
+        timeout: 5000,
+      }));
+    };
+    const onNewBooking = (notification) => {
+      dispatch(notificationsSlice.addNotification(notification));
+      dispatch(snackBarSlice.setSnackBar({
+        type: "info",
+        message: `טופס הזמנה חדש: ${notification.message || notification.title}`,
+        timeout: 5000,
+      }));
+    };
+    const onNewRegistration = (notification) => {
+      dispatch(notificationsSlice.addNotification(notification));
+      dispatch(snackBarSlice.setSnackBar({
+        type: "success",
+        message: `הרשמה חדשה נחתמה: ${notification.message || notification.title}`,
+        timeout: 5000,
+      }));
+    };
+
+    socket.on("new_lead",         onNewLead);
+    socket.on("new_signature",    onNewSignature);
+    socket.on("new_booking",      onNewBooking);
+    socket.on("new_registration", onNewRegistration);
+
     return () => {
-      getSocket()?.off("new_lead");
-      getSocket()?.off("new_signature");
-      getSocket()?.off("new_booking");
+      const s = getSocket();
+      if (!s) return;
+      s.off("new_lead",         onNewLead);
+      s.off("new_signature",    onNewSignature);
+      s.off("new_booking",      onNewBooking);
+      s.off("new_registration", onNewRegistration);
     };
   }, [token]);
 
@@ -93,6 +106,7 @@ function App() {
           <Route path="/public/documents/:vacationId/:docToken" element={<PublicDocumentUpload />} />
           <Route path="/public/sign/:vacationId/:docToken" element={<PublicSignaturePage />} />
           <Route path="/public/booking/:vacationId/:docToken" element={<PublicBookingForm />} />
+          <Route path="/public/register/:vacationId/:token" element={<PublicRegistration />} />
 
           {isAuthenticated ? (
             <>

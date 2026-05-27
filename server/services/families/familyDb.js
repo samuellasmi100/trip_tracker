@@ -13,6 +13,8 @@ const addFamily = async (data,vacationId) => {
       data.total_amount || null,
       data.start_date || null,
       data.end_date || null,
+      data.payment_method || null,
+      data.num_payments ? Number(data.num_payments) : null,
     ]
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
@@ -74,6 +76,8 @@ const updateFamily = async (data, vacationId) => {
       data.total_amount,
       data.start_date || null,
       data.end_date || null,
+      data.payment_method || null,
+      data.num_payments ? Number(data.num_payments) : null,
       data.family_id,
     ])
   } catch (error) {

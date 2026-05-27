@@ -37,6 +37,7 @@ const USER_FIELDS = [
   "birth_date", "identity_id", "email", "address", "phone_a", "phone_b",
   "flights", "flying_with_us", "is_in_group", "flights_direction",
   "week_chosen", "arrival_date", "departure_date",
+  "is_main_user",
 ];
 const FLIGHT_FIELDS = [
   "passport_number", "validity_passport", "user_classification",
@@ -133,6 +134,16 @@ const GuestEditor = ({ onClose }) => {
       });
     }
     if (familyDetails?.family_id) dispatch(userSlice.updateFormField({ field: "family_id", value: familyDetails.family_id }));
+
+    // Default for the new "ראש משפחה" toggle. addParent is the first guest of
+    // a family (the drawer "+" button auto-picks this when no parent exists),
+    // so default ON. addChild → default OFF. The coordinator can flip either
+    // way in PersonalDetailsStep; the server demotes any other main atomically.
+    dispatch(userSlice.updateFormField({
+      field: "is_main_user",
+      value: dialogType === "addParent" ? 1 : 0,
+    }));
+
     setPrefillDone(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dialogType]);
@@ -195,6 +206,10 @@ const GuestEditor = ({ onClose }) => {
       dispatch(userSlice.updateFormField({ field: name, value }));
     } else if (name === "flights" || name === "flying_with_us" || name === "is_in_group") {
       dispatch(userSlice.updateFormField({ field: name, value: checked }));
+    } else if (name === "is_main_user") {
+      // Normalize to 1/0 so the form value matches what the server returns on
+      // read (tinyint), avoiding spurious dirty-diff flags after reload.
+      dispatch(userSlice.updateFormField({ field: name, value: checked ? 1 : 0 }));
     } else if (name === "week_chosen") {
       const found = vacationsDates?.find((k) => k.name === value);
       if (found && found.name !== "חריגים") {

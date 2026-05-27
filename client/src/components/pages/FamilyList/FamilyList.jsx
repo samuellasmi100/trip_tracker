@@ -2,12 +2,15 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import MainDialog from "../../shared/MainDialog/MainDialog";
 import PaymentDialog from "../../shared/Payments/Payments";
+import SendRegistrationDialog from "./SendRegistrationDialog/SendRegistrationDialog";
 import { useDispatch, useSelector } from "react-redux";
 import ApiUser from "../../../apis/userRequest"
 import ApiVacations from "../../../apis/vacationRequest"
 import ApiDocuments from "../../../apis/documentsRequest"
 import ApiSignatures from "../../../apis/signaturesRequest"
 import ApiBookings from "../../../apis/bookingsRequest"
+import ApiRegistrations from "../../../apis/registrationsRequest"
+import { connectSocket, getSocket } from "../../../utils/socketService";
 import FamilyListView from "./FamilyList.view";
 import * as userSlice from "../../../store/slices/userSlice";
 import * as dialogSlice from "../../../store/slices/dialogSlice";
@@ -45,6 +48,9 @@ const FamilyList = () => {
   const [sigCopiedId, setSigCopiedId] = useState(null);
   const [bookingStatusMap, setBookingStatusMap] = useState({});
   const [bookingCopiedId, setBookingCopiedId] = useState(null);
+  // Dialog state for the new send-registration-link modal. Opens on a
+  // successful POST /registrations/:vacationId; closed by the user.
+  const [registrationDialog, setRegistrationDialog] = useState({ open: false, data: null });
   const [selectedBooking, setSelectedBooking] = useState({ open: false, familyId: null, data: null });
 
   // Drawer state
@@ -83,6 +89,25 @@ const FamilyList = () => {
     }
   }, [vacationId, token]);
 
+  // Re-fetch the guests array for a given family and push it into Redux.
+  // Single source of truth for "load this family's guests" — used by:
+  //   - handleNameClick (drawer open)
+  //   - getChosenFamily (deep-link landing)
+  //   - closeModal (defensive: every editor close, so the drawer's toggle
+  //     visuals always reflect fresh DB state — covers the race where
+  //     GuestEditor's internal post-save refreshGuests fails silently)
+  // Quiet by design: no spinner, no toast. Callers wrap with their own
+  // loading UI when they want one (the drawer-open path does).
+  const reloadFamilyGuests = useCallback(async (familyId) => {
+    if (!familyId || !vacationId) return;
+    try {
+      const response = await ApiUser.getUserFamilyList(token, familyId, vacationId);
+      dispatch(userSlice.updateGuest(response.data?.length > 0 ? response.data : []));
+    } catch (error) {
+      console.log(error);
+    }
+  }, [token, vacationId, dispatch]);
+
   // Background refresh after a dialog closes: swap fresh page-1 rows in place
   // WITHOUT blanking the table or flipping the loading spinner, so the main page
   // doesn't flash/jump. React reconciles by key, so unchanged rows stay put and
@@ -100,6 +125,31 @@ const FamilyList = () => {
       console.log(error);
     }
   }, [vacationId, token, dispatch]);
+
+  // ── Real-time refresh on new_registration ────────────────────────────────
+  // When a family submits the public registration form, the server emits
+  // new_registration to the 'coordinators' room. Refresh the visible row so
+  // the "ממתין" badge flips to "נחתם" without a manual reload.
+  //
+  // We call `connectSocket(token)` here (not `getSocket()`) because of the
+  // React effect order: child effects run BEFORE parent effects on initial
+  // mount, so when this useEffect runs, App.jsx hasn't called connectSocket
+  // yet and `getSocket()` would return null. `connectSocket` is idempotent
+  // (returns the existing connected socket, or creates one), so it's safe to
+  // call from both places — App.jsx and here will end up with the same
+  // socket singleton, both subscribing handlers to it.
+  useEffect(() => {
+    if (!vacationId || !token) return;
+    const socket = connectSocket(token);
+    if (!socket) return;
+    const handler = (notification) => {
+      if (String(notification?.vacation_id) === String(vacationId)) {
+        silentRefresh();
+      }
+    };
+    socket.on("new_registration", handler);
+    return () => socket.off("new_registration", handler);
+  }, [vacationId, token, silentRefresh]);
 
   // ── Infinite scroll — attach once, use refs for live values ──────────────
   useEffect(() => {
@@ -140,6 +190,11 @@ const FamilyList = () => {
     dispatch(dialogSlice.closeModal())
     clearModalForms()
     dispatch(roomsSlice.resetChildRoom())
+    // Defensive re-fetch of the drawer's guests so any DB change made via
+    // the just-closed editor (incl. our atomic clearOtherMainUsers) is
+    // reflected in Redux before the user can trigger another action
+    // (e.g. "send registration link") that relies on this state.
+    if (chosenFamily?.family_id) reloadFamilyGuests(chosenFamily.family_id);
   };
 
   const clearModalForms = () => {
@@ -189,25 +244,14 @@ const FamilyList = () => {
     dispatch(userSlice.updateGuest([]))  // clear stale guests immediately
     setDrawerOpen(true);                 // open drawer instantly, don't wait for API
     setGuestsLoading(true);
-    try {
-      const response = await ApiUser.getUserFamilyList(token, user.family_id, vacationId)
-      dispatch(userSlice.updateGuest(response.data.length > 0 ? response.data : []))
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setGuestsLoading(false)
-    }
+    await reloadFamilyGuests(user.family_id);
+    setGuestsLoading(false);
   }
 
   const getChosenFamily = async () => {
     if (!chosenFamily?.family_id) return;
     dispatch(userSlice.updateFamily(chosenFamily))
-    try {
-      const response = await ApiUser.getUserFamilyList(token, chosenFamily.family_id, vacationId)
-      dispatch(userSlice.updateGuest(response.data.length > 0 ? response.data : []))
-    } catch (error) {
-      console.log(error)
-    }
+    await reloadFamilyGuests(chosenFamily.family_id);
   }
 
   // Edit family dialog state
@@ -225,6 +269,8 @@ const FamilyList = () => {
       number_of_guests: user.number_of_guests || "",
       number_of_rooms: user.number_of_rooms || "",
       total_amount: user.total_amount || "",
+      payment_method: user.payment_method || "",
+      num_payments: user.num_payments != null ? String(user.num_payments) : "",
       start_date: isoToDisplay(user.start_date) || "",
       end_date: isoToDisplay(user.end_date) || "",
       week_chosen: matchedWeek?.name || "",
@@ -341,6 +387,8 @@ const FamilyList = () => {
         number_of_guests: addFamilyData.number_of_guests || "",
         number_of_rooms: addFamilyData.number_of_rooms || "",
         total_amount: addFamilyData.total_amount || "",
+        payment_method: addFamilyData.payment_method || "",
+        num_payments: addFamilyData.num_payments || "",
         week_chosen: addFamilyData.week_chosen || "",
         arrival_date: addFamilyData.start_date || "",
         departure_date: addFamilyData.end_date || "",
@@ -425,6 +473,59 @@ const FamilyList = () => {
       dispatch(snackBarSlice.setSnackBar({ type: "error", message: "שליחת קישור החתימה נכשלה, נסה שוב", timeout: 4000 }));
     }
   }, [token, vacationId, sigStatusMap, dispatch]);
+
+  // Registration link — calls authenticated POST /registrations/:vacationId
+  // and opens the SendRegistrationDialog so the coordinator can pick a channel
+  // (WhatsApp / Email / Copy). Idempotent on the server: a second click within
+  // 1 day returns reused:true with the same token (we just relabel the toast).
+  // Errors stay as toasts and never open the dialog.
+  const handleSendRegistrationLink = useCallback(async (e, user) => {
+    e.stopPropagation();
+    if (!vacationId) return;
+    try {
+      const res = await ApiRegistrations.create(token, vacationId, user.family_id);
+      const data = res.data || {};
+      if (!data.path) {
+        dispatch(snackBarSlice.setSnackBar({ type: "error", message: "יצירת הקישור נכשלה", timeout: 4000 }));
+        return;
+      }
+      const url = `${window.location.origin}${data.path}`;
+      setRegistrationDialog({
+        open: true,
+        data: {
+          link:          url,
+          expiresAt:     data.expiresAt,
+          headFirstName: data.headFirstName,
+          headPhone:     data.headPhone,
+          headEmail:     data.headEmail,
+          vacationName:  data.vacationName,
+        },
+      });
+      // Quiet "link is ready" toast so the user knows the link was created
+      // (the dialog opening is also a visual signal, but the reused-flag
+      // distinction is worth surfacing on the resend path).
+      dispatch(snackBarSlice.setSnackBar({
+        type: "success",
+        message: data.reused ? "קישור קיים בתוקף — בחר ערוץ שליחה" : "קישור הרשמה נוצר — בחר ערוץ שליחה",
+        timeout: 3000,
+      }));
+    } catch (err) {
+      console.error(err);
+      const code = err?.response?.data?.code;
+      const serverMsg = err?.response?.data?.message;
+      let message = serverMsg || "יצירת הקישור נכשלה, נסה שוב";
+      if (code === "NO_MAIN_GUEST") {
+        message = serverMsg || 'הוסף נופש וסמן אותו כ"משתמש ראשי" לפני יצירת קישור הרשמה';
+      } else if (code === "HEAD_GUEST_NO_PHONE") {
+        message = serverMsg || "ראש המשפחה ללא טלפון — הוסף טלפון לפני יצירת קישור";
+      } else if (code === "NO_FAMILY") {
+        message = serverMsg || "המשפחה לא נמצאה";
+      } else if (code === "ALREADY_SIGNED") {
+        message = serverMsg || "המשפחה כבר חתמה על הטופס — לא ניתן לשלוח קישור חדש";
+      }
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message, timeout: 5000 }));
+    }
+  }, [token, vacationId, dispatch]);
 
   const handleCopyDocLink = useCallback(async (e, familyId) => {
     e.stopPropagation();
@@ -567,6 +668,7 @@ const FamilyList = () => {
         sigStatusMap={sigStatusMap}
         sigCopiedId={sigCopiedId}
         handleSendSignatureLink={handleSendSignatureLink}
+        handleSendRegistrationLink={handleSendRegistrationLink}
         bookingStatusMap={bookingStatusMap}
         bookingCopiedId={bookingCopiedId}
         handleCopyBookingLink={handleCopyBookingLink}
@@ -587,6 +689,16 @@ const FamilyList = () => {
         }}
         family={paymentDialogFamily}
         vacationId={vacationId}
+      />
+      <SendRegistrationDialog
+        open={registrationDialog.open}
+        onClose={() => setRegistrationDialog({ open: false, data: null })}
+        link={registrationDialog.data?.link}
+        expiresAt={registrationDialog.data?.expiresAt}
+        headFirstName={registrationDialog.data?.headFirstName}
+        headPhone={registrationDialog.data?.headPhone}
+        headEmail={registrationDialog.data?.headEmail}
+        vacationName={registrationDialog.data?.vacationName}
       />
     </>
   )

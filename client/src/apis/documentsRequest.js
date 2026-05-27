@@ -48,4 +48,14 @@ export default {
       headers: { Authorization: token },
     });
   },
+  // Returns { url, fileName } for R2-backed docs (signed_registration etc.).
+  // Pass { share: true } to bump the presigned-URL expiry from the default
+  // 15 minutes to 7 days (the AWS S3 / R2 max), for the share-via-WhatsApp/
+  // email flow where the recipient may not click immediately.
+  getDownloadUrl(token, vacationId, docId, { share = false } = {}) {
+    const qs = share ? '?share=true' : '';
+    return Api.get(`/${END_POINT.DOCUMENTS}/${vacationId}/${docId}/download-url${qs}`, {
+      headers: { Authorization: token },
+    });
+  },
 };

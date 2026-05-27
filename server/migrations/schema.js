@@ -163,6 +163,8 @@ const TENANT_TABLE_SCHEMAS = {
       { name: 'special_requests',       definition: 'text' },
       { name: 'doc_token',              definition: 'varchar(36) DEFAULT NULL' },
       { name: 'signature_sent_at',      definition: 'timestamp NULL DEFAULT NULL' },
+      { name: 'payment_method',         definition: 'varchar(45) DEFAULT NULL' },
+      { name: 'num_payments',           definition: 'int DEFAULT NULL' },
     ],
   },
 
@@ -484,7 +486,7 @@ const TENANT_TABLE_SCHEMAS = {
       { name: 'sort_order',  definition: "int NOT NULL DEFAULT '0'" },
       { name: 'created_at',  definition: 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP' },
     ],
-    seed: `INSERT INTO {{T}} (type_key, label, is_required, sort_order) VALUES ('id_passport', 'צילום תעודת זהות / דרכון', 1, 1), ('flight_ticket', 'כרטיסי טיסה', 1, 2)`,
+    seed: `INSERT INTO {{T}} (type_key, label, is_required, sort_order) VALUES ('id_passport', 'צילום תעודת זהות / דרכון', 1, 1), ('flight_ticket', 'כרטיסי טיסה', 1, 2), ('signed_registration', 'טופס הרשמה חתום', 1, 3)`,
   },
 
   family_documents: {
@@ -511,6 +513,35 @@ const TENANT_TABLE_SCHEMAS = {
       { name: 'signature_image_path', definition: 'varchar(500) NOT NULL' },
       { name: 'signed_at',            definition: 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP' },
       { name: 'ip_address',           definition: 'varchar(45) DEFAULT NULL' },
+    ],
+  },
+
+  registration_requests: {
+    options: ENGINE_AI,
+    primaryKey: '(`id`)',
+    indexes: [
+      { name: 'uq_registration_token', columns: ['token'],      unique: true },
+      { name: 'idx_reg_family_id',     columns: ['family_id'] },
+      { name: 'idx_reg_status',        columns: ['status'] },
+      { name: 'idx_reg_expires_at',    columns: ['expires_at'] },
+    ],
+    columns: [
+      { name: 'id',                 definition: 'int NOT NULL AUTO_INCREMENT' },
+      { name: 'family_id',          definition: 'varchar(45) NOT NULL' },
+      { name: 'guest_id',           definition: 'int DEFAULT NULL' },
+      { name: 'token',              definition: 'varchar(64) NOT NULL' },
+      { name: 'expires_at',         definition: 'datetime NOT NULL' },
+      { name: 'status',             definition: "enum('pending','signed','expired','cancelled') NOT NULL DEFAULT 'pending'" },
+      { name: 'verify_attempts',    definition: 'int NOT NULL DEFAULT 0' },
+      { name: 'signed_at',          definition: 'datetime DEFAULT NULL' },
+      { name: 'signer_ip',          definition: 'varchar(45) DEFAULT NULL' },
+      { name: 'signer_user_agent',  definition: 'text' },
+      { name: 'r2_pdf_key',         definition: 'varchar(500) DEFAULT NULL' },
+      { name: 'r2_signature_key',   definition: 'varchar(500) DEFAULT NULL' },
+      { name: 'form_data',          definition: 'json DEFAULT NULL' },
+      { name: 'created_by',         definition: 'varchar(45) DEFAULT NULL' },
+      { name: 'created_at',         definition: 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP' },
+      { name: 'updated_at',         definition: 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP' },
     ],
   },
 
@@ -616,6 +647,7 @@ const TENANT_TABLE_ORDER = [
   'family_document_types',
   'family_documents',
   'family_signatures',
+  'registration_requests',
   'staff',
   'vehicles',
   'booking_submissions',

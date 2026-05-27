@@ -70,6 +70,16 @@ const getDocById = async (vacationId, docId) => {
   }
 };
 
+const getDocByIdWithType = async (vacationId, docId) => {
+  try {
+    const rows = await connection.executeWithParameters(q.getDocByIdWithType(vacationId), [docId]);
+    return rows[0] || null;
+  } catch (error) {
+    logger.error(`documentsDb.getDocByIdWithType: ${error.sqlMessage || error.message}`);
+    throw error;
+  }
+};
+
 const getAllFamiliesDocStatus = async (vacationId) => {
   try {
     return await connection.execute(q.getAllFamiliesDocStatus(vacationId));
@@ -116,6 +126,7 @@ module.exports = {
   deleteDocument,
   getDocsByFamily,
   getDocById,
+  getDocByIdWithType,
   getAllFamiliesDocStatus,
   getFamilyByToken,
   getFamilyMembers,

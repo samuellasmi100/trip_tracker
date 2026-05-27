@@ -24,6 +24,16 @@ const getDocsByFamily = (vacationId) =>
 const getDocById = (vacationId) =>
   `SELECT * FROM \`trip_tracker_${vacationId}\`.family_documents WHERE id = ?`;
 
+// Same as getDocById but JOINed with family_document_types so the caller
+// knows whether file_path is an R2 key (signed_registration) or a local
+// filesystem path (legacy multer uploads).
+const getDocByIdWithType = (vacationId) =>
+  `SELECT fd.*, fdt.type_key, fdt.label
+   FROM \`trip_tracker_${vacationId}\`.family_documents fd
+   JOIN \`trip_tracker_${vacationId}\`.family_document_types fdt ON fd.doc_type_id = fdt.id
+   WHERE fd.id = ?
+   LIMIT 1`;
+
 /**
  * Returns per-family doc status: total members × required types vs uploaded count.
  * Joined so we get family_name alongside.
@@ -62,6 +72,7 @@ module.exports = {
   deleteDocument,
   getDocsByFamily,
   getDocById,
+  getDocByIdWithType,
   getAllFamiliesDocStatus,
   getFamilyByToken,
   getFamilyMembers,

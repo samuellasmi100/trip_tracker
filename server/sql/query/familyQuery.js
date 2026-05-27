@@ -1,7 +1,7 @@
 const PAGE_SIZE = 30;
 
 const addFamily = (vacationId) =>{
-  return `INSERT INTO trip_tracker_${vacationId}.families (family_name, family_id, number_of_guests, number_of_rooms, total_amount, start_date, end_date, doc_token) VALUES (?,?,?,?,?,?,?,UUID())`
+  return `INSERT INTO trip_tracker_${vacationId}.families (family_name, family_id, number_of_guests, number_of_rooms, total_amount, start_date, end_date, payment_method, num_payments, doc_token) VALUES (?,?,?,?,?,?,?,?,?,UUID())`
 }
 
 const getFamilies = (vacationId, { search = '', limit = PAGE_SIZE, offset = 0 } = {}) => {
@@ -19,13 +19,22 @@ SELECT
     fa.number_of_guests,
     fa.number_of_rooms,
     REPLACE(fa.total_amount, ',', '') AS total_amount,
+    fa.payment_method,
+    fa.num_payments,
     fa.start_date,
     fa.end_date,
     COALESCE(pay_agg.total_paid_amount, 0) AS total_paid_amount,
     rt_agg.room_ids,
     (SELECT COUNT(*)
      FROM trip_tracker_${vacationId}.guest
-     WHERE family_id = fa.family_id) AS user_in_system_count
+     WHERE family_id = fa.family_id) AS user_in_system_count,
+    -- Registration status (signed wins over pending; pending requires non-expired):
+    CASE
+      WHEN reg_agg.has_signed = 1         THEN 'signed'
+      WHEN reg_agg.has_pending_active = 1 THEN 'pending'
+      ELSE NULL
+    END AS registration_status,
+    reg_agg.signed_at AS registration_signed_at
 FROM trip_tracker_${vacationId}.families fa
 LEFT JOIN trip_tracker_${vacationId}.guest gu
     ON fa.family_id = gu.family_id AND gu.is_main_user = 1
@@ -40,6 +49,15 @@ LEFT JOIN (
     FROM trip_tracker_${vacationId}.room_taken
     GROUP BY family_id
 ) rt_agg ON fa.family_id = rt_agg.family_id
+LEFT JOIN (
+    SELECT
+      family_id,
+      MAX(CASE WHEN status = 'signed' THEN 1 ELSE 0 END)                            AS has_signed,
+      MAX(CASE WHEN status = 'signed' THEN signed_at END)                           AS signed_at,
+      MAX(CASE WHEN status = 'pending' AND expires_at > NOW() THEN 1 ELSE 0 END)    AS has_pending_active
+    FROM trip_tracker_${vacationId}.registration_requests
+    GROUP BY family_id
+) reg_agg ON fa.family_id = reg_agg.family_id
 ${whereClause}
 ORDER BY fa.family_name
 LIMIT ${limit} OFFSET ${offset}`;
@@ -81,7 +99,7 @@ LEFT JOIN (
 ) gu_count ON fa.family_id = gu_count.family_id`;
 
 const updateFamily = (vacationId) => {
-  return `UPDATE trip_tracker_${vacationId}.families SET family_name = ?, number_of_guests = ?, number_of_rooms = ?, total_amount = ?, start_date = ?, end_date = ? WHERE family_id = ?`
+  return `UPDATE trip_tracker_${vacationId}.families SET family_name = ?, number_of_guests = ?, number_of_rooms = ?, total_amount = ?, start_date = ?, end_date = ?, payment_method = ?, num_payments = ? WHERE family_id = ?`
 }
 
 // Server-side family search by name (used by room board assignment dialog)

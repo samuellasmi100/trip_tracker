@@ -6,7 +6,10 @@ import {
   MenuItem,
   OutlinedInput,
   Typography,
+  Switch,
+  FormControlLabel,
 } from "@mui/material";
+import StarOutlineIcon from "@mui/icons-material/StarOutline";
 import { useStyles } from "../GuestWizard.style";
 import { useSelector } from "react-redux";
 
@@ -18,7 +21,25 @@ const AREA_CODES = ["050", "052", "053", "054", "058", "+44", "+1081"];
 function PersonalDetailsStep({ handleInputChange }) {
   const classes = useStyles();
   const form = useSelector((state) => state.userSlice.form);
+  const guests = useSelector((state) => state.userSlice.guests);
   const inputRefs = useRef([]);
+
+  // Coerce the truthy variants the API + form sometimes use (1, "1", true).
+  const isMain = form.is_main_user === 1 || form.is_main_user === "1" || form.is_main_user === true;
+
+  // When the toggle is being flipped ON, find any OTHER guest in the family
+  // that's currently marked as main — used to render a soft warning that the
+  // save will demote them. Skips the warning for the guest being edited (so
+  // an unchanged main doesn't trigger its own demotion notice).
+  const existingMain = (guests || []).find(
+    (g) => (g.is_main_user === 1 || g.is_main_user === true) && g.user_id !== form.user_id
+  );
+
+  const handleMainToggle = (e) => {
+    handleInputChange({
+      target: { name: "is_main_user", value: e.target.checked, checked: e.target.checked },
+    });
+  };
 
   const handleKeyDown = (e, index) => {
     if (e.key === "Enter") {
@@ -68,8 +89,63 @@ function PersonalDetailsStep({ handleInputChange }) {
     </div>
   );
 
+  // Resolve the existing main's display name for the demotion caption, with
+  // sensible fallbacks. Hebrew first, English next, identity_id last.
+  const existingMainName = existingMain
+    ? (
+        [existingMain.hebrew_first_name, existingMain.hebrew_last_name].filter(Boolean).join(" ").trim() ||
+        [existingMain.english_first_name, existingMain.english_last_name].filter(Boolean).join(" ").trim() ||
+        existingMain.identity_id ||
+        "ראש המשפחה הנוכחי"
+      )
+    : null;
+
   return (
     <div className={classes.compactSection}>
+      {/* Head-of-family toggle — first so it's seen before names are filled in. */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "12px",
+          padding: "10px 14px",
+          marginBottom: "16px",
+          background: isMain ? "#ecfeff" : "#f8fafc",
+          border: `1px solid ${isMain ? "#a5f3fc" : "#e2e8f0"}`,
+          borderRadius: "10px",
+        }}
+      >
+        <FormControlLabel
+          control={
+            <Switch
+              checked={isMain}
+              onChange={handleMainToggle}
+              size="small"
+              sx={{
+                "& .MuiSwitch-switchBase.Mui-checked": { color: "#0d9488" },
+                "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": { backgroundColor: "#0d9488" },
+              }}
+            />
+          }
+          label={
+            <span style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "14px", fontWeight: 600, color: "#0f172a" }}>
+              <StarOutlineIcon style={{ fontSize: "18px", color: isMain ? "#0d9488" : "#64748b" }} />
+              ראש משפחה
+            </span>
+          }
+          sx={{ marginLeft: 0, marginRight: 0 }}
+        />
+        <span style={{ fontSize: "11px", color: "#64748b", textAlign: "left", lineHeight: 1.5 }}>
+          איש הקשר עבור קישור הרשמה ואימות SMS
+        </span>
+      </div>
+      {isMain && existingMainName && (
+        <Typography style={{ fontSize: "12px", color: "#b45309", marginTop: "-10px", marginBottom: "14px", padding: "0 4px" }}>
+          ⚠ פעולה זו תסיר את "ראש משפחה" מ-{existingMainName}.
+        </Typography>
+      )}
+
       {/* Names — Hebrew row, then English row */}
       <Typography className={classes.groupLabel}>שמות</Typography>
       <div className={classes.compactGrid}>

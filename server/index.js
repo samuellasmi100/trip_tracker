@@ -3,6 +3,29 @@ const http = require("http");
 const cors = require("cors");
 const app = express();
 require("dotenv").config();
+
+// Hard-fail on startup if any critical env var is missing. Without this, JWT
+// sign/verify paths (auth middleware, socket auth, registration verify) would
+// run with `undefined`, producing a `secretOrPrivateKey must have a value`
+// crash deep inside a real user's request — or, with the template-literal
+// `${process.env.X}` pattern elsewhere in the codebase, silently sign tokens
+// against the literal string "undefined". Better to refuse to boot.
+const REQUIRED_ENV = [
+  "DB_HOST",
+  "DB_USER",
+  "DB_PASS",
+  "REST_API_PORT",
+  "TOKEN_SECRET_KEY",
+];
+const missingEnv = REQUIRED_ENV.filter((name) => !process.env[name]);
+if (missingEnv.length > 0) {
+  console.error(
+    `\nFATAL: required environment variable(s) missing from server/.env: ${missingEnv.join(", ")}.\n` +
+    `Set them and restart. See server/CLAUDE.md "Environment Variables" for the full list.\n`
+  );
+  process.exit(1);
+}
+
 const errorHandler = require("./serverLogs/errorHandler");
 const checkAuthorizationMiddleware = require("./middleware/authMiddleware/checkAuthorization");
 const path = require('path');
@@ -31,6 +54,8 @@ const settingsController = require("./services/settings/settingsController");
 const bookingsController = require("./services/bookings/bookingsController");
 const publicBookingsController = require("./services/bookings/publicBookingsController");
 const dashboardController = require("./services/dashboard/dashboardController");
+const registrationsController = require("./services/registrations/registrationsController");
+const publicRegistrationsController = require("./services/registrations/publicRegistrationsController");
 
 app.use(cors());
 app.use(express.json());
@@ -41,6 +66,7 @@ app.use("/public", publicLeadsController);
 app.use("/public", publicDocumentsController);
 app.use("/public", publicSignaturesController);
 app.use("/public", publicBookingsController);
+app.use("/public", publicRegistrationsController);
 // Cardcom webhook — must be public (Cardcom POSTs here, no JWT)
 app.post("/payments/webhook", paymentsController.webhookHandler);
 
@@ -66,6 +92,7 @@ app.use('/signatures', signaturesController);
 app.use('/settings', settingsController);
 app.use('/bookings', bookingsController);
 app.use('/dashboard', dashboardController);
+app.use('/registrations', registrationsController);
 
 app.use(errorHandler);
 

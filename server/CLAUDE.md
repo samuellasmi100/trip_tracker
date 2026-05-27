@@ -44,6 +44,75 @@ Request → CORS → JSON parser → Auth middleware (JWT) → Controller → Se
 
 JWT-based. Passwords hashed with SHA256 (jshashes). Token payload: `{userId, permission, email}`. Token sent as Bearer in Authorization header.
 
+## Code structure & file-size conventions
+
+These rules apply to **new** code. Existing oversized files (`budgets/*`, `registrationsService.js`, `userDb.js`) are known outliers awaiting refactor — don't use them as templates.
+
+### File-size targets
+
+- **Target:** ≤ 200 lines per `.js` file (controller / service / db / query).
+- **Soft limit:** at ~250 lines, plan a split before adding more.
+- **Hard signal:** ≥ 350 lines almost always means more than one responsibility.
+
+Clean reference files: `services/leads/leadsController.js` (123), `services/leads/leadsDb.js` (169), `services/bookings/*`, `sql/query/leadsQuery.js` (132).
+
+### Feature layering — Controller → Service → Db → Query
+
+Every server feature uses the same four-layer split. Each layer only calls the layer directly below it.
+
+```
+server/services/<feature>/
+  <feature>Controller.js   // Express Router; req/res only; calls Service
+  <feature>Service.js      // Business logic, validation, orchestration; calls Db
+  <feature>Db.js           // Thin try/catch wrapper around connection.execute; imports SQL from Query
+server/sql/query/<feature>Query.js   // SQL string builders; no JS logic, no DB calls
+```
+
+- **Controller** — `express.Router()`. Only req parsing, route definition, calling the service, `res.send`/`res.json`, and `next(err)` (optionally wrapped in `new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, …, err)`). Never call `connection.execute` directly. Never inline SQL.
+- **Service** — Business logic, validation, normalization (phone, date, BiDi-stripping, etc.). Returns plain data. May compose multiple Db calls.
+- **Db** — Thin `try { return await connection.execute(query.X(vacationId)) } catch { logger.error; throw }`. Imports SQL from `sql/query/<feature>Query.js`. No SQL strings inlined here.
+- **Query** — Exports functions returning SQL strings. Functions take `vacationId` and interpolate it into `trip_tracker_${vacationId}`. No JS logic beyond string assembly, no `connection` access.
+
+**Schema-name interpolation lives only in the Query layer.** `trip_tracker_${vacationId}` must not appear in services or controllers.
+
+### Public vs protected controllers
+
+When a feature exposes unauthenticated routes alongside protected ones, split into two controllers in the same folder. Both share the same Service and Db:
+
+```
+services/leads/leadsController.js          // mounted after auth middleware
+services/leads/publicLeadsController.js    // mounted before auth middleware
+```
+
+Existing examples: `leads/`, `bookings/`, `signatures/`, `documents/`, `registrations/`.
+
+### Adding a new feature `foo`
+
+1. `server/services/foo/fooController.js`, `fooService.js`, `fooDb.js` (+ `publicFooController.js` only if there are unauthenticated routes).
+2. `server/sql/query/fooQuery.js`.
+3. Register the router in `server/index.js` next to existing mounts — protected routes after the auth middleware, public routes before it.
+4. If the feature touches the DB, add tables/columns to `server/migrations/schema.js` (see HARD RULES below).
+
+File names are camelCase (`leadsQuery.js`, `userRoomsService.js`). Folder names match what already exists (lowercase, plural where natural: `leads/`, `bookings/`; singular where existing code is: `families/`, `auth/`). Don't invent a new naming convention.
+
+### When to extract shared logic vs inline it
+
+Default: **inline.** Three similar lines is better than a premature abstraction.
+
+Extract only when:
+- The exact same logic appears in **two or more** features (e.g. `utils/dateNormalize.js`, `db/connection-wrapper.js`, `middleware/authMiddleware/`, `serverLogs/errorHandler.js`).
+- Cross-cutting concerns that don't fit any single feature (auth, error envelope, logging, DB pool) — these have established homes; extend them rather than duplicating.
+
+Do **not** extract:
+- A helper used in one file only — keep it at the top of that file (see `normalizePhone`, `normalizeName`, `valuesEqual` at the top of `leadsService.js`).
+- An abstraction with no second caller yet.
+
+### Things that keep the good files good
+
+- **Helpers + constants at the top of the file, exports below.** Module-scoped until a second caller appears.
+- **One responsibility per layer, no shortcuts.** One file calling `connection.execute` from a controller sets the precedent for the next.
+- **Comments explain WHY, not WHAT.** `leadsService.js` is a good reference — comments about Excel BiDi marks, why empty file values aren't treated as changes, etc.
+
 ## Database Schema & Migrations
 
 MySQL2, promise-based, no ORM. Multi-tenant: a shared `trip_tracker` database

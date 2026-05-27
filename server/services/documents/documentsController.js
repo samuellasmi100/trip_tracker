@@ -73,6 +73,33 @@ router.get('/:vacationId/family/:familyId', async (req, res, next) => {
   }
 });
 
+// GET /documents/:vacationId/:docId/download-url
+// Returns a presigned R2 URL for signed-registration PDFs.
+//   - default: 15-minute expiry (direct download by the coordinator)
+//   - ?share=true: 7-day expiry (forwarded via WhatsApp/email to a recipient)
+// 7 days is the AWS S3 / R2 maximum for presigned URLs.
+// Other doc types use the /uploads static mount, not this endpoint.
+const SHARE_EXPIRY_S = 7 * 24 * 60 * 60;
+router.get('/:vacationId/:docId/download-url', async (req, res, next) => {
+  try {
+    const { vacationId, docId } = req.params;
+    const expiresIn = req.query.share === 'true' ? SHARE_EXPIRY_S : undefined;
+    const info = await documentsService.getDownloadInfo(vacationId, docId, { expiresIn });
+    if (info.code === 'NOT_FOUND') {
+      return res.status(404).json({ code: 'NOT_FOUND', message: 'מסמך לא נמצא' });
+    }
+    if (info.code === 'NOT_DOWNLOADABLE_VIA_API') {
+      return res.status(400).json({
+        code: 'NOT_DOWNLOADABLE_VIA_API',
+        message: 'סוג מסמך זה אינו זמין להורדה ישירה',
+      });
+    }
+    res.json({ url: info.url, fileName: info.fileName });
+  } catch (error) {
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle documents download", error));
+  }
+});
+
 // DELETE /documents/:vacationId/:docId — delete a document
 router.delete('/:vacationId/:docId', async (req, res, next) => {
   try {

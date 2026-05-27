@@ -9,15 +9,15 @@ router.post("/:id", async (req, res, next) => {
   const vacationId = req.params.id
     const userData = req.body.form
     userData.family_id = req.body.newFamilyId
-    if(userData.userType === "addParent" || userData.userType === "addFamily"){
-      userData.is_main_user = true
-      userData.user_type = "parent"
-      userData.user_id = req.body.newUserId
-    }else{
-      userData.is_main_user = false
-      userData.user_type = "client"
-      userData.user_id = req.body.newUserId
-    }
+    // Default-only override: only apply the userType-derived values when the
+    // caller hasn't explicitly set them. This lets the new client-side
+    // "ראש משפחה" toggle in PersonalDetailsStep be authoritative for is_main_user
+    // while preserving backward compat for callers (Excel importers, legacy UI
+    // paths) that rely on the userType-based default.
+    const isParentType = userData.userType === "addParent" || userData.userType === "addFamily"
+    if (userData.is_main_user === undefined) userData.is_main_user = isParentType
+    if (userData.user_type === undefined)    userData.user_type    = isParentType ? "parent" : "client"
+    userData.user_id = req.body.newUserId
     try {
       const response = await userService.addGuest(userData,vacationId)
    

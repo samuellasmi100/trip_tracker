@@ -2,6 +2,11 @@
 
 const fs = require('fs');
 const db = require('./documentsDb');
+const r2 = require('../storage/r2Client');
+
+// Doc types whose file_path is an R2 object key (not a local filesystem
+// path). For these, downloads go through R2 presigned URLs.
+const R2_BACKED_TYPE_KEYS = new Set(['signed_registration']);
 
 /**
  * Verifies token → returns page data for the public upload form.
@@ -72,6 +77,28 @@ const getFamilyLink = async (vacationId, familyId) => {
   return db.getFamilyDocToken(vacationId, familyId);
 };
 
+/**
+ * Resolve a download URL for a family_documents row.
+ *
+ * Signed registrations are stored on R2 (file_path = R2 object key) and get a
+ * presigned GET URL. Default expiry is 15 minutes for direct download (the
+ * coordinator clicking the download icon). Pass `{ expiresIn: 7*24*60*60 }`
+ * for the "share" flow where the coordinator forwards the URL via WhatsApp/
+ * email — 7 days is the AWS S3 / R2 max for presigned URLs.
+ *
+ * Other doc types are uploaded by multer to local disk and aren't downloadable
+ * from this endpoint (those are served via the /uploads static mount).
+ */
+const getDownloadInfo = async (vacationId, docId, { expiresIn = 900 } = {}) => {
+  const doc = await db.getDocByIdWithType(vacationId, docId);
+  if (!doc) return { code: 'NOT_FOUND' };
+  if (!R2_BACKED_TYPE_KEYS.has(doc.type_key)) {
+    return { code: 'NOT_DOWNLOADABLE_VIA_API' };
+  }
+  const url = await r2.getPresignedUrl(doc.file_path, expiresIn);
+  return { ok: true, url, fileName: doc.file_name };
+};
+
 module.exports = {
   getPublicUploadPage,
   uploadDocument,
@@ -81,4 +108,5 @@ module.exports = {
   addDocumentType,
   deleteDocumentType,
   getFamilyLink,
+  getDownloadInfo,
 };

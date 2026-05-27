@@ -4,7 +4,14 @@ const notesService = require("../notes/notesService");
 const paymentsService = require("../payments/paymentsService");
 const userDb = require("./userDb");
 const userRoomService = require("../userRooms/userRoomsService");
+const connection = require("../../db/connection-wrapper");
 const { parseDateLoose } = require("../../utils/dateNormalize");
+
+// Coerce the form's is_main_user (which can arrive as true, 1, "1", false, 0,
+// undefined, null) into a boolean intent. We only switch to the transactional
+// path when the caller is *promoting* this guest to main.
+const isPromotingToMain = (v) =>
+  v === true || v === 1 || v === "1";
 
 // Sentinel thrown by updateGuest when arrival/departure dates are supplied
 // but not parseable — the controller maps this to a 400 with a Hebrew
@@ -17,6 +24,16 @@ const INVALID_DATES = 'INVALID_DATES';
 const HAS_ROOM_ASSIGNMENTS = 'HAS_ROOM_ASSIGNMENTS';
 
 const addGuest = async (data, vacationId) => {
+  // Uniqueness rule: only one guest per family can carry is_main_user=1.
+  // When the new guest is being promoted to main, demote everyone else in
+  // the family *first*, then insert — both inside one transaction so we
+  // never observe a "two mains" state.
+  if (isPromotingToMain(data.is_main_user)) {
+    return await connection.withTransaction(async (tx) => {
+      await userDb.clearOtherMainUsersTx(tx, vacationId, data.family_id, data.user_id || '');
+      return await userDb.addGuestTx(tx, data, vacationId);
+    });
+  }
   return await userDb.addGuest(data, vacationId);
 };
 
@@ -89,6 +106,15 @@ const updateGuest = async (data, vacationId) => {
     sdArg,
     edArg
   );
+
+  // Same uniqueness rule as addGuest: if this update promotes the guest to
+  // main, demote every other guest in the family inside the same transaction.
+  if (isPromotingToMain(data.is_main_user)) {
+    return await connection.withTransaction(async (tx) => {
+      await userDb.clearOtherMainUsersTx(tx, vacationId, familyId, data.user_id);
+      return await userDb.updateGuestTx(tx, data, vacationId);
+    });
+  }
   return await userDb.updateGuest(data, vacationId);
 };
 

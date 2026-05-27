@@ -32,6 +32,7 @@ import LinkIcon from "@mui/icons-material/Link";
 import CheckIcon from "@mui/icons-material/Check";
 import GestureIcon from "@mui/icons-material/Gesture";
 import AssignmentIcon from "@mui/icons-material/Assignment";
+import HowToRegOutlinedIcon from "@mui/icons-material/HowToRegOutlined";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import SearchIcon from "@material-ui/icons/Search";
 import GroupsIcon from "@mui/icons-material/Groups";
@@ -42,6 +43,10 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { formatDateInput, isoToDisplay } from "../../../utils/helpers/formatDate";
 import { getGuestCompleteness } from "../../../utils/helpers/guestCompleteness";
 import { formatMoneyInput, stripMoney } from "../../../utils/helpers/formatMoney";
+
+// Mirrors the canonical list in shared/Payments/Payments.view.jsx — kept local
+// here to avoid a cross-feature import for a four-item constant.
+const PAYMENT_METHODS = ["מזומן", "העברה בנקאית", "כרטיס אשראי", "המחאות"];
 
 function FamilyListView(props) {
   const classes = useStyles();
@@ -84,9 +89,10 @@ function FamilyListView(props) {
     handleViewBooking,
     selectedBooking = { open: false, familyId: null, data: null },
     closeBookingDialog,
+    handleSendRegistrationLink,
   } = props;
 
-  const headers = ["", "שם משפחה / קבוצה", "קבצים", "מסמכים", "חתימה", "טופס", "תשלום", "חדרים", "נרשמים", "חסרים", "סטטוס", ""];
+  const headers = ["", "שם משפחה / קבוצה", "קבצים", "מסמכים", "חתימה", "הרשמה", "טופס", "תשלום", "חדרים", "נרשמים", "חסרים", "סטטוס", ""];
   const guests = useSelector((state) => state.userSlice.guests);
   const family = useSelector((state) => state.userSlice.family);
   const vacationsDates = useSelector((state) => state.vacationSlice.vacationsDates);
@@ -248,6 +254,51 @@ function FamilyListView(props) {
                               </div>
                             );
                           }
+                        })()}
+                      </TableCell>
+                      <TableCell className={classes.dataTableCell}>
+                        {(() => {
+                          const status = user.registration_status; // 'signed' | 'pending' | null
+                          // signed → terminal green badge, no send button.
+                          if (status === "signed") {
+                            const signedAt = user.registration_signed_at;
+                            const tip = signedAt
+                              ? `נחתם ב-${new Date(signedAt).toLocaleString("he-IL")}`
+                              : "נחתם";
+                            return (
+                              <Tooltip title={tip}>
+                                <span className={`${classes.statusBadge} ${classes.statusOk}`}>
+                                  נחתם ✓
+                                </span>
+                              </Tooltip>
+                            );
+                          }
+                          // pending (non-expired) → amber badge + resend icon
+                          // (opens the channel-picker dialog with the still-valid token).
+                          if (status === "pending") {
+                            return (
+                              <div style={{ display: "flex", alignItems: "center", gap: "4px", justifyContent: "center" }}>
+                                <span className={`${classes.statusBadge} ${classes.statusWarning}`}>
+                                  ממתין
+                                </span>
+                                <Tooltip title="שלח שוב — בחר ערוץ">
+                                  <IconButton size="small" onClick={(e) => handleSendRegistrationLink(e, user)} style={{ padding: "2px" }}>
+                                    <LinkIcon style={{ fontSize: "14px", color: "#64748b" }} />
+                                  </IconButton>
+                                </Tooltip>
+                              </div>
+                            );
+                          }
+                          // No row yet → original send icon (opens the dialog).
+                          return (
+                            <div style={{ display: "flex", alignItems: "center", gap: "4px", justifyContent: "center" }}>
+                              <Tooltip title="שלח קישור הרשמה">
+                                <IconButton size="small" onClick={(e) => handleSendRegistrationLink(e, user)} style={{ padding: "2px" }}>
+                                  <HowToRegOutlinedIcon style={{ fontSize: "16px", color: "#64748b" }} />
+                                </IconButton>
+                              </Tooltip>
+                            </div>
+                          );
                         })()}
                       </TableCell>
                       <TableCell className={classes.dataTableCell}>
@@ -622,6 +673,47 @@ function FamilyListView(props) {
               />
             </div>
             <div className={classes.editFamilyFieldItem}>
+              <InputLabel className={classes.editFamilyLabel}>צורת תשלום</InputLabel>
+              <Select
+                name="payment_method"
+                value={editFamilyData.payment_method || ""}
+                onChange={handleEditFamilyChange}
+                input={<OutlinedInput className={classes.editFamilyField} />}
+                displayEmpty
+                renderValue={(value) => value || "בחר..."}
+                size="small"
+                fullWidth
+                MenuProps={{
+                  style: { zIndex: 1700 },
+                  PaperProps: {
+                    sx: {
+                      bgcolor: "#ffffff",
+                      borderRadius: "8px",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                      border: "1px solid #e2e8f0",
+                    },
+                  },
+                }}
+              >
+                {PAYMENT_METHODS.map((m) => (
+                  <MenuItem key={m} value={m}>{m}</MenuItem>
+                ))}
+              </Select>
+            </div>
+            <div className={classes.editFamilyFieldItem}>
+              <InputLabel className={classes.editFamilyLabel}>מספר תשלומים</InputLabel>
+              <TextField
+                name="num_payments"
+                value={editFamilyData.num_payments || ""}
+                onChange={handleEditFamilyChange}
+                size="small"
+                fullWidth
+                className={classes.editFamilyField}
+                inputProps={{ inputMode: "numeric", min: 1 }}
+                type="number"
+              />
+            </div>
+            <div className={classes.editFamilyFieldItem}>
               <InputLabel className={classes.editFamilyLabel}>בחירת מסלול</InputLabel>
               <Select
                 name="week_chosen"
@@ -742,6 +834,47 @@ function FamilyListView(props) {
                 fullWidth
                 className={classes.editFamilyField}
                 inputProps={{ inputMode: "decimal" }}
+              />
+            </div>
+            <div className={classes.editFamilyFieldItem}>
+              <InputLabel className={classes.editFamilyLabel}>צורת תשלום</InputLabel>
+              <Select
+                name="payment_method"
+                value={addFamilyData.payment_method || ""}
+                onChange={handleAddFamilyChange}
+                input={<OutlinedInput className={classes.editFamilyField} />}
+                displayEmpty
+                renderValue={(value) => value || "בחר..."}
+                size="small"
+                fullWidth
+                MenuProps={{
+                  style: { zIndex: 1700 },
+                  PaperProps: {
+                    sx: {
+                      bgcolor: "#ffffff",
+                      borderRadius: "8px",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                      border: "1px solid #e2e8f0",
+                    },
+                  },
+                }}
+              >
+                {PAYMENT_METHODS.map((m) => (
+                  <MenuItem key={m} value={m}>{m}</MenuItem>
+                ))}
+              </Select>
+            </div>
+            <div className={classes.editFamilyFieldItem}>
+              <InputLabel className={classes.editFamilyLabel}>מספר תשלומים</InputLabel>
+              <TextField
+                name="num_payments"
+                value={addFamilyData.num_payments || ""}
+                onChange={handleAddFamilyChange}
+                size="small"
+                fullWidth
+                className={classes.editFamilyField}
+                inputProps={{ inputMode: "numeric", min: 1 }}
+                type="number"
               />
             </div>
             <div className={classes.editFamilyFieldItem}>

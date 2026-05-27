@@ -9,13 +9,19 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DescriptionIcon from "@mui/icons-material/Description";
+import DownloadIcon from "@mui/icons-material/Download";
+import ShareIcon from "@mui/icons-material/Share";
+import AssignmentTurnedInOutlinedIcon from "@mui/icons-material/AssignmentTurnedInOutlined";
 import { useStyles } from "../Documents.style";
 import ApiDocuments from "../../../../apis/documentsRequest";
+import ShareDocumentDialog from "../ShareDocumentDialog/ShareDocumentDialog";
 
 function DocumentsDetailPanel({ open, onClose, family, vacationId, token, onDocDeleted }) {
   const classes = useStyles();
   const [docs, setDocs] = useState([]);
   const [loading, setLoading] = useState(false);
+  // Share dialog state — only opens for signed_registration rows.
+  const [shareDialog, setShareDialog] = useState({ open: false, docId: null });
 
   const fetchDocs = useCallback(async () => {
     if (!family?.family_id || !vacationId) return;
@@ -44,9 +50,22 @@ function DocumentsDetailPanel({ open, onClose, family, vacationId, token, onDocD
     }
   };
 
-  // Group docs by user_id
+  const handleDownload = async (docId) => {
+    try {
+      const res = await ApiDocuments.getDownloadUrl(token, vacationId, docId);
+      const url = res?.data?.url;
+      if (url) window.open(url, "_blank", "noopener");
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  // Signed registrations are top-level (one per family, not per-guest), so
+  // pull them out of the per-user grouping into their own section above.
+  const registrationDocs = docs.filter((d) => d.type_key === "signed_registration");
+  const otherDocs        = docs.filter((d) => d.type_key !== "signed_registration");
   const grouped = {};
-  docs.forEach((d) => {
+  otherDocs.forEach((d) => {
     if (!grouped[d.user_id]) grouped[d.user_id] = { user_id: d.user_id, docs: [] };
     grouped[d.user_id].docs.push(d);
   });
@@ -75,29 +94,72 @@ function DocumentsDetailPanel({ open, onClose, family, vacationId, token, onDocD
             אין מסמכים שהועלו
           </Typography>
         ) : (
-          Object.values(grouped).map((group) => (
-            <div key={group.user_id}>
-              <Typography className={classes.sectionHeading}>{group.user_id}</Typography>
-              {group.docs.map((doc) => (
-                <div key={doc.id} className={classes.docItem}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <DescriptionIcon style={{ fontSize: "18px", color: "#0d9488" }} />
-                    <div className={classes.docItemInfo}>
-                      <Typography className={classes.docItemLabel}>{doc.label || doc.file_name}</Typography>
-                      <Typography className={classes.docItemMeta}>{doc.file_name}</Typography>
+          <>
+            {registrationDocs.length > 0 && (
+              <div>
+                <Typography className={classes.sectionHeading}>טופס הרשמה חתום</Typography>
+                {registrationDocs.map((doc) => (
+                  <div key={doc.id} className={classes.docItem}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <AssignmentTurnedInOutlinedIcon style={{ fontSize: "20px", color: "#0d9488" }} />
+                      <div className={classes.docItemInfo}>
+                        <Typography className={classes.docItemLabel}>{doc.label || "טופס הרשמה חתום"}</Typography>
+                        <Typography className={classes.docItemMeta}>{doc.file_name}</Typography>
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", gap: "2px" }}>
+                      <Tooltip title="הורד PDF">
+                        <IconButton size="small" onClick={() => handleDownload(doc.id)}>
+                          <DownloadIcon style={{ fontSize: "18px", color: "#0d9488" }} />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="שיתוף">
+                        <IconButton size="small" onClick={() => setShareDialog({ open: true, docId: doc.id })}>
+                          <ShareIcon style={{ fontSize: "18px", color: "#0d9488" }} />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="מחק מסמך">
+                        <IconButton size="small" onClick={() => handleDelete(doc.id)}>
+                          <DeleteOutlineIcon style={{ fontSize: "18px", color: "#ef4444" }} />
+                        </IconButton>
+                      </Tooltip>
                     </div>
                   </div>
-                  <Tooltip title="מחק מסמך">
-                    <IconButton size="small" onClick={() => handleDelete(doc.id)}>
-                      <DeleteOutlineIcon style={{ fontSize: "18px", color: "#ef4444" }} />
-                    </IconButton>
-                  </Tooltip>
-                </div>
-              ))}
-            </div>
-          ))
+                ))}
+              </div>
+            )}
+            {Object.values(grouped).map((group) => (
+              <div key={group.user_id}>
+                <Typography className={classes.sectionHeading}>{group.user_id}</Typography>
+                {group.docs.map((doc) => (
+                  <div key={doc.id} className={classes.docItem}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <DescriptionIcon style={{ fontSize: "18px", color: "#0d9488" }} />
+                      <div className={classes.docItemInfo}>
+                        <Typography className={classes.docItemLabel}>{doc.label || doc.file_name}</Typography>
+                        <Typography className={classes.docItemMeta}>{doc.file_name}</Typography>
+                      </div>
+                    </div>
+                    <Tooltip title="מחק מסמך">
+                      <IconButton size="small" onClick={() => handleDelete(doc.id)}>
+                        <DeleteOutlineIcon style={{ fontSize: "18px", color: "#ef4444" }} />
+                      </IconButton>
+                    </Tooltip>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </>
         )}
       </div>
+
+      <ShareDocumentDialog
+        open={shareDialog.open}
+        onClose={() => setShareDialog({ open: false, docId: null })}
+        docId={shareDialog.docId}
+        vacationId={vacationId}
+        token={token}
+      />
     </Drawer>
   );
 }
