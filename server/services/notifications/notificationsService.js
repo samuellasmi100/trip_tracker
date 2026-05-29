@@ -17,4 +17,6 @@ const markAllRead = async () => db.markAllRead();
 
 const deleteOne = async (id) => db.deleteOne(id);
 
-module.exports = { getAll, getUnread, create, markAllRead, deleteOne };
+const deleteAll = async () => db.deleteAll();
+
+module.exports = { getAll, getUnread, create, markAllRead, deleteOne, deleteAll };

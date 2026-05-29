@@ -32,7 +32,7 @@ const SendRegistrationDialog = ({
   // paragraph without trailing-edge punctuation interference.
   const messageBody = useMemo(() => (
     `שלום ${headFirstName || ""},\n` +
-    `לפניך קישור להרשמה לחופשת ${vacationName || ""}.\n` +
+    `לפניך קישור לטופס רישום לחופשת ${vacationName || ""}.\n` +
     `הקישור בתוקף עד ${expiresAtFormatted}.\n` +
     `\n` +
     `${link}\n` +
@@ -49,7 +49,7 @@ const SendRegistrationDialog = ({
 
   const emailHref = useMemo(() => {
     if (!headEmail) return "";
-    const subject = `הרשמה לחופשת ${vacationName || ""}`;
+    const subject = `טופס רישום לחופשת ${vacationName || ""}`;
     return `mailto:${headEmail}`
       + `?subject=${encodeURIComponent(subject)}`
       + `&body=${encodeURIComponent(messageBody)}`;

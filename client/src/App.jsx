@@ -73,7 +73,7 @@ function App() {
       dispatch(notificationsSlice.addNotification(notification));
       dispatch(snackBarSlice.setSnackBar({
         type: "success",
-        message: `הרשמה חדשה נחתמה: ${notification.message || notification.title}`,
+        message: `טופס רישום נחתם: ${notification.message || notification.title}`,
         timeout: 5000,
       }));
     };

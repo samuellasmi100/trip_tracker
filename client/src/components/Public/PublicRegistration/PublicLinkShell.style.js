@@ -95,11 +95,6 @@ export const useStyles = makeStyles(() => ({
     color: "#64748b",
     lineHeight: "1.6 !important",
   },
-  verifyHintStrong: {
-    color: "#0f172a",
-    fontWeight: 600,
-    letterSpacing: "0.5px",
-  },
   verifyField: {
     "& .MuiInputBase-input": {
       textAlign: "center",

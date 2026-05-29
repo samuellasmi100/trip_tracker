@@ -50,7 +50,7 @@ const APPLY = has('--apply');
 const ONLY_VACATION = val('vacation', null);
 
 const TYPE_KEY    = 'signed_registration';
-const TYPE_LABEL  = 'טופס הרשמה חתום';
+const TYPE_LABEL  = 'טופס רישום חתום';
 const IS_REQUIRED = 1;
 const SORT_ORDER  = 3;
 
@@ -77,8 +77,24 @@ async function processTenant(conn, db) {
   );
 
   if (rows.length > 0) {
-    log(`   • already present (id=${rows[0].id}, label="${rows[0].label}", sort_order=${rows[0].sort_order}) — no-op`);
-    return { alreadyPresent: true };
+    const current = rows[0];
+    // Row exists. If the label is already the target wording, no-op. Otherwise
+    // relabel it — this is how existing tenants pick up a wording change (the
+    // schema seed only covers brand-new tenants).
+    if (current.label === TYPE_LABEL) {
+      log(`   • already present with current label (id=${current.id}) — no-op`);
+      return { alreadyPresent: true };
+    }
+    if (!APPLY) {
+      log(`   • would UPDATE label (id=${current.id}) "${current.label}" → "${TYPE_LABEL}"  (dry run)`);
+      return { wouldUpdate: true };
+    }
+    const [ures] = await conn.query(
+      `UPDATE \`${db}\`.family_document_types SET label = ? WHERE type_key = ?`,
+      [TYPE_LABEL, TYPE_KEY]
+    );
+    log(`   ✓ updated label (affectedRows=${ures.affectedRows}) "${current.label}" → "${TYPE_LABEL}"`);
+    return { updated: ures.affectedRows };
   }
 
   if (!APPLY) {
@@ -113,14 +129,16 @@ async function processTenant(conn, db) {
       ? [`trip_tracker_${ONLY_VACATION}`]
       : await listTenantDatabases(conn);
 
-    const totals = { tenants: 0, inserted: 0, already: 0, would: 0, skipped: 0 };
+    const totals = { tenants: 0, inserted: 0, updated: 0, already: 0, would: 0, wouldUpdate: 0, skipped: 0 };
     for (const db of dbs) {
       try {
         const r = await processTenant(conn, db);
         totals.tenants += 1;
         if (r.inserted)         totals.inserted += 1;
+        if (r.updated)          totals.updated  += 1;
         if (r.alreadyPresent)   totals.already  += 1;
         if (r.wouldInsert)      totals.would    += 1;
+        if (r.wouldUpdate)      totals.wouldUpdate += 1;
         if (r.skipped)          totals.skipped  += 1;
       } catch (e) {
         log(`   ! ERROR on ${db}: ${e.sqlMessage || e.message} — continuing`);
@@ -129,9 +147,9 @@ async function processTenant(conn, db) {
 
     log(`\n=== Summary: ${totals.tenants} tenant(s) processed ===`);
     if (APPLY) {
-      log(`    inserted: ${totals.inserted}, already-present: ${totals.already}, skipped: ${totals.skipped}`);
+      log(`    inserted: ${totals.inserted}, relabeled: ${totals.updated}, already-current: ${totals.already}, skipped: ${totals.skipped}`);
     } else {
-      log(`    would insert: ${totals.would}, already-present: ${totals.already}, skipped: ${totals.skipped}`
+      log(`    would insert: ${totals.would}, would relabel: ${totals.wouldUpdate}, already-current: ${totals.already}, skipped: ${totals.skipped}`
         + `\n    Re-run with: --apply`);
     }
   } finally {

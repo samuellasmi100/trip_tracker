@@ -114,7 +114,7 @@ const MainGuests = () => {
       "כמות נרשמים": row.number_of_guests,
       "נמצאים במערכת": row.user_in_system_count,
       "חסרים": Math.max(Number(row.number_of_guests) - Number(row.user_in_system_count), 0) || "",
-      "מספר טלפון": row.phone_a || "",
+      "מספר טלפון": row.phone || row.phone_a || "",
       "אימייל": row.email || "",
       "מספר זהות": row.identity_id || "",
     }));

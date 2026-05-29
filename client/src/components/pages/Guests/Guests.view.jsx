@@ -85,7 +85,7 @@ function GuestsView({
                 <TableCell className={classes.dataTableCell}>{user?.english_last_name}</TableCell>
                 <TableCell className={classes.dataTableCell}>{user?.age}</TableCell>
                 <TableCell className={classes.dataTableCell}>{user?.identity_id}</TableCell>
-                <TableCell className={classes.dataTableCell}>{user?.phone_a || ""}</TableCell>
+                <TableCell className={classes.dataTableCell}>{user?.phone || user?.phone_a || ""}</TableCell>
                 <TableCell className={classes.dataTableCell}>{user?.email}</TableCell>
                 <TableCell className={classes.dataTableCell}>{user?.is_main_user === 1 ? "כן" : "לא"}</TableCell>
                 <TableCell className={classes.dataTableCell}>{user?.room_id}</TableCell>

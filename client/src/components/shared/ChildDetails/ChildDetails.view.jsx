@@ -132,7 +132,8 @@ const ChildDetailsView = ({ userData }) => {
           <InfoRow label="כתובת" value={userDetails?.address} />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <InfoRow label="טלפון" value={userDetails?.phone_a} />
+          <InfoRow label="טלפון" value={userDetails?.phone || userDetails?.phone_a} />
+          {/* Legacy second-number row; kept until phone_a/phone_b are dropped. */}
           <InfoRow label="טלפון נוסף" value={userDetails?.phone_b} />
           <InfoRow label="אימייל" value={userDetails?.email} />
         </Grid>

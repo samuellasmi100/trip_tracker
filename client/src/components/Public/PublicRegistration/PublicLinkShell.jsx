@@ -111,12 +111,12 @@ const PublicLinkShell = ({ vacationId, token, children }) => {
             {pageData.vacationName}
           </Typography>
           <Typography className={classes.vacationSub}>
-            טופס הרשמה לחופשה
+            טופס רישום לחופשה
           </Typography>
         </>
       )}
       {!pageData?.vacationName && (
-        <Typography className={classes.vacationName}>טופס הרשמה לחופשה</Typography>
+        <Typography className={classes.vacationName}>טופס רישום לחופשה</Typography>
       )}
     </div>
   );
@@ -183,10 +183,7 @@ const PublicLinkShell = ({ vacationId, token, children }) => {
               <LockOutlinedIcon style={{ fontSize: 36, color: "#0d9488", marginBottom: 4 }} />
               <Typography className={classes.verifyTitle}>אימות זהות</Typography>
               <Typography className={classes.verifyHint}>
-                הזן את 4 הספרות האחרונות של מספר הטלפון{" "}
-                <span className={classes.verifyHintStrong}>
-                  ({pageData?.phoneHint || "****"})
-                </span>
+                הזן את 4 הספרות האחרונות של מספר הטלפון
               </Typography>
             </div>
             <TextField

@@ -32,4 +32,10 @@ const deleteOne = () => `
   DELETE FROM trip_tracker.notifications WHERE id = ?;
 `;
 
-module.exports = { getAll, getUnread, create, markAllRead, deleteOne };
+// Clear-all: notifications are a global coordinator feed (shared DB, not
+// per-user), so this wipes the whole feed — same scope as markAllRead.
+const deleteAll = () => `
+  DELETE FROM trip_tracker.notifications;
+`;
+
+module.exports = { getAll, getUnread, create, markAllRead, deleteOne, deleteAll };

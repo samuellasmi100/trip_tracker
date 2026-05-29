@@ -22,7 +22,7 @@ function SendRegistrationDialogView({
   return (
     <Dialog open={open} onClose={onClose} PaperProps={{ className: classes.paper }} style={{ zIndex: 1650 }}>
       <DialogTitle className={classes.title}>
-        <span>שליחת קישור הרשמה</span>
+        <span>שליחת קישור לטופס רישום</span>
         <Tooltip title="סגור">
           <IconButton className={classes.closeBtn} onClick={onClose} size="small">
             <CloseIcon style={{ fontSize: "20px" }} />

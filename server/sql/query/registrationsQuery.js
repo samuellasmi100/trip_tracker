@@ -16,7 +16,7 @@ const getFamilyByFamilyId = (vacationId) => `
 // local number. Both must be returned so the service can validate that a
 // real phone is on file and compare last-4 against the real digits.
 const getMainGuest = (vacationId) => `
-  SELECT id, hebrew_first_name, phone_a, phone_b, email
+  SELECT id, hebrew_first_name, phone, phone_a, phone_b, email
   FROM \`trip_tracker_${vacationId}\`.guest
   WHERE family_id = ? AND is_main_user = 1
   LIMIT 1
@@ -76,6 +76,7 @@ const getRegistrationByToken = (vacationId) => `
     f.num_payments,
     g.hebrew_first_name AS head_first_name,
     g.hebrew_last_name  AS head_last_name,
+    g.phone             AS head_phone,
     g.phone_a           AS head_phone_a,
     g.phone_b           AS head_phone_b,
     g.email             AS head_email,

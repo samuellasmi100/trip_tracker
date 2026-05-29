@@ -107,7 +107,7 @@ const GeneralInfo = () => {
       "שם משפחה באנגלית": row.english_last_name,
       "תאריך לידה": row.birth_date === null ? row.defaule_birth_date : row.birth_date,
       "מספר זהות": row.identity_id,
-      "מספר טלפון": row.phone_a || "",
+      "מספר טלפון": row.phone || row.phone_a || "",
       "אימייל": row.email,
       "גיל": row.age === null ? row.default_age : row.age,
       "תואר": row.user_classification,

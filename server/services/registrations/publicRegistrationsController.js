@@ -151,8 +151,8 @@ router.post('/register/:vacationId/:token/submit', async (req, res, next) => {
         vacation_id:   vacationId,
         vacation_name: result.vacationName || null,
         type:          'new_registration',
-        title:         'הרשמה חדשה התקבלה',
-        message:       [result.familyName, result.headFirstName].filter(Boolean).join(' · '),
+        title:         'טופס רישום חתום',
+        message:       `טופס הרישום חתום התקבל מאת: ${result.headFirstName || ''}`,
         entity_id:     result.registrationId,
         entity_type:   'registration',
       });

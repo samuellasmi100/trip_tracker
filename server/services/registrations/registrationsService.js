@@ -7,6 +7,7 @@ const db = require('./registrationsDb');
 const r2 = require('../storage/r2Client');
 const connection = require('../../db/connection-wrapper');
 const { parseDateLoose } = require('../../utils/dateNormalize');
+const { buildWhatsAppDigits } = require('../../utils/phoneNormalize');
 const { generateRegistrationPdf } = require('./pdfGenerator');
 const logger = require('../../utils/logger');
 
@@ -22,44 +23,8 @@ const usablePhoneDigits = (phoneB) => {
   return digits.length >= MIN_PHONE_DIGITS ? digits : '';
 };
 
-// Resolve phone_a + phone_b into a wa.me-ready digit string (no "+"). The
-// dual-column storage isn't used consistently across the app:
-//   • Excel imports populate phone_a as the FULL number, phone_b = NULL.
-//   • The GuestEditor form treats phone_a as the area-code Select and
-//     phone_b as the local part — but users sometimes type the full number
-//     into phone_b too, leaving doubled area codes on save.
-//   • Other UI sites display phone_a alone as "the phone".
-// We can't unify the storage in this PR, but we can detect every shape
-// and produce a single correct international digit string.
-const buildWhatsAppDigits = (phoneA, phoneB) => {
-  const a = String(phoneA || '').trim();
-  const b = String(phoneB || '').trim();
-  const aDigits = a.replace(/\D/g, '');
-  const bDigits = b.replace(/\D/g, '');
-
-  // International country code declared in phone_a (e.g. "+44", legacy "+1081").
-  if (a.startsWith('+')) {
-    // phone_b may already include the country code (form-fighting users).
-    if (bDigits.length > 0 && bDigits.startsWith(aDigits)) return bDigits;
-    return aDigits + bDigits;
-  }
-
-  // Israeli local form. Decide whether phone_b is the COMPLETE number on its
-  // own (typed as "0544372393"), or the LOCAL part needing the area-code
-  // prefix from phone_a (typed as "4372393").
-  let combined;
-  if (bDigits.length >= 9 && bDigits.startsWith('0')) {
-    combined = bDigits;
-  } else if (bDigits.length > 0) {
-    combined = aDigits + bDigits;
-  } else {
-    combined = aDigits;
-  }
-
-  // Normalize: Israeli leading "0" → "972" so wa.me accepts it.
-  if (combined.startsWith('0')) return '972' + combined.slice(1);
-  return combined;
-};
+// buildWhatsAppDigits (phone_a/phone_b → country-code-first digit string) now
+// lives in utils/phoneNormalize so the migration backfill shares it verbatim.
 
 const TOKEN_BYTES        = 32;            // → 64 hex chars
 const EXPIRY_MS_1D       = 24 * 60 * 60 * 1000;
@@ -103,13 +68,6 @@ const getVacationName = async (vacationId) => {
   } finally {
     if (conn) await conn.end();
   }
-};
-
-// Mask all but the last 4 digits of a phone, e.g. "0501234567" → "******4567".
-const maskPhoneAllButLast4 = (phone) => {
-  const clean = String(phone || '').replace(/\D/g, '');
-  if (clean.length < 4) return clean;
-  return '*'.repeat(clean.length - 4) + clean.slice(-4);
 };
 
 // Per DECISION 2: count guests under 2 by parsing guest.birth_date with the
@@ -167,16 +125,17 @@ const createLink = async (vacationId, familyId, { createdBy = null } = {}) => {
   if (!head) {
     throw new RegistrationError(
       'NO_MAIN_GUEST',
-      'המשפחה לא כוללת ראש משפחה — סמן נופש כ"משתמש ראשי" לפני יצירת קישור הרשמה'
+      'המשפחה לא כוללת ראש משפחה — סמן נופש כ"משתמש ראשי" לפני יצירת קישור לטופס רישום'
     );
   }
-  // The actual phone number lives in phone_b; phone_a is just the area-code
-  // Select. Require phone_b to have enough digits to plausibly be a real
-  // number so the link is never issued for a guest who can't pass verify.
-  if (!usablePhoneDigits(head.phone_b)) {
+  // Prefer the unified `phone` (E.164); fall back to the legacy phone_b (the
+  // actual number — phone_a was only the area-code Select) for rows not yet
+  // backfilled. Require enough digits to plausibly be a real number so the
+  // link is never issued for a guest who can't pass verify.
+  if (!usablePhoneDigits(head.phone || head.phone_b)) {
     throw new RegistrationError(
       'HEAD_GUEST_NO_PHONE',
-      'לראש המשפחה לא רשום מספר טלפון תקין — לא ניתן ליצור קישור הרשמה ללא טלפון לאימות'
+      'לראש המשפחה לא רשום מספר טלפון תקין — לא ניתן ליצור קישור לטופס רישום ללא טלפון לאימות'
     );
   }
 
@@ -196,7 +155,9 @@ const createLink = async (vacationId, familyId, { createdBy = null } = {}) => {
   // observed phone_a/phone_b shape (form-compliant, form-fighting, legacy
   // import, international). Email may be null; the client disables the
   // Email button in that case.
-  const headPhone = buildWhatsAppDigits(head.phone_a, head.phone_b);
+  const headPhone = head.phone
+    ? head.phone.replace(/\D/g, '')
+    : buildWhatsAppDigits(head.phone_a, head.phone_b);
   const headEmail = head.email || null;
   const vacationName = await getVacationName(vacationId);
 
@@ -273,7 +234,10 @@ const getPublicInfo = async (vacationId, token) => {
     alreadySigned: false,
     familyName: row.family_name,
     headFirstName: row.head_first_name || null,
-    phoneHint: maskPhoneAllButLast4(row.head_phone_a),
+    // SECURITY: do NOT return any form of the phone here. The verify step asks
+    // for the last 4 digits, so even a masked "******2245" hint would literally
+    // reveal the answer and defeat the second auth factor — the family-head is
+    // expected to know their own number. Only the token gates this endpoint.
     vacationName,
     expiresAt: row.expires_at,
     requiresPhoneVerify: true,
@@ -303,11 +267,13 @@ const verifyPhone = async (vacationId, token, lastFourDigits) => {
   try { await db.incrementVerifyAttempts(vacationId, token); }
   catch (e) { logger.warn(`verifyPhone: incrementVerifyAttempts failed: ${e.message}`); }
 
-  // Compare against the actual phone (phone_b), not the area code (phone_a).
-  // createLink already enforces phone_b is present at link-issue time, so in
-  // normal operation this guard is unreachable; it stays as defense against
-  // an edit-after-issue race where someone wipes the phone on the guest row.
-  const headDigits = String(row.head_phone_b || '').replace(/\D/g, '');
+  // Compare against the unified phone (E.164), falling back to the legacy
+  // phone_b for un-backfilled rows — never the area code (phone_a). Last-4 is
+  // identical across both formats (the country code is a prefix), so links
+  // issued before the migration still verify. createLink already enforces a
+  // usable phone at issue time, so this guard is normally unreachable; it
+  // stays as defense against an edit-after-issue race that wipes the phone.
+  const headDigits = String(row.head_phone || row.head_phone_b || '').replace(/\D/g, '');
   if (headDigits.length < 4) {
     throw new RegistrationError('HEAD_GUEST_NO_PHONE', 'ראש המשפחה ללא טלפון תקין במערכת');
   }
@@ -323,9 +289,9 @@ const verifyPhone = async (vacationId, token, lastFourDigits) => {
 
   // Post-verify form data — the registration page renders this as the
   // read-only "orderer details" + payment block. Phone is exposed in full
-  // here (vs the masked phoneHint on the GET endpoint) because the client
-  // has just proven they hold those digits. Email is similarly post-verify.
-  const fullPhone = `${row.head_phone_a || ''}${row.head_phone_b || ''}`.trim();
+  // here (the GET endpoint exposes NO phone at all) because the client has
+  // just proven they hold those digits. Email is similarly post-verify.
+  const fullPhone = row.head_phone || `${row.head_phone_a || ''}${row.head_phone_b || ''}`.trim();
   const formData = {
     requestCreatedAt: row.request_created_at,
     familyName:       row.family_name,
@@ -359,9 +325,9 @@ const buildSnapshot = async ({ vacationId, registrationRow, clientInputs, signed
     );
   }
 
-  // Last-4 for the snapshot/PDF comes from the actual phone number (phone_b),
+  // Last-4 for the snapshot/PDF comes from the unified phone (fallback phone_b),
   // matching the verify-comparison source — never from phone_a (area code).
-  const headLast4 = String(registrationRow.head_phone_b || '').replace(/\D/g, '').slice(-4);
+  const headLast4 = String(registrationRow.head_phone || registrationRow.head_phone_b || '').replace(/\D/g, '').slice(-4);
 
   return {
     schema_version: SCHEMA_VERSION,
@@ -518,7 +484,7 @@ const submitRegistration = async (
 
     // 9. atomic DB writes
     const familyDocFileName =
-      `טופס הרשמה - ${row.family_name || row.family_id}.pdf`.slice(0, 200);
+      `טופס רישום - ${row.family_name || row.family_id}.pdf`.slice(0, 200);
     // family_documents.user_id is NOT NULL. Prefer guest.user_id; fall back
     // to the head guest's int id stringified so we never violate the column.
     const userIdForDocs = (row.head_user_id && String(row.head_user_id).trim())

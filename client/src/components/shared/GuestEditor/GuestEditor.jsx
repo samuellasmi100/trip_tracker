@@ -34,7 +34,7 @@ import { getGuestCompleteness } from "../../../utils/helpers/guestCompleteness";
 // Fields the editor can change, per entity — used for the close-time dirty diff.
 const USER_FIELDS = [
   "hebrew_first_name", "hebrew_last_name", "english_first_name", "english_last_name",
-  "birth_date", "identity_id", "email", "address", "phone_a", "phone_b",
+  "birth_date", "identity_id", "email", "address", "phone", "phone_a", "phone_b",
   "flights", "flying_with_us", "is_in_group", "flights_direction",
   "week_chosen", "arrival_date", "departure_date",
   "is_main_user",

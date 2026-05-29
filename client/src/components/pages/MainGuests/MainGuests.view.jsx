@@ -89,7 +89,7 @@ function MainGuestsView({
                     ? Number(user?.number_of_guests) - Number(user?.user_in_system_count)
                     : ""}
                 </TableCell>
-                <TableCell className={classes.dataTableCell}>{user?.phone_a || ""}</TableCell>
+                <TableCell className={classes.dataTableCell}>{user?.phone || user?.phone_a || ""}</TableCell>
                 <TableCell className={classes.dataTableCell}>{user?.email || ""}</TableCell>
                 <TableCell className={classes.dataTableCell}>{user?.identity_id || ""}</TableCell>
                 <TableCell className={classes.dataTableCell} style={{ maxWidth: "1px" }}>

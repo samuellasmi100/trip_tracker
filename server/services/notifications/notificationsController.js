@@ -25,6 +25,17 @@ router.put('/read', async (req, res, next) => {
   }
 });
 
+// DELETE /notifications  — clear all (global feed). Registered before /:id so
+// the bare collection path isn't swallowed by the param route.
+router.delete('/', async (req, res, next) => {
+  try {
+    await notificationsService.deleteAll();
+    res.send({ success: true });
+  } catch (error) {
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle notifications request", error));
+  }
+});
+
 // DELETE /notifications/:id
 router.delete('/:id', async (req, res, next) => {
   try {

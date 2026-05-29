@@ -2,18 +2,16 @@ import React, { useRef } from "react";
 import {
   TextField,
   InputLabel,
-  Select,
-  MenuItem,
-  OutlinedInput,
   Typography,
   Switch,
   FormControlLabel,
 } from "@mui/material";
 import StarOutlineIcon from "@mui/icons-material/StarOutline";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/material.css";
 import { useStyles } from "../GuestWizard.style";
 import { useSelector } from "react-redux";
-
-const AREA_CODES = ["050", "052", "053", "054", "058", "+44", "+1081"];
+import { legacyPartsToE164 } from "../../../../utils/helpers/phoneFormat";
 
 // Compact personal pane (Direction B): one pane, lightweight text group-labels
 // (no bordered sub-cards), denser responsive grid. Flight toggles live in the
@@ -61,16 +59,13 @@ function PersonalDetailsStep({ handleInputChange }) {
     handleInputChange({ target: { name: "birth_date", value: formatted } });
   };
 
-  const phoneMenuProps = {
-    style: { zIndex: 1700 },
-    PaperProps: {
-      sx: {
-        bgcolor: "#ffffff",
-        borderRadius: "8px",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-        border: "1px solid #e2e8f0",
-      },
-    },
+  // Unified phone input (react-phone-input-2). The widget reports the number as
+  // digits WITHOUT a leading "+", so we store E.164 by prepending it. For guests
+  // not yet backfilled, prefill from the legacy phone_a/phone_b pair.
+  const phoneValue = (form.phone || legacyPartsToE164(form.phone_a, form.phone_b) || "").replace(/\D/g, "");
+
+  const handlePhoneChange = (value) => {
+    handleInputChange({ target: { name: "phone", value: value ? `+${value}` : "" } });
   };
 
   const textField = (name, label, refIndex, extra = {}) => (
@@ -137,7 +132,7 @@ function PersonalDetailsStep({ handleInputChange }) {
           sx={{ marginLeft: 0, marginRight: 0 }}
         />
         <span style={{ fontSize: "11px", color: "#64748b", textAlign: "left", lineHeight: 1.5 }}>
-          איש הקשר עבור קישור הרשמה ואימות SMS
+          איש הקשר עבור קישור לטופס רישום ואימות SMS
         </span>
       </div>
       {isMain && existingMainName && (
@@ -162,30 +157,19 @@ function PersonalDetailsStep({ handleInputChange }) {
         {textField("address", "כתובת מלאה", 5)}
         <div className={classes.compactItemFull}>
           <InputLabel className={classes.inputLabelStyle}>מספר טלפון</InputLabel>
-          <div className={classes.phoneRow}>
-            <TextField
-              name="phone_b"
-              value={form.phone_b || ""}
-              className={classes.phoneField}
-              onChange={handleInputChange}
-              size="small"
-              placeholder="1234567"
-              inputRef={(el) => (inputRefs.current[6] = el)}
-              onKeyDown={(e) => handleKeyDown(e, 6)}
+          {/* dir=ltr: phone numbers + the country/dial dropdown read LTR even
+              inside the RTL form. react-phone-input-2 stores full E.164. */}
+          <div dir="ltr" style={{ direction: "ltr" }}>
+            <PhoneInput
+              country={"il"}
+              preferredCountries={["il", "us", "gb", "fr"]}
+              enableSearch
+              value={phoneValue}
+              onChange={handlePhoneChange}
+              inputProps={{ name: "phone", onKeyDown: (e) => handleKeyDown(e, 6) }}
+              inputStyle={{ width: "100%", height: "40px" }}
+              specialLabel=""
             />
-            <Select
-              name="phone_a"
-              value={form.phone_a || ""}
-              onChange={handleInputChange}
-              input={<OutlinedInput className={classes.areaCodeSelect} />}
-              displayEmpty
-              renderValue={(value) => value || "קידומת"}
-              MenuProps={phoneMenuProps}
-            >
-              {AREA_CODES.map((code) => (
-                <MenuItem key={code} value={code} className={classes.menuItem}>{code}</MenuItem>
-              ))}
-            </Select>
           </div>
         </div>
       </div>

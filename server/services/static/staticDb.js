@@ -5,7 +5,8 @@ const logger = require("../../utils/logger");
 const getMainGuests = async (vacationId, search, limit, offset) => {
   try {
     const sql = staticQuery.getMainGuests(vacationId, limit, offset)
-    return await connection.executeWithParameters(sql, [search, search, search, search])
+    // 5 placeholders: search-empty guard + family_name + phone + phone_a + email
+    return await connection.executeWithParameters(sql, [search, search, search, search, search])
   } catch (error) {
     logger.error(`Error: Function:getMainGuests :, ${error.sqlMessage}`);
   }

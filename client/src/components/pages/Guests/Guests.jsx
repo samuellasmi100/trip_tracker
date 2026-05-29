@@ -117,7 +117,7 @@ const Guests = () => {
       "שם משפחה באנגלית": row.english_last_name,
       "גיל": row.age !== null ? row.age : "",
       "מספר זהות": row.identity_id,
-      "מספר טלפון": row.phone_a || "",
+      "מספר טלפון": row.phone || row.phone_a || "",
       "אימייל": row.email,
       "משויך לחדר": row.room_id,
     }));

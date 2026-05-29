@@ -2,6 +2,7 @@ import React from "react";
 import { Badge, IconButton, Typography, Button, ClickAwayListener } from "@mui/material";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import CloseIcon from "@mui/icons-material/Close";
 import { useStyles } from "./NotificationBell.style";
 
 const timeAgo = (dateStr) => {
@@ -15,7 +16,7 @@ const timeAgo = (dateStr) => {
   return `לפני ${days} ימים`;
 };
 
-function NotificationBellView({ unreadCount, notifications, isOpen, handleBellClick, handleMarkAllRead, handleClickAway }) {
+function NotificationBellView({ unreadCount, notifications, isOpen, handleBellClick, handleMarkAllRead, handleDismiss, handleClearAll, handleClickAway }) {
   const classes = useStyles();
 
   return (
@@ -62,7 +63,16 @@ function NotificationBellView({ unreadCount, notifications, isOpen, handleBellCl
                         {!n.is_read && <div className={classes.unreadDot} />}
                         <Typography className={classes.notifTitle}>{n.title}</Typography>
                       </div>
-                      <Typography className={classes.notifTime}>{timeAgo(n.created_at)}</Typography>
+                      <div style={{ display: "flex", alignItems: "center", gap: "2px", flexShrink: 0 }}>
+                        <Typography className={classes.notifTime}>{timeAgo(n.created_at)}</Typography>
+                        <IconButton
+                          className={classes.dismissBtn}
+                          onClick={() => handleDismiss(n.id)}
+                          aria-label="הסר התראה"
+                        >
+                          <CloseIcon className={classes.dismissIcon} />
+                        </IconButton>
+                      </div>
                     </div>
                     {n.message && (
                       <Typography className={classes.notifMessage}>{n.message}</Typography>
@@ -74,6 +84,14 @@ function NotificationBellView({ unreadCount, notifications, isOpen, handleBellCl
                 ))
               )}
             </div>
+
+            {notifications.length > 0 && (
+              <div className={classes.dropdownFooter}>
+                <Button className={classes.clearAllBtn} onClick={handleClearAll}>
+                  נקה הכל
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </div>

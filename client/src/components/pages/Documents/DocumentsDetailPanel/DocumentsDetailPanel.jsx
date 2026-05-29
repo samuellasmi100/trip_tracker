@@ -97,13 +97,13 @@ function DocumentsDetailPanel({ open, onClose, family, vacationId, token, onDocD
           <>
             {registrationDocs.length > 0 && (
               <div>
-                <Typography className={classes.sectionHeading}>טופס הרשמה חתום</Typography>
+                <Typography className={classes.sectionHeading}>טופס רישום חתום</Typography>
                 {registrationDocs.map((doc) => (
                   <div key={doc.id} className={classes.docItem}>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                       <AssignmentTurnedInOutlinedIcon style={{ fontSize: "20px", color: "#0d9488" }} />
                       <div className={classes.docItemInfo}>
-                        <Typography className={classes.docItemLabel}>{doc.label || "טופס הרשמה חתום"}</Typography>
+                        <Typography className={classes.docItemLabel}>{doc.label || "טופס רישום חתום"}</Typography>
                         <Typography className={classes.docItemMeta}>{doc.file_name}</Typography>
                       </div>
                     </div>

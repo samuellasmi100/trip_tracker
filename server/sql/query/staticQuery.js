@@ -16,6 +16,7 @@ const getMainGuests = (vacationId, limit, offset) => {
     fa.total_amount,
     fa.start_date,
     fa.end_date,
+    g.phone,
     g.phone_a,
     g.email,
     g.identity_id,
@@ -28,6 +29,7 @@ FROM
 LEFT JOIN (
     SELECT
         family_id,
+        COALESCE(MAX(CASE WHEN is_main_user = 1 THEN phone END), MAX(phone))           AS phone,
         COALESCE(MAX(CASE WHEN is_main_user = 1 THEN phone_a END), MAX(phone_a))       AS phone_a,
         COALESCE(MAX(CASE WHEN is_main_user = 1 THEN email END), MAX(email))           AS email,
         COALESCE(MAX(CASE WHEN is_main_user = 1 THEN identity_id END), MAX(identity_id)) AS identity_id,
@@ -37,6 +39,7 @@ LEFT JOIN (
 ) g ON fa.family_id = g.family_id
 WHERE
     (? = '' OR fa.family_name LIKE CONCAT('%',?,'%')
+            OR g.phone        LIKE CONCAT('%',?,'%')
             OR g.phone_a      LIKE CONCAT('%',?,'%')
             OR g.email        LIKE CONCAT('%',?,'%'))
 ORDER BY fa.family_name
@@ -46,7 +49,7 @@ LIMIT ${limit} OFFSET ${offset}`
 const getAllGuests = (vacationId, limit, offset) => {
     return `SELECT gu.hebrew_first_name, gu.hebrew_last_name, gu.english_first_name, gu.english_last_name,
     gu.is_main_user, gu.user_id, gu.family_id, gu.age,
-    gu.birth_date, gu.phone_a, gu.phone_b, gu.email, gu.identity_id, ura.room_id
+    gu.birth_date, gu.phone, gu.phone_a, gu.phone_b, gu.email, gu.identity_id, ura.room_id
     FROM trip_tracker_${vacationId}.guest gu
     LEFT JOIN trip_tracker_${vacationId}.user_room_assignments ura ON gu.user_id = ura.user_id
     WHERE (? = '' OR gu.hebrew_first_name LIKE CONCAT('%',?,'%')
@@ -172,6 +175,7 @@ return `SELECT
         )
     END AS date_chosen,
     ${dmy('g.birth_date')} AS defaule_birth_date,
+    g.phone,
     g.phone_a,
     g.phone_b,
     g.email,

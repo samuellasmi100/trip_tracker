@@ -109,7 +109,7 @@ function GeneralInfoView({
                 <TableCell className={classes.dataTableCell}>{flight?.english_last_name}</TableCell>
                 <TableCell className={classes.dataTableCell}>{flight?.birth_date === null ? flight?.defaule_birth_date : flight?.birth_date}</TableCell>
                 <TableCell className={classes.dataTableCell}>{flight?.identity_id}</TableCell>
-                <TableCell className={classes.dataTableCell}>{flight?.phone_a || ""}</TableCell>
+                <TableCell className={classes.dataTableCell}>{flight?.phone || flight?.phone_a || ""}</TableCell>
                 <TableCell className={classes.dataTableCell}>{flight?.email}</TableCell>
                 <TableCell className={classes.dataTableCell}>{flight?.age === null ? flight?.default_age : flight?.age}</TableCell>
                 <TableCell className={classes.dataTableCell}>{flight?.user_classification}</TableCell>

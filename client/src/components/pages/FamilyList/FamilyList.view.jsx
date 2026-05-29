@@ -92,7 +92,7 @@ function FamilyListView(props) {
     handleSendRegistrationLink,
   } = props;
 
-  const headers = ["", "שם משפחה / קבוצה", "קבצים", "מסמכים", "חתימה", "הרשמה", "טופס", "תשלום", "חדרים", "נרשמים", "חסרים", "סטטוס", ""];
+  const headers = ["", "שם משפחה / קבוצה", "קבצים", "מסמכים", "חתימה", "טופס רישום", "טופס", "תשלום", "חדרים", "נרשמים", "חסרים", "סטטוס", ""];
   const guests = useSelector((state) => state.userSlice.guests);
   const family = useSelector((state) => state.userSlice.family);
   const vacationsDates = useSelector((state) => state.vacationSlice.vacationsDates);
@@ -292,7 +292,7 @@ function FamilyListView(props) {
                           // No row yet → original send icon (opens the dialog).
                           return (
                             <div style={{ display: "flex", alignItems: "center", gap: "4px", justifyContent: "center" }}>
-                              <Tooltip title="שלח קישור הרשמה">
+                              <Tooltip title="שליחת קישור לטופס רישום">
                                 <IconButton size="small" onClick={(e) => handleSendRegistrationLink(e, user)} style={{ padding: "2px" }}>
                                   <HowToRegOutlinedIcon style={{ fontSize: "16px", color: "#64748b" }} />
                                 </IconButton>

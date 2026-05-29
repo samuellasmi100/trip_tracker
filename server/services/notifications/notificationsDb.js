@@ -59,4 +59,13 @@ const deleteOne = async (id) => {
   }
 };
 
-module.exports = { getAll, getUnread, create, markAllRead, deleteOne };
+const deleteAll = async () => {
+  try {
+    return await connection.execute(q.deleteAll());
+  } catch (error) {
+    logger.error(`notificationsDb.deleteAll: ${error.sqlMessage || error.message}`);
+    throw error;
+  }
+};
+
+module.exports = { getAll, getUnread, create, markAllRead, deleteOne, deleteAll };

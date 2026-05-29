@@ -287,7 +287,7 @@ const generateRegistrationPdf = async (snapshot, signatureDataUrl, registrationI
     });
   }
 
-  drawCenter('טופס הרשמה לחופשה', y - 6, hebBold, titleSize, primary);
+  drawCenter('טופס רישום לחופשה', y - 6, hebBold, titleSize, primary);
   y -= 30;
 
   const vacName = snapshot.display_snapshot?.vacation_name || '';

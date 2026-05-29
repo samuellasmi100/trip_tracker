@@ -48,6 +48,26 @@ const NotificationBell = () => {
     }
   };
 
+  // Per-item dismiss — hard delete (notifications are transient alerts; the
+  // underlying registration/lead/booking record persists in its own table).
+  const handleDismiss = async (id) => {
+    try {
+      await ApiNotifications.deleteOne(token, id);
+      dispatch(notificationsSlice.removeNotification(id));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleClearAll = async () => {
+    try {
+      await ApiNotifications.deleteAll(token);
+      dispatch(notificationsSlice.clearNotifications());
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleClickAway = () => {
     setIsOpen(false);
   };
@@ -59,6 +79,8 @@ const NotificationBell = () => {
       isOpen={isOpen}
       handleBellClick={handleBellClick}
       handleMarkAllRead={handleMarkAllRead}
+      handleDismiss={handleDismiss}
+      handleClearAll={handleClearAll}
       handleClickAway={handleClickAway}
     />
   );

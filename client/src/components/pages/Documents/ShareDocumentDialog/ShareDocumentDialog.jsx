@@ -8,13 +8,13 @@ import { toWhatsAppDigits, looksLikeEmail } from "../../../../utils/helpers/phon
 // Trailing closing line keeps the URL in its own paragraph.
 const buildMessage = (url) =>
   `שלום,\n` +
-  `מצורף טופס הרשמה חתום.\n` +
+  `מצורף טופס רישום חתום.\n` +
   `\n` +
   `${url}\n` +
   `\n` +
   `תודה!`;
 
-const SUBJECT = "טופס הרשמה חתום";
+const SUBJECT = "טופס רישום חתום";
 
 const ShareDocumentDialog = ({ open, onClose, docId, vacationId, token }) => {
   const [recipient,   setRecipient]   = useState("");

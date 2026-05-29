@@ -16,4 +16,9 @@ export default {
       headers: { Authorization: token },
     });
   },
+  deleteAll(token) {
+    return Api.delete("/notifications", {
+      headers: { Authorization: token },
+    });
+  },
 };

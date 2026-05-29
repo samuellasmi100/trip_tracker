@@ -128,4 +128,31 @@ export const useStyles = makeStyles(() => ({
     fontSize: "13px !important",
     color: "#94a3b8",
   },
+  dismissBtn: {
+    padding: "2px !important",
+    color: "#cbd5e1 !important",
+    "&:hover": {
+      color: "#ef4444 !important",
+      backgroundColor: "transparent !important",
+    },
+  },
+  dismissIcon: {
+    fontSize: "14px !important",
+  },
+  dropdownFooter: {
+    display: "flex",
+    justifyContent: "center",
+    padding: "8px 16px",
+    borderTop: "1px solid #f1f5f9",
+  },
+  clearAllBtn: {
+    fontSize: "12px !important",
+    color: "#64748b !important",
+    textTransform: "none !important",
+    padding: "4px 12px !important",
+    "&:hover": {
+      color: "#ef4444 !important",
+      backgroundColor: "#fef2f2 !important",
+    },
+  },
 }));

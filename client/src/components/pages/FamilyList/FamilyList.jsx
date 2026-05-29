@@ -506,7 +506,7 @@ const FamilyList = () => {
       // distinction is worth surfacing on the resend path).
       dispatch(snackBarSlice.setSnackBar({
         type: "success",
-        message: data.reused ? "קישור קיים בתוקף — בחר ערוץ שליחה" : "קישור הרשמה נוצר — בחר ערוץ שליחה",
+        message: data.reused ? "קישור קיים בתוקף — בחר ערוץ שליחה" : "קישור לטופס רישום נוצר — בחר ערוץ שליחה",
         timeout: 3000,
       }));
     } catch (err) {
@@ -515,7 +515,7 @@ const FamilyList = () => {
       const serverMsg = err?.response?.data?.message;
       let message = serverMsg || "יצירת הקישור נכשלה, נסה שוב";
       if (code === "NO_MAIN_GUEST") {
-        message = serverMsg || 'הוסף נופש וסמן אותו כ"משתמש ראשי" לפני יצירת קישור הרשמה';
+        message = serverMsg || 'הוסף נופש וסמן אותו כ"משתמש ראשי" לפני יצירת קישור לטופס רישום';
       } else if (code === "HEAD_GUEST_NO_PHONE") {
         message = serverMsg || "ראש המשפחה ללא טלפון — הוסף טלפון לפני יצירת קישור";
       } else if (code === "NO_FAMILY") {

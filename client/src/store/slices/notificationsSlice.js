@@ -19,6 +19,12 @@ export const notificationsSlice = createSlice({
       state.notifications = state.notifications.map((n) => ({ ...n, is_read: 1 }));
       state.unreadCount = 0;
     },
+    removeNotification: (state, action) => {
+      const id = action.payload;
+      const removed = state.notifications.find((n) => n.id === id);
+      state.notifications = state.notifications.filter((n) => n.id !== id);
+      if (removed && !removed.is_read) state.unreadCount = Math.max(0, state.unreadCount - 1);
+    },
     clearNotifications: (state) => {
       state.notifications = [];
       state.unreadCount = 0;
@@ -30,6 +36,7 @@ export const {
   setNotifications,
   addNotification,
   markAllRead,
+  removeNotification,
   clearNotifications,
 } = notificationsSlice.actions;
 

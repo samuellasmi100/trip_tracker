@@ -46,6 +46,40 @@ export const toWhatsAppDigits = (raw) => {
 };
 
 /**
+ * Derive an E.164 string ("+972…") from the legacy phone_a/phone_b column
+ * pair. Mirrors the server's utils/phoneNormalize.buildWhatsAppDigits shape
+ * detection so the GuestEditor can prefill the unified phone input for rows
+ * that haven't been backfilled yet. Returns "" when there are no digits.
+ *
+ * Kept in lockstep with the server logic; if one changes, change both.
+ */
+export const legacyPartsToE164 = (phoneA, phoneB) => {
+  const a = String(phoneA || '').trim();
+  const b = String(phoneB || '').trim();
+  const aDigits = a.replace(/\D/g, '');
+  const bDigits = b.replace(/\D/g, '');
+
+  // International country code declared in phone_a (e.g. "+44").
+  if (a.startsWith('+')) {
+    const digits = (bDigits.length > 0 && bDigits.startsWith(aDigits)) ? bDigits : aDigits + bDigits;
+    return digits ? `+${digits}` : '';
+  }
+
+  // Israeli local form: phone_b may be the full number or just the local part.
+  let combined;
+  if (bDigits.length >= 9 && bDigits.startsWith('0')) {
+    combined = bDigits;
+  } else if (bDigits.length > 0) {
+    combined = aDigits + bDigits;
+  } else {
+    combined = aDigits;
+  }
+  if (!combined) return '';
+  if (combined.startsWith('0')) return `+972${combined.slice(1)}`;
+  return `+${combined}`;
+};
+
+/**
  * Cheap "looks like an email" check for the share-recipient input — used to
  * decide whether to enable the WhatsApp button or the Email button. Not RFC
  * 5322; deliberately permissive ("foo@bar" passes) because the recipient is

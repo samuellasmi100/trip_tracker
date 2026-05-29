@@ -208,6 +208,10 @@ const TENANT_TABLE_SCHEMAS = {
       { name: 'english_last_name',  definition: 'varchar(45) DEFAULT NULL' },
       { name: 'phone_a',            definition: 'varchar(45) DEFAULT NULL' },
       { name: 'phone_b',            definition: 'varchar(45) DEFAULT NULL' },
+      // Unified international phone in E.164 (e.g. "+972544372393"). Supersedes
+      // the phone_a/phone_b pair; both kept during the migration transition and
+      // dropped in a later cleanup PR. Backfilled by scripts/backfill_phone_e164.js.
+      { name: 'phone',              definition: 'varchar(20) DEFAULT NULL' },
       { name: 'email',              definition: 'varchar(45) DEFAULT NULL' },
       { name: 'identity_id',        definition: 'varchar(45) DEFAULT NULL' },
       { name: 'family_id',          definition: 'varchar(45) NOT NULL' },
@@ -486,7 +490,7 @@ const TENANT_TABLE_SCHEMAS = {
       { name: 'sort_order',  definition: "int NOT NULL DEFAULT '0'" },
       { name: 'created_at',  definition: 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP' },
     ],
-    seed: `INSERT INTO {{T}} (type_key, label, is_required, sort_order) VALUES ('id_passport', 'צילום תעודת זהות / דרכון', 1, 1), ('flight_ticket', 'כרטיסי טיסה', 1, 2), ('signed_registration', 'טופס הרשמה חתום', 1, 3)`,
+    seed: `INSERT INTO {{T}} (type_key, label, is_required, sort_order) VALUES ('id_passport', 'צילום תעודת זהות / דרכון', 1, 1), ('flight_ticket', 'כרטיסי טיסה', 1, 2), ('signed_registration', 'טופס רישום חתום', 1, 3)`,
   },
 
   family_documents: {
