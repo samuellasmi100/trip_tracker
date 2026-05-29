@@ -162,7 +162,6 @@ const TENANT_TABLE_SCHEMAS = {
       { name: 'voucher_number',         definition: 'varchar(20) DEFAULT NULL' },
       { name: 'special_requests',       definition: 'text' },
       { name: 'doc_token',              definition: 'varchar(36) DEFAULT NULL' },
-      { name: 'signature_sent_at',      definition: 'timestamp NULL DEFAULT NULL' },
       { name: 'payment_method',         definition: 'varchar(45) DEFAULT NULL' },
       { name: 'num_payments',           definition: 'int DEFAULT NULL' },
     ],
@@ -507,19 +506,6 @@ const TENANT_TABLE_SCHEMAS = {
     ],
   },
 
-  family_signatures: {
-    options: ENGINE_AI,
-    primaryKey: '(`id`)',
-    columns: [
-      { name: 'id',                   definition: 'int NOT NULL AUTO_INCREMENT' },
-      { name: 'family_id',            definition: 'varchar(45) NOT NULL' },
-      { name: 'signer_name',          definition: 'varchar(100) NOT NULL' },
-      { name: 'signature_image_path', definition: 'varchar(500) NOT NULL' },
-      { name: 'signed_at',            definition: 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP' },
-      { name: 'ip_address',           definition: 'varchar(45) DEFAULT NULL' },
-    ],
-  },
-
   registration_requests: {
     options: ENGINE_AI,
     primaryKey: '(`id`)',
@@ -546,68 +532,6 @@ const TENANT_TABLE_SCHEMAS = {
       { name: 'created_by',         definition: 'varchar(45) DEFAULT NULL' },
       { name: 'created_at',         definition: 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP' },
       { name: 'updated_at',         definition: 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP' },
-    ],
-  },
-
-  staff: {
-    options: ENGINE_AI,
-    primaryKey: '(`id`)',
-    columns: [
-      { name: 'id',            definition: 'int NOT NULL AUTO_INCREMENT' },
-      { name: 'name',          definition: 'varchar(100) NOT NULL' },
-      { name: 'role',          definition: 'varchar(100) DEFAULT NULL' },
-      { name: 'location',      definition: 'varchar(45) DEFAULT NULL' },
-      { name: 'room_number',   definition: 'varchar(10) DEFAULT NULL' },
-      { name: 'persons_count', definition: "int DEFAULT '1'" },
-      { name: 'notes',         definition: 'text' },
-    ],
-  },
-
-  vehicles: {
-    options: ENGINE_AI,
-    primaryKey: '(`id`)',
-    columns: [
-      { name: 'id',           definition: 'int NOT NULL AUTO_INCREMENT' },
-      { name: 'family_id',    definition: 'varchar(45) DEFAULT NULL' },
-      { name: 'family_name',  definition: 'varchar(100) DEFAULT NULL' },
-      { name: 'vehicle_type', definition: 'varchar(100) DEFAULT NULL' },
-      { name: 'seats',        definition: 'int DEFAULT NULL' },
-      { name: 'cost',         definition: 'decimal(10,2) DEFAULT NULL' },
-      { name: 'currency',     definition: "varchar(10) DEFAULT 'EUR'" },
-      { name: 'notes',        definition: 'text' },
-    ],
-  },
-
-  booking_submissions: {
-    options: ENGINE_AI,
-    primaryKey: '(`id`)',
-    columns: [
-      { name: 'id',                 definition: 'int NOT NULL AUTO_INCREMENT' },
-      { name: 'family_id',          definition: 'varchar(45) NOT NULL' },
-      { name: 'contact_name',       definition: 'varchar(100) DEFAULT NULL' },
-      { name: 'contact_phone',      definition: 'varchar(20) DEFAULT NULL' },
-      { name: 'contact_email',      definition: 'varchar(100) DEFAULT NULL' },
-      { name: 'contact_address',    definition: 'varchar(200) DEFAULT NULL' },
-      { name: 'payment_preference', definition: 'varchar(30) DEFAULT NULL' },
-      { name: 'special_requests',   definition: 'text' },
-      { name: 'submitted_at',       definition: 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP' },
-    ],
-  },
-
-  booking_guests: {
-    options: ENGINE_AI,
-    primaryKey: '(`id`)',
-    columns: [
-      { name: 'id',              definition: 'int NOT NULL AUTO_INCREMENT' },
-      { name: 'submission_id',   definition: 'int NOT NULL' },
-      { name: 'full_name_he',    definition: 'varchar(100) DEFAULT NULL' },
-      { name: 'full_name_en',    definition: 'varchar(100) DEFAULT NULL' },
-      { name: 'passport_number', definition: 'varchar(50) DEFAULT NULL' },
-      { name: 'passport_expiry', definition: 'varchar(20) DEFAULT NULL' },
-      { name: 'date_of_birth',   definition: 'varchar(20) DEFAULT NULL' },
-      { name: 'gender',          definition: 'varchar(10) DEFAULT NULL' },
-      { name: 'food_preference', definition: 'varchar(50) DEFAULT NULL' },
-      { name: 'sort_order',      definition: "int DEFAULT '0'" },
     ],
   },
 
@@ -650,12 +574,7 @@ const TENANT_TABLE_ORDER = [
   'lead_notes',
   'family_document_types',
   'family_documents',
-  'family_signatures',
   'registration_requests',
-  'staff',
-  'vehicles',
-  'booking_submissions',
-  'booking_guests',
   'files',
 ];
 

@@ -3,14 +3,12 @@
 const dashboardDb = require('./dashboardDb');
 
 const getSummary = async (vacationId) => {
-  const { familyRow, roomRow, paymentRow, flightRow, leadsRow, bookingsRow } =
+  const { familyRow, roomRow, paymentRow, flightRow, leadsRow } =
     await dashboardDb.getSummary(vacationId);
 
   const totalFamilies    = Number(familyRow?.total_families    ?? 0);
   const occupiedFamilies = Number(roomRow?.occupied_families   ?? 0);
   const roomFamilyTotal  = Number(roomRow?.total_families      ?? totalFamilies);
-
-  const submitted    = Number(bookingsRow?.submitted ?? 0);
 
   return {
     families: {
@@ -35,16 +33,13 @@ const getSummary = async (vacationId) => {
       fullyReady:   Number(flightRow?.fully_ready    ?? 0),
     },
     leads: {
-      total:       Number(leadsRow?.total       ?? 0),
-      active:      Number(leadsRow?.active      ?? 0),
-      registered:  Number(leadsRow?.registered  ?? 0),
-      newCold:     Number(leadsRow?.new_cold    ?? 0),
-      notRelevant: Number(leadsRow?.not_relevant ?? 0),
-    },
-    bookings: {
-      total:        totalFamilies,
-      submitted,
-      notSubmitted: Math.max(0, totalFamilies - submitted),
+      total:           Number(leadsRow?.total            ?? 0),
+      active:          Number(leadsRow?.active           ?? 0),
+      registered:      Number(leadsRow?.registered       ?? 0),
+      newCold:         Number(leadsRow?.new_cold         ?? 0),
+      notRelevant:     Number(leadsRow?.not_relevant     ?? 0),
+      followupOverdue: Number(leadsRow?.followup_overdue ?? 0),
+      followupToday:   Number(leadsRow?.followup_today   ?? 0),
     },
   };
 };

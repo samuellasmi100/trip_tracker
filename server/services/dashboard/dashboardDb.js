@@ -5,14 +5,13 @@ const q  = require('../../sql/query/dashboardQuery');
 
 const getSummary = async (vacationId) => {
   // Use allSettled so a missing table (e.g. leads on old vacation) doesn't crash the whole request
-  const [familyRes, roomRes, paymentRes, flightRes, leadsRes, bookingsRes] =
+  const [familyRes, roomRes, paymentRes, flightRes, leadsRes] =
     await Promise.allSettled([
       db.execute(q.getFamiliesAndGuests(vacationId)),
       db.execute(q.getRoomOccupancy(vacationId)),
       db.execute(q.getPaymentSummary(vacationId)),
       db.execute(q.getFlightReadiness(vacationId)),
       db.execute(q.getLeadsSummary(vacationId)),
-      db.execute(q.getBookingStatus(vacationId)),
     ]);
 
   const val = (res) => (res.status === 'fulfilled' ? res.value[0] : null);
@@ -23,7 +22,6 @@ const getSummary = async (vacationId) => {
     paymentRow:  val(paymentRes),
     flightRow:   val(flightRes),
     leadsRow:    val(leadsRes),
-    bookingsRow: val(bookingsRes),
   };
 };
 

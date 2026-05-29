@@ -7,8 +7,6 @@ import { useDispatch, useSelector } from "react-redux";
 import ApiUser from "../../../apis/userRequest"
 import ApiVacations from "../../../apis/vacationRequest"
 import ApiDocuments from "../../../apis/documentsRequest"
-import ApiSignatures from "../../../apis/signaturesRequest"
-import ApiBookings from "../../../apis/bookingsRequest"
 import ApiRegistrations from "../../../apis/registrationsRequest"
 import { connectSocket, getSocket } from "../../../utils/socketService";
 import FamilyListView from "./FamilyList.view";
@@ -44,14 +42,9 @@ const FamilyList = () => {
   const vacationsDates = useSelector((state) => state.vacationSlice.vacationsDates)
   const [docStatusMap, setDocStatusMap] = useState({});
   const [copiedFamilyId, setCopiedFamilyId] = useState(null);
-  const [sigStatusMap, setSigStatusMap] = useState({});
-  const [sigCopiedId, setSigCopiedId] = useState(null);
-  const [bookingStatusMap, setBookingStatusMap] = useState({});
-  const [bookingCopiedId, setBookingCopiedId] = useState(null);
   // Dialog state for the new send-registration-link modal. Opens on a
   // successful POST /registrations/:vacationId; closed by the user.
   const [registrationDialog, setRegistrationDialog] = useState({ open: false, data: null });
-  const [selectedBooking, setSelectedBooking] = useState({ open: false, familyId: null, data: null });
 
   // Drawer state
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -230,10 +223,6 @@ const FamilyList = () => {
       dispatch(dialogSlice.openModal())
       dispatch(userSlice.updateForm(userData))
     } else if (type === "parentDetails") {
-      dispatch(dialogSlice.openModal())
-      dispatch(userSlice.updateForm(userData))
-    } else if (type === "uploadFile") {
-      dispatch(dialogSlice.updateActiveButton("העלה קובץ"))
       dispatch(dialogSlice.openModal())
       dispatch(userSlice.updateForm(userData))
     }
@@ -436,44 +425,6 @@ const FamilyList = () => {
     } catch (e) { /* non-fatal */ }
   }, [vacationId, token]);
 
-  const fetchSigStatus = useCallback(async () => {
-    if (!vacationId) return;
-    try {
-      const res = await ApiSignatures.getAllStatus(token, vacationId);
-      const map = {};
-      (res.data || []).forEach((row) => { map[row.family_id] = row; });
-      setSigStatusMap(map);
-    } catch (e) { /* non-fatal */ }
-  }, [vacationId, token]);
-
-  const handleSendSignatureLink = useCallback(async (e, user) => {
-    e.stopPropagation();
-    if (!vacationId) return;
-    try {
-      await ApiSignatures.markSent(token, vacationId, user.family_id);
-      setSigStatusMap((prev) => ({
-        ...prev,
-        [user.family_id]: {
-          ...(prev[user.family_id] || {}),
-          family_id: user.family_id,
-          family_name: user.family_name,
-          signature_sent_at: new Date().toISOString(),
-          doc_token: prev[user.family_id]?.doc_token || null,
-        },
-      }));
-      const docToken = sigStatusMap[user.family_id]?.doc_token;
-      if (docToken) {
-        const url = `${window.location.origin}/public/sign/${vacationId}/${docToken}`;
-        await navigator.clipboard.writeText(url);
-        setSigCopiedId(user.family_id);
-        setTimeout(() => setSigCopiedId(null), 2500);
-      }
-    } catch (e) {
-      console.error(e);
-      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "שליחת קישור החתימה נכשלה, נסה שוב", timeout: 4000 }));
-    }
-  }, [token, vacationId, sigStatusMap, dispatch]);
-
   // Registration link — calls authenticated POST /registrations/:vacationId
   // and opens the SendRegistrationDialog so the coordinator can pick a channel
   // (WhatsApp / Email / Copy). Idempotent on the server: a second click within
@@ -542,53 +493,6 @@ const FamilyList = () => {
     }
   }, [token, vacationId]);
 
-  const fetchBookingStatus = useCallback(async () => {
-    if (!vacationId) return;
-    try {
-      const res = await ApiBookings.getAllStatus(token, vacationId);
-      const map = {};
-      (res.data || []).forEach((row) => {
-        if (row.submission_id) {
-          map[row.family_id] = {
-            submission_id: row.submission_id,
-            contact_name: row.contact_name,
-            submitted_at: row.submitted_at,
-          };
-        }
-      });
-      setBookingStatusMap(map);
-    } catch (e) { /* non-fatal */ }
-  }, [vacationId, token]);
-
-  const handleCopyBookingLink = useCallback(async (e, user) => {
-    e.stopPropagation();
-    const docToken = user.doc_token;
-    if (!docToken) return;
-    try {
-      const url = `${window.location.origin}/public/booking/${vacationId}/${docToken}`;
-      await navigator.clipboard.writeText(url);
-      setBookingCopiedId(user.family_id);
-      setTimeout(() => setBookingCopiedId(null), 2500);
-    } catch (err) {
-      console.error(err);
-    }
-  }, [vacationId]);
-
-  const handleViewBooking = useCallback(async (e, user) => {
-    e.stopPropagation();
-    setSelectedBooking({ open: true, familyId: user.family_id, data: null });
-    try {
-      const res = await ApiBookings.getByFamily(token, vacationId, user.family_id);
-      setSelectedBooking((prev) => ({ ...prev, data: res.data }));
-    } catch (err) {
-      console.error(err);
-    }
-  }, [token, vacationId]);
-
-  const closeBookingDialog = useCallback(() => {
-    setSelectedBooking({ open: false, familyId: null, data: null });
-  }, []);
-
   // ── Vacation change: reset everything and reload ──────────────────────────
   useEffect(() => {
     if (!vacationId) return;
@@ -602,8 +506,6 @@ const FamilyList = () => {
     loadPage(1, "");
     getChosenFamily();
     fetchDocStatus();
-    fetchSigStatus();
-    fetchBookingStatus();
   }, [vacationId]);
 
   // Load vacation dates for route dropdown
@@ -665,16 +567,7 @@ const FamilyList = () => {
         docStatusMap={docStatusMap}
         copiedFamilyId={copiedFamilyId}
         handleCopyDocLink={handleCopyDocLink}
-        sigStatusMap={sigStatusMap}
-        sigCopiedId={sigCopiedId}
-        handleSendSignatureLink={handleSendSignatureLink}
         handleSendRegistrationLink={handleSendRegistrationLink}
-        bookingStatusMap={bookingStatusMap}
-        bookingCopiedId={bookingCopiedId}
-        handleCopyBookingLink={handleCopyBookingLink}
-        handleViewBooking={handleViewBooking}
-        selectedBooking={selectedBooking}
-        closeBookingDialog={closeBookingDialog}
       />
       <MainDialog
         dialogType={dialogType}

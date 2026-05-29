@@ -9,7 +9,6 @@ import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import HotelIcon          from "@mui/icons-material/Hotel";
 import FlightTakeoffIcon  from "@mui/icons-material/FlightTakeoff";
 import LeaderboardIcon    from "@mui/icons-material/Leaderboard";
-import AssignmentIcon     from "@mui/icons-material/Assignment";
 import GroupsIcon         from "@mui/icons-material/Groups";
 import WarningAmberIcon   from "@mui/icons-material/WarningAmber";
 import { Doughnut }       from "react-chartjs-2";
@@ -53,6 +52,23 @@ function StatRow({ color, label, value, total, warn }) {
           }}
         />
       )}
+    </div>
+  );
+}
+
+// ── Follow-up count row (leads card) ─────────────────────────────────────────
+// A barless label/value row in StatRow's visual idiom. Unlike StatRow the accent
+// tints the value (and label, when warn) only while the count is > 0, so a clear
+// queue reads as neutral slate rather than alarming red/amber.
+function FollowupStat({ label, value, color, warn }) {
+  const active = value > 0;
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", marginBottom: "6px" }}>
+      <span style={{ display: "flex", alignItems: "center", gap: "6px", color: warn && active ? color : "#475569" }}>
+        {warn && active && <WarningAmberIcon style={{ fontSize: "14px", color }} />}
+        {label}
+      </span>
+      <span style={{ fontWeight: 700, color: active ? color : "#0f172a" }}>{value}</span>
     </div>
   );
 }
@@ -117,7 +133,6 @@ function DashboardView({ vacations, selectedIds, onVacationChange, data, loading
 
   const roomPct     = data ? pct(data.rooms.occupied,          data.rooms.total)             : 0;
   const collectedPct= data ? pct(data.payments.totalPaid,      data.payments.totalExpected)  : 0;
-  const bookingPct  = data ? pct(data.bookings.submitted,      data.bookings.total)          : 0;
   const outstanding = data ? Math.max(0, data.payments.totalExpected - data.payments.totalPaid) : 0;
 
   return (
@@ -286,40 +301,17 @@ function DashboardView({ vacations, selectedIds, onVacationChange, data, loading
                   { label: "לא רלוונטי",      value: data.leads.notRelevant, color: "#e2e8f0" },
                 ]}
                 footer={
-                  <div style={{ fontSize: "12px", color: "#94a3b8", borderTop: "1px solid #f1f5f9", paddingTop: "8px" }}>
-                    סה״כ {data.leads.total} לידים · המרה {pct(data.leads.registered, data.leads.total)}%
-                  </div>
+                  <>
+                    <div style={{ borderTop: "1px solid #f1f5f9", paddingTop: "10px" }}>
+                      <FollowupStat label="פולואפ באיחור" value={data.leads.followupOverdue} color="#ef4444" warn />
+                      <FollowupStat label="פולואפ להיום"  value={data.leads.followupToday}   color="#f59e0b" />
+                    </div>
+                    <div style={{ fontSize: "12px", color: "#94a3b8", borderTop: "1px solid #f1f5f9", paddingTop: "8px" }}>
+                      סה״כ {data.leads.total} לידים · המרה {pct(data.leads.registered, data.leads.total)}%
+                    </div>
+                  </>
                 }
               />
-
-              {/* ── 6. Booking forms ── */}
-              <div className={classes.card}>
-                <div className={classes.cardHeader}>
-                  <p className={classes.cardTitle}>הגשת טפסי הזמנה</p>
-                  <div className={`${classes.cardIconWrap} ${classes.cardIconTeal}`}>
-                    <AssignmentIcon style={{ fontSize: "20px" }} />
-                  </div>
-                </div>
-                <div>
-                  <div className={classes.bigNumber}>{data.bookings.submitted}</div>
-                  <div className={classes.bigNumberSub}>מתוך {data.bookings.total} משפחות הגישו טופס</div>
-                </div>
-                <div>
-                  <div className={classes.progressLabel}>
-                    <span>{bookingPct}% הגישו</span>
-                    <span>{data.bookings.notSubmitted} טרם הגישו</span>
-                  </div>
-                  <LinearProgress
-                    variant="determinate"
-                    value={Math.min(bookingPct, 100)}
-                    sx={{
-                      height: 10, borderRadius: 6,
-                      backgroundColor: "#e2e8f0",
-                      "& .MuiLinearProgress-bar": { backgroundColor: "#0d9488", borderRadius: 6 },
-                    }}
-                  />
-                </div>
-              </div>
 
               {/* ── 7. Cross-vacation families (only when 2+ vacations) ── */}
               {crossFamilies.length > 0 && (

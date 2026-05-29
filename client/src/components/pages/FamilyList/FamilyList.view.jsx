@@ -27,13 +27,9 @@ import React from "react";
 import { useStyles } from "./FamilyList.style";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import { useSelector } from "react-redux";
-import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
 import LinkIcon from "@mui/icons-material/Link";
 import CheckIcon from "@mui/icons-material/Check";
-import GestureIcon from "@mui/icons-material/Gesture";
-import AssignmentIcon from "@mui/icons-material/Assignment";
 import HowToRegOutlinedIcon from "@mui/icons-material/HowToRegOutlined";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import SearchIcon from "@material-ui/icons/Search";
 import GroupsIcon from "@mui/icons-material/Groups";
 import CloseIcon from "@mui/icons-material/Close";
@@ -80,19 +76,10 @@ function FamilyListView(props) {
     docStatusMap = {},
     copiedFamilyId,
     handleCopyDocLink,
-    sigStatusMap = {},
-    sigCopiedId,
-    handleSendSignatureLink,
-    bookingStatusMap = {},
-    bookingCopiedId,
-    handleCopyBookingLink,
-    handleViewBooking,
-    selectedBooking = { open: false, familyId: null, data: null },
-    closeBookingDialog,
     handleSendRegistrationLink,
   } = props;
 
-  const headers = ["", "שם משפחה / קבוצה", "קבצים", "מסמכים", "חתימה", "טופס רישום", "טופס", "תשלום", "חדרים", "נרשמים", "חסרים", "סטטוס", ""];
+  const headers = ["", "שם משפחה / קבוצה", "מסמכים", "טופס רישום", "תשלום", "חדרים", "נרשמים", "חסרים", "סטטוס", ""];
   const guests = useSelector((state) => state.userSlice.guests);
   const family = useSelector((state) => state.userSlice.family);
   const vacationsDates = useSelector((state) => state.vacationSlice.vacationsDates);
@@ -169,7 +156,7 @@ function FamilyListView(props) {
               <TableBody className={classes.dataTableBody}>
                 {loading && (
                   <TableRow>
-                    <TableCell colSpan={12} style={{ textAlign: "center", padding: "32px 0", border: "none" }}>
+                    <TableCell colSpan={10} style={{ textAlign: "center", padding: "32px 0", border: "none" }}>
                       <CircularProgress size={28} style={{ color: "#0d9488" }} />
                     </TableCell>
                   </TableRow>
@@ -180,14 +167,6 @@ function FamilyListView(props) {
                     <TableRow key={index} onClick={() => handleNameClick(user)}>
                       <TableCell className={classes.dataTableCell}>{index + 1}</TableCell>
                       <TableCell className={classes.familyNameCell}>{user.family_name}</TableCell>
-                      <TableCell className={classes.dataTableCell}>
-                        <IconButton
-                          size="small"
-                          onClick={(e) => { e.stopPropagation(); handleDialogTypeOpen("uploadFile", user); }}
-                        >
-                          <DriveFolderUploadIcon style={{ color: "#0d9488", fontSize: "20px" }} />
-                        </IconButton>
-                      </TableCell>
                       <TableCell className={classes.dataTableCell}>
                         {(() => {
                           const ds = docStatusMap[user.family_id];
@@ -207,53 +186,6 @@ function FamilyListView(props) {
                               </Tooltip>
                             </div>
                           );
-                        })()}
-                      </TableCell>
-                      <TableCell className={classes.dataTableCell}>
-                        {(() => {
-                          const sig = sigStatusMap[user.family_id];
-                          const isSent = sig?.signature_sent_at;
-                          const isSigned = sig?.sig_id;
-                          const copied = sigCopiedId === user.family_id;
-
-                          if (isSigned) {
-                            // GREEN — signed
-                            return (
-                              <span className={`${classes.statusBadge} ${classes.statusOk}`}>
-                                נחתם ✓
-                              </span>
-                            );
-                          } else if (isSent) {
-                            // ORANGE — sent, awaiting signature
-                            return (
-                              <div style={{ display: "flex", alignItems: "center", gap: "4px", justifyContent: "center" }}>
-                                <span className={`${classes.statusBadge} ${classes.statusWarning}`}>
-                                  ממתין
-                                </span>
-                                <Tooltip title={copied ? "הועתק!" : "שלח שוב"}>
-                                  <IconButton size="small" onClick={(e) => handleSendSignatureLink(e, user)} style={{ padding: "2px" }}>
-                                    {copied
-                                      ? <CheckIcon style={{ fontSize: "14px", color: "#22c55e" }} />
-                                      : <LinkIcon style={{ fontSize: "14px", color: "#64748b" }} />}
-                                  </IconButton>
-                                </Tooltip>
-                              </div>
-                            );
-                          } else {
-                            // GRAY — not sent yet
-                            return (
-                              <div style={{ display: "flex", alignItems: "center", gap: "4px", justifyContent: "center" }}>
-                                <span style={{ fontSize: "11px", color: "#94a3b8" }}>טרם נשלח</span>
-                                <Tooltip title={copied ? "הועתק!" : "שלח קישור חתימה"}>
-                                  <IconButton size="small" onClick={(e) => handleSendSignatureLink(e, user)} style={{ padding: "2px" }}>
-                                    {copied
-                                      ? <CheckIcon style={{ fontSize: "14px", color: "#22c55e" }} />
-                                      : <GestureIcon style={{ fontSize: "14px", color: "#64748b" }} />}
-                                  </IconButton>
-                                </Tooltip>
-                              </div>
-                            );
-                          }
                         })()}
                       </TableCell>
                       <TableCell className={classes.dataTableCell}>
@@ -299,44 +231,6 @@ function FamilyListView(props) {
                               </Tooltip>
                             </div>
                           );
-                        })()}
-                      </TableCell>
-                      <TableCell className={classes.dataTableCell}>
-                        {(() => {
-                          const booking = bookingStatusMap[user.family_id];
-                          const copied = bookingCopiedId === user.family_id;
-                          if (booking) {
-                            // GREEN — form submitted
-                            const date = booking.submitted_at
-                              ? new Date(booking.submitted_at).toLocaleDateString("he-IL")
-                              : "";
-                            return (
-                              <div style={{ display: "flex", alignItems: "center", gap: "4px", justifyContent: "center" }}>
-                                <span className={`${classes.statusBadge} ${classes.statusOk}`}>
-                                  הוגש {date}
-                                </span>
-                                <Tooltip title="צפה בפרטים">
-                                  <IconButton size="small" onClick={(e) => handleViewBooking(e, user)} style={{ padding: "2px" }}>
-                                    <VisibilityIcon style={{ fontSize: "14px", color: "#22c55e" }} />
-                                  </IconButton>
-                                </Tooltip>
-                              </div>
-                            );
-                          } else {
-                            // GRAY — not submitted yet
-                            return (
-                              <div style={{ display: "flex", alignItems: "center", gap: "4px", justifyContent: "center" }}>
-                                <span style={{ fontSize: "11px", color: "#94a3b8" }}>לא הוגש</span>
-                                <Tooltip title={copied ? "הועתק!" : "העתק קישור טופס"}>
-                                  <IconButton size="small" onClick={(e) => handleCopyBookingLink(e, user)} style={{ padding: "2px" }}>
-                                    {copied
-                                      ? <CheckIcon style={{ fontSize: "14px", color: "#22c55e" }} />
-                                      : <AssignmentIcon style={{ fontSize: "14px", color: "#64748b" }} />}
-                                  </IconButton>
-                                </Tooltip>
-                              </div>
-                            );
-                          }
                         })()}
                       </TableCell>
                       <TableCell
@@ -395,7 +289,7 @@ function FamilyListView(props) {
                 })}
                 {loadingMore && (
                   <TableRow>
-                    <TableCell colSpan={12} style={{ textAlign: "center", padding: "16px 0", border: "none" }}>
+                    <TableCell colSpan={10} style={{ textAlign: "center", padding: "16px 0", border: "none" }}>
                       <CircularProgress size={22} style={{ color: "#0d9488" }} />
                     </TableCell>
                   </TableRow>
@@ -518,104 +412,6 @@ function FamilyListView(props) {
           )}
         </div>
       </div>
-
-      {/* ===== SUBMISSION DETAIL DIALOG ===== */}
-      <Dialog
-        open={selectedBooking.open}
-        onClose={closeBookingDialog}
-        maxWidth="sm"
-        fullWidth
-        PaperProps={{ className: classes.editFamilyDialogPaper }}
-        style={{ zIndex: 1600 }}
-      >
-        <DialogTitle className={classes.editFamilyTitle}>
-          פרטי טופס הזמנה
-        </DialogTitle>
-        <DialogContent className={classes.editFamilyContent}>
-          {!selectedBooking.data ? (
-            <div style={{ display: "flex", justifyContent: "center", padding: "24px 0" }}>
-              <CircularProgress size={28} style={{ color: "#0d9488" }} />
-            </div>
-          ) : (
-            <div style={{ direction: "rtl" }}>
-              {/* Contact info */}
-              <div style={{ marginBottom: "16px" }}>
-                <Typography style={{ fontSize: "13px", fontWeight: 700, color: "#0f766e", marginBottom: "8px" }}>
-                  פרטי יצירת קשר
-                </Typography>
-                {[
-                  ["שם", selectedBooking.data.contact_name],
-                  ["טלפון", selectedBooking.data.contact_phone],
-                  ["אימייל", selectedBooking.data.contact_email],
-                  ["כתובת", selectedBooking.data.contact_address],
-                  ["אמצעי תשלום", selectedBooking.data.payment_preference],
-                  ["תאריך הגשה", selectedBooking.data.submitted_at ? new Date(selectedBooking.data.submitted_at).toLocaleDateString("he-IL") : null],
-                ]
-                  .filter(([, v]) => v)
-                  .map(([label, value]) => (
-                    <div key={label} style={{ display: "flex", gap: "6px", fontSize: "13px", color: "#374151", marginBottom: "4px" }}>
-                      <span style={{ fontWeight: 600, minWidth: 90 }}>{label}:</span>
-                      <span>{value}</span>
-                    </div>
-                  ))}
-              </div>
-
-              {/* Special requests */}
-              {selectedBooking.data.special_requests && (
-                <div style={{ marginBottom: "16px" }}>
-                  <Typography style={{ fontSize: "13px", fontWeight: 700, color: "#0f766e", marginBottom: "6px" }}>
-                    הערות ובקשות מיוחדות
-                  </Typography>
-                  <div style={{ fontSize: "13px", color: "#374151", whiteSpace: "pre-wrap", background: "#f8fafc", borderRadius: 6, padding: "8px 10px", border: "1px solid #e2e8f0" }}>
-                    {selectedBooking.data.special_requests}
-                  </div>
-                </div>
-              )}
-
-              {/* Guests */}
-              {Array.isArray(selectedBooking.data.guests) && selectedBooking.data.guests.length > 0 && (
-                <div>
-                  <Typography style={{ fontSize: "13px", fontWeight: 700, color: "#0f766e", marginBottom: "8px" }}>
-                    נוסעים ({selectedBooking.data.guests.length})
-                  </Typography>
-                  <TableContainer>
-                    <Table size="small">
-                      <TableHead>
-                        <TableRow>
-                          {["#", "שם בעברית", "שם באנגלית", "דרכון", "תוקף", "ת.לידה", "מגדר", "מזון"].map((h) => (
-                            <TableCell key={h} style={{ fontSize: "11px", fontWeight: 700, color: "#64748b", padding: "4px 6px", whiteSpace: "nowrap" }}>
-                              {h}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {selectedBooking.data.guests.map((g, i) => (
-                          <TableRow key={i}>
-                            <TableCell style={{ fontSize: "12px", padding: "4px 6px", color: "#0d9488", fontWeight: 600 }}>{i + 1}</TableCell>
-                            <TableCell style={{ fontSize: "12px", padding: "4px 6px" }}>{g.full_name_he || "—"}</TableCell>
-                            <TableCell style={{ fontSize: "12px", padding: "4px 6px" }}>{g.full_name_en || "—"}</TableCell>
-                            <TableCell style={{ fontSize: "12px", padding: "4px 6px" }}>{g.passport_number || "—"}</TableCell>
-                            <TableCell style={{ fontSize: "12px", padding: "4px 6px" }}>{g.passport_expiry || "—"}</TableCell>
-                            <TableCell style={{ fontSize: "12px", padding: "4px 6px" }}>{g.date_of_birth || "—"}</TableCell>
-                            <TableCell style={{ fontSize: "12px", padding: "4px 6px" }}>{g.gender || "—"}</TableCell>
-                            <TableCell style={{ fontSize: "12px", padding: "4px 6px" }}>{g.food_preference || "—"}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </div>
-              )}
-            </div>
-          )}
-        </DialogContent>
-        <DialogActions className={classes.editFamilyActions}>
-          <Button className={classes.editFamilyCancelBtn} onClick={closeBookingDialog}>
-            סגור
-          </Button>
-        </DialogActions>
-      </Dialog>
 
       {/* ===== EDIT FAMILY DIALOG ===== */}
       <Dialog

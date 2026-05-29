@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Dialog,
-  Grid,
 } from "@mui/material";
 
 import { useStyles } from "./MainDialog.style";
@@ -13,11 +12,9 @@ const MainDialogView = (props) => {
     dialogOpen,
     closeModal,
     handleDataView,
-    handleButtonHeader,
   } = props;
 
   const classes = useStyles();
-  const headerContent = handleButtonHeader();
 
   // Guest add/edit flows manage their own close (with an unsaved-changes prompt),
   // so backdrop/Esc must not close them directly.
@@ -31,21 +28,6 @@ const MainDialogView = (props) => {
       classes={{ paper: classes.dialog }}
       onClose={isGuestEditorFlow ? undefined : closeModal}
       style={{ zIndex: 1600 }}>
-      {headerContent && (
-        <Grid>
-          <Grid
-            item
-            container
-            xs={12}
-            style={{ marginTop: "30px", marginLeft: "30px"}}
-            alignContent="center"
-            justifyContent="space-between">
-            <Grid item xs={12} container justifyContent={dialogType !== "uploadFile" ? "center" : ""} style={{ marginTop: "20px", marginBottom: "30px",marginRight:dialogType !== "uploadFile" ? "" : "10px" }} >
-              {headerContent}
-            </Grid>
-          </Grid>
-        </Grid>
-      )}
       {handleDataView()}
     </Dialog>
   );

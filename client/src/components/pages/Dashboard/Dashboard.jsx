@@ -10,8 +10,7 @@ const ZERO = {
   payments:        { totalExpected: 0, totalPaid: 0 },
   rooms:           { total: 0, occupied: 0, withoutRoom: 0 },
   flightReadiness: { totalGuests: 0, withPassport: 0, withBirthdate: 0, withOutbound: 0, withReturn: 0, fullyReady: 0 },
-  leads:           { total: 0, active: 0, registered: 0, newCold: 0, notRelevant: 0 },
-  bookings:        { total: 0, submitted: 0, notSubmitted: 0 },
+  leads:           { total: 0, active: 0, registered: 0, newCold: 0, notRelevant: 0, followupOverdue: 0, followupToday: 0 },
 };
 
 function mergeResults(results) {
@@ -38,16 +37,13 @@ function mergeResults(results) {
       fullyReady:    acc.flightReadiness.fullyReady     + r.flightReadiness.fullyReady,
     },
     leads: {
-      total:       acc.leads.total       + r.leads.total,
-      active:      acc.leads.active      + r.leads.active,
-      registered:  acc.leads.registered  + r.leads.registered,
-      newCold:     acc.leads.newCold     + r.leads.newCold,
-      notRelevant: acc.leads.notRelevant + r.leads.notRelevant,
-    },
-    bookings: {
-      total:        acc.bookings.total        + r.bookings.total,
-      submitted:    acc.bookings.submitted    + r.bookings.submitted,
-      notSubmitted: acc.bookings.notSubmitted + r.bookings.notSubmitted,
+      total:           acc.leads.total           + r.leads.total,
+      active:          acc.leads.active           + r.leads.active,
+      registered:      acc.leads.registered       + r.leads.registered,
+      newCold:         acc.leads.newCold          + r.leads.newCold,
+      notRelevant:     acc.leads.notRelevant      + r.leads.notRelevant,
+      followupOverdue: acc.leads.followupOverdue  + r.leads.followupOverdue,
+      followupToday:   acc.leads.followupToday    + r.leads.followupToday,
     },
   }), { ...ZERO });
 }

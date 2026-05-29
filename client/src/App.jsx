@@ -15,8 +15,6 @@ import Leads from "./components/pages/Leads/Leads";
 import Settings from "./components/pages/Settings/Settings";
 import PublicLeadForm from "./components/Public/PublicLeadForm/PublicLeadForm";
 import PublicDocumentUpload from "./components/Public/PublicDocumentUpload/PublicDocumentUpload";
-import PublicSignaturePage from "./components/Public/PublicSignaturePage/PublicSignaturePage";
-import PublicBookingForm from "./components/Public/PublicBookingForm/PublicBookingForm";
 import PublicRegistration from "./components/Public/PublicRegistration/PublicRegistration";
 import Dashboard from "./components/pages/Dashboard/Dashboard";
 import RequireVacation from "./components/layout/RequireVacation/RequireVacation";
@@ -53,22 +51,6 @@ function App() {
         timeout: 5000,
       }));
     };
-    const onNewSignature = (notification) => {
-      dispatch(notificationsSlice.addNotification(notification));
-      dispatch(snackBarSlice.setSnackBar({
-        type: "success",
-        message: `חתימה חדשה: ${notification.message || notification.title}`,
-        timeout: 5000,
-      }));
-    };
-    const onNewBooking = (notification) => {
-      dispatch(notificationsSlice.addNotification(notification));
-      dispatch(snackBarSlice.setSnackBar({
-        type: "info",
-        message: `טופס הזמנה חדש: ${notification.message || notification.title}`,
-        timeout: 5000,
-      }));
-    };
     const onNewRegistration = (notification) => {
       dispatch(notificationsSlice.addNotification(notification));
       dispatch(snackBarSlice.setSnackBar({
@@ -79,16 +61,12 @@ function App() {
     };
 
     socket.on("new_lead",         onNewLead);
-    socket.on("new_signature",    onNewSignature);
-    socket.on("new_booking",      onNewBooking);
     socket.on("new_registration", onNewRegistration);
 
     return () => {
       const s = getSocket();
       if (!s) return;
       s.off("new_lead",         onNewLead);
-      s.off("new_signature",    onNewSignature);
-      s.off("new_booking",      onNewBooking);
       s.off("new_registration", onNewRegistration);
     };
   }, [token]);
@@ -104,8 +82,6 @@ function App() {
           {/* Always-public routes — no auth required */}
           <Route path="/public/leads/:vacationId" element={<PublicLeadForm />} />
           <Route path="/public/documents/:vacationId/:docToken" element={<PublicDocumentUpload />} />
-          <Route path="/public/sign/:vacationId/:docToken" element={<PublicSignaturePage />} />
-          <Route path="/public/booking/:vacationId/:docToken" element={<PublicBookingForm />} />
           <Route path="/public/register/:vacationId/:token" element={<PublicRegistration />} />
 
           {isAuthenticated ? (

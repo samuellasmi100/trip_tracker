@@ -49,23 +49,20 @@ const getFlightReadiness = (vacationId) => `
   FROM \`trip_tracker_${vacationId}\`.flights
 `;
 
-// Leads pipeline breakdown
+// Leads pipeline breakdown. The two followup_* counts split the app's existing
+// "due" bucket (followup_date <= today AND open) into overdue vs today — open =
+// is_active = 1 (registered/not_relevant flip it to 0); a NULL followup_date is
+// "handled" and excluded. CURDATE() is the DB server's date.
 const getLeadsSummary = (vacationId) => `
   SELECT
     COUNT(*) AS total,
     SUM(CASE WHEN status = 'follow_up'    THEN 1 ELSE 0 END) AS active,
     SUM(CASE WHEN status = 'registered'   THEN 1 ELSE 0 END) AS registered,
     SUM(CASE WHEN status = 'new_interest' THEN 1 ELSE 0 END) AS new_cold,
-    SUM(CASE WHEN status = 'not_relevant' THEN 1 ELSE 0 END) AS not_relevant
+    SUM(CASE WHEN status = 'not_relevant' THEN 1 ELSE 0 END) AS not_relevant,
+    SUM(CASE WHEN followup_date IS NOT NULL AND followup_date < CURDATE() AND is_active = 1 THEN 1 ELSE 0 END) AS followup_overdue,
+    SUM(CASE WHEN followup_date IS NOT NULL AND followup_date = CURDATE() AND is_active = 1 THEN 1 ELSE 0 END) AS followup_today
   FROM \`trip_tracker_${vacationId}\`.leads
-`;
-
-// Booking form submissions — how many families submitted the public form
-const getBookingStatus = (vacationId) => `
-  SELECT
-    (SELECT COUNT(*) FROM \`trip_tracker_${vacationId}\`.families)                    AS total_families,
-    COUNT(DISTINCT bs.family_id)                                                       AS submitted
-  FROM \`trip_tracker_${vacationId}\`.booking_submissions bs
 `;
 
 // Cross-vacation: families whose name appears in 2+ of the given vacation schemas.
@@ -93,6 +90,5 @@ module.exports = {
   getPaymentSummary,
   getFlightReadiness,
   getLeadsSummary,
-  getBookingStatus,
   getCrossVacationFamilies,
 };

@@ -42,17 +42,12 @@ const userRoomsController = require("./services/userRooms/userRoomsController");
 const vacationsController = require("./services/vacations/vacationController");
 const staticController = require("./services/static/staticController");
 const budgetController = require("./services/budgets/budgetsController");
-const uploadsController = require("./services/uploads/uploadsController");
 const leadsController = require("./services/leads/leadsController");
 const publicLeadsController = require("./services/leads/publicLeadsController");
 const notificationsController = require("./services/notifications/notificationsController");
 const documentsController = require("./services/documents/documentsController");
 const publicDocumentsController = require("./services/documents/publicDocumentsController");
-const signaturesController = require("./services/signatures/signaturesController");
-const publicSignaturesController = require("./services/signatures/publicSignaturesController");
 const settingsController = require("./services/settings/settingsController");
-const bookingsController = require("./services/bookings/bookingsController");
-const publicBookingsController = require("./services/bookings/publicBookingsController");
 const dashboardController = require("./services/dashboard/dashboardController");
 const registrationsController = require("./services/registrations/registrationsController");
 const publicRegistrationsController = require("./services/registrations/publicRegistrationsController");
@@ -64,8 +59,6 @@ app.use(express.json());
 app.use("/auth", authController);
 app.use("/public", publicLeadsController);
 app.use("/public", publicDocumentsController);
-app.use("/public", publicSignaturesController);
-app.use("/public", publicBookingsController);
 app.use("/public", publicRegistrationsController);
 // Cardcom webhook — must be public (Cardcom POSTs here, no JWT)
 app.post("/payments/webhook", paymentsController.webhookHandler);
@@ -84,13 +77,13 @@ app.use("/notes", notesController);
 app.use("/vacations", vacationsController);
 app.use("/static", staticController);
 app.use("/budget", budgetController);
-app.use('/uploads', express.static(uploadsPath), uploadsController);
+// `express.static` serves locally-stored family_documents files (Documents
+// feature). The old multer-based uploadsController was removed.
+app.use('/uploads', express.static(uploadsPath));
 app.use('/leads', leadsController);
 app.use('/notifications', notificationsController);
 app.use('/documents', documentsController);
-app.use('/signatures', signaturesController);
 app.use('/settings', settingsController);
-app.use('/bookings', bookingsController);
 app.use('/dashboard', dashboardController);
 app.use('/registrations', registrationsController);
 

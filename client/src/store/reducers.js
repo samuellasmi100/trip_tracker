@@ -13,8 +13,6 @@ import budgetSlice from "./slices/budgetSlice"
 import leadsSlice from "./slices/leadsSlice"
 import notificationsSlice from "./slices/notificationsSlice"
 import documentsSlice from "./slices/documentsSlice"
-import signaturesSlice from "./slices/signaturesSlice"
-import bookingsSlice from "./slices/bookingsSlice"
 import dashboardSlice from "./slices/dashboardSlice"
 
 const createRootReducer = () =>
@@ -33,8 +31,6 @@ const createRootReducer = () =>
     leadsSlice:leadsSlice,
     notificationsSlice:notificationsSlice,
     documentsSlice:documentsSlice,
-    signaturesSlice:signaturesSlice,
-    bookingsSlice:bookingsSlice,
     dashboardSlice:dashboardSlice,
   });
 

@@ -11,12 +11,9 @@ export const END_POINT = {
   VACATIONS:"vacations",
   STATIC:"static",
   BUDGET:'budget',
-  UPLOADS:"uploads",
   LEADS:"leads",
   DOCUMENTS:"documents",
-  SIGNATURES:"signatures",
   SETTINGS:"settings",
-  BOOKINGS:"bookings",
   DASHBOARD:"dashboard",
 };
 
