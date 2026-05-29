@@ -10,6 +10,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DescriptionIcon from "@mui/icons-material/Description";
 import DownloadIcon from "@mui/icons-material/Download";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import ShareIcon from "@mui/icons-material/Share";
 import AssignmentTurnedInOutlinedIcon from "@mui/icons-material/AssignmentTurnedInOutlined";
 import { useStyles } from "../Documents.style";
@@ -51,6 +52,18 @@ function DocumentsDetailPanel({ open, onClose, family, vacationId, token, onDocD
   };
 
   const handleDownload = async (docId) => {
+    try {
+      const res = await ApiDocuments.getDownloadUrl(token, vacationId, docId);
+      const url = res?.data?.url;
+      if (url) window.open(url, "_blank", "noopener");
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  // Same presigned URL as download — opened in a new tab the browser renders
+  // the PDF inline natively (15-min expiry is fine for a quick view).
+  const handleView = async (docId) => {
     try {
       const res = await ApiDocuments.getDownloadUrl(token, vacationId, docId);
       const url = res?.data?.url;
@@ -108,6 +121,11 @@ function DocumentsDetailPanel({ open, onClose, family, vacationId, token, onDocD
                       </div>
                     </div>
                     <div style={{ display: "flex", gap: "2px" }}>
+                      <Tooltip title="צפייה">
+                        <IconButton size="small" onClick={() => handleView(doc.id)}>
+                          <VisibilityIcon style={{ fontSize: "18px", color: "#0d9488" }} />
+                        </IconButton>
+                      </Tooltip>
                       <Tooltip title="הורד PDF">
                         <IconButton size="small" onClick={() => handleDownload(doc.id)}>
                           <DownloadIcon style={{ fontSize: "18px", color: "#0d9488" }} />
