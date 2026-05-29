@@ -535,20 +535,6 @@ const TENANT_TABLE_SCHEMAS = {
     ],
   },
 
-  // `files` — written to by sql/query/userQuery.js but historically absent
-  // from every schema source. Now part of the single source of truth.
-  files: {
-    options: ENGINE_AI,
-    primaryKey: '(`id`)',
-    columns: [
-      { name: 'id',         definition: 'int NOT NULL AUTO_INCREMENT' },
-      { name: 'filename',   definition: 'text NOT NULL' },
-      { name: 'fileType',   definition: 'text NOT NULL' },
-      { name: 'filePath',   definition: 'text NOT NULL' },
-      { name: 'family_id',  definition: 'varchar(455) DEFAULT NULL' },
-      { name: 'uploadedAt', definition: 'datetime DEFAULT CURRENT_TIMESTAMP' },
-    ],
-  },
 };
 
 // Creation order matters: parents (rooms, families) before children that
@@ -575,7 +561,6 @@ const TENANT_TABLE_ORDER = [
   'family_document_types',
   'family_documents',
   'registration_requests',
-  'files',
 ];
 
 // ─── TENANT COLUMN FIXUPS ─────────────────────────────────────────────────────

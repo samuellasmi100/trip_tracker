@@ -122,10 +122,6 @@ const getFamilyMember = async (id, vacationId) => {
   return await userDb.getFamilyMember(id, vacationId);
 };
 
-const saveRegistrationForm = async (filename, fileType, filePath, id) => {
-  return await userDb.saveRegistrationForm(filename, fileType, filePath, id);
-};
-
 const getUserDetails = async (id, familyId, isIngroup, vacationId) => {
   const [
     userDetails,
@@ -156,7 +152,6 @@ module.exports = {
   getFamilyGuests,
   updateGuest,
   getFamilyMember,
-  saveRegistrationForm,
   getUserDetails,
   deleteGuest,
   deleteMainGuest,

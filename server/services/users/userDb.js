@@ -127,22 +127,6 @@ const deleteNotes = async (userId, vacationId) => {
   }
 }
 
-const saveRegistrationForm = async (filename, fileType, filePath, id) => {
-  try {
-
-    const sql = userQuery.saveRegistrationForm()
-    const parameters = [filename, fileType, filePath, id]
-    const response = await connection.executeWithParameters(sql, parameters)
-    return response
-
-  } catch (error) {
-    logger.error(
-      `Error: Function:saveRegistrationForm :, ${error.sqlMessage}`,
-    );
-    throw error;
-  }
-}
-
 const deleteFamilyGuests = async (userId, vacationId) => {
   const sql = userQuery.deleteFamilyGuests(vacationId)
 
@@ -303,7 +287,6 @@ module.exports = {
   updateGuest,
   updateGuestTx,
   getFamilyMember,
-  saveRegistrationForm,
   deleteGuest,
   deleteGuestFlights,
   deleteGuestRooms,

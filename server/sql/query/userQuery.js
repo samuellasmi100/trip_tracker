@@ -110,10 +110,6 @@ const updateGuest = (userData, id, vacationId) => {
   WHERE user_id = '${id}'`;
 };
 
-const saveRegistrationForm = (vacationId) => {
-  return `INSERT INTO trip_tracker_${vacationId}.files (filename, fileType, filePath,family_id) VALUES (?, ?, ?,?)`;
-};
-
 const deleteGuest = (vacationId) => {
   return `
 DELETE FROM trip_tracker_${vacationId}.guest WHERE user_id = ?;
@@ -178,7 +174,6 @@ module.exports = {
   getFamilyGuests,
   getFamilyMember,
   getParentFamilyMember,
-  saveRegistrationForm,
   deleteGuest,
   deleteGuestFlights,
   deleteGuestRooms,
