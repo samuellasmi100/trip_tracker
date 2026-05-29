@@ -5,6 +5,15 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import NotificationBell from "./NotificationBell/NotificationBell";
 
+// total_balance arrives from the API as a numeric string (e.g. "91070.00"), so coerce to Number before formatting.
+// minimumFractionDigits: 0 drops a trailing ".00" on whole amounts; maximumFractionDigits: 2 keeps real cents.
+const shekelFormatter = new Intl.NumberFormat("he-IL", {
+  style: "currency",
+  currency: "ILS",
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 2,
+});
+
 function HeaderView({ vacationName, vacationList, pageTitle, familyCount, totalGuests, totalBalance, totalMissing, handleVacationChange }) {
   const classes = useStyles();
 
@@ -45,7 +54,7 @@ function HeaderView({ vacationName, vacationList, pageTitle, familyCount, totalG
               <Typography className={classes.chipText}>{totalGuests} אורחים</Typography>
             </Grid>
             <Grid className={classes.chipHideMobile}>
-              <Typography className={classes.chipText}>₪{totalBalance.toLocaleString()}</Typography>
+              <Typography className={classes.chipText}>{`סה"כ ${shekelFormatter.format(Number(totalBalance) || 0)}`}</Typography>
             </Grid>
             {totalMissing > 0 && (
               <Grid className={classes.chipWarning}>
