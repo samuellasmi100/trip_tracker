@@ -31,6 +31,8 @@ const deleteDocumentType = async (vacationId, typeId) => {
   }
 };
 
+// Upsert (latest-only): replaces any existing file for the same
+// (family_id, user_id, doc_type_id) via ON DUPLICATE KEY UPDATE.
 const insertDocument = async (vacationId, { family_id, user_id, doc_type_id, file_name, file_path }) => {
   try {
     return await connection.executeWithParameters(q.insertDocument(vacationId), [
@@ -42,11 +44,30 @@ const insertDocument = async (vacationId, { family_id, user_id, doc_type_id, fil
   }
 };
 
+const getDocByFamilyUserType = async (vacationId, { family_id, user_id, doc_type_id }) => {
+  try {
+    const rows = await connection.executeWithParameters(q.getDocByFamilyUserType(vacationId), [family_id, user_id, doc_type_id]);
+    return rows[0] || null;
+  } catch (error) {
+    logger.error(`documentsDb.getDocByFamilyUserType: ${error.sqlMessage || error.message}`);
+    throw error;
+  }
+};
+
 const deleteDocument = async (vacationId, docId) => {
   try {
     return await connection.executeWithParameters(q.deleteDocument(vacationId), [docId]);
   } catch (error) {
     logger.error(`documentsDb.deleteDocument: ${error.sqlMessage || error.message}`);
+    throw error;
+  }
+};
+
+const deletePublicDocument = async (vacationId, docId, familyId) => {
+  try {
+    return await connection.executeWithParameters(q.deletePublicDocument(vacationId), [docId, familyId]);
+  } catch (error) {
+    logger.error(`documentsDb.deletePublicDocument: ${error.sqlMessage || error.message}`);
     throw error;
   }
 };
@@ -80,11 +101,29 @@ const getDocByIdWithType = async (vacationId, docId) => {
   }
 };
 
-const getAllFamiliesDocStatus = async (vacationId) => {
+const getAllFamilies = async (vacationId) => {
   try {
-    return await connection.execute(q.getAllFamiliesDocStatus(vacationId));
+    return await connection.execute(q.getAllFamilies(vacationId));
   } catch (error) {
-    logger.error(`documentsDb.getAllFamiliesDocStatus: ${error.sqlMessage || error.message}`);
+    logger.error(`documentsDb.getAllFamilies: ${error.sqlMessage || error.message}`);
+    throw error;
+  }
+};
+
+const getGuestsForStatus = async (vacationId) => {
+  try {
+    return await connection.execute(q.getGuestsForStatus(vacationId));
+  } catch (error) {
+    logger.error(`documentsDb.getGuestsForStatus: ${error.sqlMessage || error.message}`);
+    throw error;
+  }
+};
+
+const getUploadedDocsForStatus = async (vacationId) => {
+  try {
+    return await connection.execute(q.getUploadedDocsForStatus(vacationId));
+  } catch (error) {
+    logger.error(`documentsDb.getUploadedDocsForStatus: ${error.sqlMessage || error.message}`);
     throw error;
   }
 };
@@ -123,11 +162,15 @@ module.exports = {
   addDocumentType,
   deleteDocumentType,
   insertDocument,
+  getDocByFamilyUserType,
   deleteDocument,
+  deletePublicDocument,
   getDocsByFamily,
   getDocById,
   getDocByIdWithType,
-  getAllFamiliesDocStatus,
+  getAllFamilies,
+  getGuestsForStatus,
+  getUploadedDocsForStatus,
   getFamilyByToken,
   getFamilyMembers,
   getFamilyDocToken,
