@@ -495,6 +495,14 @@ const TENANT_TABLE_SCHEMAS = {
   family_documents: {
     options: 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4',
     primaryKey: '(`id`)',
+    // Latest-only (overwrite) semantics: at most ONE current file per
+    // (family_id, user_id, doc_type_id). The public upload upserts via
+    // ON DUPLICATE KEY UPDATE on this key (same convention as
+    // payment_provider_configs.uq_provider_type), and the old R2 object is
+    // cleaned up best-effort after the row is replaced.
+    indexes: [
+      { name: 'uq_family_user_doctype', columns: ['family_id', 'user_id', 'doc_type_id'], unique: true },
+    ],
     columns: [
       { name: 'id',          definition: 'int NOT NULL AUTO_INCREMENT' },
       { name: 'family_id',   definition: 'varchar(45) NOT NULL' },
