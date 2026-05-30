@@ -22,6 +22,7 @@ import {
   MenuItem,
   OutlinedInput,
   CircularProgress,
+  Popover,
 } from "@mui/material";
 import React from "react";
 import { useStyles } from "./FamilyList.style";
@@ -36,6 +37,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import SendIcon from "@mui/icons-material/Send";
 import { formatDateInput, isoToDisplay } from "../../../utils/helpers/formatDate";
 import { getGuestCompleteness } from "../../../utils/helpers/guestCompleteness";
 import { formatMoneyInput, stripMoney } from "../../../utils/helpers/formatMoney";
@@ -77,9 +80,21 @@ function FamilyListView(props) {
     copiedFamilyId,
     handleCopyDocLink,
     handleSendRegistrationLink,
+    handleSendDocLink,
   } = props;
 
   const headers = ["", "שם משפחה / קבוצה", "מסמכים", "טופס רישום", "תשלום", "חדרים", "נרשמים", "חסרים", "סטטוס", ""];
+  // UI-only state for the documents "what's missing" popup (anchor + the family
+  // whose breakdown is shown). Presentational, so it stays in the view.
+  const [missingAnchor, setMissingAnchor] = React.useState(null);
+  const [missingData, setMissingData] = React.useState(null);
+  const openMissing = (e, ds) => {
+    e.stopPropagation();
+    setMissingData(ds);
+    setMissingAnchor(e.currentTarget);
+  };
+  const closeMissing = () => { setMissingAnchor(null); setMissingData(null); };
+
   const guests = useSelector((state) => state.userSlice.guests);
   const family = useSelector((state) => state.userSlice.family);
   const vacationsDates = useSelector((state) => state.vacationSlice.vacationsDates);
@@ -173,15 +188,28 @@ function FamilyListView(props) {
                           const uploaded = Number(ds?.uploaded) || 0;
                           const total = Number(ds?.total) || 0;
                           const dotColor = total === 0 ? "#94a3b8" : uploaded >= total ? "#22c55e" : uploaded > 0 ? "#f59e0b" : "#ef4444";
+                          const hasMissing = total > 0 && uploaded < total;
                           return (
                             <div style={{ display: "flex", alignItems: "center", gap: "6px", justifyContent: "center" }}>
                               <span style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: dotColor, display: "inline-block", flexShrink: 0 }} />
                               <span style={{ fontSize: "12px", color: "#475569" }}>{uploaded}/{total}</span>
+                              {hasMissing && (
+                                <Tooltip title="מה חסר">
+                                  <IconButton size="small" onClick={(e) => openMissing(e, ds)} style={{ padding: "2px" }}>
+                                    <ErrorOutlineIcon style={{ fontSize: "14px", color: "#f59e0b" }} />
+                                  </IconButton>
+                                </Tooltip>
+                              )}
                               <Tooltip title={copiedFamilyId === user.family_id ? "הועתק!" : "העתק קישור"}>
                                 <IconButton size="small" onClick={(e) => handleCopyDocLink(e, user.family_id)} style={{ padding: "2px" }}>
                                   {copiedFamilyId === user.family_id
                                     ? <CheckIcon style={{ fontSize: "14px", color: "#22c55e" }} />
                                     : <LinkIcon style={{ fontSize: "14px", color: "#64748b" }} />}
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip title="שליחת קישור להעלאת מסמכים">
+                                <IconButton size="small" onClick={(e) => handleSendDocLink(e, user)} style={{ padding: "2px" }}>
+                                  <SendIcon style={{ fontSize: "15px", color: "#64748b" }} />
                                 </IconButton>
                               </Tooltip>
                             </div>
@@ -412,6 +440,42 @@ function FamilyListView(props) {
           )}
         </div>
       </div>
+
+      {/* ===== "WHAT'S MISSING" DOCUMENTS POPOVER ===== */}
+      <Popover
+        open={Boolean(missingAnchor)}
+        anchorEl={missingAnchor}
+        onClose={closeMissing}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        transformOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <div style={{ direction: "rtl", padding: "12px 16px", maxWidth: 280 }}>
+          <Typography style={{ fontWeight: 700, fontSize: 13, marginBottom: 8, color: "#0f172a" }}>
+            מסמכים חסרים
+          </Typography>
+          {(missingData?.missingFamily || []).length > 0 && (
+            <div style={{ marginBottom: 8 }}>
+              {missingData.missingFamily.map((label) => (
+                <div key={`fam-${label}`} style={{ fontSize: 13, color: "#b45309" }}>• {label}</div>
+              ))}
+            </div>
+          )}
+          {(missingData?.missingByGuest || []).map((g) => (
+            <div key={g.user_id} style={{ marginBottom: 6 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#334155" }}>{g.name}</div>
+              {(g.missing || []).map((label) => (
+                <div key={`${g.user_id}-${label}`} style={{ fontSize: 12, color: "#64748b", marginRight: 8 }}>
+                  • {label}
+                </div>
+              ))}
+            </div>
+          ))}
+          {(missingData?.missingFamily || []).length === 0 &&
+            (missingData?.missingByGuest || []).length === 0 && (
+              <Typography style={{ fontSize: 13, color: "#15803d" }}>הכל הושלם</Typography>
+            )}
+        </div>
+      </Popover>
 
       {/* ===== EDIT FAMILY DIALOG ===== */}
       <Dialog

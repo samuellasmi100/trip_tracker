@@ -42,15 +42,19 @@ const BUCKET_NAME = process.env.R2_BUCKET_NAME || 'trip-tracker-files';
  * @param {string} objectKey
  * @param {Buffer} buffer
  * @param {string} contentType
+ * @param {{contentDisposition?: string}} [options]  e.g. 'attachment' to force
+ *   the object to download rather than render inline (defense for untrusted
+ *   uploads — prevents a stored file being served as inline HTML/script).
  * @returns {Promise<{success: true, key: string}>}
  */
-const uploadToR2 = async (objectKey, buffer, contentType) => {
+const uploadToR2 = async (objectKey, buffer, contentType, options = {}) => {
   try {
     await r2Client.send(new PutObjectCommand({
       Bucket: BUCKET_NAME,
       Key: objectKey,
       Body: buffer,
       ContentType: contentType,
+      ...(options.contentDisposition ? { ContentDisposition: options.contentDisposition } : {}),
     }));
     return { success: true, key: objectKey };
   } catch (error) {
@@ -63,13 +67,22 @@ const uploadToR2 = async (objectKey, buffer, contentType) => {
  * Generate a short-lived presigned GET URL for downloading an object.
  * @param {string} objectKey
  * @param {number} expiresIn  seconds; default 900 (15 minutes)
+ * @param {{contentType?: string, contentDisposition?: string}} [options]
+ *   When set, the presigned response forces these headers (ResponseContentType /
+ *   ResponseContentDisposition) so an untrusted object is always returned with a
+ *   safe type and as an attachment — it can never execute inline in a browser.
  * @returns {Promise<string>}
  */
-const getPresignedUrl = async (objectKey, expiresIn = 900) => {
+const getPresignedUrl = async (objectKey, expiresIn = 900, options = {}) => {
   try {
     return await getSignedUrl(
       r2Client,
-      new GetObjectCommand({ Bucket: BUCKET_NAME, Key: objectKey }),
+      new GetObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: objectKey,
+        ...(options.contentType ? { ResponseContentType: options.contentType } : {}),
+        ...(options.contentDisposition ? { ResponseContentDisposition: options.contentDisposition } : {}),
+      }),
       { expiresIn }
     );
   } catch (error) {

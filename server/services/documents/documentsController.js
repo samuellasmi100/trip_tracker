@@ -5,6 +5,8 @@ const ErrorMessage = require("../../serverLogs/errorMessage");
 const ErrorType = require("../../serverLogs/errorType");
 const documentsService = require('./documentsService');
 const documentsDb = require('./documentsDb');
+const { getIO } = require('../../socketServer');
+const logger = require('../../utils/logger');
 
 // ── Document-type routes (must come before /:vacationId to avoid param collision) ──
 
@@ -74,25 +76,22 @@ router.get('/:vacationId/family/:familyId', async (req, res, next) => {
 });
 
 // GET /documents/:vacationId/:docId/download-url
-// Returns a presigned R2 URL for signed-registration PDFs.
-//   - default: 15-minute expiry (direct download by the coordinator)
+// All documents live on R2 (file_path = object key), so every type presigns a
+// GET URL through this endpoint (always with a safe forced content-type).
+//   - default: 15-minute expiry, attachment (direct download by the coordinator)
 //   - ?share=true: 7-day expiry (forwarded via WhatsApp/email to a recipient)
+//   - ?inline=true: inline disposition so the file renders in a new tab instead
+//                   of downloading (safe — content-type is always PDF/JPEG/PNG)
 // 7 days is the AWS S3 / R2 maximum for presigned URLs.
-// Other doc types use the /uploads static mount, not this endpoint.
 const SHARE_EXPIRY_S = 7 * 24 * 60 * 60;
 router.get('/:vacationId/:docId/download-url', async (req, res, next) => {
   try {
     const { vacationId, docId } = req.params;
     const expiresIn = req.query.share === 'true' ? SHARE_EXPIRY_S : undefined;
-    const info = await documentsService.getDownloadInfo(vacationId, docId, { expiresIn });
+    const disposition = req.query.inline === 'true' ? 'inline' : undefined;
+    const info = await documentsService.getDownloadInfo(vacationId, docId, { expiresIn, disposition });
     if (info.code === 'NOT_FOUND') {
       return res.status(404).json({ code: 'NOT_FOUND', message: 'מסמך לא נמצא' });
-    }
-    if (info.code === 'NOT_DOWNLOADABLE_VIA_API') {
-      return res.status(400).json({
-        code: 'NOT_DOWNLOADABLE_VIA_API',
-        message: 'סוג מסמך זה אינו זמין להורדה ישירה',
-      });
     }
     res.json({ url: info.url, fileName: info.fileName });
   } catch (error) {
@@ -100,11 +99,22 @@ router.get('/:vacationId/:docId/download-url', async (req, res, next) => {
   }
 });
 
-// DELETE /documents/:vacationId/:docId — delete a document
+// DELETE /documents/:vacationId/:docId — delete a document (DB row + R2 object)
 router.delete('/:vacationId/:docId', async (req, res, next) => {
   try {
     const { vacationId, docId } = req.params;
-    await documentsService.deleteDocument(vacationId, docId);
+    const removed = await documentsService.deleteDocument(vacationId, docId);
+    // Best-effort realtime nudge — never blocks/rolls back the delete.
+    if (removed) {
+      try {
+        const io = getIO();
+        if (io) io.to('coordinators').emit('document_deleted', {
+          vacationId, familyId: removed.familyId, userId: removed.userId, docTypeId: removed.docTypeId,
+        });
+      } catch (e) {
+        logger.warn(`documentsController document_deleted emit failed: ${e.message}`);
+      }
+    }
     res.json({ success: true });
   } catch (error) {
     next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle documents request", error));

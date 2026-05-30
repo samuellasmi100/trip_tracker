@@ -12,9 +12,7 @@ import {
   Tooltip,
   LinearProgress,
 } from "@mui/material";
-import LinkIcon from "@mui/icons-material/Link";
 import FolderOpenIcon from "@mui/icons-material/FolderOpen";
-import CheckIcon from "@mui/icons-material/Check";
 import { useStyles } from "./Documents.style";
 import DocumentsDetailPanel from "./DocumentsDetailPanel/DocumentsDetailPanel";
 
@@ -26,8 +24,6 @@ function DocumentsView({
   panelOpen,
   openPanel,
   closePanel,
-  copiedFamilyId,
-  onCopyLink,
   onDocDeleted,
 }) {
   const classes = useStyles();
@@ -55,8 +51,8 @@ function DocumentsView({
               </TableHead>
               <TableBody>
                 {familiesStatus.map((row) => {
-                  const total = Number(row.total_required) || 0;
-                  const uploaded = Number(row.uploaded_count) || 0;
+                  const total = Number(row.total) || 0;
+                  const uploaded = Number(row.uploaded) || 0;
                   const pct = total > 0 ? Math.round((uploaded / total) * 100) : 0;
                   const statusClass =
                     pct === 100 ? classes.chipComplete
@@ -66,7 +62,6 @@ function DocumentsView({
                     pct === 100 ? "הושלם"
                     : pct > 0 ? "חלקי"
                     : "חסר";
-                  const isCopied = copiedFamilyId === row.family_id;
 
                   return (
                     <TableRow key={row.family_id} hover>
@@ -96,17 +91,6 @@ function DocumentsView({
                         <Chip label={statusLabel} size="small" className={statusClass} />
                       </TableCell>
                       <TableCell className={classes.dataCell}>
-                        <Tooltip title={isCopied ? "הועתק!" : "העתק קישור להעלאה"}>
-                          <IconButton
-                            size="small"
-                            className={classes.actionBtn}
-                            onClick={() => onCopyLink(row.family_id)}
-                          >
-                            {isCopied
-                              ? <CheckIcon style={{ fontSize: "18px", color: "#22c55e" }} />
-                              : <LinkIcon style={{ fontSize: "18px" }} />}
-                          </IconButton>
-                        </Tooltip>
                         <Tooltip title="צפה במסמכים">
                           <IconButton
                             size="small"

@@ -147,12 +147,50 @@ const getFamilyMembers = async (vacationId, familyId) => {
   }
 };
 
+const getSignedRegistrationKeys = async (vacationId, familyId) => {
+  try {
+    const rows = await connection.executeWithParameters(q.getSignedRegistrationKeys(vacationId), [familyId]);
+    return rows[0] || null;
+  } catch (error) {
+    logger.error(`documentsDb.getSignedRegistrationKeys: ${error.sqlMessage || error.message}`);
+    throw error;
+  }
+};
+
+// Atomic coordinator wipe of a signed_registration: delete the family_documents
+// PDF row AND delete the registration_requests row outright, both inside the
+// caller's transaction (opened via connection.withTransaction). Mirrors
+// registrationsDb.submitRegistrationWriteTx.
+const wipeSignedRegistrationTx = async (tx, vacationId, { docId, familyId }) => {
+  await tx.executeWithParameters(q.deleteDocument(vacationId), [docId]);
+  await tx.executeWithParameters(q.deleteSignedRegistration(vacationId), [familyId]);
+};
+
 const getFamilyDocToken = async (vacationId, familyId) => {
   try {
     const rows = await connection.executeWithParameters(q.getFamilyDocToken(vacationId), [familyId]);
     return rows[0]?.doc_token || null;
   } catch (error) {
     logger.error(`documentsDb.getFamilyDocToken: ${error.sqlMessage || error.message}`);
+    throw error;
+  }
+};
+
+const ensureFamilyDocToken = async (vacationId, familyId) => {
+  try {
+    return await connection.executeWithParameters(q.ensureFamilyDocToken(vacationId), [familyId]);
+  } catch (error) {
+    logger.error(`documentsDb.ensureFamilyDocToken: ${error.sqlMessage || error.message}`);
+    throw error;
+  }
+};
+
+const getVacationName = async (vacationId) => {
+  try {
+    const rows = await connection.executeWithParameters(q.getVacationName(), [vacationId]);
+    return rows[0]?.name || null;
+  } catch (error) {
+    logger.error(`documentsDb.getVacationName: ${error.sqlMessage || error.message}`);
     throw error;
   }
 };
@@ -173,5 +211,9 @@ module.exports = {
   getUploadedDocsForStatus,
   getFamilyByToken,
   getFamilyMembers,
+  getSignedRegistrationKeys,
+  wipeSignedRegistrationTx,
   getFamilyDocToken,
+  ensureFamilyDocToken,
+  getVacationName,
 };

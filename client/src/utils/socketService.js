@@ -10,9 +10,17 @@ let socket = null;
  * Safe to call multiple times — returns existing connected socket if already connected.
  */
 export const connectSocket = (token) => {
-  if (socket?.connected) return socket;
+  // Reuse the existing socket if it's connected OR still actively (re)connecting.
+  // A socket mid-handshake has connected=false but active=true. The old check
+  // (`socket?.connected`) treated that as "no socket" and recreated it — so when
+  // a child component (FamilyList) called connectSocket and attached listeners
+  // BEFORE the parent (App) effect ran, App's later call disconnected the first
+  // socket and made a second one, stranding FamilyList's document_uploaded/
+  // document_deleted listeners on the dead socket. Recreate ONLY when there is
+  // no socket or it has permanently stopped (manually closed / retries exhausted).
+  if (socket && (socket.connected || socket.active)) return socket;
 
-  // If socket exists but is disconnected, clean it up first
+  // If socket exists but is permanently disconnected, clean it up first
   if (socket) {
     socket.disconnect();
     socket = null;

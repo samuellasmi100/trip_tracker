@@ -28,7 +28,6 @@ if (missingEnv.length > 0) {
 
 const errorHandler = require("./serverLogs/errorHandler");
 const checkAuthorizationMiddleware = require("./middleware/authMiddleware/checkAuthorization");
-const path = require('path');
 
 //! services
 const userController = require("./services/users/userController");
@@ -65,8 +64,6 @@ app.post("/payments/webhook", paymentsController.webhookHandler);
 
 app.use(checkAuthorizationMiddleware.checkAuthorization);
 
-const uploadsPath = path.resolve(__dirname, 'uploads');
-
 app.use("/user", userController);
 app.use("/family", familyController);
 app.use("/rooms", roomsController);
@@ -77,9 +74,8 @@ app.use("/notes", notesController);
 app.use("/vacations", vacationsController);
 app.use("/static", staticController);
 app.use("/budget", budgetController);
-// `express.static` serves locally-stored family_documents files (Documents
-// feature). The old multer-based uploadsController was removed.
-app.use('/uploads', express.static(uploadsPath));
+// Document files now live on Cloudflare R2 (served via presigned URLs); the
+// former local-disk /uploads static mount was removed with the disk-multer path.
 app.use('/leads', leadsController);
 app.use('/notifications', notificationsController);
 app.use('/documents', documentsController);

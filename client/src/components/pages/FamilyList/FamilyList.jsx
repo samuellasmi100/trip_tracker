@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import MainDialog from "../../shared/MainDialog/MainDialog";
 import PaymentDialog from "../../shared/Payments/Payments";
 import SendRegistrationDialog from "./SendRegistrationDialog/SendRegistrationDialog";
+import SendDocumentLinkDialog from "./SendDocumentLinkDialog/SendDocumentLinkDialog";
 import { useDispatch, useSelector } from "react-redux";
 import ApiUser from "../../../apis/userRequest"
 import ApiVacations from "../../../apis/vacationRequest"
@@ -24,8 +25,22 @@ import { v4 as uuidv4 } from "uuid";
 
 const PAGE_SIZE = 30;
 
+// Resolve the family head's wa.me-ready phone digits for the document send link.
+// Prefer the unified E.164 `phone` (strip the "+"); fall back to the legacy
+// phone_a/phone_b pair, normalizing a leading Israeli "0" to the 972 country code.
+const headWhatsappDigits = (head) => {
+  if (!head) return "";
+  if (head.phone) return String(head.phone).replace(/\D/g, "");
+  const a = String(head.phone_a || "").replace(/\D/g, "");
+  const b = String(head.phone_b || "").replace(/\D/g, "");
+  let combined = b.length >= 9 && b.startsWith("0") ? b : a + b;
+  if (combined.startsWith("0")) combined = "972" + combined.slice(1);
+  return combined;
+};
+
 const FamilyList = () => {
   const vacationId = useSelector((state) => state.vacationSlice.vacationId)
+  const vacationName = useSelector((state) => state.vacationSlice.vacationName)
   const [usersData, setUsersData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -45,6 +60,9 @@ const FamilyList = () => {
   // Dialog state for the new send-registration-link modal. Opens on a
   // successful POST /registrations/:vacationId; closed by the user.
   const [registrationDialog, setRegistrationDialog] = useState({ open: false, data: null });
+  // Send-document-link modal (WhatsApp / Email / Copy) — sits next to the
+  // registration send action so both links are sent from the same place.
+  const [docLinkDialog, setDocLinkDialog] = useState({ open: false, data: null });
 
   // Drawer state
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -417,13 +435,37 @@ const FamilyList = () => {
       const map = {};
       (res.data || []).forEach((row) => {
         map[row.family_id] = {
-          uploaded: Number(row.uploaded_count) || 0,
-          total: Number(row.total_required) || 0,
+          uploaded: Number(row.uploaded) || 0,
+          total: Number(row.total) || 0,
+          // Per-guest + family-level breakdown for the "what's missing" popup.
+          missingByGuest: row.missingByGuest || [],
+          missingFamily: row.missingFamily || [],
         };
       });
       setDocStatusMap(map);
     } catch (e) { /* non-fatal */ }
   }, [vacationId, token]);
+
+  // ── Real-time refresh on document upload / delete ─────────────────────────
+  // The server emits document_uploaded / document_deleted to 'coordinators' on
+  // each public mutation; refresh the doc-status map so the X/Y counter and the
+  // "what's missing" popup update live. Same idempotent connectSocket as the
+  // new_registration handler above. Declared here (not next to that handler)
+  // because it depends on fetchDocStatus, which is defined just above.
+  useEffect(() => {
+    if (!vacationId || !token) return;
+    const socket = connectSocket(token);
+    if (!socket) return;
+    const handler = (payload) => {
+      if (String(payload?.vacationId) === String(vacationId)) fetchDocStatus();
+    };
+    socket.on("document_uploaded", handler);
+    socket.on("document_deleted", handler);
+    return () => {
+      socket.off("document_uploaded", handler);
+      socket.off("document_deleted", handler);
+    };
+  }, [vacationId, token, fetchDocStatus]);
 
   // Registration link — calls authenticated POST /registrations/:vacationId
   // and opens the SendRegistrationDialog so the coordinator can pick a channel
@@ -483,15 +525,53 @@ const FamilyList = () => {
     try {
       const res = await ApiDocuments.getFamilyLink(token, vacationId, familyId);
       const docToken = res.data?.docToken;
-      if (!docToken) return;
+      if (!docToken) {
+        dispatch(snackBarSlice.setSnackBar({ type: "error", message: "לא ניתן להפיק קישור למשפחה זו", timeout: 4000 }));
+        return;
+      }
       const url = `${window.location.origin}/public/documents/${vacationId}/${docToken}`;
       await navigator.clipboard.writeText(url);
       setCopiedFamilyId(familyId);
       setTimeout(() => setCopiedFamilyId(null), 2500);
-    } catch (e) {
-      console.error(e);
+      dispatch(snackBarSlice.setSnackBar({ type: "success", message: "הקישור הועתק", timeout: 2500 }));
+    } catch (err) {
+      console.error(err);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "העתקת הקישור נכשלה, נסה שוב", timeout: 4000 }));
     }
-  }, [token, vacationId]);
+  }, [token, vacationId, dispatch]);
+
+  // Open the send-document-link dialog (WhatsApp / Email / Copy). Resolves the
+  // family's permanent doc_token into a URL and pulls the head's phone/email
+  // from the guest list — same shape the registration send dialog uses.
+  const handleSendDocLink = useCallback(async (e, user) => {
+    e.stopPropagation();
+    if (!vacationId) return;
+    try {
+      const [linkRes, guestsRes] = await Promise.all([
+        ApiDocuments.getFamilyLink(token, vacationId, user.family_id),
+        ApiUser.getUserFamilyList(token, user.family_id, vacationId),
+      ]);
+      const docToken = linkRes.data?.docToken;
+      if (!docToken) {
+        dispatch(snackBarSlice.setSnackBar({ type: "error", message: "לא ניתן להפיק קישור למשפחה זו", timeout: 4000 }));
+        return;
+      }
+      const head = (guestsRes.data || []).find((g) => Number(g.is_main_user) === 1) || null;
+      setDocLinkDialog({
+        open: true,
+        data: {
+          link: `${window.location.origin}/public/documents/${vacationId}/${docToken}`,
+          headFirstName: head?.hebrew_first_name || "",
+          headPhone: headWhatsappDigits(head),
+          headEmail: head?.email || null,
+          vacationName: vacationName || "",
+        },
+      });
+    } catch (err) {
+      console.error(err);
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "פתיחת שליחת הקישור נכשלה, נסה שוב", timeout: 4000 }));
+    }
+  }, [token, vacationId, vacationName, dispatch]);
 
   // ── Vacation change: reset everything and reload ──────────────────────────
   useEffect(() => {
@@ -568,6 +648,7 @@ const FamilyList = () => {
         copiedFamilyId={copiedFamilyId}
         handleCopyDocLink={handleCopyDocLink}
         handleSendRegistrationLink={handleSendRegistrationLink}
+        handleSendDocLink={handleSendDocLink}
       />
       <MainDialog
         dialogType={dialogType}
@@ -592,6 +673,15 @@ const FamilyList = () => {
         headPhone={registrationDialog.data?.headPhone}
         headEmail={registrationDialog.data?.headEmail}
         vacationName={registrationDialog.data?.vacationName}
+      />
+      <SendDocumentLinkDialog
+        open={docLinkDialog.open}
+        onClose={() => setDocLinkDialog({ open: false, data: null })}
+        link={docLinkDialog.data?.link}
+        headFirstName={docLinkDialog.data?.headFirstName}
+        headPhone={docLinkDialog.data?.headPhone}
+        headEmail={docLinkDialog.data?.headEmail}
+        vacationName={docLinkDialog.data?.vacationName}
       />
     </>
   )

@@ -59,15 +59,25 @@ function App() {
         timeout: 5000,
       }));
     };
+    const onNewDocument = (notification) => {
+      dispatch(notificationsSlice.addNotification(notification));
+      dispatch(snackBarSlice.setSnackBar({
+        type: "info",
+        message: notification.message || notification.title,
+        timeout: 5000,
+      }));
+    };
 
     socket.on("new_lead",         onNewLead);
     socket.on("new_registration", onNewRegistration);
+    socket.on("new_document",     onNewDocument);
 
     return () => {
       const s = getSocket();
       if (!s) return;
       s.off("new_lead",         onNewLead);
       s.off("new_registration", onNewRegistration);
+      s.off("new_document",     onNewDocument);
     };
   }, [token]);
 

@@ -93,8 +93,43 @@ const getFamilyByToken = (vacationId) =>
 const getFamilyMembers = (vacationId) =>
   `SELECT user_id, hebrew_first_name, hebrew_last_name, flying_with_us FROM \`trip_tracker_${vacationId}\`.guest WHERE family_id = ?`;
 
+// ── signed_registration wipe (coordinator delete of the signed form) ─────────
+// Deleting the family_documents PDF row alone leaves registration_requests
+// stuck at status='signed' (so hasSignedRegistration keeps blocking new links)
+// and orphans the signature PNG (family_documents only knows the PDF key).
+// These read both R2 keys (before deletion) and remove the request row outright.
+
+const getSignedRegistrationKeys = (vacationId) =>
+  `SELECT r2_pdf_key, r2_signature_key
+   FROM \`trip_tracker_${vacationId}\`.registration_requests
+   WHERE family_id = ? AND status = 'signed'
+   LIMIT 1`;
+
+// Full wipe: delete the request row entirely (no audit trail kept) so the family
+// returns to a clean "nothing was ever submitted" state and a fresh link can be
+// issued. Read getSignedRegistrationKeys FIRST — once the row is gone the R2
+// keys are unrecoverable.
+const deleteSignedRegistration = (vacationId) =>
+  `DELETE FROM \`trip_tracker_${vacationId}\`.registration_requests
+   WHERE family_id = ? AND status = 'signed'`;
+
 const getFamilyDocToken = (vacationId) =>
   `SELECT doc_token FROM \`trip_tracker_${vacationId}\`.families WHERE family_id = ?`;
+
+// Mint a doc_token for an old family that predates the UUID()-on-insert default
+// (the column is DEFAULT NULL and was never backfilled). Uses the SAME DB-side
+// UUID() as familyQuery.addFamily. The WHERE guard makes it idempotent and
+// race-safe — it only fills a missing token, never overwrites an existing one.
+const ensureFamilyDocToken = (vacationId) =>
+  `UPDATE \`trip_tracker_${vacationId}\`.families
+   SET doc_token = UUID()
+   WHERE family_id = ? AND (doc_token IS NULL OR doc_token = '')`;
+
+// Vacation display name lives in the SHARED trip_tracker DB (not a tenant DB),
+// so this query is fully-qualified and takes the vacation_id as a parameter.
+// Used to populate vacation_name on the coordinator upload notification.
+const getVacationName = () =>
+  `SELECT name FROM trip_tracker.vacations WHERE vacation_id = ? LIMIT 1`;
 
 module.exports = {
   getDocumentTypes,
@@ -112,5 +147,9 @@ module.exports = {
   getUploadedDocsForStatus,
   getFamilyByToken,
   getFamilyMembers,
+  getSignedRegistrationKeys,
+  deleteSignedRegistration,
   getFamilyDocToken,
+  ensureFamilyDocToken,
+  getVacationName,
 };

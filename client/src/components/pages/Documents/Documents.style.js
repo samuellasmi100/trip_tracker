@@ -82,8 +82,35 @@ export const useStyles = makeStyles(() => ({
   },
   // Detail panel (Drawer)
   drawerPaper: {
-    width: "360px !important",
+    width: "420px !important",
+    maxWidth: "100vw !important",
     direction: "rtl",
+    "@media (max-width: 480px)": {
+      width: "100vw !important",
+    },
+  },
+  // Per-guest grouping inside the panel.
+  guestGroupHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+    marginTop: "18px",
+    marginBottom: "4px",
+  },
+  guestGroupName: {
+    fontSize: "14px !important",
+    fontWeight: "700 !important",
+    color: "#0f172a",
+  },
+  slotState: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+  },
+  missingText: {
+    fontSize: "12px !important",
+    fontWeight: "600 !important",
+    color: "#b91c1c",
   },
   drawerHeader: {
     display: "flex",
