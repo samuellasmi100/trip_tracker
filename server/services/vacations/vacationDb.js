@@ -71,10 +71,80 @@ const getAllVacationDates = async () => {
     const sql = vacationQuery.getAllVacationDates()
     const response = await connection.execute(sql)
     return response
-  } catch (error) { 
+  } catch (error) {
   logger.error(
       `Error: Function:getAllVacationDates :, ${error.sqlMessage}`,
     );
+  }
+}
+
+const getVacationPartById = async (id) => {
+  try {
+    const sql = vacationQuery.getVacationPartById()
+    const response = await connection.executeWithParameters(sql, [id])
+    return response
+  } catch (error) {
+    logger.error(`Error: Function:getVacationPartById :, ${error.sqlMessage}`);
+    // Rethrow: the delete decision depends on this read. A swallowed error must
+    // never be mistaken for "no part / no blockers" and let an unsafe delete through.
+    throw error;
+  }
+}
+
+const getGuestsOnPart = async (vacationId, name) => {
+  const sanitizedVacationId = vacationId.replace(/[^a-zA-Z0-9_]/g, '_');
+  try {
+    const sql = vacationQuery.getGuestsOnPart(sanitizedVacationId)
+    const response = await connection.executeWithParameters(sql, [name])
+    return response
+  } catch (error) {
+    logger.error(`Error: Function:getGuestsOnPart :, ${error.sqlMessage}`);
+    throw error;
+  }
+}
+
+const getFamiliesOnPartDates = async (vacationId, startDate, endDate) => {
+  const sanitizedVacationId = vacationId.replace(/[^a-zA-Z0-9_]/g, '_');
+  try {
+    const sql = vacationQuery.getFamiliesOnPartDates(sanitizedVacationId)
+    const response = await connection.executeWithParameters(sql, [startDate, endDate])
+    return response
+  } catch (error) {
+    logger.error(`Error: Function:getFamiliesOnPartDates :, ${error.sqlMessage}`);
+    throw error;
+  }
+}
+
+const deleteVacationPart = async (id) => {
+  try {
+    const sql = vacationQuery.deleteVacationPart()
+    const response = await connection.executeWithParameters(sql, [id])
+    return response
+  } catch (error) {
+    logger.error(`Error: Function:deleteVacationPart :, ${error.sqlMessage}`);
+    throw error;
+  }
+}
+
+const updateVacation = async (vacationId, name) => {
+  try {
+    const sql = vacationQuery.updateVacation()
+    const response = await connection.executeWithParameters(sql, [name, vacationId])
+    return response
+  } catch (error) {
+    logger.error(`Error: Function:updateVacation :, ${error.sqlMessage}`);
+    throw error;
+  }
+}
+
+const updateVacationDate = async (id, startDate, endDate) => {
+  try {
+    const sql = vacationQuery.updateVacationDate()
+    const response = await connection.executeWithParameters(sql, [startDate, endDate, id])
+    return response
+  } catch (error) {
+    logger.error(`Error: Function:updateVacationDate :, ${error.sqlMessage}`);
+    throw error;
   }
 }
 
@@ -84,5 +154,11 @@ module.exports = {
     getVacations,
     addVacationDates,
     getVacationDates,
-    getAllVacationDates
+    getAllVacationDates,
+    getVacationPartById,
+    getGuestsOnPart,
+    getFamiliesOnPartDates,
+    deleteVacationPart,
+    updateVacation,
+    updateVacationDate
 }

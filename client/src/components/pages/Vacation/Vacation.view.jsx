@@ -23,7 +23,7 @@ import AddBoxIcon from "@mui/icons-material/AddBox";
 import SearchIcon from "@material-ui/icons/Search";
 import moment from "moment";
 
-function VacationView({ 
+function VacationView({
   filteredVacations,
   searchTerm,
   setSearchTerm,

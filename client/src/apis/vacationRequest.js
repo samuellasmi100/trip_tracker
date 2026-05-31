@@ -14,7 +14,19 @@ export default {
       headers: { Authorization: token },
     });
   },
-  
+
+  deleteVacationPart(token, id) {
+    return Api.delete(`${END_POINT.VACATIONS}/part/${id}`, {
+      headers: { Authorization: token },
+    });
+  },
+
+  updateVacation(token, payload) {
+    return Api.put(`${END_POINT.VACATIONS}`, payload, {
+      headers: { Authorization: token },
+    });
+  },
+
 }
 
 
