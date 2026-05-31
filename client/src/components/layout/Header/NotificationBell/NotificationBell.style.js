@@ -108,6 +108,13 @@ export const useStyles = makeStyles(() => ({
   notifMessage: {
     fontSize: "12px !important",
     color: "#475569",
+    // Clamp to 2 lines so no single notification can dominate the panel. Batch
+    // document messages are now short one-liners; this is a safety net for any
+    // longer message (truncated with an ellipsis rather than pushing others down).
+    display: "-webkit-box",
+    WebkitBoxOrient: "vertical",
+    WebkitLineClamp: 2,
+    overflow: "hidden",
   },
   notifVacation: {
     fontSize: "11px !important",

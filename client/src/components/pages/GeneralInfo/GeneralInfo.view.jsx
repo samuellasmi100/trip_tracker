@@ -9,6 +9,7 @@ import React from "react";
 import { ReactComponent as DownloadIcon } from "../../../assets/icons/download.svg";
 import SearchIcon from "@material-ui/icons/Search";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import { includesFlights, withUsLegsLabel } from "../../../utils/helpers/flightWithUs";
 
 function GeneralInfoView({
   rows, search, setSearch, headers, handleExportToExcel,
@@ -113,8 +114,8 @@ function GeneralInfoView({
                 <TableCell className={classes.dataTableCell}>{flight?.email}</TableCell>
                 <TableCell className={classes.dataTableCell}>{flight?.age === null ? flight?.default_age : flight?.age}</TableCell>
                 <TableCell className={classes.dataTableCell}>{flight?.user_classification}</TableCell>
-                <TableCell className={classes.dataTableCell}>{flight?.flights === "1" ? "כן" : "לא"}</TableCell>
-                <TableCell className={classes.dataTableCell}>{flight?.flying_with_us === 1 ? "כן" : "לא"}</TableCell>
+                <TableCell className={classes.dataTableCell}>{includesFlights(flight) ? "כן" : "לא"}</TableCell>
+                <TableCell className={classes.dataTableCell}>{withUsLegsLabel(flight)}</TableCell>
                 <TableCell className={classes.dataTableCell}>
                   {flight?.flights_direction === "round_trip" ? "הלוך חזור" : flight?.flights_direction === "one_way_outbound" ? "הלוך בלבד" : flight?.flights_direction === "one_way_return" ? "חזור בלבד" : ""}
                 </TableCell>

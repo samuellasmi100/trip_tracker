@@ -6,6 +6,7 @@ import ApiStatic from "../../../apis/staticRequest";
 import EditOrUpdateDialog from "../../shared/EditDialog/EditOrUpdateDialog";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { includesFlights, withUsLegsLabel } from "../../../utils/helpers/flightWithUs";
 
 const LIMIT = 50;
 
@@ -77,7 +78,7 @@ const GeneralInfo = () => {
   const closeDetailsModal = () => dispatch(staticSlice.closeDetailsModal());
 
   const filteredRows = rows.filter((user) => {
-    if (selectedFilter === "טסים איתנו") return user.flights === "1";
+    if (selectedFilter === "טסים איתנו") return includesFlights(user);
     if (selectedFilter === "גיל") return user.age ? user.age > 3 : user.default_age && user.default_age > 3;
     return true;
   });
@@ -111,8 +112,8 @@ const GeneralInfo = () => {
       "אימייל": row.email,
       "גיל": row.age === null ? row.default_age : row.age,
       "תואר": row.user_classification,
-      "כולל טיסות": row.flights === "1" ? "כן" : "לא",
-      "טסים איתנו": row.flying_with_us === 1 ? "כן" : "לא",
+      "כולל טיסות": includesFlights(row) ? "כן" : "לא",
+      "טסים איתנו": withUsLegsLabel(row),
       "סוג טיסה": row.flights_direction === "round_trip" ? "הלוך חזור" : row.flights_direction === "one_way_outbound" ? "הלוך בלבד" : row.flights_direction === "one_way_return" ? "חזור בלבד" : "",
       "מספר דרכון": row.passport_number,
       "תוקף": row.validity_passport,

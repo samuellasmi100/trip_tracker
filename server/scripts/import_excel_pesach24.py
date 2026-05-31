@@ -815,8 +815,8 @@ def import_guests(conn, dry_run):
                   (user_id, family_id, hebrew_first_name, hebrew_last_name,
                    english_first_name, english_last_name,
                    identity_id, age, birth_date,
-                   is_main_user, flying_with_us)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,0,1)
+                   is_main_user, flying_with_us, flights)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,0,1,'1')
             """, (user_id, family_id, heb_first, heb_last,
                   eng_first, eng_last, id_num, age_val, birth_dt),
             dry_run, f"INSERT guest '{heb_first} {heb_last}' -> family '{resolve_result}'")
@@ -1011,9 +1011,11 @@ def import_flights(conn, dry_run):
             continue
 
         if all_x:
-            # Passenger has no flights through us — set flying_with_us = 0
+            # Passenger has no flights through us — fully self-arranged. Keep
+            # `flights` ("כולל טיסות" = has flights with us) consistent with the
+            # flying_with_us flag so the per-direction model reads it correctly.
             db_exec(conn,
-                    "UPDATE guest SET flying_with_us = 0 WHERE user_id = %s",
+                    "UPDATE guest SET flying_with_us = 0, flights = '0' WHERE user_id = %s",
                     (uid,), dry_run,
                     f"  flying_with_us=0 for '{heb_first} {raw_last}'")
             updated_status.append((raw_last, heb_first, 'flying_with_us=0'))

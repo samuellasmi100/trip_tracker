@@ -21,7 +21,8 @@ function FlightDetailsStep() {
   const form = useSelector((state) => state.userSlice.form);
   const flightsForm = useSelector((state) => state.flightsSlice.form);
 
-  const flyingWithUs = Number(form.flying_with_us) === 1 || form.flying_with_us === true;
+  // New model: "כולל טיסות" (form.flights) + direction drive which with-us legs
+  // are captured. flying_with_us is no longer an input.
   const direction = form?.flights_direction;
   const showOutbound = direction === "round_trip" || direction === "one_way_outbound";
   const showReturn = direction === "round_trip" || direction === "one_way_return";
@@ -126,8 +127,9 @@ function FlightDetailsStep() {
         </div>
       </div>
 
-      {/* Flight rows */}
-      {flyingWithUs && direction ? (
+      {/* Flight rows — shown once a direction is chosen (the early return above
+          already handles the "כולל טיסות" off case). */}
+      {direction ? (
         <>
           {/* Outbound */}
           {showOutbound && (
@@ -236,9 +238,7 @@ function FlightDetailsStep() {
       ) : (
         <div className={classes.flightEmptyState} style={{ padding: "28px 20px" }}>
           <Typography style={{ color: "#94a3b8", fontSize: 12.5 }}>
-            {!flyingWithUs
-              ? "סמן \"טסים איתנו\" בלשונית פרטי נסיעה כדי להוסיף פרטי טיסות"
-              : "בחר כיוון טיסה בלשונית פרטי נסיעה"}
+            בחר כיוון טיסה בלשונית פרטי נסיעה
           </Typography>
         </div>
       )}

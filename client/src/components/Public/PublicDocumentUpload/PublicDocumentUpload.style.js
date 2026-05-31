@@ -26,6 +26,115 @@ export const useStyles = makeStyles(() => ({
     marginBottom: "6px !important",
   },
 
+  // ── Split mode: "links to forward" panel ──────────────────────────────────
+  // Shown above the upload grid when the head opened a ?split=1 link for a
+  // multi-surname family. Visually distinct (teal card) from the upload area so
+  // "forward to others" reads differently from "upload my own files".
+  forwardPanel: {
+    border: "1px solid #ccfbf1",
+    background: "#f0fdfa",
+    borderRadius: "14px",
+    padding: "16px",
+    marginBottom: "22px",
+  },
+  forwardTitle: {
+    fontSize: "15px !important",
+    fontWeight: "700 !important",
+    color: "#0f172a",
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    marginBottom: "4px !important",
+  },
+  forwardHint: {
+    fontSize: "12.5px !important",
+    color: "#475569",
+    lineHeight: "1.55 !important",
+    marginBottom: "12px !important",
+  },
+  forwardList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+  },
+  forwardRow: {
+    background: "#ffffff",
+    border: "1px solid #e2e8f0",
+    borderRadius: "10px",
+    padding: "10px 12px",
+  },
+  forwardHeader: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: "8px",
+  },
+  forwardName: {
+    fontSize: "14px !important",
+    fontWeight: "700 !important",
+    color: "#0f172a",
+  },
+  forwardCount: {
+    fontSize: "12px",
+    fontWeight: 600,
+    color: "#0d9488",
+    background: "#f0fdfa",
+    border: "1px solid #ccfbf1",
+    borderRadius: "999px",
+    padding: "2px 10px",
+  },
+  forwardActions: {
+    display: "flex",
+    gap: "8px",
+  },
+  forwardBtn: {
+    flex: 1,
+    padding: "8px !important",
+    fontSize: "13px !important",
+    fontWeight: "600 !important",
+    textTransform: "none !important",
+    borderRadius: "10px !important",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
+  },
+  forwardWhatsapp: {
+    background: "#25d366 !important",
+    color: "#ffffff !important",
+    "&:hover": { background: "#128c7e !important" },
+  },
+  forwardCopy: {
+    background: "#ffffff !important",
+    color: "#0f172a !important",
+    border: "1.5px solid #0d9488 !important",
+    "&:hover": { background: "#f0fdfa !important" },
+  },
+  // Header row above the upload grid (split mode): "my docs / all family" title
+  // plus the show-all toggle. Wraps to two lines on narrow phones.
+  uploadBar: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+    gap: "6px",
+    marginBottom: "10px",
+  },
+  // Heading that introduces the upload area below the forward panel.
+  uploadHeading: {
+    fontSize: "15px !important",
+    fontWeight: "700 !important",
+    color: "#0f172a",
+  },
+  showAllToggle: {
+    margin: "0 !important",
+    "& .MuiFormControlLabel-label": {
+      fontSize: "13px !important",
+      color: "#475569",
+      fontWeight: "600 !important",
+    },
+  },
+
   // Responsive guest grid: one column on phones, auto-filling columns that use
   // the full desktop width.
   guestGrid: {
@@ -62,9 +171,10 @@ export const useStyles = makeStyles(() => ({
     color: "#0f172a",
     flex: 1,
     minWidth: 0,
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
+    // Wrap the full "first last" name instead of ellipsis-truncating it — long
+    // or compound names (common in multi-surname families) must stay fully
+    // readable so guests sharing a first name are distinguishable.
+    overflowWrap: "anywhere",
   },
   guestCount: {
     fontSize: "12px",

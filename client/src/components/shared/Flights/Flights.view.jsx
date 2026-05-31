@@ -55,8 +55,10 @@ const FlightsView = (props) => {
     });
   };
 
-  const flyingWithUs =
-    Number(userForm.flying_with_us) === 1 || userForm.flying_with_us === true;
+  // New model: "כולל טיסות" (userForm.flights) + direction drive which with-us
+  // legs are captured. flying_with_us is no longer an input.
+  const hasFlights =
+    Number(userForm.flights) === 1 || userForm.flights === true;
   const direction = userForm?.flights_direction || "round_trip";
   const showOutbound =
     direction === "round_trip" || direction === "one_way_outbound";
@@ -168,8 +170,8 @@ const FlightsView = (props) => {
         </div>
       </div>
 
-      {/* Flight details — only when flying with us + direction chosen */}
-      {flyingWithUs && direction && (
+      {/* Flight details — only when "כולל טיסות" is on + a direction is chosen */}
+      {hasFlights && direction && (
         <>
           {showOutbound && (
             <div className={classes.sectionCard}>

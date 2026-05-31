@@ -52,21 +52,6 @@ function TripOptionsStep({ handleInputChange }) {
               label={<span className={classes.switchLabel}>כולל טיסות</span>}
             />
 
-            {Boolean(form.flights) && (
-              <FormControlLabel
-                control={
-                  <Switch
-                    name="flying_with_us"
-                    className={classes.switchControl}
-                    onChange={handleInputChange}
-                    checked={Boolean(form.flying_with_us)}
-                    size="small"
-                  />
-                }
-                label={<span className={classes.switchLabel}>טסים איתנו</span>}
-              />
-            )}
-
             <FormControlLabel
               control={
                 <Switch

@@ -5,6 +5,11 @@ const db = require('./documentsDb');
 const r2 = require('../storage/r2Client');
 const connection = require('../../db/connection-wrapper');
 const logger = require('../../utils/logger');
+const {
+  requiredFlightTicketTypeKeys,
+  FLIGHT_TICKET_OUTBOUND_KEY,
+  FLIGHT_TICKET_RETURN_KEY,
+} = require('./flightTicketRequirement');
 
 const SIGNED_REGISTRATION_TYPE_KEY = 'signed_registration';
 
@@ -19,13 +24,18 @@ const VERIFY_JWT_EXPIRES = '30m';
 // ── Completeness (X/Y) rules ─────────────────────────────────────────────────
 // Required-slot derivation, evaluated against LIVE data at query time:
 //   • signed_registration → FAMILY-LEVEL: one slot per family, not per guest.
-//   • flight_ticket       → PER GUEST, but ONLY for independent fliers
-//                           (flying_with_us = 0). NOTE this is the INVERSE of
-//                           getGuestCompleteness, where flying_with_us = 1
-//                           triggers flight-field requirements.
+//   • flight tickets       → PER GUEST, 0/1/2 slots decided by
+//                           requiredFlightTicketTypeKeys(guest) (the shared helper)
+//                           from guest.flights + flights_direction — one slot per
+//                           self-arranged direction (outbound/return).
 //   • everything else required (id_passport, custom types) → PER GUEST, all.
-const FAMILY_LEVEL_TYPE_KEYS      = new Set(['signed_registration']);
-const INDEPENDENT_FLIER_TYPE_KEYS = new Set(['flight_ticket']);
+const FAMILY_LEVEL_TYPE_KEYS = new Set(['signed_registration']);
+// All flight-ticket type_keys are excluded from the generic per-guest base — the
+// legacy single 'flight_ticket' (kept for old rows) and the two per-direction
+// types, which are added per guest via the helper instead of the is_required flag.
+const FLIGHT_TICKET_TYPE_KEYS = new Set([
+  'flight_ticket', FLIGHT_TICKET_OUTBOUND_KEY, FLIGHT_TICKET_RETURN_KEY,
+]);
 
 // Allowed upload types. The R2 key extension and the stored Content-Type are
 // derived from the CONTENT-detected mime (sniffMime), never the client filename
@@ -83,8 +93,6 @@ class DocumentsError extends Error {
     this.code = code;
   }
 }
-
-const isIndependentFlier = (guest) => Number(guest.flying_with_us) === 0;
 
 // Last-4 source mirrors the registration verify: unified E.164 `phone`, falling
 // back to the legacy phone_b (the real local number — phone_a is only the
@@ -344,9 +352,9 @@ const deleteDocument = async (vacationId, docId) => {
 
 // ── Completeness (X/Y) + per-guest "what's missing" ──────────────────────────
 // Derived in JS from three flat reads so the rules (per-guest vs family-level,
-// flying_with_us-conditional flight_ticket) stay readable. Returns one entry
-// per family with counts AND the missing breakdown, so the client renders both
-// the X/Y badge and the "what's missing" popup from a single source.
+// per-direction flight tickets via requiredFlightTicketTypeKeys) stay readable.
+// Returns one entry per family with counts AND the missing breakdown, so the
+// client renders both the X/Y badge and the "what's missing" popup from one source.
 const getAllFamiliesStatus = async (vacationId) => {
   const [families, guests, uploaded, types] = await Promise.all([
     db.getAllFamilies(vacationId),
@@ -356,8 +364,17 @@ const getAllFamiliesStatus = async (vacationId) => {
   ]);
 
   const requiredTypes = types.filter((t) => Number(t.is_required) === 1);
-  const perGuestTypes = requiredTypes.filter((t) => !FAMILY_LEVEL_TYPE_KEYS.has(t.type_key));
-  const familyTypes   = requiredTypes.filter((t) => FAMILY_LEVEL_TYPE_KEYS.has(t.type_key));
+  // Per-guest base = required types that are neither family-level nor any kind of
+  // flight ticket (passport + custom). Flight tickets are added per guest below.
+  const perGuestBaseTypes = requiredTypes.filter(
+    (t) => !FAMILY_LEVEL_TYPE_KEYS.has(t.type_key) && !FLIGHT_TICKET_TYPE_KEYS.has(t.type_key)
+  );
+  const familyTypes = requiredTypes.filter((t) => FAMILY_LEVEL_TYPE_KEYS.has(t.type_key));
+  // type_key → doc-type row for the per-direction tickets (is_required=0, so they
+  // are NOT in requiredTypes; look them up across ALL types).
+  const ticketTypeByKey = new Map(
+    types.filter((t) => FLIGHT_TICKET_TYPE_KEYS.has(t.type_key)).map((t) => [t.type_key, t])
+  );
 
   // (family|user|docType) → uploaded; and (family|docType) for family-level.
   const perGuestUploaded = new Set(uploaded.map((u) => `${u.family_id}|${u.user_id}|${u.doc_type_id}`));
@@ -377,9 +394,12 @@ const getAllFamiliesStatus = async (vacationId) => {
 
     for (const g of famGuests) {
       const guestMissing = [];
-      for (const t of perGuestTypes) {
-        // flight_ticket only required for independent fliers (flying_with_us=0).
-        if (INDEPENDENT_FLIER_TYPE_KEYS.has(t.type_key) && !isIndependentFlier(g)) continue;
+      // Per-guest required slots = base types + the 0/1/2 flight-ticket types the
+      // helper says this guest needs (one per self-arranged direction).
+      const ticketTypes = requiredFlightTicketTypeKeys(g)
+        .map((key) => ticketTypeByKey.get(key))
+        .filter(Boolean);
+      for (const t of [...perGuestBaseTypes, ...ticketTypes]) {
         total += 1;
         if (perGuestUploaded.has(`${fam.family_id}|${g.user_id}|${t.id}`)) uploadedCount += 1;
         else guestMissing.push(t.label);
@@ -412,34 +432,27 @@ const getFamilyDocuments = async (vacationId, familyId) => {
   return db.getDocsByFamily(vacationId, familyId);
 };
 
-// Build ONE detailed coordinator-notification payload for a whole save batch
-// (not per file). Gated by the verify session and scoped to that family; labels
-// and guest names are resolved server-side from the item ids so the message is
-// authoritative. `items` = [{ userId, docTypeId, replaced }]. Returns the
-// notification payload (the controller persists + emits it, mirroring the
-// registration submit block). Throws on an invalid verify token.
+// Build ONE summarized coordinator-notification payload for a whole save batch
+// (not per file). Gated by the verify session and scoped to that family. The
+// message is a single short count line (no per-file/per-guest enumeration) so it
+// stays readable in the bell. `items` = [{ userId, docTypeId, replaced }];
+// only the new-vs-updated counts are used. Returns the notification payload (the
+// controller persists + emits it). Throws on an invalid verify token.
 const buildBatchNotification = async (vacationId, docToken, verifyToken, items) => {
   const family = await requireVerifiedFamily(vacationId, docToken, verifyToken);
-  const [members, docTypes] = await Promise.all([
-    db.getFamilyMembers(vacationId, family.family_id),
-    db.getDocumentTypes(vacationId),
-  ]);
 
-  const nameByUser = new Map(members.map((m) => [m.user_id, fullName(m)]));
-  const labelByType = new Map(docTypes.map((t) => [Number(t.id), t.label]));
+  // One short summary LINE — counts only, never a per-file/per-guest list, so the
+  // message can't balloon and crowd out other notifications in the bell. e.g.
+  // "משפחת בדיקה העלתה 4, עדכנה 2 מסמכים".
+  const addedCount   = items.filter((i) => !i.replaced).length;
+  const updatedCount = items.filter((i) => i.replaced).length;
+  const docWord = (n) => (n === 1 ? 'מסמך' : 'מסמכים');
 
-  const describe = (it) => {
-    const label = labelByType.get(Number(it.docTypeId)) || 'מסמך';
-    const name = nameByUser.get(it.userId) || '';
-    return name ? `${label} – ${name}` : label;
-  };
-  const added   = items.filter((i) => !i.replaced).map(describe);
-  const updated = items.filter((i) => i.replaced).map(describe);
-
-  const segments = [];
-  if (added.length)   segments.push(`העלתה: ${added.join(', ')}`);
-  if (updated.length) segments.push(`עדכנה: ${updated.join(', ')}`);
-  const message = `משפחת ${family.family_name || ''} ${segments.join(' · ')}`.trim();
+  const parts = [];
+  if (addedCount)   parts.push(`העלתה ${addedCount}`);
+  if (updatedCount) parts.push(`עדכנה ${updatedCount}`);
+  // Noun once, agreeing with the last count shown (controller guarantees ≥1 item).
+  const message = `משפחת ${family.family_name || ''} ${parts.join(', ')} ${docWord(updatedCount || addedCount)}`.trim();
 
   const vacationName = await getVacationName(vacationId);
   return {

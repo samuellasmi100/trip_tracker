@@ -1,6 +1,7 @@
 import React from "react";
 import {
   Typography, TextField, Button, CircularProgress, LinearProgress, IconButton, Tooltip,
+  Switch, FormControlLabel,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
@@ -14,19 +15,30 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import PendingOutlinedIcon from "@mui/icons-material/PendingOutlined";
 import CloseIcon from "@mui/icons-material/Close";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import CheckIcon from "@mui/icons-material/Check";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 // Page chrome is shared with the registration public page so the two look
 // identical; only the upload grid uses this component's own styles.
 import { useStyles as useShellStyles } from "../PublicRegistration/PublicLinkShell.style";
 import { useStyles as useDocStyles } from "./PublicDocumentUpload.style";
 import logoUrl from "../../../assets/icons/avimor-logo.png";
+import {
+  requiredFlightTicketTypeKeys,
+  FLIGHT_TICKET_OUTBOUND_KEY,
+  FLIGHT_TICKET_RETURN_KEY,
+} from "../../../utils/helpers/flightTicketRequirement";
 
 const SIGNED_REGISTRATION_KEY = "signed_registration";
-const FLIGHT_TICKET_KEY = "flight_ticket";
+// All flight-ticket type_keys (legacy single + the two per-direction types) are
+// excluded from the generic per-guest base; tickets are added per guest via the
+// shared requiredFlightTicketTypeKeys helper instead.
+const FLIGHT_TICKET_TYPE_KEYS = new Set([
+  "flight_ticket", FLIGHT_TICKET_OUTBOUND_KEY, FLIGHT_TICKET_RETURN_KEY,
+]);
 
 const fullName = (m) => `${m.hebrew_first_name || ""} ${m.hebrew_last_name || ""}`.trim();
-// Independent fliers (flying_with_us=0) additionally need a flight ticket — the
-// INVERSE of the flight-data completeness rule, matching the server.
-const isIndependent = (m) => Number(m.flying_with_us) === 0;
 
 function PublicDocumentUploadView({
   loading, fatal, info,
@@ -34,6 +46,8 @@ function PublicDocumentUploadView({
   family, members, docTypes, uploadedDocs,
   staged = {}, saving, saveError, saveSuccess,
   busyKey, slotError, onStage, onUnstage, onPreviewStaged, onSave, onView, onDelete,
+  forwardLinks = [], copiedForward, onCopyForward,
+  splitActive, showAllGuests, onToggleShowAll,
 }) {
   const shell = useShellStyles();
   const c = useDocStyles();
@@ -117,14 +131,25 @@ function PublicDocumentUploadView({
   const uploadedMap = new Map();
   (uploadedDocs || []).forEach((d) => uploadedMap.set(`${d.user_id}-${Number(d.doc_type_id)}`, d));
 
-  // Required, per-guest types (matches the server X/Y rule): every required type
-  // except the family-level signed registration; flight_ticket only shows for
-  // independent fliers.
-  const perGuestTypes = (docTypes || []).filter(
-    (t) => t.type_key !== SIGNED_REGISTRATION_KEY && Number(t.is_required) === 1
+  // Required per-guest base (matches the server X/Y rule): required types that are
+  // neither the family-level signed registration nor any flight ticket.
+  const perGuestBaseTypes = (docTypes || []).filter(
+    (t) =>
+      t.type_key !== SIGNED_REGISTRATION_KEY &&
+      !FLIGHT_TICKET_TYPE_KEYS.has(t.type_key) &&
+      Number(t.is_required) === 1
   );
-  const slotsFor = (m) =>
-    perGuestTypes.filter((t) => t.type_key !== FLIGHT_TICKET_KEY || isIndependent(m));
+  // type_key → doc-type row for the per-direction tickets (is_required=0).
+  const ticketTypeByKey = new Map(
+    (docTypes || []).filter((t) => FLIGHT_TICKET_TYPE_KEYS.has(t.type_key)).map((t) => [t.type_key, t])
+  );
+  // Per-guest slots = base + the 0/1/2 flight tickets the helper says they need.
+  const slotsFor = (m) => {
+    const tickets = requiredFlightTicketTypeKeys(m)
+      .map((key) => ticketTypeByKey.get(key))
+      .filter(Boolean);
+    return [...perGuestBaseTypes, ...tickets];
+  };
 
   let total = 0;
   let done = 0;
@@ -136,8 +161,78 @@ function PublicDocumentUploadView({
   const allDone = total > 0 && done >= total;
   const stagedCount = Object.keys(staged).length;
 
+  const hasForward = forwardLinks.length > 0;
+
   return (
     <Frame>
+      {/* Split-mode: links the head forwards to each surname's people. Kept
+          visually separate from the upload area below so "forward to others"
+          never gets confused with "upload my own files". */}
+      {hasForward && (
+        <div className={c.forwardPanel}>
+          <Typography className={c.forwardTitle}>
+            <ShareOutlinedIcon style={{ fontSize: "20px", color: "#0d9488" }} />
+            קישורים להעברה לבני המשפחה
+          </Typography>
+          <Typography className={c.forwardHint}>
+            המשפחה כוללת כמה שמות משפחה. העבירו לכל קבוצה את הקישור שלה — כל קישור מציג
+            רק את בני אותו שם משפחה. האימות נשאר 4 הספרות של מספר הטלפון שלך.
+          </Typography>
+          <div className={c.forwardList}>
+            {forwardLinks.map((sg) => (
+              <div key={sg.surname} className={c.forwardRow}>
+                <div className={c.forwardHeader}>
+                  <span className={c.forwardName} style={{ direction: "rtl" }}>{sg.surname}</span>
+                  <span className={c.forwardCount}>{sg.count} נופשים</span>
+                </div>
+                <div className={c.forwardActions}>
+                  <Button
+                    className={`${c.forwardBtn} ${c.forwardWhatsapp}`}
+                    onClick={() => window.open(sg.whatsappHref, "_blank", "noopener")}
+                  >
+                    <WhatsAppIcon style={{ fontSize: "18px" }} /> שיתוף
+                  </Button>
+                  <Button
+                    className={`${c.forwardBtn} ${c.forwardCopy}`}
+                    onClick={() => onCopyForward(sg.surname, sg.link)}
+                  >
+                    {copiedForward === sg.surname
+                      ? <CheckIcon style={{ fontSize: "18px", color: "#22c55e" }} />
+                      : <ContentCopyIcon style={{ fontSize: "18px" }} />}
+                    {copiedForward === sg.surname ? "הועתק!" : "העתקה"}
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Split mode: head's grid defaults to his own subgroup; the toggle reveals
+          the whole family so he CAN upload for others if he chooses. */}
+      {splitActive && (
+        <div className={c.uploadBar}>
+          <Typography className={c.uploadHeading}>
+            {showAllGuests ? "העלאת מסמכים — כל המשפחה" : "העלאת המסמכים שלי"}
+          </Typography>
+          <FormControlLabel
+            className={c.showAllToggle}
+            control={(
+              <Switch
+                size="small"
+                checked={!!showAllGuests}
+                onChange={(e) => onToggleShowAll(e.target.checked)}
+                sx={{
+                  "& .MuiSwitch-switchBase.Mui-checked": { color: "#0d9488" },
+                  "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": { backgroundColor: "#0d9488" },
+                }}
+              />
+            )}
+            label="הצג את כל המשפחה"
+          />
+        </div>
+      )}
+
       <Typography className={c.intro}>
         אנא העלו את המסמכים הנדרשים עבור כל אחד מבני המשפחה.<br />
         ניתן לשמור ולחזור בכל עת — מה שהועלה יישמר.
@@ -178,7 +273,9 @@ function PublicDocumentUploadView({
             <div key={m.user_id} className={c.guestCard}>
               <div className={c.guestHeader}>
                 <PersonOutlineIcon className={c.guestIcon} />
-                <Typography className={c.guestName}>{fullName(m) || "אורח"}</Typography>
+                <Typography className={c.guestName} title={fullName(m) || "אורח"}>
+                  {fullName(m) || "אורח"}
+                </Typography>
                 <span className={c.guestCount}>{guestDone}/{slots.length}</span>
               </div>
 

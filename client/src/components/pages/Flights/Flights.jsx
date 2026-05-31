@@ -8,6 +8,7 @@ import * as dialogSlice from "../../../store/slices/dialogSlice"
 import EditOrUpdateDialog from "../../shared/EditDialog/EditOrUpdateDialog";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { includesFlights, withUsLegsLabel } from "../../../utils/helpers/flightWithUs";
 
 const Flights = () => {
   const dispatch = useDispatch();
@@ -73,8 +74,8 @@ const Flights = () => {
       "תאריך לידה":row.birth_date,
       "גיל":row.age === null ? row.default_age : row.age,
       "תואר":row.user_classification,
-      "כולל טיסות":(row.flights === "1" || row.passport_number || row.outbound_flight_date) ? 'כן': "לא",
-      "טסים איתנו":row.flying_with_us === 1 ? 'כן': "לא",
+      "כולל טיסות":includesFlights(row) ? 'כן': "לא",
+      "טסים איתנו":withUsLegsLabel(row),
       "סוג טיסה":row.flights_direction === "round_trip" ? "הלוך חזור":row.flights_direction === "one_way_outbound" ? "הלוך בלבד" : row.flights_direction === "one_way_return" ? "חזור בלבד" : "",
       "מספר דרכון":row.passport_number,
       "תוקף":row.validity_passport,

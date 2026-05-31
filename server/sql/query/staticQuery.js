@@ -80,7 +80,6 @@ const getFlightsDetails = (vacationId) => {
     g.is_main_user,
     g.identity_id,
     g.flights,
-    g.flying_with_us,
     g.flights_direction,
     g.age as default_age
 FROM 
@@ -155,7 +154,6 @@ return `SELECT
     g.is_main_user,
     g.identity_id,
     g.flights,
-    g.flying_with_us,
     g.flights_direction,
     g.age AS default_age,
     g.number_of_guests,

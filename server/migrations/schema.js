@@ -489,7 +489,15 @@ const TENANT_TABLE_SCHEMAS = {
       { name: 'sort_order',  definition: "int NOT NULL DEFAULT '0'" },
       { name: 'created_at',  definition: 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP' },
     ],
-    seed: `INSERT INTO {{T}} (type_key, label, is_required, sort_order) VALUES ('id_passport', 'צילום תעודת זהות / דרכון', 1, 1), ('flight_ticket', 'כרטיסי טיסה', 1, 2), ('signed_registration', 'טופס רישום חתום', 1, 3)`,
+    // 'flight_ticket' (single, is_required=1) is KEPT for the current consumers
+    // that still key on it. The per-direction feature adds two conditional types
+    // ('flight_ticket_outbound' / 'flight_ticket_return'); they are seeded with
+    // is_required=0 so the generic "required per-guest types" filter does NOT
+    // auto-pick them up — their requiredness is decided per guest by
+    // services/documents/flightTicketRequirement.js, not by this flag. Existing
+    // tenants get the two new rows via scripts/backfillFlightTicketDocTypes.js
+    // (the seed only fires on fresh table creation).
+    seed: `INSERT INTO {{T}} (type_key, label, is_required, sort_order) VALUES ('id_passport', 'צילום תעודת זהות / דרכון', 1, 1), ('flight_ticket', 'כרטיסי טיסה', 1, 2), ('signed_registration', 'טופס רישום חתום', 1, 3), ('flight_ticket_outbound', 'צילום כרטיס טיסה - הלוך', 0, 4), ('flight_ticket_return', 'צילום כרטיס טיסה - חזור', 0, 5)`,
   },
 
   family_documents: {

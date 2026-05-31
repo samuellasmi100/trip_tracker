@@ -55,16 +55,18 @@ const getDocByIdWithType = (vacationId) =>
 // ── Inputs for the per-family completeness computation ───────────────────────
 // The X/Y math is derived in the service (documentsService.getAllFamiliesStatus)
 // from these three flat reads rather than a single aggregate query, because the
-// required-slot rules depend on per-guest flying_with_us AND on whether a doc
-// type is per-guest (id_passport / custom) or family-level (signed_registration)
-// — logic that is far clearer in JS than in GROUP BY arithmetic.
+// required-slot rules depend on per-guest flight info (flights + flights_direction
+// → per-direction tickets) AND on whether a doc type is per-guest (id_passport /
+// custom) or family-level (signed_registration) — logic that is far clearer in JS
+// than in GROUP BY arithmetic.
 
 const getAllFamilies = (vacationId) =>
   `SELECT family_id, family_name FROM \`trip_tracker_${vacationId}\`.families`;
 
-// flying_with_us is read here (live) — it is freely mutable via the guest editor.
+// flights + flights_direction drive the per-direction flight-ticket requirement
+// (via flightTicketRequirement.js); read live (freely mutable via the guest editor).
 const getGuestsForStatus = (vacationId) =>
-  `SELECT family_id, user_id, hebrew_first_name, hebrew_last_name, flying_with_us
+  `SELECT family_id, user_id, hebrew_first_name, hebrew_last_name, flights, flights_direction
    FROM \`trip_tracker_${vacationId}\`.guest`;
 
 const getUploadedDocsForStatus = (vacationId) =>
@@ -90,8 +92,12 @@ const getFamilyByToken = (vacationId) =>
    WHERE f.doc_token = ?
    LIMIT 1`;
 
+// is_main_user marks the family head authoritatively (vs. guessing by name) —
+// the public page uses it to identify the head's own surname subgroup.
+// flights + flights_direction included so the public page can derive each
+// member's per-direction flight-ticket slots (flightTicketRequirement mirror).
 const getFamilyMembers = (vacationId) =>
-  `SELECT user_id, hebrew_first_name, hebrew_last_name, flying_with_us FROM \`trip_tracker_${vacationId}\`.guest WHERE family_id = ?`;
+  `SELECT user_id, hebrew_first_name, hebrew_last_name, is_main_user, flights, flights_direction FROM \`trip_tracker_${vacationId}\`.guest WHERE family_id = ?`;
 
 // ── signed_registration wipe (coordinator delete of the signed form) ─────────
 // Deleting the family_documents PDF row alone leaves registration_requests

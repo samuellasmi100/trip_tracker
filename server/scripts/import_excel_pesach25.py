@@ -879,6 +879,11 @@ def import_guests(conn, dry_run):
             # 'X', blank, or any other value → hotel guest, no charter
             flying_with_us = 0
 
+        # `flights` ("כולל טיסות" = has flights with us) mirrors flying_with_us so
+        # the per-direction flight-ticket model reads it correctly. Stored as the
+        # string '1'/'0' (matches the display convention + the requirement helper).
+        flights_flag = '1' if flying_with_us == 1 else '0'
+
         heb_last = _strip_parens(raw_last)
 
         # ── Resolve family ───────────────────────────────────────────────────
@@ -901,10 +906,11 @@ def import_guests(conn, dry_run):
                   identity_id        = COALESCE(%s, identity_id),
                   age                = COALESCE(%s, age),
                   birth_date         = COALESCE(%s, birth_date),
-                  flying_with_us     = %s
+                  flying_with_us     = %s,
+                  flights            = %s
                 WHERE user_id = %s
             """, (eng_first, eng_last, id_num, age_val, birth_dt,
-                  flying_with_us, existing_uid),
+                  flying_with_us, flights_flag, existing_uid),
             dry_run, f"UPDATE guest '{heb_first} {heb_last}' flying_with_us={flying_with_us}")
 
             db_exec(conn, """
@@ -924,11 +930,11 @@ def import_guests(conn, dry_run):
                   (user_id, family_id, hebrew_first_name, hebrew_last_name,
                    english_first_name, english_last_name,
                    identity_id, age, birth_date,
-                   is_main_user, flying_with_us)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,0,%s)
+                   is_main_user, flying_with_us, flights)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,0,%s,%s)
             """, (user_id, family_id, heb_first, heb_last,
                   eng_first, eng_last, id_num, age_val, birth_dt,
-                  flying_with_us),
+                  flying_with_us, flights_flag),
             dry_run,
             f"INSERT guest '{heb_first} {heb_last}' -> '{resolve_result}' flying_with_us={flying_with_us}")
 
@@ -1342,7 +1348,7 @@ def import_flights(conn, dry_run):
             continue
 
         db_exec(conn,
-                "UPDATE guest SET flying_with_us = 0 WHERE user_id = %s",
+                "UPDATE guest SET flying_with_us = 0, flights = '0' WHERE user_id = %s",
                 (uid,), dry_run,
                 f"not_flying '{heb_first} {raw_last}' → flying_with_us=0")
         ok.append(('not_flying', raw_last, heb_first))

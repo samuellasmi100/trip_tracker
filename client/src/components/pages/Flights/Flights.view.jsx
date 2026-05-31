@@ -18,6 +18,7 @@ import { useStyles } from "./Flights.style";
 import React  from "react";
 import { ReactComponent as DownloadIcon } from "../../../assets/icons/download.svg";
 import SearchIcon from "@material-ui/icons/Search";
+import { includesFlights, withUsLegsLabel } from "../../../utils/helpers/flightWithUs";
 
 function FlightsView({ 
   filteredFlightDetails,
@@ -104,10 +105,10 @@ function FlightsView({
                  {flight?.user_classification}
                  </TableCell>
                  <TableCell className={classes.dataTableCell}>
-                 {flight?.flights === "1" || flight?.passport_number || flight?.outbound_flight_date ? 'כן': "לא"}
+                 {includesFlights(flight) ? 'כן': "לא"}
                  </TableCell>
                  <TableCell className={classes.dataTableCell}>
-                 {flight?.flying_with_us === 1 ? 'כן' : "לא"}
+                 {withUsLegsLabel(flight)}
                  </TableCell>
                  <TableCell className={classes.dataTableCell}>
                  {flight?.flights_direction === "round_trip" ? "הלוך חזור" : flight?.flights_direction === "one_way_outbound" ? "הלוך בלבד" : flight?.flights_direction === "one_way_return" ? "חזור בלבד" : ""}

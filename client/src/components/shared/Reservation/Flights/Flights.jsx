@@ -52,24 +52,10 @@ function Flights({ handleInputChange }) {
           label={<span className={classes.switchLabel}>חלק מקבוצה?</span>}
         />
 
-        {(Boolean(form.flights) || Boolean(form.flying_with_us)) && (
-          <FormControlLabel
-            control={
-              <Switch
-                name="flying_with_us"
-                className={classes.switchControl}
-                onChange={handleInputChange}
-                checked={Boolean(form.flying_with_us)}
-                size="small"
-              />
-            }
-            label={<span className={classes.switchLabel}>טסים איתנו</span>}
-          />
-        )}
       </div>
 
-      {/* Flight direction radio group */}
-      {(Boolean(form.flights) || Boolean(form.flying_with_us)) && (
+      {/* Flight direction radio group — shown whenever "כולל טיסות" is on. */}
+      {Boolean(form.flights) && (
         <div style={{ marginTop: "16px" }}>
           <InputLabel
             className={classes.inputLabelStyle}

@@ -36,7 +36,7 @@ import { getGuestCompleteness } from "../../../utils/helpers/guestCompleteness";
 const USER_FIELDS = [
   "hebrew_first_name", "hebrew_last_name", "english_first_name", "english_last_name",
   "birth_date", "identity_id", "email", "address", "phone", "phone_a", "phone_b",
-  "flights", "flying_with_us", "is_in_group", "flights_direction",
+  "flights", "is_in_group", "flights_direction",
   "week_chosen", "arrival_date", "departure_date",
   "is_main_user",
 ];
@@ -74,9 +74,9 @@ const GuestEditor = ({ onClose }) => {
   const token = sessionStorage.getItem("token");
 
   const isAdd = dialogType === "addParent" || dialogType === "addChild";
+  // "כולל טיסות" is the sole driver of the flights section now (flying_with_us retired).
   const hasFlights =
-    Number(userForm.flights) === 1 || userForm.flights === true ||
-    Number(userForm.flying_with_us) === 1 || userForm.flying_with_us === true;
+    Number(userForm.flights) === 1 || userForm.flights === true;
 
   // Live completeness for the nav chips + overall badge. Personal fields come
   // from userForm; flight fields from flightsForm (authoritative once loaded),
@@ -112,7 +112,7 @@ const GuestEditor = ({ onClose }) => {
     if (!isAdd) return;
     const mainUser = guests?.find((g) => g.is_main_user === 1 || g.is_main_user === true);
     if (mainUser) {
-      ["week_chosen", "number_of_guests", "number_of_rooms", "flights", "flying_with_us", "flights_direction"].forEach((field) => {
+      ["week_chosen", "number_of_guests", "number_of_rooms", "flights", "flights_direction"].forEach((field) => {
         if (mainUser[field] !== undefined && mainUser[field] !== null && mainUser[field] !== "") {
           dispatch(userSlice.updateFormField({ field, value: mainUser[field] }));
         }
@@ -176,7 +176,6 @@ const GuestEditor = ({ onClose }) => {
         initialFlyingRef.current = false;
       } else if (userForm.user_id) {
         initialFlyingRef.current =
-          Number(userForm.flying_with_us) === 1 || userForm.flying_with_us === true ||
           Number(userForm.flights) === 1 || userForm.flights === true;
       } else {
         return; // wait for the guest to populate
@@ -205,7 +204,7 @@ const GuestEditor = ({ onClose }) => {
     } else if (name === "birth_date") {
       dispatch(userSlice.updateFormField({ field: "age", value: calculateAge(value) }));
       dispatch(userSlice.updateFormField({ field: name, value }));
-    } else if (name === "flights" || name === "flying_with_us" || name === "is_in_group") {
+    } else if (name === "flights" || name === "is_in_group") {
       dispatch(userSlice.updateFormField({ field: name, value: checked }));
     } else if (name === "is_main_user") {
       // Normalize to 1/0 so the form value matches what the server returns on
@@ -274,6 +273,14 @@ const GuestEditor = ({ onClose }) => {
     }
     if (dialogType === "addChild" && guests.some((u) => u.identity_id === userForm.identity_id)) {
       dispatch(snackBarSlice.setSnackBar({ type: "error", message: "מספר תעודת זהות זה כבר נמצא במערכת", timeout: 3000 }));
+      return null;
+    }
+    // New flight model: "כולל טיסות" on ⇒ a flight direction is mandatory (it
+    // defines which legs are with us vs self-arranged). Off ⇒ direction is
+    // irrelevant (fully self-arranged → both tickets).
+    const includesFlights = Number(userForm.flights) === 1 || userForm.flights === true;
+    if (includesFlights && !String(userForm.flights_direction || "").trim()) {
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: 'יש לבחור כיוון טיסה כאשר "כולל טיסות" מסומן', timeout: 3000 }));
       return null;
     }
 

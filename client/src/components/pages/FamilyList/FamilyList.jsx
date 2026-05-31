@@ -556,7 +556,22 @@ const FamilyList = () => {
         dispatch(snackBarSlice.setSnackBar({ type: "error", message: "לא ניתן להפיק קישור למשפחה זו", timeout: 4000 }));
         return;
       }
-      const head = (guestsRes.data || []).find((g) => Number(g.is_main_user) === 1) || null;
+      const guests = guestsRes.data || [];
+      const head = guests.find((g) => Number(g.is_main_user) === 1) || null;
+
+      // Distinct (non-empty) hebrew_last_name values + counts. When a family
+      // spans more than one surname (e.g. שטרן contains שטרן / יעקובזון / בייטלר),
+      // the dialog offers optional per-surname filtered links. Largest group first.
+      const surnameCounts = new Map();
+      guests.forEach((gst) => {
+        const surname = (gst.hebrew_last_name || "").trim();
+        if (!surname) return;
+        surnameCounts.set(surname, (surnameCounts.get(surname) || 0) + 1);
+      });
+      const subgroups = [...surnameCounts.entries()]
+        .map(([surname, count]) => ({ surname, count }))
+        .sort((a, b) => b.count - a.count || a.surname.localeCompare(b.surname, "he"));
+
       setDocLinkDialog({
         open: true,
         data: {
@@ -565,6 +580,7 @@ const FamilyList = () => {
           headPhone: headWhatsappDigits(head),
           headEmail: head?.email || null,
           vacationName: vacationName || "",
+          subgroups,
         },
       });
     } catch (err) {
@@ -682,6 +698,7 @@ const FamilyList = () => {
         headPhone={docLinkDialog.data?.headPhone}
         headEmail={docLinkDialog.data?.headEmail}
         vacationName={docLinkDialog.data?.vacationName}
+        subgroups={docLinkDialog.data?.subgroups}
       />
     </>
   )

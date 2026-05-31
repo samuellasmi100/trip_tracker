@@ -26,18 +26,27 @@ import { useStyles } from "../Documents.style";
 import ApiDocuments from "../../../../apis/documentsRequest";
 import ApiUser from "../../../../apis/userRequest";
 import ShareDocumentDialog from "../ShareDocumentDialog/ShareDocumentDialog";
+import {
+  requiredFlightTicketTypeKeys,
+  FLIGHT_TICKET_OUTBOUND_KEY,
+  FLIGHT_TICKET_RETURN_KEY,
+} from "../../../../utils/helpers/flightTicketRequirement";
 
 const SIGNED_REGISTRATION_KEY = "signed_registration";
-const FLIGHT_TICKET_KEY = "flight_ticket";
+// All flight-ticket type_keys (legacy single + the two per-direction types) are
+// excluded from the generic per-guest base; tickets are added per guest via the
+// shared requiredFlightTicketTypeKeys helper instead.
+const FLIGHT_TICKET_TYPE_KEYS = new Set([
+  "flight_ticket", FLIGHT_TICKET_OUTBOUND_KEY, FLIGHT_TICKET_RETURN_KEY,
+]);
 
 const fullName = (g) => `${g.hebrew_first_name || ""} ${g.hebrew_last_name || ""}`.trim();
-const isIndependent = (g) => Number(g.flying_with_us) === 0;
 
 // Coordinator drawer: shows the full required-slot matrix per guest (passport
-// for everyone; flight ticket only for independent fliers — flying_with_us=0;
-// signed registration as a family-level row), each slot green/missing with
-// view / download / share / delete on the uploaded ones. Deletes are full
-// wipes, so they go through a confirmation dialog.
+// for everyone; 0/1/2 flight tickets per the per-direction helper — one per
+// self-arranged leg; signed registration as a family-level row), each slot
+// green/missing with view / download / share / delete on the uploaded ones.
+// Deletes are full wipes, so they go through a confirmation dialog.
 function DocumentsDetailPanel({ open, onClose, family, vacationId, token, onDocDeleted }) {
   const classes = useStyles();
   const [guests, setGuests] = useState([]);
@@ -101,14 +110,25 @@ function DocumentsDetailPanel({ open, onClose, family, vacationId, token, onDocD
   const uploadedMap = new Map();
   docs.forEach((d) => uploadedMap.set(`${d.user_id}-${Number(d.doc_type_id)}`, d));
 
-  // Required, per-guest types (matches the server X/Y rule): every required type
-  // except the family-level signed registration; flight_ticket only for
-  // independent fliers (flying_with_us=0).
-  const perGuestTypes = docTypes.filter(
-    (t) => t.type_key !== SIGNED_REGISTRATION_KEY && Number(t.is_required) === 1
+  // Required per-guest base (matches the server X/Y rule): required types that are
+  // neither the family-level signed registration nor any flight ticket.
+  const perGuestBaseTypes = docTypes.filter(
+    (t) =>
+      t.type_key !== SIGNED_REGISTRATION_KEY &&
+      !FLIGHT_TICKET_TYPE_KEYS.has(t.type_key) &&
+      Number(t.is_required) === 1
   );
-  const slotsFor = (g) =>
-    perGuestTypes.filter((t) => t.type_key !== FLIGHT_TICKET_KEY || isIndependent(g));
+  // type_key → doc-type row for the per-direction tickets (is_required=0).
+  const ticketTypeByKey = new Map(
+    docTypes.filter((t) => FLIGHT_TICKET_TYPE_KEYS.has(t.type_key)).map((t) => [t.type_key, t])
+  );
+  // Per-guest slots = base + the 0/1/2 flight tickets the helper says they need.
+  const slotsFor = (g) => {
+    const tickets = requiredFlightTicketTypeKeys(g)
+      .map((key) => ticketTypeByKey.get(key))
+      .filter(Boolean);
+    return [...perGuestBaseTypes, ...tickets];
+  };
 
   // Family-level signed registration (one per family).
   const signedType = docTypes.find((t) => t.type_key === SIGNED_REGISTRATION_KEY);

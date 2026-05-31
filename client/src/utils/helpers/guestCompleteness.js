@@ -1,3 +1,5 @@
+import { includesFlights } from "./flightWithUs";
+
 // Computes how complete a registered guest's info is for issuing a flight ticket.
 //
 // Returns { status, missing, total, filled }:
@@ -8,7 +10,8 @@
 // Rules (confirmed with product):
 //   Base — required for everyone:
 //     identity_id, hebrew first+last name, english first+last name.
-//   If flying_with_us == 1, ALSO required:
+//   If "כולל טיסות" (guest.flights) is on, ALSO required (these are the legs we
+//   book and need details for — flights_direction = which legs are with us):
 //     passport number + expiry, classification (סיווג), and — per flights_direction —
 //     flight number + airline + date for each relevant direction:
 //       one_way_outbound → outbound leg only
@@ -31,8 +34,9 @@ const isFilled = (v) => {
 };
 
 export function getGuestCompleteness(guest = {}) {
-  const flyingWithUs =
-    Number(guest.flying_with_us) === 1 || guest.flying_with_us === true;
+  // "כולל טיסות" (flights) drives the with-us flight-field requirements; the
+  // specific legs follow flights_direction below. flying_with_us is retired.
+  const hasFlightsWithUs = includesFlights(guest);
 
   // [label, value, section] triples. A field is satisfied when value isFilled().
   // The section tag buckets each requirement so the editor can show per-section
@@ -45,7 +49,7 @@ export function getGuestCompleteness(guest = {}) {
     ["שם משפחה באנגלית", guest.english_last_name, "personal"],
   ];
 
-  if (flyingWithUs) {
+  if (hasFlightsWithUs) {
     required.push(
       ["מספר דרכון", guest.passport_number, "flights"],
       ["תוקף דרכון", guest.validity_passport, "flights"],
