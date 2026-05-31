@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 // Section content (reused as-is from the previous add/edit flows)
 import PersonalDetailsStep from "../Guest/steps/PersonalDetailsStep";
 import TripOptionsStep from "../Guest/steps/TripOptionsStep";
+import RouteDatesSection from "../Guest/steps/RouteDatesSection";
 import FlightDetailsStep from "../Guest/steps/FlightDetailsStep";
 import NotesStep from "../Guest/steps/NotesStep";
 import FlightToggles from "../Reservation/Flights/Flights";
@@ -373,12 +374,14 @@ const GuestEditor = ({ onClose }) => {
       case "personal":
         return <PersonalDetailsStep handleInputChange={handleInputChange} />;
       case "trip":
-        // Add: full trip step (route/dates + toggles). Edit: just the flight
-        // toggles (route/dates are edited via the family dialog).
+        // Add: full trip step (route/dates + toggles). Edit: same Route & Dates
+        // block (shared component, bound to the already-loaded form values) plus
+        // the edit flight toggles.
         return isAdd ? (
           <TripOptionsStep handleInputChange={handleInputChange} />
         ) : (
           <>
+            <RouteDatesSection handleInputChange={handleInputChange} />
             <Typography className={classes.togglesTitle}>טיסות ואפשרויות</Typography>
             <FlightToggles handleInputChange={handleInputChange} />
           </>
