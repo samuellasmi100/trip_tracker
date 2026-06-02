@@ -53,10 +53,20 @@ function NotificationBellView({ unreadCount, notifications, isOpen, handleBellCl
               {notifications.length === 0 ? (
                 <Typography className={classes.emptyState}>אין התראות</Typography>
               ) : (
-                notifications.map((n) => (
+                notifications.map((n) => {
+                  // Subtle start-edge accent for lead notifications: green for a
+                  // new lead, red for a returning one. Other types stay neutral.
+                  const accent =
+                    n.type === "new_lead"
+                      ? "#22c55e"
+                      : n.type === "returning_lead"
+                        ? "#ef4444"
+                        : null;
+                  return (
                   <div
                     key={n.id}
                     className={`${classes.notifItem} ${!n.is_read ? classes.notifItemUnread : ""}`}
+                    style={accent ? { borderInlineStart: `3px solid ${accent}` } : undefined}
                   >
                     <div className={classes.notifTop}>
                       <div style={{ display: "flex", alignItems: "flex-start", gap: "6px" }}>
@@ -81,7 +91,8 @@ function NotificationBellView({ unreadCount, notifications, isOpen, handleBellCl
                       <Typography className={classes.notifVacation}>{n.vacation_name}</Typography>
                     )}
                   </div>
-                ))
+                  );
+                })
               )}
             </div>
 

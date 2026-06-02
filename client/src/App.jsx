@@ -45,9 +45,12 @@ function App() {
 
     const onNewLead = (notification) => {
       dispatch(notificationsSlice.addNotification(notification));
+      // Colour + label by lead type: new → green "ליד חדש", returning → red
+      // "ליד חוזר". snackBarSlice maps success→green, error→red.
+      const isReturning = notification.type === "returning_lead";
       dispatch(snackBarSlice.setSnackBar({
-        type: "info",
-        message: `ליד חדש: ${notification.message || notification.title}`,
+        type: isReturning ? "error" : "success",
+        message: `${isReturning ? "ליד חוזר" : "ליד חדש"}: ${notification.message || notification.title}`,
         timeout: 5000,
       }));
     };

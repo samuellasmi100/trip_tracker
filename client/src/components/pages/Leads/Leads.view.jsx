@@ -277,10 +277,21 @@ function LeadsView({
             ) : (
               filteredLeads?.map((lead, index) => {
                 const due = isDue?.(lead);
+                // Highlight wins over due: a 'new'/'returning' row keeps its
+                // colour until the coordinator opens it (clears to 'none'); only
+                // then does the follow-up-due colour show.
+                const rowClass =
+                  lead.highlight === "new"
+                    ? classes.newRow
+                    : lead.highlight === "returning"
+                      ? classes.returningRow
+                      : due
+                        ? classes.dueRow
+                        : undefined;
                 return (
                   <TableRow
                     key={lead.lead_id || index}
-                    className={due ? classes.dueRow : undefined}
+                    className={rowClass}
                     onClick={() => handleRowClick(lead)}
                     style={{ cursor: "pointer" }}
                   >

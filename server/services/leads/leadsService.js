@@ -81,6 +81,64 @@ const create = async (vacationId, data) => {
   return await leadsDb.getById(vacationId, result.insertId);
 };
 
+// Public-form submission, WITH dedup — unlike `create` (coordinator add), a
+// public submission that matches an existing lead in THIS vacation on phone OR
+// email must NOT create a duplicate. Instead it flips the existing lead's
+// highlight to 'returning'. Returns { lead, isReturning } so the controller can
+// colour the notification (new vs returning).
+//
+// Phone/email are normalized with the SAME helpers the Excel importer uses, and
+// a brand-new lead is STORED with the normalized phone — so a later resubmission
+// matches via the plain `WHERE phone = ?` lookup (raw formatting like
+// "050-..." would otherwise never equal the normalized query value). Email is
+// stored as submitted; MySQL's case-insensitive collation handles the match.
+const createPublic = async (vacationId, data) => {
+  const normPhone = normalizePhone(data.phone);
+  const normEmail = normalizeEmail(data.email);
+
+  // Match on phone first (strongest key), then email. Name-only submissions
+  // (no phone, no email) skip the lookup entirely and insert as new.
+  let existing = null;
+  if (normPhone) {
+    existing = await leadsDb.getByPhone(vacationId, normPhone);
+  }
+  if (!existing && normEmail) {
+    existing = await leadsDb.getByEmail(vacationId, normEmail);
+  }
+
+  if (existing) {
+    // Returning interest — flip highlight, no new row. Unconditional set, so it
+    // overrides 'new' or 'none'. bumpUpdatedAt:false so this doesn't masquerade
+    // as a genuine coordinator edit.
+    await leadsDb.update(
+      vacationId,
+      existing.lead_id,
+      { highlight: 'returning' },
+      { bumpUpdatedAt: false }
+    );
+    return { lead: existing, isReturning: true };
+  }
+
+  const result = await leadsDb.create(vacationId, {
+    ...data,
+    phone: normPhone,
+    highlight: 'new',
+  });
+  const lead = await leadsDb.getById(vacationId, result.insertId);
+  return { lead, isReturning: false };
+};
+
+// Coordinator opened the lead → clear its public-flow highlight. bumpUpdatedAt
+// is false because viewing a lead is not a content edit.
+const markSeen = async (vacationId, leadId) => {
+  return await leadsDb.update(
+    vacationId,
+    leadId,
+    { highlight: 'none' },
+    { bumpUpdatedAt: false }
+  );
+};
+
 const update = async (vacationId, leadId, data) => {
   // Auto-set is_active based on terminal statuses
   if (data.status === 'registered' || data.status === 'not_relevant') {
@@ -278,6 +336,8 @@ module.exports = {
   getById,
   getSummary,
   create,
+  createPublic,
+  markSeen,
   update,
   remove,
   removeAll,

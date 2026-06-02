@@ -8,6 +8,7 @@ import * as leadsSlice from "../../../store/slices/leadsSlice";
 import * as staticSlice from "../../../store/slices/staticSlice";
 import * as snackBarSlice from "../../../store/slices/snackbarSlice";
 import ApiLeads from "../../../apis/leadsRequest";
+import { connectSocket } from "../../../utils/socketService";
 import { toLocalYMD, todayLocalYMD } from "../../../utils/helpers/formatDate";
 
 // ─── Excel import helpers ───────────────────────────────────────────────────
@@ -233,6 +234,33 @@ const Leads = () => {
     getAllLeads();
   }, [vacationId]);
 
+  // Live grid update: when a public lead arrives for the CURRENTLY selected
+  // vacation, re-fetch so the new row shows without a manual refresh. We
+  // re-fetch (not build a row from the socket payload) because new_lead is a
+  // notification — it lacks lead columns the grid renders (phone, email,
+  // status, notes, financials); re-fetch is also inherently duplicate-free
+  // (updateLeadsList replaces the list) and keeps the summary counts in sync.
+  // Filtered by vacation_id so another vacation's lead never appears here.
+  //
+  // Use connectSocket(token) (not getSocket()) to match FamilyList/Documents:
+  // child effects run BEFORE App.jsx's connectSocket on initial mount, so
+  // getSocket() would return null here and the listener would never attach.
+  // connectSocket is idempotent — App.jsx and this component share the one
+  // socket singleton. Own handler reference + off(handler) leaves App.jsx's
+  // bell/snackbar listener on the same event intact.
+  useEffect(() => {
+    if (!vacationId || !token) return;
+    const socket = connectSocket(token);
+    if (!socket) return;
+    const onNewLead = (notification) => {
+      if (String(notification?.vacation_id) === String(vacationId)) {
+        getAllLeads();
+      }
+    };
+    socket.on("new_lead", onNewLead);
+    return () => socket.off("new_lead", onNewLead);
+  }, [vacationId, token]);
+
   const today = todayLocalYMD();
   const isDue = (lead) =>
     lead.followup_date &&
@@ -331,6 +359,13 @@ const Leads = () => {
 
   const handleRowClick = (lead) => {
     setSelectedLeadId(lead.lead_id);
+    // Opening a highlighted lead marks it "seen": clear the colour locally for
+    // instant feedback and persist it server-side (survives refresh). The clear
+    // does not bump updated_at.
+    if (lead.highlight && lead.highlight !== "none") {
+      dispatch(leadsSlice.clearHighlight(lead.lead_id));
+      ApiLeads.markSeen(token, vacationId, lead.lead_id).catch((e) => console.log(e));
+    }
   };
 
   // Delete with NO confirmation here — the LeadDetailPanel runs its own styled

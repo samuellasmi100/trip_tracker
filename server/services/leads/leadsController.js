@@ -97,6 +97,17 @@ router.post('/:vacationId/:leadId/notes', async (req, res, next) => {
   }
 });
 
+// POST /leads/:vacationId/:leadId/seen  — coordinator opened the lead; clear its
+// public-flow highlight to 'none'. No updated_at bump (not a content edit).
+router.post('/:vacationId/:leadId/seen', async (req, res, next) => {
+  try {
+    await leadsService.markSeen(req.params.vacationId, req.params.leadId);
+    res.send({ success: true });
+  } catch (error) {
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle leads request", error));
+  }
+});
+
 // DELETE /leads/:vacationId/:leadId
 router.delete('/:vacationId/:leadId', async (req, res, next) => {
   try {

@@ -21,6 +21,12 @@ export const leadsSlice = createSlice({
         return toLocalYMD(l.followup_date) <= today;
       }).length;
     },
+    // Optimistic "mark seen": clear one lead's highlight locally so the row
+    // colour clears instantly on open (server persists it via markSeen).
+    clearHighlight: (state, action) => {
+      const lead = state.leads.find((l) => l.lead_id === action.payload);
+      if (lead) lead.highlight = "none";
+    },
     setSelectedLead: (state, action) => {
       state.selectedLead = action.payload;
     },
@@ -41,6 +47,7 @@ export const leadsSlice = createSlice({
 
 export const {
   updateLeadsList,
+  clearHighlight,
   setSelectedLead,
   clearSelectedLead,
   openNotesDialog,

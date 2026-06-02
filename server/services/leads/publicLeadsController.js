@@ -3,7 +3,7 @@
 const router = require('express').Router();
 const ErrorMessage = require("../../serverLogs/errorMessage");
 const ErrorType = require("../../serverLogs/errorType");
-const leadsDb = require('./leadsDb');
+const leadsService = require('./leadsService');
 const notificationsService = require('../notifications/notificationsService');
 const { getIO } = require('../../socketServer');
 const mysql = require('mysql2/promise');
@@ -42,8 +42,10 @@ router.post('/leads/:vacationId', async (req, res, next) => {
   }
 
   try {
-    // Insert lead into the vacation-specific DB
-    const result = await leadsDb.create(vacationId, {
+    // Insert-or-flip with dedup (phone OR email) in the vacation-specific DB.
+    // isReturning=true means an existing lead matched and was flipped to
+    // 'returning' instead of inserting a duplicate.
+    const { lead, isReturning } = await leadsService.createPublic(vacationId, {
       full_name: full_name.trim(),
       phone: phone || null,
       email: email || null,
@@ -52,8 +54,6 @@ router.post('/leads/:vacationId', async (req, res, next) => {
       source: 'website',
       notes: notes || null,
     });
-
-    const insertId = result.insertId;
 
     // Look up vacation name for the notification
     const vacationName = await getVacationName(vacationId);
@@ -64,10 +64,12 @@ router.post('/leads/:vacationId', async (req, res, next) => {
       notification = await notificationsService.create({
         vacation_id: vacationId,
         vacation_name: vacationName,
-        type: 'new_lead',
-        title: 'ליד חדש הגיע',
+        // Reuses the existing notifications.type column (no new column) to drive
+        // the client colour in Step 3: 'new_lead' → green, 'returning_lead' → red.
+        type: isReturning ? 'returning_lead' : 'new_lead',
+        title: isReturning ? 'ליד חוזר הגיע' : 'ליד חדש הגיע',
         message: full_name.trim(),
-        entity_id: insertId,
+        entity_id: lead.lead_id,
         entity_type: 'lead',
       });
     } catch (notifErr) {

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Public Lead — Test Submitter</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      max-width: 560px;
+      margin: 32px auto;
+      padding: 0 16px;
+      color: #1e293b;
+      background: #f8fafc;
+    }
+    h1 { font-size: 20px; margin-bottom: 4px; }
+    p.sub { color: #64748b; font-size: 13px; margin-top: 0; }
+    fieldset { border: 1px solid #e2e8f0; border-radius: 8px; margin: 16px 0; padding: 16px; background: #fff; }
+    legend { font-size: 12px; font-weight: 600; color: #475569; padding: 0 6px; }
+    label { display: block; font-size: 13px; font-weight: 600; margin: 10px 0 4px; }
+    .req { color: #dc2626; }
+    input, textarea {
+      width: 100%; box-sizing: border-box; padding: 8px 10px;
+      border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px;
+    }
+    button {
+      margin-top: 16px; width: 100%; padding: 10px; font-size: 15px; font-weight: 600;
+      color: #fff; background: #2563eb; border: none; border-radius: 8px; cursor: pointer;
+    }
+    button:disabled { background: #94a3b8; cursor: not-allowed; }
+    #result { margin-top: 20px; }
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 13px; font-weight: 700; }
+    .ok { background: #dcfce7; color: #166534; }
+    .err { background: #fee2e2; color: #991b1b; }
+    pre {
+      background: #0f172a; color: #e2e8f0; padding: 12px; border-radius: 8px;
+      font-size: 13px; white-space: pre-wrap; word-break: break-word; overflow-x: auto;
+    }
+    .muted { color: #64748b; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Public Lead — Test Submitter</h1>
+  <p class="sub">Simulates a real public-website submission: POST /public/leads/&lt;vacationId&gt;</p>
+
+  <fieldset>
+    <legend>Target</legend>
+    <label for="baseUrl">Server base URL</label>
+    <input id="baseUrl" value="http://localhost:5000" />
+    <p class="muted">Dev port from server/.env is 5000. Change if your server runs elsewhere.</p>
+
+    <label for="vacationId">vacationId <span class="req">*</span></label>
+    <input id="vacationId" placeholder="e.g. 1700000000000_abcd" />
+    <p class="muted">Becomes the schema name trip_tracker_&lt;vacationId&gt;.leads on the server.</p>
+  </fieldset>
+
+  <fieldset>
+    <legend>Lead fields</legend>
+    <label for="full_name">full_name <span class="req">*</span></label>
+    <input id="full_name" placeholder="ישראל ישראלי" />
+
+    <label for="phone">phone <span class="muted">(optional)</span></label>
+    <input id="phone" placeholder="050-0000000" />
+
+    <label for="email">email <span class="muted">(optional)</span></label>
+    <input id="email" placeholder="mail@example.com" />
+
+    <label for="family_size">family_size <span class="muted">(optional, defaults to 1)</span></label>
+    <input id="family_size" type="number" min="1" value="1" />
+
+    <label for="notes">notes <span class="muted">(optional)</span></label>
+    <textarea id="notes" rows="3" placeholder="ספרו לנו על עצמכם..."></textarea>
+  </fieldset>
+
+  <button id="submitBtn">Send POST</button>
+
+  <div id="result"></div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const btn = $("submitBtn");
+    const resultEl = $("result");
+
+    btn.addEventListener("click", async () => {
+      const baseUrl = $("baseUrl").value.trim().replace(/\/+$/, "");
+      const vacationId = $("vacationId").value.trim();
+      const fullName = $("full_name").value.trim();
+
+      if (!vacationId) { showError("Fill vacationId first."); return; }
+      if (!fullName)   { showError("full_name is required."); return; }
+
+      // Build body to match the real PublicLeadForm submission exactly.
+      // Only full_name is required server-side; the rest are sent as-is.
+      // family_size sent as a number; empty optional fields sent as "".
+      const body = {
+        full_name: fullName,
+        phone: $("phone").value.trim(),
+        email: $("email").value.trim(),
+        family_size: Number($("family_size").value) || 1,
+        notes: $("notes").value.trim(),
+      };
+
+      const url = `${baseUrl}/public/leads/${encodeURIComponent(vacationId)}`;
+
+      btn.disabled = true;
+      btn.textContent = "Sending...";
+      resultEl.innerHTML = "";
+
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+
+        // Try JSON; fall back to raw text if the server didn't send JSON.
+        let parsed;
+        const raw = await res.text();
+        try { parsed = JSON.stringify(JSON.parse(raw), null, 2); }
+        catch { parsed = raw || "(empty response body)"; }
+
+        const cls = res.ok ? "ok" : "err";
+        resultEl.innerHTML =
+          `<div><span class="badge ${cls}">HTTP ${res.status} ${res.statusText}</span></div>` +
+          `<p class="muted">POST ${url}</p>` +
+          `<pre>${escapeHtml(parsed)}</pre>`;
+      } catch (e) {
+        // Network/CORS failure — no HTTP status to show.
+        showError(
+          "Request failed (network/CORS/server down): " + e.message +
+          "\n\nPOST " + url
+        );
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Send POST";
+      }
+    });
+
+    function showError(msg) {
+      resultEl.innerHTML =
+        `<div><span class="badge err">No response</span></div>` +
+        `<pre>${escapeHtml(msg)}</pre>`;
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+  </script>
+</body>
+</html>

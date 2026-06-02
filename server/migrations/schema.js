@@ -463,6 +463,14 @@ const TENANT_TABLE_SCHEMAS = {
       // converged on `run_migration.js` via TENANT_COLUMN_FIXUPS below
       // (metadata-only ALTER MODIFY, idempotent).
       { name: 'updated_at',        definition: 'timestamp NULL DEFAULT NULL' },
+      // Persistent per-lead row highlight for the public-lead flow:
+      //   'new'       — created via the public form (soft green row)
+      //   'returning' — a public submission matched an existing lead (soft red)
+      //   'none'      — default / cleared when a coordinator opens the lead
+      // NOT NULL DEFAULT 'none' so ADD COLUMN backfills every pre-existing row
+      // to 'none' — no client null-handling. varchar matches the enum-as-varchar
+      // convention used by `status` above.
+      { name: 'highlight',         definition: "varchar(20) NOT NULL DEFAULT 'none'" },
     ],
   },
 

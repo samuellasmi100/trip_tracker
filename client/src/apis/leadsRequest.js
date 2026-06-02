@@ -34,6 +34,11 @@ export default {
       { headers: { Authorization: token } }
     );
   },
+  markSeen(token, vacationId, leadId) {
+    return Api.post(`/${END_POINT.LEADS}/${vacationId}/${leadId}/seen`, {}, {
+      headers: { Authorization: token },
+    });
+  },
   deleteLead(token, vacationId, leadId) {
     return Api.delete(`/${END_POINT.LEADS}/${vacationId}/${leadId}`, {
       headers: { Authorization: token },

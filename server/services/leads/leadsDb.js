@@ -28,6 +28,30 @@ const getById = async (vacationId, leadId) => {
   }
 };
 
+// Single-row dedup lookups for the public-form flow. WHERE = ? can never match
+// a NULL column, so an empty incoming phone/email inherently matches nothing.
+const getByPhone = async (vacationId, phone) => {
+  try {
+    const sql = leadsQuery.getByPhone(vacationId);
+    const rows = await connection.executeWithParameters(sql, [phone]);
+    return rows[0] || null;
+  } catch (error) {
+    logger.error(`leadsDb.getByPhone: ${error.sqlMessage || error.message}`);
+    throw error;
+  }
+};
+
+const getByEmail = async (vacationId, email) => {
+  try {
+    const sql = leadsQuery.getByEmail(vacationId);
+    const rows = await connection.executeWithParameters(sql, [email]);
+    return rows[0] || null;
+  } catch (error) {
+    logger.error(`leadsDb.getByEmail: ${error.sqlMessage || error.message}`);
+    throw error;
+  }
+};
+
 const getNotesByLeadId = async (vacationId, leadId) => {
   try {
     const sql = leadsQuery.getNotesByLeadId(vacationId);
@@ -55,6 +79,7 @@ const create = async (vacationId, data) => {
       data.discount          != null && data.discount !== ''  ? data.discount : null,
       data.training          || null,
       data.composition       || null,
+      data.highlight         || 'none',
     ];
     return await connection.executeWithParameters(sql, params);
   } catch (error) {
@@ -158,6 +183,8 @@ const getFollowupDueCount = async (vacationId) => {
 module.exports = {
   getAll,
   getById,
+  getByPhone,
+  getByEmail,
   getNotesByLeadId,
   create,
   update,

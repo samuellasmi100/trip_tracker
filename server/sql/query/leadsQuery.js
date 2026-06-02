@@ -2,6 +2,7 @@ const ALLOWED_LEAD_COLUMNS = [
   'full_name', 'phone', 'email', 'family_size',
   'status', 'source', 'notes', 'referred_by', 'is_active', 'assigned_to',
   'followup_date', 'price', 'discount', 'training', 'composition',
+  'highlight',
 ];
 
 const getAll = (vacationId) => `
@@ -41,8 +42,8 @@ const getNotesByLeadId = (vacationId) => `
 const create = (vacationId) => `
   INSERT INTO trip_tracker_${vacationId}.leads
     (full_name, phone, email, family_size, status, source, notes, referred_by,
-     followup_date, price, discount, training, composition)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+     followup_date, price, discount, training, composition, highlight)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 `;
 
 // bumpUpdatedAt=false suppresses the "updated_at = NOW()" clause — used by the
@@ -114,6 +115,13 @@ const getByPhone = (vacationId) => `
   LIMIT 1;
 `;
 
+const getByEmail = (vacationId) => `
+  SELECT *
+  FROM trip_tracker_${vacationId}.leads
+  WHERE email = ?
+  LIMIT 1;
+`;
+
 module.exports = {
   ALLOWED_LEAD_COLUMNS,
   getAll,
@@ -128,5 +136,6 @@ module.exports = {
   getSummary,
   getFollowupDueCount,
   getByPhone,
+  getByEmail,
   bumpUpdatedAt,
 };

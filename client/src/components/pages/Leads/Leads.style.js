@@ -70,6 +70,17 @@ export const useStyles = makeStyles(() => ({
     backgroundColor: "#fef2f2 !important",
     "&:hover": { backgroundColor: "#fee2e2 !important" },
   },
+  // Public-lead highlights. Subtle/pastel. returningRow is intentionally a
+  // DEEPER red than dueRow (red-50) so a returning lead never reads as a mere
+  // follow-up-due row. Highlight wins over dueRow (precedence in Leads.view.jsx).
+  newRow: {
+    backgroundColor: "#f0fdf4 !important",
+    "&:hover": { backgroundColor: "#dcfce7 !important" },
+  },
+  returningRow: {
+    backgroundColor: "#fee2e2 !important",
+    "&:hover": { backgroundColor: "#fecaca !important" },
+  },
   statusBadge: {
     display: "inline-block",
     padding: "2px 10px",
