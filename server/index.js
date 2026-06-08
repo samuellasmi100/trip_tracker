@@ -52,7 +52,10 @@ const registrationsController = require("./services/registrations/registrationsC
 const publicRegistrationsController = require("./services/registrations/publicRegistrationsController");
 
 app.use(cors());
-app.use(express.json());
+// Raised from the body-parser default (100kb) to 5mb so legitimate internal
+// bulk imports (e.g. the leads Excel upload — a few hundred-to-few-thousand
+// rows ~ 100kb+) pass comfortably. Still capped as a safety guard.
+app.use(express.json({ limit: "5mb" }));
 
 // Public routes — no auth required (register BEFORE auth middleware)
 app.use("/auth", authController);
