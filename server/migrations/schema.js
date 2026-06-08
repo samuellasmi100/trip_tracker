@@ -164,6 +164,7 @@ const TENANT_TABLE_SCHEMAS = {
       { name: 'doc_token',              definition: 'varchar(36) DEFAULT NULL' },
       { name: 'payment_method',         definition: 'varchar(45) DEFAULT NULL' },
       { name: 'num_payments',           definition: 'int DEFAULT NULL' },
+      { name: 'created_at',             definition: 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP' },
     ],
   },
 

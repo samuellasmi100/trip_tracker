@@ -39,7 +39,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import SendIcon from "@mui/icons-material/Send";
-import { formatDateInput, isoToDisplay } from "../../../utils/helpers/formatDate";
+import { formatDateInput, isoToDisplay, toLocalYMD } from "../../../utils/helpers/formatDate";
 import { getGuestCompleteness } from "../../../utils/helpers/guestCompleteness";
 import { formatMoneyInput, stripMoney } from "../../../utils/helpers/formatMoney";
 
@@ -83,7 +83,7 @@ function FamilyListView(props) {
     handleSendDocLink,
   } = props;
 
-  const headers = ["", "שם משפחה / קבוצה", "מסמכים", "טופס רישום", "תשלום", "חדרים", "נרשמים", "חסרים", "סטטוס", ""];
+  const headers = ["", "שם משפחה / קבוצה", "מסמכים", "טופס רישום", "תשלום", "חדרים", "נרשמים", "חסרים", "סטטוס", "תאריך רישום", ""];
   // UI-only state for the documents "what's missing" popup (anchor + the family
   // whose breakdown is shown). Presentational, so it stays in the view.
   const [missingAnchor, setMissingAnchor] = React.useState(null);
@@ -171,7 +171,7 @@ function FamilyListView(props) {
               <TableBody className={classes.dataTableBody}>
                 {loading && (
                   <TableRow>
-                    <TableCell colSpan={10} style={{ textAlign: "center", padding: "32px 0", border: "none" }}>
+                    <TableCell colSpan={11} style={{ textAlign: "center", padding: "32px 0", border: "none" }}>
                       <CircularProgress size={28} style={{ color: "#0d9488" }} />
                     </TableCell>
                   </TableRow>
@@ -308,6 +308,12 @@ function FamilyListView(props) {
                             : <span className={`${classes.statusBadge} ${classes.statusOk}`}>תקין</span>}
                       </TableCell>
                       <TableCell className={classes.dataTableCell}>
+                        {/* created_at is a timestamp → comes over as a UTC ISO string;
+                            toLocalYMD reads local components (avoids the Israel day-shift),
+                            isoToDisplay renders DD/MM/YYYY like the other date columns. */}
+                        {isoToDisplay(toLocalYMD(user.created_at)) || "—"}
+                      </TableCell>
+                      <TableCell className={classes.dataTableCell}>
                         <IconButton size="small" onClick={(e) => openEditFamily(e, user)}>
                           <EditOutlinedIcon style={{ color: "#64748b", fontSize: "18px" }} />
                         </IconButton>
@@ -317,7 +323,7 @@ function FamilyListView(props) {
                 })}
                 {loadingMore && (
                   <TableRow>
-                    <TableCell colSpan={10} style={{ textAlign: "center", padding: "16px 0", border: "none" }}>
+                    <TableCell colSpan={11} style={{ textAlign: "center", padding: "16px 0", border: "none" }}>
                       <CircularProgress size={22} style={{ color: "#0d9488" }} />
                     </TableCell>
                   </TableRow>

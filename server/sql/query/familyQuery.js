@@ -23,6 +23,7 @@ SELECT
     fa.num_payments,
     fa.start_date,
     fa.end_date,
+    fa.created_at,
     COALESCE(pay_agg.total_paid_amount, 0) AS total_paid_amount,
     rt_agg.room_ids,
     (SELECT COUNT(*)
@@ -59,7 +60,11 @@ LEFT JOIN (
     GROUP BY family_id
 ) reg_agg ON fa.family_id = reg_agg.family_id
 ${whereClause}
-ORDER BY fa.family_name
+-- Insertion order: oldest-added first (#1 = first family added). created_at was
+-- backfilled to the migration time for all pre-existing rows, so those share a
+-- timestamp — fall back to the primary key id to keep the order deterministic.
+-- New families get distinct created_at values and sort correctly on their own.
+ORDER BY fa.created_at ASC, fa.id ASC
 LIMIT ${limit} OFFSET ${offset}`;
 };
 
