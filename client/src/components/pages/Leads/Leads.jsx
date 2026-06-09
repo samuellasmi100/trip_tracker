@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 import LeadsView from "./Leads.view";
+import { STATUS_CONFIG } from "./Leads.style";
 import LeadDetailPanel from "./LeadDetailPanel";
 import EditOrUpdateDialog from "../../shared/EditDialog/EditOrUpdateDialog";
 import { useDispatch, useSelector } from "react-redux";
@@ -170,9 +172,12 @@ const parseLeadsWorkbook = async (file) => {
     const lastName  = cleanString(m.last_name)  || "";
     const phone     = normalizePhone(m.phone);
 
-    // "Row is real only if it has a first name OR a phone."
-    if (!firstName && !phone) continue;
+    // "Row is real only if it has a name (first OR last) OR a phone."
+    if (!firstName && !lastName && !phone) continue;
 
+    // first_name / last_name are stored as their own columns (null when that
+    // part is absent). full_name is kept as the NOT NULL display/search/dedupe
+    // key — populated from whichever parts exist.
     const fullName = `${firstName} ${lastName}`.trim() || phone || "ללא שם";
     // Also normalize the status cell — Excel sometimes leaves an RLM/LRM
     // around values typed into RTL columns, which would block STATUS_MAP.
@@ -180,6 +185,8 @@ const parseLeadsWorkbook = async (file) => {
 
     out.push({
       full_name:         fullName,
+      first_name:        firstName || null,
+      last_name:         lastName  || null,
       phone:             phone,
       email:             cleanString(m.email),
       status:            STATUS_MAP[statusHe] || "new_interest",
@@ -215,10 +222,9 @@ const Leads = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
+  const [selectedTraining, setSelectedTraining] = useState("all");
   const [selectedLeadId, setSelectedLeadId] = useState(null);
   const [importing, setImporting] = useState(false);
-  const [deleteAllOpen, setDeleteAllOpen] = useState(false);
-  const [deletingAll, setDeletingAll] = useState(false);
   const fileInputRef = useRef(null);
 
   const getAllLeads = async () => {
@@ -262,10 +268,18 @@ const Leads = () => {
   }, [vacationId, token]);
 
   const today = todayLocalYMD();
-  const isDue = (lead) =>
-    lead.followup_date &&
-    Number(lead.is_active) === 1 &&
-    toLocalYMD(lead.followup_date) <= today;
+  // Follow-up state — compared by LOCAL YMD (not a raw Date with a time
+  // component) so a followup_date of TODAY is never miscounted as overdue.
+  // Only active leads that actually have a date qualify.
+  const followupYMD = (lead) =>
+    lead.followup_date && Number(lead.is_active) === 1
+      ? toLocalYMD(lead.followup_date)
+      : null;
+  const isOverdue  = (lead) => { const d = followupYMD(lead); return !!d && d <  today; };
+  const isDueToday = (lead) => { const d = followupYMD(lead); return !!d && d === today; };
+  // "Needs follow-up" = overdue OR due today. Drives the count + the
+  // "followup_due" filter (same set as the old <= today check).
+  const isDue = (lead) => isOverdue(lead) || isDueToday(lead);
 
   const filteredLeads = leads?.filter((lead) => {
     const matchesSearch =
@@ -278,7 +292,11 @@ const Leads = () => {
         : selectedStatus === "followup_due"
           ? isDue(lead)
           : lead.status === selectedStatus;
-    return matchesSearch && matchesStatus;
+    // Lead-quality (השתלמות / training) filter. Composes with status via AND.
+    // Leads with an empty/null training match only "all", never a specific value.
+    const matchesTraining =
+      selectedTraining === "all" ? true : lead.training === selectedTraining;
+    return matchesSearch && matchesStatus && matchesTraining;
   });
 
   const dueCount = leads?.filter(isDue).length || 0;
@@ -384,29 +402,67 @@ const Leads = () => {
     dispatch(staticSlice.closeDetailsModal());
   };
 
-  // Bulk wipe — invoked from the styled confirm dialog. Server returns the
-  // (now empty) updated list, same pattern as the single-lead delete.
-  const handleDeleteAllConfirm = async () => {
-    setDeletingAll(true);
-    try {
-      const response = await ApiLeads.deleteAll(token, vacationId);
-      dispatch(leadsSlice.updateLeadsList(response.data));
-      dispatch(snackBarSlice.setSnackBar({
-        type: "success",
-        message: "כל הלידים נמחקו",
-        timeout: 4000,
-      }));
-      setDeleteAllOpen(false);
-    } catch (error) {
-      console.log(error);
-      dispatch(snackBarSlice.setSnackBar({
-        type: "error",
-        message: "מחיקת כל הלידים נכשלה, נסה שוב",
-        timeout: 4000,
-      }));
-    } finally {
-      setDeletingAll(false);
+  // Export ALL leads for the current vacation (the full Redux list, not the
+  // search/status-filtered view) to a Hebrew RTL .xlsx. Mirrors the export
+  // recipe used by GeneralInfo/Guests/Flights: json_to_sheet → Hebrew header
+  // AOA → !dir rtl → book_append_sheet → saveAs.
+  const sanitizeSheetName = (name) => name.replace(/[\\/:*?[\]]/g, "_");
+
+  // Local YYYY-MM-DD (no UTC day-shift), shown as DD/MM/YYYY — matches the grid.
+  const toDisplayDate = (v) => {
+    const s = toLocalYMD(v);
+    if (!s) return "";
+    const [y, m, d] = s.split("-");
+    return `${d}/${m}/${y}`;
+  };
+
+  const handleExportToExcel = () => {
+    if (!leads?.length) {
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "אין לידים לייצוא", timeout: 4000 }));
+      return;
     }
+    // Same column set the grid shows, in the same order, plus family_size.
+    const headers = [
+      "שם פרטי", "שם משפחה", "טלפון", "אימייל", "סטטוס",
+      "פולואפ", "תאריך עדכון אחרון", "מחיר שקיבל", "הנחה", "השתלמות", "הרכב", "הערות",
+    ];
+    const transformedData = leads.map((lead) => {
+      // Mirror the grid's name fallback: legacy leads (both parts null) show
+      // full_name under שם פרטי so the cell is never blank.
+      const first = lead.first_name?.trim();
+      const last = lead.last_name?.trim();
+      const showFirst = !first && !last ? lead.full_name || "" : first || "";
+      const showLast = !first && !last ? "" : last || "";
+      return {
+        "שם פרטי": showFirst,
+        "שם משפחה": showLast,
+        "טלפון": lead.phone || "",
+        "אימייל": lead.email || "",
+        "סטטוס": STATUS_CONFIG[lead.status]?.label || lead.status || "",
+        "פולואפ": toDisplayDate(lead.followup_date),
+        "תאריך עדכון אחרון": toDisplayDate(lead.updated_at),
+        "מחיר שקיבל": lead.price != null && lead.price !== "" ? Number(lead.price) : "",
+        "הנחה": lead.discount != null && lead.discount !== "" ? Number(lead.discount) : "",
+        "השתלמות": lead.training || "",
+        "הרכב": lead.composition || "",
+        "הערות": lead.last_note || lead.notes || "",
+      };
+    });
+    const ws = XLSX.utils.json_to_sheet(transformedData);
+    XLSX.utils.sheet_add_aoa(ws, [headers], { origin: "A1" });
+    ws["!dir"] = "rtl";
+    ws["!cols"] = headers.map(() => ({ wch: 20 }));
+    const wb = XLSX.utils.book_new();
+    const vacationName = sessionStorage.getItem("vacName") || "";
+    const sanitized = sanitizeSheetName(vacationName);
+    XLSX.utils.book_append_sheet(wb, ws, `לידים ${sanitized}`.slice(0, 31));
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    saveAs(new Blob([excelBuffer], { type: "application/octet-stream" }), `לידים ${sanitized}.xlsx`);
+
+    // Best-effort audit log (who/when/which vacation/count) AFTER the download
+    // succeeded. WHO is derived from the JWT server-side. Fire-and-forget: a
+    // logging failure must never block or error the user's export.
+    ApiLeads.logExport(token, vacationId, leads.length, vacationName).catch((e) => console.log(e));
   };
 
   return (
@@ -417,6 +473,8 @@ const Leads = () => {
         setSearchTerm={setSearchTerm}
         selectedStatus={selectedStatus}
         setSelectedStatus={setSelectedStatus}
+        selectedTraining={selectedTraining}
+        setSelectedTraining={setSelectedTraining}
         handleAddClick={handleAddClick}
         handleRowClick={handleRowClick}
         handleImportClick={handleImportClick}
@@ -424,13 +482,10 @@ const Leads = () => {
         importing={importing}
         fileInputRef={fileInputRef}
         dueCount={dueCount}
-        isDue={isDue}
+        isOverdue={isOverdue}
+        isDueToday={isDueToday}
         statusCounts={statusCounts}
-        onRequestDeleteAll={() => setDeleteAllOpen(true)}
-        deleteAllOpen={deleteAllOpen}
-        deletingAll={deletingAll}
-        onCancelDeleteAll={() => setDeleteAllOpen(false)}
-        onConfirmDeleteAll={handleDeleteAllConfirm}
+        handleExportToExcel={handleExportToExcel}
       />
 
       <EditOrUpdateDialog

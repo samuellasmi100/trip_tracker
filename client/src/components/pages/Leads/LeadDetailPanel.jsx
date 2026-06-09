@@ -16,6 +16,10 @@ const LeadDetailPanel = ({ selectedLeadId, onClose, onOpenFullEdit, onDelete }) 
   const vacationId = useSelector((s) => s.vacationSlice.vacationId);
   const leads = useSelector((s) => s.leadsSlice.leads);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  // "Not relevant" requires a reason note before the status can be saved.
+  const [notRelevantOpen, setNotRelevantOpen] = useState(false);
+  const [notRelevantNote, setNotRelevantNote] = useState("");
+  const [savingNotRelevant, setSavingNotRelevant] = useState(false);
 
   // Re-derive the live lead from the slice so any list refresh (status pill,
   // date change, full-edit save) is reflected immediately in the panel.
@@ -52,8 +56,55 @@ const LeadDetailPanel = ({ selectedLeadId, onClose, onOpenFullEdit, onDelete }) 
     }
   };
 
-  const handleStatusChange = (newStatus) =>
+  const handleStatusChange = (newStatus) => {
+    // Marking a lead "not relevant" requires a reason note: open the gate
+    // dialog instead of saving now. The status is committed only alongside the
+    // note in handleConfirmNotRelevant. Every other status saves immediately.
+    if (newStatus === "not_relevant") {
+      setNotRelevantNote("");
+      setNotRelevantOpen(true);
+      return;
+    }
     persist({ status: newStatus }, `הסטטוס עודכן ל"${STATUS_CONFIG[newStatus]?.label || newStatus}"`);
+  };
+
+  // Commit the "not relevant" change: save the reason note via the existing
+  // notes mechanism FIRST, then the status — so the status never changes
+  // without its note. An empty note is blocked with a clear Hebrew message.
+  const handleConfirmNotRelevant = async () => {
+    const note = notRelevantNote.trim();
+    if (!note) {
+      dispatch(snackBarSlice.setSnackBar({
+        type: "error",
+        message: "יש להוסיף הערה מדוע הליד לא רלוונטי",
+        timeout: 4000,
+      }));
+      return;
+    }
+    if (!lead) return;
+    setSavingNotRelevant(true);
+    try {
+      await ApiLeads.addNote(token, vacationId, lead.lead_id, note);
+      const response = await ApiLeads.update(token, vacationId, lead.lead_id, { status: "not_relevant" });
+      dispatch(leadsSlice.updateLeadsList(response.data));
+      dispatch(snackBarSlice.setSnackBar({
+        type: "success",
+        message: `הסטטוס עודכן ל"${STATUS_CONFIG.not_relevant?.label || "לא רלוונטי"}"`,
+        timeout: 3000,
+      }));
+      setNotRelevantOpen(false);
+      setNotRelevantNote("");
+    } catch (error) {
+      console.log(error);
+      dispatch(snackBarSlice.setSnackBar({
+        type: "error",
+        message: "עדכון הליד נכשל, נסה שוב",
+        timeout: 4000,
+      }));
+    } finally {
+      setSavingNotRelevant(false);
+    }
+  };
 
   // Empty-string from a cleared date input maps to null on the server via
   // NULLABLE_ON_BLANK in leadsDb.update — safe.
@@ -74,6 +125,12 @@ const LeadDetailPanel = ({ selectedLeadId, onClose, onOpenFullEdit, onDelete }) 
       onMarkHandled={handleMarkHandled}
       onOpenFullEdit={() => lead && onOpenFullEdit(lead)}
       followupOverdue={followupOverdue}
+      notRelevantOpen={notRelevantOpen}
+      notRelevantNote={notRelevantNote}
+      savingNotRelevant={savingNotRelevant}
+      onNotRelevantNoteChange={setNotRelevantNote}
+      onCancelNotRelevant={() => setNotRelevantOpen(false)}
+      onConfirmNotRelevant={handleConfirmNotRelevant}
       confirmDeleteOpen={confirmDeleteOpen}
       onRequestDelete={() => setConfirmDeleteOpen(true)}
       onCancelDelete={() => setConfirmDeleteOpen(false)}

@@ -25,7 +25,17 @@ const SOURCE_OPTIONS = [
   { value: "referral",  label: "המלצה" },
   { value: "website",   label: "אתר" },
   { value: "social",    label: "רשתות חברתיות" },
+  { value: "whatsapp",  label: "וואטסאפ" },
   { value: "other",     label: "אחר" },
+];
+
+// Lead-quality / priority rating, stored in the `training` column. Hebrew label
+// is the stored value. Starts empty (the displayEmpty placeholder below).
+const TRAINING_OPTIONS = [
+  { value: "גבוה",      label: "גבוה" },
+  { value: "סטנדרט",    label: "סטנדרט" },
+  { value: "נמוך",      label: "נמוך" },
+  { value: "סוף רישום", label: "סוף רישום" },
 ];
 
 // MySQL DATE returns either a Date object or 'YYYY-MM-DDTHH:mm:ss.000Z'.
@@ -168,14 +178,24 @@ function LeadView({ form, isEdit, handleInputChange, handleSelectChange, submit,
       <div className={classes.fieldGroup}>
         <div className={classes.fieldItem}>
           <InputLabel className={classes.inputLabelStyle}>השתלמות</InputLabel>
-          <TextField
-            name="training"
-            className={classes.textField}
-            value={form.training || ""}
-            onChange={handleInputChange}
-            size="small"
-            placeholder="כן / לא / שם הקורס"
-          />
+          <FormControl size="small" className={classes.selectField}>
+            <Select
+              name="training"
+              value={form.training || ""}
+              onChange={handleSelectChange}
+              displayEmpty
+              style={{ fontSize: 13, borderRadius: "8px" }}
+            >
+              <MenuItem value="" style={{ fontSize: 13, color: "#94a3b8" }}>
+                ללא
+              </MenuItem>
+              {TRAINING_OPTIONS.map((opt) => (
+                <MenuItem key={opt.value} value={opt.value} style={{ fontSize: 13 }}>
+                  {opt.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </div>
         <div className={classes.fieldItem}>
           <InputLabel className={classes.inputLabelStyle}>הרכב</InputLabel>

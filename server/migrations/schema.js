@@ -86,6 +86,23 @@ const SHARED_TABLE_SCHEMAS = {
     ],
   },
 
+  // Global audit log of leads Excel exports — one row per export, across all
+  // vacations (shared DB, same rationale as `notifications`). WHO (user_id,
+  // user_email) is written server-side from the JWT, never from the client.
+  lead_export_audit: {
+    options: ENGINE_AI,
+    primaryKey: '(`id`)',
+    columns: [
+      { name: 'id',            definition: 'int NOT NULL AUTO_INCREMENT' },
+      { name: 'user_id',       definition: 'int DEFAULT NULL' },
+      { name: 'user_email',    definition: 'varchar(45) DEFAULT NULL' },
+      { name: 'vacation_id',   definition: 'varchar(100) NOT NULL' },
+      { name: 'vacation_name', definition: 'varchar(200) DEFAULT NULL' },
+      { name: 'lead_count',    definition: "int NOT NULL DEFAULT '0'" },
+      { name: 'created_at',    definition: 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP' },
+    ],
+  },
+
   payment_provider_configs: {
     options: ENGINE_UNI,
     primaryKey: '(`id`)',
@@ -440,6 +457,12 @@ const TENANT_TABLE_SCHEMAS = {
     columns: [
       { name: 'lead_id',           definition: 'int NOT NULL AUTO_INCREMENT' },
       { name: 'full_name',         definition: 'varchar(100) NOT NULL' },
+      // Split name parts from the leads Excel import (שם פרטי / שם משפחה).
+      // Nullable so a row carrying only one of the two stores just that part.
+      // full_name is kept as the NOT NULL display/search/dedupe key and stays
+      // populated ("first last".trim()) alongside these.
+      { name: 'first_name',        definition: 'varchar(45) DEFAULT NULL' },
+      { name: 'last_name',         definition: 'varchar(45) DEFAULT NULL' },
       { name: 'phone',             definition: 'varchar(30) DEFAULT NULL' },
       { name: 'email',             definition: 'varchar(100) DEFAULT NULL' },
       { name: 'family_size',       definition: "int DEFAULT '1'" },

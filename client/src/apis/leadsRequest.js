@@ -59,6 +59,15 @@ export default {
       headers: { Authorization: token },
     });
   },
+  // Audit a leads Excel export. WHO is derived from the JWT server-side; we send
+  // only the count + vacation_name (never the user identity).
+  logExport(token, vacationId, count, vacationName) {
+    return Api.post(
+      `/${END_POINT.LEADS}/export-log/${vacationId}`,
+      { count, vacation_name: vacationName },
+      { headers: { Authorization: token } }
+    );
+  },
   // Public — no auth header
   submitPublic(vacationId, data) {
     return Api.post(`/public/leads/${vacationId}`, data);

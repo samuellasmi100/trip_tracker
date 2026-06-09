@@ -4,7 +4,7 @@ const leadsDb = require('./leadsDb');
 // Excludes free-text-only fields the file doesn't carry (family_size,
 // referred_by, assigned_to) so we never blank them on update.
 const IMPORTABLE_COLUMNS = [
-  'full_name', 'phone', 'email', 'status', 'notes',
+  'full_name', 'first_name', 'last_name', 'phone', 'email', 'status', 'notes',
   'followup_date',
   'price', 'discount', 'training', 'composition',
 ];
@@ -260,6 +260,8 @@ const importRows = async (vacationId, rows) => {
     if (!match) {
       const payload = {
         full_name: row.full_name || row.phone || 'ללא שם',
+        first_name: row.first_name || null,
+        last_name: row.last_name || null,
         phone: row.phone,
         email: row.email || null,
         status: row.status || 'new_interest',
@@ -331,6 +333,22 @@ const importRows = async (vacationId, rows) => {
   return { created, updated, skipped };
 };
 
+// Record a leads Excel export in the global audit log. userId/userEmail are
+// passed down from the controller's JWT-derived req.user — NEVER the client.
+// count is sanitized to a non-negative integer; missing identity is stored as
+// NULL rather than rejected (the export itself already succeeded client-side).
+const logExport = async ({ userId, userEmail, vacationId, vacationName, count }) => {
+  const n = Number(count);
+  const leadCount = Number.isFinite(n) && n >= 0 ? Math.trunc(n) : 0;
+  return await leadsDb.logExport({
+    userId: userId ?? null,
+    userEmail: userEmail || null,
+    vacationId,
+    vacationName: vacationName || null,
+    leadCount,
+  });
+};
+
 module.exports = {
   getAll,
   getById,
@@ -344,4 +362,5 @@ module.exports = {
   addNote,
   getFollowupDueCount,
   importRows,
+  logExport,
 };

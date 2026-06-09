@@ -67,6 +67,8 @@ const create = async (vacationId, data) => {
     const sql = leadsQuery.create(vacationId);
     const params = [
       data.full_name,
+      data.first_name || null,
+      data.last_name || null,
       data.phone || null,
       data.email || null,
       data.family_size || 1,
@@ -158,6 +160,20 @@ const addNote = async (vacationId, leadId, noteText, createdBy) => {
   }
 };
 
+// Insert one leads-export audit row into the shared trip_tracker DB. WHO
+// (userId/userEmail) is supplied by the service from the JWT, never the client.
+const logExport = async ({ userId, userEmail, vacationId, vacationName, leadCount }) => {
+  try {
+    const sql = leadsQuery.logExport();
+    return await connection.executeWithParameters(sql, [
+      userId, userEmail, vacationId, vacationName, leadCount,
+    ]);
+  } catch (error) {
+    logger.error(`leadsDb.logExport: ${error.sqlMessage || error.message}`);
+    throw error;
+  }
+};
+
 const getSummary = async (vacationId) => {
   try {
     const sql = leadsQuery.getSummary(vacationId);
@@ -191,6 +207,7 @@ module.exports = {
   remove,
   removeAll,
   addNote,
+  logExport,
   getSummary,
   getFollowupDueCount,
 };

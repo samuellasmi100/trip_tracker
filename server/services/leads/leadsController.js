@@ -38,6 +38,25 @@ router.post('/import/:vacationId', async (req, res, next) => {
   }
 });
 
+// POST /leads/export-log/:vacationId  — audit a (client-side) Excel export.
+// WHO is taken from the JWT (req.user), NEVER from the request body; the client
+// only sends the lead count + vacation_name. Declared before /:vacationId so the
+// generic POST route doesn't shadow it.
+router.post('/export-log/:vacationId', async (req, res, next) => {
+  try {
+    await leadsService.logExport({
+      userId: req.user?.userId,
+      userEmail: req.user?.email,
+      vacationId: req.params.vacationId,
+      vacationName: req.body?.vacation_name,
+      count: req.body?.count,
+    });
+    res.send({ success: true });
+  } catch (error) {
+    next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to log lead export", error));
+  }
+});
+
 // GET /leads/:vacationId/:leadId  — single lead with notes
 router.get('/:vacationId/:leadId', async (req, res, next) => {
   try {

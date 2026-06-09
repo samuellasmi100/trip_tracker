@@ -12,7 +12,11 @@ const checkAuthorization = async (req, res, next) => {
       if (authorizationString === undefined) {
       } else {
         let token = authorizationString.substring("Bearer ".length);
-        await verifyToken(req, token);
+        // Expose the verified JWT payload ({ userId, permission, email }) to
+        // downstream handlers. This is the ONLY trusted source of the caller's
+        // identity — controllers must read req.user, never a client-sent "who".
+        const decoded = await verifyToken(req, token);
+        req.user = decoded;
         next();
       }
     } catch (e) {

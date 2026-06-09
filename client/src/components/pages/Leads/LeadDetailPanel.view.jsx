@@ -83,6 +83,12 @@ const LeadDetailPanelView = ({
   onMarkHandled,
   onOpenFullEdit,
   followupOverdue,
+  notRelevantOpen,
+  notRelevantNote,
+  savingNotRelevant,
+  onNotRelevantNoteChange,
+  onCancelNotRelevant,
+  onConfirmNotRelevant,
   confirmDeleteOpen,
   onRequestDelete,
   onCancelDelete,
@@ -330,6 +336,75 @@ const LeadDetailPanelView = ({
             }}
           >
             מחק
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Require-a-reason gate for marking a lead "not relevant". Reuses the
+          lead notes mechanism: the typed reason is saved as a note and the
+          status is committed only alongside it (see handleConfirmNotRelevant). */}
+      <Dialog
+        open={!!notRelevantOpen}
+        onClose={savingNotRelevant ? undefined : onCancelNotRelevant}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: "14px", direction: "rtl" } }}
+      >
+        <DialogTitle
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            pb: 1,
+            borderBottom: "1px solid #e2e8f0",
+          }}
+        >
+          <Typography sx={{ fontSize: 15, fontWeight: 700, color: "#1e293b" }}>
+            סימון הליד כלא רלוונטי
+          </Typography>
+        </DialogTitle>
+        <DialogContent sx={{ pt: 2 }}>
+          <Typography variant="body2" sx={{ color: "#475569", mb: 1.5 }}>
+            יש להוסיף הערה מדוע הליד לא רלוונטי. ההערה תישמר בהיסטוריית הליד.
+          </Typography>
+          <TextField
+            autoFocus
+            fullWidth
+            multiline
+            rows={3}
+            size="small"
+            value={notRelevantNote}
+            onChange={(e) => onNotRelevantNoteChange(e.target.value)}
+            placeholder="סיבה לאי-רלוונטיות..."
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: "8px",
+                "& fieldset": { borderColor: "#e2e8f0" },
+                "&.Mui-focused fieldset": { borderColor: "#0d9488" },
+              },
+              "& .MuiInputBase-input": { fontSize: 13, color: "#1e293b" },
+            }}
+          />
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
+          <Button
+            onClick={onCancelNotRelevant}
+            disabled={savingNotRelevant}
+            sx={{ textTransform: "none", color: "#64748b" }}
+          >
+            ביטול
+          </Button>
+          <Button
+            variant="contained"
+            onClick={onConfirmNotRelevant}
+            disabled={savingNotRelevant}
+            sx={{
+              textTransform: "none",
+              backgroundColor: "#0d9488",
+              "&:hover": { backgroundColor: "#0f766e" },
+            }}
+          >
+            {savingNotRelevant ? "שומר..." : "שמור"}
           </Button>
         </DialogActions>
       </Dialog>

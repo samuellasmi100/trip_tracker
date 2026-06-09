@@ -1,12 +1,7 @@
 import React from "react";
 import {
   Box,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Grid,
-  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -14,7 +9,6 @@ import {
   TableHead,
   TableRow,
   TextField,
-  Tooltip,
   Typography,
   InputAdornment,
   Button,
@@ -24,7 +18,7 @@ import {
 } from "@mui/material";
 import SearchIcon from "@material-ui/icons/Search";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
-import DeleteIcon from "@mui/icons-material/DeleteOutline";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { useStyles, STATUS_CONFIG } from "./Leads.style";
 import { toLocalYMD } from "../../../utils/helpers/formatDate";
 
@@ -55,6 +49,17 @@ const formatMoney = (v) => {
   return `${n.toLocaleString("he-IL", { maximumFractionDigits: 2 })} ₪`;
 };
 
+// Name columns. New leads carry first_name/last_name; legacy leads created
+// before the name split have only full_name (both parts null). In that case
+// fall back to showing full_name under שם פרטי so old rows are never blank.
+// A lead with only one part shows "—" for the missing side.
+const nameParts = (lead) => {
+  const first = lead.first_name?.trim();
+  const last = lead.last_name?.trim();
+  if (!first && !last) return { first: lead.full_name || "—", last: "—" };
+  return { first: first || "—", last: last || "—" };
+};
+
 const buildStatusOptions = (dueCount) => [
   { value: "all", label: "כל הסטטוסים" },
   { value: "followup_due", label: `לפולואפ היום${dueCount ? ` (${dueCount})` : ""}` },
@@ -62,6 +67,16 @@ const buildStatusOptions = (dueCount) => [
   { value: "follow_up", label: "בתהליך" },
   { value: "registered", label: "נסגר" },
   { value: "not_relevant", label: "לא רלוונטי" },
+];
+
+// Lead-quality (השתלמות) filter options. "all" = no filter; the rest match the
+// dropdown values stored on the lead's `training` column.
+const TRAINING_FILTER_OPTIONS = [
+  { value: "all", label: "כל ההשתלמויות" },
+  { value: "גבוה", label: "גבוה" },
+  { value: "סטנדרט", label: "סטנדרט" },
+  { value: "נמוך", label: "נמוך" },
+  { value: "סוף רישום", label: "סוף רישום" },
 ];
 
 function StatusBadge({ status }) {
@@ -82,7 +97,7 @@ function StatusBadge({ status }) {
 }
 
 const headers = [
-  "שם", "טלפון", "אימייל", "סטטוס",
+  "שם פרטי", "שם משפחה", "טלפון", "אימייל", "סטטוס",
   "פולואפ", "תאריך עדכון אחרון",
   "מחיר שקיבל", "הנחה", "השתלמות", "הרכב",
   "הערות",
@@ -151,6 +166,8 @@ function LeadsView({
   setSearchTerm,
   selectedStatus,
   setSelectedStatus,
+  selectedTraining,
+  setSelectedTraining,
   handleAddClick,
   handleRowClick,
   handleImportClick,
@@ -158,13 +175,10 @@ function LeadsView({
   importing,
   fileInputRef,
   dueCount,
-  isDue,
+  isOverdue,
+  isDueToday,
   statusCounts,
-  onRequestDeleteAll,
-  deleteAllOpen,
-  deletingAll,
-  onCancelDeleteAll,
-  onConfirmDeleteAll,
+  handleExportToExcel,
 }) {
   const classes = useStyles();
   const statusOptions = buildStatusOptions(dueCount);
@@ -217,6 +231,20 @@ function LeadsView({
             </Select>
           </FormControl>
 
+          <FormControl size="small">
+            <Select
+              value={selectedTraining}
+              onChange={(e) => setSelectedTraining(e.target.value)}
+              style={{ fontSize: 12, borderRadius: "8px", minWidth: "150px", height: "32px" }}
+            >
+              {TRAINING_FILTER_OPTIONS.map((t) => (
+                <MenuItem key={t.value} value={t.value} style={{ fontSize: 12 }}>
+                  {t.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
           <TextField
             size="small"
             placeholder="חיפוש..."
@@ -232,27 +260,17 @@ function LeadsView({
             }}
           />
 
-          {/* Destructive action — icon-only, separated by extra margin, red
-              border. Disabled when there's nothing to delete. */}
-          <Tooltip title={totalCount === 0 ? "אין לידים למחיקה" : "מחיקת כל הלידים"}>
-            <span style={{ marginInlineStart: "12px" }}>
-              <IconButton
-                size="small"
-                onClick={onRequestDeleteAll}
-                disabled={totalCount === 0}
-                sx={{
-                  border: "1px solid #fecaca",
-                  color: "#dc2626",
-                  borderRadius: "8px",
-                  padding: "5px",
-                  "&:hover": { backgroundColor: "#fef2f2", borderColor: "#dc2626" },
-                  "&.Mui-disabled": { opacity: 0.4, color: "#94a3b8", borderColor: "#e2e8f0" },
-                }}
-              >
-                <DeleteIcon style={{ fontSize: "18px" }} />
-              </IconButton>
-            </span>
-          </Tooltip>
+          {/* Export ALL leads to a Hebrew RTL .xlsx. Separated by extra margin,
+              disabled when there's nothing to export. */}
+          <Button
+            className={classes.importButton}
+            onClick={handleExportToExcel}
+            disabled={totalCount === 0}
+            startIcon={<FileDownloadIcon style={{ fontSize: "16px" }} />}
+            style={{ marginInlineStart: "12px" }}
+          >
+            ייצוא לאקסל
+          </Button>
         </Grid>
       </Grid>
 
@@ -276,18 +294,21 @@ function LeadsView({
               </TableRow>
             ) : (
               filteredLeads?.map((lead, index) => {
-                const due = isDue?.(lead);
-                // Highlight wins over due: a 'new'/'returning' row keeps its
-                // colour until the coordinator opens it (clears to 'none'); only
-                // then does the follow-up-due colour show.
+                const overdue  = isOverdue?.(lead);
+                const dueToday = isDueToday?.(lead);
+                // Highlight wins over the follow-up colours: a 'new'/'returning'
+                // row keeps its colour until the coordinator opens it (clears to
+                // 'none'); only then do the overdue / due-today colours show.
                 const rowClass =
                   lead.highlight === "new"
                     ? classes.newRow
                     : lead.highlight === "returning"
                       ? classes.returningRow
-                      : due
-                        ? classes.dueRow
-                        : undefined;
+                      : overdue
+                        ? classes.overdueRow
+                        : dueToday
+                          ? classes.dueTodayRow
+                          : undefined;
                 return (
                   <TableRow
                     key={lead.lead_id || index}
@@ -295,13 +316,23 @@ function LeadsView({
                     onClick={() => handleRowClick(lead)}
                     style={{ cursor: "pointer" }}
                   >
-                    <TableCell className={classes.dataTableCell}>{lead.full_name}</TableCell>
+                    <TableCell className={classes.dataTableCell} style={{ whiteSpace: "nowrap" }}>{nameParts(lead).first}</TableCell>
+                    <TableCell className={classes.dataTableCell} style={{ whiteSpace: "nowrap" }}>{nameParts(lead).last}</TableCell>
                     <TableCell className={classes.dataTableCell}>{lead.phone || "—"}</TableCell>
                     <TableCell className={classes.dataTableCell} title={lead.email || ""}>{lead.email || "—"}</TableCell>
                     <TableCell className={classes.dataTableCell}>
                       <StatusBadge status={lead.status} />
                     </TableCell>
-                    <TableCell className={classes.dataTableCell} style={due ? { color: "#dc2626", fontWeight: 600 } : undefined}>
+                    <TableCell
+                      className={classes.dataTableCell}
+                      style={
+                        overdue
+                          ? { color: "#dc2626", fontWeight: 600 }
+                          : dueToday
+                            ? { color: "#b45309", fontWeight: 600 }
+                            : undefined
+                      }
+                    >
                       {formatDate(lead.followup_date)}
                     </TableCell>
                     <TableCell className={classes.dataTableCell} style={{ whiteSpace: "nowrap" }}>{formatTimestamp(lead.updated_at)}</TableCell>
@@ -323,74 +354,6 @@ function LeadsView({
           </TableBody>
         </Table>
       </TableContainer>
-
-      {/* Bulk-delete confirmation — mirrors the styled confirm in
-          LeadDetailPanel: 14px Paper, RTL, DeleteOutline icon + bottom-bordered
-          title, info Box with the count, and destructive red confirm. */}
-      <Dialog
-        open={!!deleteAllOpen}
-        onClose={deletingAll ? undefined : onCancelDeleteAll}
-        maxWidth="xs"
-        fullWidth
-        PaperProps={{ sx: { borderRadius: "14px", direction: "rtl" } }}
-      >
-        <DialogTitle
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-            pb: 1,
-            borderBottom: "1px solid #e2e8f0",
-          }}
-        >
-          <DeleteIcon sx={{ fontSize: 20, color: "#dc2626" }} />
-          <Typography sx={{ fontSize: 15, fontWeight: 700, color: "#1e293b" }}>
-            מחיקת כל הלידים
-          </Typography>
-        </DialogTitle>
-        <DialogContent sx={{ pt: 2 }}>
-          <Box
-            sx={{
-              p: 1.5,
-              mb: 2,
-              backgroundColor: "#fef2f2",
-              border: "1px solid #fecaca",
-              borderRadius: 1,
-            }}
-          >
-            <Typography variant="body2" sx={{ fontWeight: 700, color: "#991b1b" }}>
-              {`מחיקת כל ${totalCount} הלידים — לא ניתן לשחזר`}
-            </Typography>
-            <Typography variant="caption" sx={{ color: "#7f1d1d" }}>
-              כל הלידים, ההערות והפולואפים של חופשה זו יימחקו לצמיתות.
-            </Typography>
-          </Box>
-          <Typography variant="body2" sx={{ color: "#475569" }}>
-            פעולה זו משפיעה רק על החופשה הנוכחית. להמשיך?
-          </Typography>
-        </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
-          <Button
-            onClick={onCancelDeleteAll}
-            disabled={deletingAll}
-            sx={{ textTransform: "none", color: "#64748b" }}
-          >
-            ביטול
-          </Button>
-          <Button
-            variant="contained"
-            onClick={onConfirmDeleteAll}
-            disabled={deletingAll}
-            sx={{
-              textTransform: "none",
-              backgroundColor: "#dc2626",
-              "&:hover": { backgroundColor: "#b91c1c" },
-            }}
-          >
-            {deletingAll ? "מוחק..." : "מחק הכל"}
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Grid>
   );
 }

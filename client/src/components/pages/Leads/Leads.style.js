@@ -5,7 +5,12 @@ export const useStyles = makeStyles(() => ({
     "& tr:nth-of-type(odd)": { backgroundColor: "#f8fafc" },
     "& tr:nth-of-type(even)": { backgroundColor: "#ffffff" },
     "& tr": { transition: "background-color 0.15s ease" },
-    "& tr:hover": { backgroundColor: "#f0fdfa !important" },
+    // No !important here: this default hover must NOT clobber the per-row
+    // follow-up / highlight hover shades (overdueRow / dueTodayRow / newRow /
+    // returningRow), whose own "&:hover" rules use !important and so win on
+    // importance. Uncoloured rows still get this hover (declared after the
+    // striping rules above, so it wins by source order).
+    "& tr:hover": { backgroundColor: "#f0fdfa" },
   },
   dataTableCell: {
     fontSize: "12px !important",
@@ -66,13 +71,21 @@ export const useStyles = makeStyles(() => ({
     "&:hover": { background: "#f0fdfa !important" },
     "&.Mui-disabled": { opacity: 0.6 },
   },
-  dueRow: {
-    backgroundColor: "#fef2f2 !important",
-    "&:hover": { backgroundColor: "#fee2e2 !important" },
+  // Follow-up state row colours — both clear and noticeable at a glance, and
+  // distinct from each other and from the new/returning highlights below.
+  overdueRow: {
+    // Past follow-up date — attention-drawing coral red.
+    backgroundColor: "#ffcdc4 !important",
+    "&:hover": { backgroundColor: "#ffb8ab !important" },
   },
-  // Public-lead highlights. Subtle/pastel. returningRow is intentionally a
-  // DEEPER red than dueRow (red-50) so a returning lead never reads as a mere
-  // follow-up-due row. Highlight wins over dueRow (precedence in Leads.view.jsx).
+  dueTodayRow: {
+    // Follow-up due today — warm amber, clearly distinct from the overdue coral.
+    backgroundColor: "#ffe5a0 !important",
+    "&:hover": { backgroundColor: "#ffd766 !important" },
+  },
+  // Public-lead highlights. returningRow is a distinct soft pink-red so a
+  // returning lead never reads as an overdue follow-up row. Highlight wins over
+  // the follow-up colours (precedence in Leads.view.jsx).
   newRow: {
     backgroundColor: "#f0fdf4 !important",
     "&:hover": { backgroundColor: "#dcfce7 !important" },

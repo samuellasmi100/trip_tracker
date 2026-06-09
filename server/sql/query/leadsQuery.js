@@ -1,5 +1,5 @@
 const ALLOWED_LEAD_COLUMNS = [
-  'full_name', 'phone', 'email', 'family_size',
+  'full_name', 'first_name', 'last_name', 'phone', 'email', 'family_size',
   'status', 'source', 'notes', 'referred_by', 'is_active', 'assigned_to',
   'followup_date', 'price', 'discount', 'training', 'composition',
   'highlight',
@@ -41,9 +41,10 @@ const getNotesByLeadId = (vacationId) => `
 
 const create = (vacationId) => `
   INSERT INTO trip_tracker_${vacationId}.leads
-    (full_name, phone, email, family_size, status, source, notes, referred_by,
-     followup_date, price, discount, training, composition, highlight)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    (full_name, first_name, last_name, phone, email, family_size, status, source,
+     notes, referred_by, followup_date, price, discount, training, composition,
+     highlight)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 `;
 
 // bumpUpdatedAt=false suppresses the "updated_at = NOW()" clause — used by the
@@ -122,6 +123,15 @@ const getByEmail = (vacationId) => `
   LIMIT 1;
 `;
 
+// Audit a leads Excel export. GLOBAL shared trip_tracker DB (not per-vacation),
+// same as notifications — so this hardcodes the schema name rather than
+// interpolating ${vacationId}. created_at defaults to NOW().
+const logExport = () => `
+  INSERT INTO trip_tracker.lead_export_audit
+    (user_id, user_email, vacation_id, vacation_name, lead_count)
+  VALUES (?, ?, ?, ?, ?);
+`;
+
 module.exports = {
   ALLOWED_LEAD_COLUMNS,
   getAll,
@@ -138,4 +148,5 @@ module.exports = {
   getByPhone,
   getByEmail,
   bumpUpdatedAt,
+  logExport,
 };
