@@ -1,4 +1,6 @@
 const vacationDb = require("./vacationDb")
+const { parseDateLoose } = require("../../utils/dateNormalize")
+const logger = require("../../utils/logger")
 
 const addVacation = async (vacationDetails,vacationId) => {
     const dateEntries = [];
@@ -128,7 +130,86 @@ const updateVacation = async (payload, vacationId) => {
     await vacationDb.addVacationDates(vacationId, "", "", "חריגים")
   }
 
-  return await vacationDb.getVacationDates(vacationId)
+  const details = await vacationDb.getVacationDates(vacationId)
+
+  // Re-derive guest week_chosen from the freshly-saved routes. Isolated in a
+  // try/catch: the routes are already committed (the user's primary action), so
+  // a re-sync failure must not turn a successful edit into a 500 — we report it
+  // instead. The guest writes themselves are all-or-nothing (see vacationDb), so
+  // a failure here never leaves a half-synced tenant.
+  let resync = null
+  try {
+    resync = await resyncGuestWeeks(vacationId, details)
+  } catch (error) {
+    logger.error(`Error: Function:resyncGuestWeeks : ${error.sqlMessage || error.message}`)
+    resync = { error: true, updatedCount: 0, unmatchedGuests: [], ambiguousGuests: [], unmatchedFamilies: [] }
+  }
+
+  return { details, resync }
+}
+
+// After a vacation edit, re-attach each guest to the route their stored dates
+// actually fall in, so an in-place route-date change can't leave a guest pointing
+// at the wrong week. Fail-safe by construction:
+//   - match on BOTH dates (arrival == route.start AND departure == route.end); a
+//     lone date is ambiguous because adjacent weeks share a boundary day.
+//   - canonicalize both sides to ISO first — guest arrival/departure are stored
+//     DD/MM/YYYY while route dates are ISO, so raw equality would never hit.
+//   - exactly one match -> set week_chosen (skipped when already correct).
+//   - zero or multiple matches -> leave the guest UNTOUCHED and report it; never
+//     guess. We only ever write week_chosen to an existing route's existing name,
+//     so routes are never renamed/renumbered (names are the assignment FK).
+// Families are report-only: they carry no week_chosen, and rewriting their dates
+// is blocked by the room-lock guard while assigned — so we just flag families
+// whose range matches no current route for manual attention.
+const resyncGuestWeeks = async (vacationId, routes) => {
+  const report = { updatedCount: 0, unmatchedGuests: [], ambiguousGuests: [], unmatchedFamilies: [] }
+
+  // Routes reduced to {name, start, end} with both dates canonicalized. Routes
+  // without a real range (e.g. "חריגים") drop out and can match no one.
+  const datedRoutes = (routes || [])
+    .map((r) => ({ name: r.name, start: parseDateLoose(r.start_date), end: parseDateLoose(r.end_date) }))
+    .filter((r) => r.start && r.end)
+
+  const guests = (await vacationDb.getGuestsForResync(vacationId)) || []
+  const updates = []
+  for (const g of guests) {
+    if (g.week_chosen === "חריגים") continue
+    const gStart = parseDateLoose(g.arrival_date)
+    const gEnd = parseDateLoose(g.departure_date)
+    // Blank/unparseable dates -> the guest isn't date-assigned to a week, so
+    // there is nothing to reconcile. Skip quietly (don't flood the report).
+    if (!gStart || !gEnd) continue
+
+    const matches = datedRoutes.filter((r) => r.start === gStart && r.end === gEnd)
+    const guestName = `${g.hebrew_first_name || ""} ${g.hebrew_last_name || ""}`.trim()
+    if (matches.length === 1) {
+      if (matches[0].name !== g.week_chosen) {
+        updates.push({ id: g.id, week_chosen: matches[0].name })
+      }
+    } else if (matches.length === 0) {
+      report.unmatchedGuests.push({ name: guestName, week_chosen: g.week_chosen, arrival_date: g.arrival_date, departure_date: g.departure_date })
+    } else {
+      report.ambiguousGuests.push({ name: guestName, week_chosen: g.week_chosen, arrival_date: g.arrival_date, departure_date: g.departure_date, matchedWeeks: matches.map((m) => m.name) })
+    }
+  }
+
+  await vacationDb.applyGuestWeekChosen(vacationId, updates)
+  report.updatedCount = updates.length
+
+  // Families: report-only. Flag any whose stored range matches no current route.
+  const families = (await vacationDb.getFamiliesForResync(vacationId)) || []
+  for (const f of families) {
+    const fStart = parseDateLoose(f.start_date)
+    const fEnd = parseDateLoose(f.end_date)
+    if (!fStart || !fEnd) continue
+    const hasMatch = datedRoutes.some((r) => r.start === fStart && r.end === fEnd)
+    if (!hasMatch) {
+      report.unmatchedFamilies.push({ family_name: f.family_name, start_date: f.start_date, end_date: f.end_date })
+    }
+  }
+
+  return report
 }
 
 module.exports = {

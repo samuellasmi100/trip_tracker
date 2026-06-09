@@ -27,8 +27,8 @@ router.post("/", async (req, res, next) => {
 router.put("/", async (req, res, next) => {
   const payload = req.body
   try {
-    const details = await vacationService.updateVacation(payload, payload.vacation_id)
-    res.json({ message: "החופשה עודכנה בהצלחה", details })
+    const { details, resync } = await vacationService.updateVacation(payload, payload.vacation_id)
+    res.json({ message: "החופשה עודכנה בהצלחה", details, resync })
   } catch (error) {
     return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to update vacation", error));
   }

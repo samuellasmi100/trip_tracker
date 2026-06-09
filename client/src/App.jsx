@@ -100,7 +100,11 @@ function App() {
           {isAuthenticated ? (
             <>
               <Route path="/workspace" element={<RequireVacation><FamilyList /></RequireVacation>} />
-              <Route path="/static" element={<RequireVacation><Static /></RequireVacation>} />
+              {/* /static hosts BOTH the vacation-MANAGEMENT view (create/list
+                  vacations — must be reachable with none selected, else the first
+                  vacation could never be made) and the vacation-scoped widgets.
+                  Gating is therefore done per-widget inside Static, not here. */}
+              <Route path="/static" element={<Static />} />
               <Route path="/budgets" element={<RequireVacation><Budgets /></RequireVacation>} />
               <Route path="/leads" element={<RequireVacation><Leads /></RequireVacation>} />
               <Route path="/settings" element={<RequireVacation><Settings /></RequireVacation>} />

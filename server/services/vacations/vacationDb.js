@@ -148,6 +148,47 @@ const updateVacationDate = async (id, startDate, endDate) => {
   }
 }
 
+const getGuestsForResync = async (vacationId) => {
+  const sanitizedVacationId = vacationId.replace(/[^a-zA-Z0-9_]/g, '_');
+  try {
+    const sql = vacationQuery.getGuestsForResync(sanitizedVacationId)
+    return await connection.execute(sql)
+  } catch (error) {
+    logger.error(`Error: Function:getGuestsForResync :, ${error.sqlMessage}`);
+    throw error;
+  }
+}
+
+const getFamiliesForResync = async (vacationId) => {
+  const sanitizedVacationId = vacationId.replace(/[^a-zA-Z0-9_]/g, '_');
+  try {
+    const sql = vacationQuery.getFamiliesForResync(sanitizedVacationId)
+    return await connection.execute(sql)
+  } catch (error) {
+    logger.error(`Error: Function:getFamiliesForResync :, ${error.sqlMessage}`);
+    throw error;
+  }
+}
+
+// Apply every guest week_chosen correction as one all-or-nothing unit: a failure
+// partway through rolls back the prior writes, so the re-sync can never leave a
+// tenant half-synced. No-op (and no transaction) when there is nothing to write.
+const applyGuestWeekChosen = async (vacationId, updates) => {
+  if (!updates || updates.length === 0) return
+  const sanitizedVacationId = vacationId.replace(/[^a-zA-Z0-9_]/g, '_');
+  const sql = vacationQuery.updateGuestWeekChosen(sanitizedVacationId)
+  try {
+    await connection.withTransaction(async (tx) => {
+      for (const u of updates) {
+        await tx.executeWithParameters(sql, [u.week_chosen, u.id])
+      }
+    })
+  } catch (error) {
+    logger.error(`Error: Function:applyGuestWeekChosen :, ${error.sqlMessage || error.message}`);
+    throw error;
+  }
+}
+
 
 module.exports = {
     addVacation,
@@ -160,5 +201,8 @@ module.exports = {
     getFamiliesOnPartDates,
     deleteVacationPart,
     updateVacation,
-    updateVacationDate
+    updateVacationDate,
+    getGuestsForResync,
+    getFamiliesForResync,
+    applyGuestWeekChosen
 }

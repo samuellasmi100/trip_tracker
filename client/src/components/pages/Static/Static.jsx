@@ -14,6 +14,7 @@ import Flights from "../Flights/Flights";
 import GeneralInfo from "../GeneralInfo/GeneralInfo";
 import Payments from "../Payments/Payments";
 import Documents from "../Documents/Documents";
+import RequireVacation from "../../layout/RequireVacation/RequireVacation";
 const widgetMap = {
   rooms: Rooms,
   roomsStatus: RoomsStatus,
@@ -57,7 +58,7 @@ const Static = () => {
 
   const WidgetComponent = widgetMap[dialogType];
 
-  return (
+  const content = (
     <Grid style={{ height: "calc(100vh - 48px)", padding: "16px", boxSizing: "border-box" }}>
       {WidgetComponent ? (
         <Grid style={{
@@ -74,6 +75,12 @@ const Static = () => {
       )}
     </Grid>
   );
+
+  // The vacations-management view (create/list vacations) must be reachable with
+  // NO vacation selected — otherwise the first vacation could never be created.
+  // Every other widget here is vacation-scoped, so it stays behind RequireVacation
+  // (placeholder + no Unknown-database calls), exactly as the route-level gate did.
+  return dialogType === "vacations" ? content : <RequireVacation>{content}</RequireVacation>;
 };
 
 export default Static;

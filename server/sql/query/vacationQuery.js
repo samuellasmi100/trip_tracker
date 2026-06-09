@@ -55,6 +55,33 @@ const updateVacationDate = () => {
   return `UPDATE trip_tracker.vacation_date SET start_date = ?, end_date = ? WHERE id = ?`;
 };
 
+// --- Edit-time guest week_chosen re-sync ---------------------------------
+// After routes are saved on a vacation edit, we re-derive each guest's
+// week_chosen from the dates the guest actually holds. These three feed that.
+
+// All guests in a tenant: id is the update target, arrival/departure are the
+// dates matched against the routes, week_chosen lets us skip no-op rewrites,
+// and the names are for the coordinator report.
+const getGuestsForResync = (vacationId) => {
+  return `SELECT id,hebrew_first_name,hebrew_last_name,week_chosen,arrival_date,departure_date FROM trip_tracker_${vacationId}.guest`;
+};
+
+// All families in a tenant — report-only side of the re-sync. Families have no
+// week_chosen and their dates are never auto-edited here (the room-lock guard
+// forbids rewriting a family's dates while assigned), so we only flag the ones
+// whose range matches no current route.
+const getFamiliesForResync = (vacationId) => {
+  return `SELECT family_name,start_date,end_date FROM trip_tracker_${vacationId}.families`;
+};
+
+// The single write the re-sync performs: point a guest at the route its stored
+// dates fall in. Targets the row by primary key and writes week_chosen ONLY —
+// never the snapshot dates, and only ever to an existing route's existing name,
+// so the "names are the FK, never renumber" invariant holds.
+const updateGuestWeekChosen = (vacationId) => {
+  return `UPDATE trip_tracker_${vacationId}.guest SET week_chosen = ? WHERE id = ?`;
+};
+
 module.exports = {
   addVacation,
   addVacationDates,
@@ -66,5 +93,8 @@ module.exports = {
   getFamiliesOnPartDates,
   deleteVacationPart,
   updateVacation,
-  updateVacationDate
+  updateVacationDate,
+  getGuestsForResync,
+  getFamiliesForResync,
+  updateGuestWeekChosen
 };

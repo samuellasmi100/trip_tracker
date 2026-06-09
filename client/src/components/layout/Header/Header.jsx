@@ -50,8 +50,23 @@ const Header = () => {
     const fetchVacations = async () => {
       try {
         const response = await ApiVacations.getVacations(token);
-        if (response?.data?.vacations?.length > 0) {
-          dispatch(vacationSlice.updateVacationList(response.data.vacations));
+        const list = response?.data?.vacations || [];
+        if (list.length > 0) {
+          dispatch(vacationSlice.updateVacationList(list));
+        }
+        // Stale-selection guard: vacations are deleted directly in the DB (there
+        // is no in-app delete flow), so a persisted vacId can keep pointing at a
+        // dropped tenant schema — every scoped call then floods "Unknown
+        // database". If the persisted selection isn't in the freshly fetched
+        // list (or the list is empty), clear it so the app falls back to
+        // RequireVacation's "no vacation selected" placeholder. Runs only on a
+        // successful fetch — a network error hits catch and leaves the selection
+        // untouched, so a transient failure can't wipe a still-valid selection.
+        if (vacationId && !list.some((v) => v.vacation_id === vacationId)) {
+          dispatch(vacationSlice.updateChosenVacation(""));
+          dispatch(vacationSlice.updateVacationName(""));
+          sessionStorage.removeItem("vacId");
+          sessionStorage.removeItem("vacName");
         }
       } catch (error) {
         console.log(error);

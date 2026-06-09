@@ -76,9 +76,20 @@ const RoomsStatus = () => {
 
   const dateRange = useMemo(() => {
     if (!vacationsDates || vacationsDates.length === 0) return [];
-    const start = vacationsDates[0].start_date;
-    let end = vacationsDates[vacationsDates.length - 1].end_date;
-    if (!end) end = vacationsDates[vacationsDates.length - 2]?.end_date;
+    // Routes are not stored in chronological order (new routes added on edit are
+    // appended regardless of date), so derive the span by actual MIN(start)/
+    // MAX(end) — not array position. Skip rows missing a start or end (e.g. the
+    // empty חריגים row) so they can't collapse the range.
+    let start = null;
+    let end = null;
+    for (const r of vacationsDates) {
+      if (r.start_date && (start === null || new Date(r.start_date) < new Date(start))) {
+        start = r.start_date;
+      }
+      if (r.end_date && (end === null || new Date(r.end_date) > new Date(end))) {
+        end = r.end_date;
+      }
+    }
     if (!start || !end) return [];
     return generateDateRange(start, end);
   }, [vacationsDates]);
