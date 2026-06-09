@@ -11,6 +11,16 @@ import { useStyles } from "../GuestWizard.style";
 import { useSelector } from "react-redux";
 import { formatDateInput, isoToDisplay } from "../../../../utils/helpers/formatDate";
 
+// Dropdown label only: append the route's date range so the secretary can pick a
+// week by its actual dates. The option VALUE stays the route name (the assignment
+// key) — only the displayed text changes. Routes store ISO; isoToDisplay renders
+// DD/MM/YYYY. חריגים (and any dateless row) shows the name with no range.
+const routeOptionLabel = (route) => {
+  const start = isoToDisplay(route.start_date);
+  const end = isoToDisplay(route.end_date);
+  return start && end ? `${route.name} (${start}–${end})` : route.name;
+};
+
 // Route & Dates block (route selector + arrival/departure dates) shared by the
 // Add trip step (TripOptionsStep) and the Edit guest trip tab (GuestEditor).
 // Bound to userSlice.form via the parent's handleInputChange so week_chosen /
@@ -97,7 +107,7 @@ function RouteDatesSection({ handleInputChange }) {
           >
             {vacationsDates?.map((type) => (
               <MenuItem key={type.name} value={type.name} className={classes.menuItem}>
-                {type.name}
+                {routeOptionLabel(type)}
               </MenuItem>
             ))}
           </Select>

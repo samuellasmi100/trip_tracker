@@ -47,6 +47,16 @@ import { formatMoneyInput, stripMoney } from "../../../utils/helpers/formatMoney
 // here to avoid a cross-feature import for a four-item constant.
 const PAYMENT_METHODS = ["מזומן", "העברה בנקאית", "כרטיס אשראי", "המחאות"];
 
+// Dropdown label only: append the route's date range so the secretary can pick a
+// week by its actual dates. The option VALUE stays the route name (the assignment
+// key) — only the displayed text changes. Routes store ISO; isoToDisplay renders
+// DD/MM/YYYY. חריגים (and any dateless row) shows the name with no range.
+const routeOptionLabel = (route) => {
+  const start = isoToDisplay(route.start_date);
+  const end = isoToDisplay(route.end_date);
+  return start && end ? `${route.name} (${start}–${end})` : route.name;
+};
+
 function FamilyListView(props) {
   const classes = useStyles();
   const {
@@ -603,7 +613,7 @@ function FamilyListView(props) {
                 }}
               >
                 {vacationsDates?.map((type) => (
-                  <MenuItem key={type.name} value={type.name}>{type.name}</MenuItem>
+                  <MenuItem key={type.name} value={type.name} sx={{ fontSize: "13px" }}>{routeOptionLabel(type)}</MenuItem>
                 ))}
               </Select>
             </div>
@@ -767,7 +777,7 @@ function FamilyListView(props) {
                 }}
               >
                 {vacationsDates?.map((type) => (
-                  <MenuItem key={type.name} value={type.name}>{type.name}</MenuItem>
+                  <MenuItem key={type.name} value={type.name} sx={{ fontSize: "13px" }}>{routeOptionLabel(type)}</MenuItem>
                 ))}
               </Select>
             </div>
