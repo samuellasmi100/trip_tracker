@@ -3,6 +3,7 @@ const userRoomsService = require("../userRooms/userRoomsService");
 const notesService = require("../notes/notesService");
 const paymentsService = require("../payments/paymentsService");
 const userDb = require("./userDb");
+const flightsDb = require("../flights/flightsDb");
 const userRoomService = require("../userRooms/userRoomsService");
 const connection = require("../../db/connection-wrapper");
 const { parseDateLoose } = require("../../utils/dateNormalize");
@@ -23,6 +24,11 @@ const INVALID_DATES = 'INVALID_DATES';
 // clear Hebrew "remove the assignments first" message.
 const HAS_ROOM_ASSIGNMENTS = 'HAS_ROOM_ASSIGNMENTS';
 
+// Sentinel thrown by addGuestsBulk when the requested additions would push the
+// family past its defined size (families.number_of_guests). Controller maps it
+// to a 400 with a Hebrew message; err.remaining carries how many MAY still be added.
+const EXCEEDS_FAMILY_SIZE = 'EXCEEDS_FAMILY_SIZE';
+
 const addGuest = async (data, vacationId) => {
   // Uniqueness rule: only one guest per family can carry is_main_user=1.
   // When the new guest is being promoted to main, demote everyone else in
@@ -35,6 +41,66 @@ const addGuest = async (data, vacationId) => {
     });
   }
   return await userDb.addGuest(data, vacationId);
+};
+
+// At least one of the four name fields must be non-empty for a row to be a
+// real person — fully blank rows are skipped (defensive; the client skips too).
+const hasAnyName = (p = {}) =>
+  ["hebrew_first_name", "hebrew_last_name", "english_first_name", "english_last_name"]
+    .some((f) => p[f] && String(p[f]).trim() !== "");
+
+// Bulk-add people to a family by names (+ inherited trip info from the client).
+// All-or-nothing: one transaction so a mid-list failure rolls everything back.
+// is_main_user is forced to 0 here — bulk-add never creates a head (the family
+// already has one), so the single-main-per-family rule always holds. family_id
+// comes from the route/body, never trusted from each row.
+const addGuestsBulk = async (familyId, people, vacationId) => {
+  const rows = (people || []).filter(hasAnyName);
+  if (rows.length === 0) return [];
+  return await connection.withTransaction(async (tx) => {
+    // Enforce the family's defined size: existing guests + the additions must not
+    // exceed families.number_of_guests (NULL/blank = no limit). Read inside the
+    // transaction so the check and the inserts are consistent.
+    const cap = await userDb.getFamilyCapacityTx(tx, familyId, vacationId);
+    const limit = Number(cap.limit_size);
+    const hasLimit = cap.limit_size !== null && cap.limit_size !== undefined
+      && String(cap.limit_size).trim() !== "" && !Number.isNaN(limit);
+    if (hasLimit) {
+      const remaining = Math.max(0, limit - Number(cap.current_count || 0));
+      if (rows.length > remaining) {
+        const err = new Error(`Adding ${rows.length} guests would exceed family size (${remaining} remaining)`);
+        err.code = EXCEEDS_FAMILY_SIZE;
+        err.remaining = remaining;
+        throw err;
+      }
+    }
+
+    const created = [];
+    for (const person of rows) {
+      const data = {
+        ...person,
+        family_id: familyId,
+        is_main_user: 0,
+        user_type: person.user_type || "client",
+      };
+      // user_classification lives on the flights table, NOT guest — pull it out
+      // before the guest INSERT (else "Unknown column") and write it to a flights
+      // row in the same transaction. birth_date/age stay on guest.
+      const classification = data.user_classification;
+      delete data.user_classification;
+
+      await userDb.addGuestTx(tx, data, vacationId);
+      if (classification && String(classification).trim() !== "") {
+        await flightsDb.insertFlightRowTx(
+          tx,
+          { user_id: data.user_id, family_id: familyId, user_classification: String(classification).trim() },
+          vacationId
+        );
+      }
+      created.push(data.user_id);
+    }
+    return created;
+  });
 };
 
 const deleteGuest = async (userId, vacationId) => {
@@ -149,6 +215,7 @@ const getUserDetails = async (id, familyId, isIngroup, vacationId) => {
 
 module.exports = {
   addGuest,
+  addGuestsBulk,
   getFamilyGuests,
   updateGuest,
   getFamilyMember,
@@ -157,4 +224,5 @@ module.exports = {
   deleteMainGuest,
   INVALID_DATES,
   HAS_ROOM_ASSIGNMENTS,
+  EXCEEDS_FAMILY_SIZE,
 };

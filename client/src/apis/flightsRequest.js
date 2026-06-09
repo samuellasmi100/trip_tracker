@@ -23,4 +23,9 @@ export default {
             headers: { Authorization: token },
         });
     },
+    applyFlightsBulk(token, familyId, people, legs, vacationId) {
+        return Api.post(`${END_POINT.FLIGHTS}/${vacationId}/bulk`, { familyId, people, legs }, {
+          headers: { Authorization: token },
+        });
+    },
 }

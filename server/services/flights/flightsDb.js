@@ -76,10 +76,71 @@ const getFamilyFlightsWithNames = async (familyId, vacationId) => {
   }
 }
 
+// ── Transaction-aware variants for the group-flights bulk apply ──────────────
+// First arg is the tx connection from connection.withTransaction (same shape as
+// the pool helper). Kept separate from the non-tx fns above so the bulk apply
+// commits/rolls back atomically.
+
+const getLatestFlightsByUserIdsTx = async (tx, userIds, vacationId) => {
+  try {
+    const sql = flightsQuery.getLatestFlightsByUserIds(userIds, vacationId)
+    return await tx.executeWithParameters(sql, [...userIds])
+  } catch (error) {
+    logger.error(`Error: Function:getLatestFlightsByUserIdsTx :, ${error.sqlMessage}`)
+    throw error
+  }
+}
+
+const updateFlightLegsTx = async (tx, legData, userId, vacationId) => {
+  try {
+    const sql = flightsQuery.updateFlightLegs(legData, vacationId)
+    return await tx.executeWithParameters(sql, [...Object.values(legData), userId])
+  } catch (error) {
+    logger.error(`Error: Function:updateFlightLegsTx :, ${error.sqlMessage}`)
+    throw error
+  }
+}
+
+const insertFlightRowTx = async (tx, rowData, vacationId) => {
+  try {
+    // Reuse the existing dynamic INSERT builder (INSERT (keys) VALUES (?,…)).
+    const sql = flightsQuery.addFlightsDetails(rowData, vacationId)
+    return await tx.executeWithParameters(sql, Object.values(rowData))
+  } catch (error) {
+    logger.error(`Error: Function:insertFlightRowTx :, ${error.sqlMessage}`)
+    throw error
+  }
+}
+
+const setGuestFlyingFlagTx = async (tx, userId, direction, vacationId) => {
+  try {
+    const sql = flightsQuery.setGuestFlyingFlag(vacationId)
+    return await tx.executeWithParameters(sql, [direction, userId])
+  } catch (error) {
+    logger.error(`Error: Function:setGuestFlyingFlagTx :, ${error.sqlMessage}`)
+    throw error
+  }
+}
+
+const setGuestNotFlyingTx = async (tx, userId, vacationId) => {
+  try {
+    const sql = flightsQuery.setGuestNotFlying(vacationId)
+    return await tx.executeWithParameters(sql, [userId])
+  } catch (error) {
+    logger.error(`Error: Function:setGuestNotFlyingTx :, ${error.sqlMessage}`)
+    throw error
+  }
+}
+
 module.exports = {
   addFlightsDetails,
   updateFlightsDetails,
   getFlightsDetails,
   getFlightsByFamily,
   getFamilyFlightsWithNames,
+  getLatestFlightsByUserIdsTx,
+  updateFlightLegsTx,
+  insertFlightRowTx,
+  setGuestFlyingFlagTx,
+  setGuestNotFlyingTx,
 }

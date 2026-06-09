@@ -12,6 +12,11 @@ export default {
       headers: { Authorization: token },
     });
   },
+  addUsersBulk(token,familyId,people,vacationId) {
+    return Api.post(`${END_POINT.USER}/${vacationId}/bulk`, {familyId,people}, {
+      headers: { Authorization: token },
+    });
+  },
   updateUser(token,form,vacationId) {
     return Api.put(`${END_POINT.USER}/${vacationId}`, form, {
       headers: { Authorization: token },

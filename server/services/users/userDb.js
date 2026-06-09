@@ -247,6 +247,17 @@ const clearOtherMainUsersTx = async (tx, vacationId, familyId, userId) => {
   }
 };
 
+const getFamilyCapacityTx = async (tx, familyId, vacationId) => {
+  const sql = userQuery.getFamilyCapacity(vacationId);
+  try {
+    const rows = await tx.executeWithParameters(sql, [familyId, familyId]);
+    return (rows && rows[0]) || { limit_size: null, current_count: 0 };
+  } catch (error) {
+    logger.error(`Error: Function:getFamilyCapacityTx :, ${error.sqlMessage}`);
+    throw error;
+  }
+};
+
 const addGuestTx = async (tx, data, vacationId) => {
   // Mirror the non-tx addGuest: strip userType before composing the INSERT
   // (it's a client-side hint, not a DB column).
@@ -282,6 +293,7 @@ const updateGuestTx = async (tx, data, vacationId) => {
 module.exports = {
   addGuest,
   addGuestTx,
+  getFamilyCapacityTx,
   clearOtherMainUsersTx,
   getFamilyGuests,
   updateGuest,

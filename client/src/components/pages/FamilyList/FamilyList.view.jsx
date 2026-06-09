@@ -33,6 +33,8 @@ import CheckIcon from "@mui/icons-material/Check";
 import HowToRegOutlinedIcon from "@mui/icons-material/HowToRegOutlined";
 import SearchIcon from "@material-ui/icons/Search";
 import GroupsIcon from "@mui/icons-material/Groups";
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
+import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 import CloseIcon from "@mui/icons-material/Close";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -91,6 +93,8 @@ function FamilyListView(props) {
     handleCopyDocLink,
     handleSendRegistrationLink,
     handleSendDocLink,
+    openBulkAdd,
+    openGroupFlights,
   } = props;
 
   const headers = ["", "שם משפחה / קבוצה", "מסמכים", "טופס רישום", "תשלום", "חדרים", "נרשמים", "חסרים", "סטטוס", "תאריך רישום", ""];
@@ -359,10 +363,26 @@ function FamilyListView(props) {
             </IconButton>
             {family.family_id !== undefined &&
               (!family?.number_of_guests || Number(family?.user_in_system_count) < Number(family?.number_of_guests)) && (
-                <IconButton size="small" onClick={() => handleDialogTypeOpen(isParentIdExist ? "addChild" : "addParent")}>
-                  <AddBoxIcon style={{ color: "#0d9488", fontSize: "24px" }} />
-                </IconButton>
+                <>
+                  <Tooltip title="הוסף אדם אחד">
+                    <IconButton size="small" onClick={() => handleDialogTypeOpen(isParentIdExist ? "addChild" : "addParent")}>
+                      <AddBoxIcon style={{ color: "#0d9488", fontSize: "24px" }} />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="הוסף כמה אנשים">
+                    <IconButton size="small" onClick={openBulkAdd}>
+                      <GroupAddIcon style={{ color: "#0d9488", fontSize: "23px" }} />
+                    </IconButton>
+                  </Tooltip>
+                </>
               )}
+            {family.family_id !== undefined && guests?.length > 0 && (
+              <Tooltip title="טיסות לקבוצה">
+                <IconButton size="small" onClick={openGroupFlights}>
+                  <FlightTakeoffIcon style={{ color: "#0d9488", fontSize: "22px" }} />
+                </IconButton>
+              </Tooltip>
+            )}
           </div>
           <div className={classes.drawerTitleArea}>
             <Typography className={classes.drawerTitle}>

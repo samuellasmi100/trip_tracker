@@ -164,9 +164,18 @@ const clearOtherMainUsers = (vacationId) =>
    SET is_main_user = 0
    WHERE family_id = ? AND user_id <> ?`;
 
+// Family headcount limit + how many guests currently exist. limit_size is the
+// intended size set at family creation (families.number_of_guests, may be NULL =
+// no limit); current_count counts ALL guests in the family (incl. the main user).
+const getFamilyCapacity = (vacationId) =>
+  `SELECT
+     (SELECT number_of_guests FROM trip_tracker_${vacationId}.families WHERE family_id = ?) AS limit_size,
+     (SELECT COUNT(*) FROM trip_tracker_${vacationId}.guest WHERE family_id = ?) AS current_count`;
+
 module.exports = {
   updateGuest,
   addGuest,
+  getFamilyCapacity,
   clearOtherMainUsers,
   getFamilyGuests,
   getFamilyMember,

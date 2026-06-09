@@ -4,6 +4,10 @@ import MainDialog from "../../shared/MainDialog/MainDialog";
 import PaymentDialog from "../../shared/Payments/Payments";
 import SendRegistrationDialog from "./SendRegistrationDialog/SendRegistrationDialog";
 import SendDocumentLinkDialog from "./SendDocumentLinkDialog/SendDocumentLinkDialog";
+import BulkAddGuestsDialog from "./BulkAddGuestsDialog/BulkAddGuestsDialog";
+import GroupFlightsDialog from "./GroupFlightsDialog/GroupFlightsDialog";
+import SubFamilyPickerDialog from "./SubFamilyPickerDialog/SubFamilyPickerDialog";
+import { computeSubFamilies, ALL_SCOPE } from "../../../utils/helpers/subFamilies";
 import { useDispatch, useSelector } from "react-redux";
 import ApiUser from "../../../apis/userRequest"
 import ApiVacations from "../../../apis/vacationRequest"
@@ -54,6 +58,7 @@ const FamilyList = () => {
   const dialogType = useSelector((state) => state.dialogSlice.type)
   const token = sessionStorage.getItem('token')
   const chosenFamily = useSelector((state) => state.userSlice.family)
+  const guests = useSelector((state) => state.userSlice.guests)
   const vacationsDates = useSelector((state) => state.vacationSlice.vacationsDates)
   const [docStatusMap, setDocStatusMap] = useState({});
   const [copiedFamilyId, setCopiedFamilyId] = useState(null);
@@ -66,6 +71,39 @@ const FamilyList = () => {
 
   // Drawer state
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [bulkAddOpen, setBulkAddOpen] = useState(false);
+  const openBulkAdd = useCallback(() => setBulkAddOpen(true), []);
+  const [groupFlightsOpen, setGroupFlightsOpen] = useState(false);
+  const [groupFlightsScope, setGroupFlightsScope] = useState(ALL_SCOPE);
+  const [surnamePicker, setSurnamePicker] = useState({ open: false, options: [] });
+
+  // Entry flow: decide WHO before the flights modal opens. A truly single-surname
+  // group → open scoped to everyone directly. A multi-surname group → ALWAYS show
+  // the picker (even if only one sub-family is still un-filled). Completed
+  // sub-families (all members already have flights) appear DISABLED ("הפרטים
+  // מולאו"); partially-filled ones stay selectable so she can finish them.
+  const openGroupFlights = useCallback(() => {
+    const subs = computeSubFamilies(guests || []);
+    if (subs.length <= 1) {
+      setGroupFlightsScope(ALL_SCOPE);
+      setGroupFlightsOpen(true);
+      return;
+    }
+    const everyoneSelectable = subs.reduce((n, s) => n + s.count, 0);
+    setSurnamePicker({
+      open: true,
+      options: [
+        { value: ALL_SCOPE, label: "כל הקבוצה", count: everyoneSelectable, disabled: everyoneSelectable === 0, done: false },
+        ...subs.map((s) => ({ value: s.key, label: s.label, count: s.count, disabled: s.done, done: s.done })),
+      ],
+    });
+  }, [guests]);
+
+  const handlePickSubFamily = useCallback((value) => {
+    setGroupFlightsScope(value);
+    setSurnamePicker({ open: false, options: [] });
+    setGroupFlightsOpen(true);
+  }, []);
 
   // Refs used by the scroll handler to avoid stale closures
   const tableWrapRef = useRef(null);
@@ -665,6 +703,8 @@ const FamilyList = () => {
         handleCopyDocLink={handleCopyDocLink}
         handleSendRegistrationLink={handleSendRegistrationLink}
         handleSendDocLink={handleSendDocLink}
+        openBulkAdd={openBulkAdd}
+        openGroupFlights={openGroupFlights}
       />
       <MainDialog
         dialogType={dialogType}
@@ -699,6 +739,30 @@ const FamilyList = () => {
         headEmail={docLinkDialog.data?.headEmail}
         vacationName={docLinkDialog.data?.vacationName}
         subgroups={docLinkDialog.data?.subgroups}
+      />
+      <BulkAddGuestsDialog
+        open={bulkAddOpen}
+        onClose={() => setBulkAddOpen(false)}
+        onAdded={async () => {
+          await reloadFamilyGuests(chosenFamily?.family_id);
+          silentRefresh();
+        }}
+      />
+      <SubFamilyPickerDialog
+        open={surnamePicker.open}
+        options={surnamePicker.options}
+        familyName={chosenFamily?.family_name}
+        onPick={handlePickSubFamily}
+        onClose={() => setSurnamePicker({ open: false, options: [] })}
+      />
+      <GroupFlightsDialog
+        open={groupFlightsOpen}
+        scope={groupFlightsScope}
+        onClose={() => setGroupFlightsOpen(false)}
+        onApplied={async () => {
+          await reloadFamilyGuests(chosenFamily?.family_id);
+          silentRefresh();
+        }}
       />
     </>
   )

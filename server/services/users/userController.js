@@ -5,6 +5,31 @@ const userService = require("./userService")
 const staticService = require("../static/staticService")
 
 
+// Bulk-add people to a family by names only (trip info inherited client-side
+// from the head). Two path segments, so it never collides with POST "/:id".
+// Body: { familyId, people: [{ user_id, <name fields>, ...inheritedTrip }] }.
+router.post("/:vacationId/bulk", async (req, res, next) => {
+  const vacationId = req.params.vacationId
+  const { familyId, people } = req.body
+  if (!familyId || !Array.isArray(people) || people.length === 0) {
+    return res.status(400).json({ error: "BAD_REQUEST", message: "familyId and people are required" })
+  }
+  try {
+    const created = await userService.addGuestsBulk(familyId, people, vacationId)
+    res.send({ created })
+  } catch (error) {
+    // Adding these people would exceed the family's defined size → 400 with a
+    // clear Hebrew message (and the remaining capacity).
+    if (error && error.code === userService.EXCEEDS_FAMILY_SIZE) {
+      return res.status(400).json({
+        error: 'EXCEEDS_FAMILY_SIZE',
+        message: `לא ניתן להוסיף יותר מ-${error.remaining} אנשים — חרגת מגודל המשפחה`,
+      });
+    }
+    return next(new ErrorMessage(ErrorType.SQL_GENERAL_ERROR, "Failed to handle bulk user request", error));
+  }
+});
+
 router.post("/:id", async (req, res, next) => {
   const vacationId = req.params.id
     const userData = req.body.form
