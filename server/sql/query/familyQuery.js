@@ -1,7 +1,23 @@
 const PAGE_SIZE = 30;
 
-const addFamily = (vacationId) =>{
-  return `INSERT INTO trip_tracker_${vacationId}.families (family_name, family_id, number_of_guests, number_of_rooms, total_amount, start_date, end_date, payment_method, num_payments, doc_token) VALUES (?,?,?,?,?,?,?,?,?,UUID())`
+// `withCreatedAt` is used ONLY by the Excel family-import flow, which carries a
+// backdated registration date. The manual UI flow omits it so MySQL's
+// DEFAULT CURRENT_TIMESTAMP applies (the registration timestamp = now).
+const addFamily = (vacationId, { withCreatedAt = false } = {}) =>{
+  const columns = [
+    'family_name', 'family_id', 'number_of_guests', 'number_of_babies',
+    'number_of_rooms', 'total_amount', 'total_amount_eur', 'start_date', 'end_date',
+    'payment_method', 'num_payments', 'special_requests',
+  ];
+  const placeholders = columns.map(() => '?');
+  // doc_token is always generated server-side.
+  columns.push('doc_token');
+  placeholders.push('UUID()');
+  if (withCreatedAt) {
+    columns.push('created_at');
+    placeholders.push('?');
+  }
+  return `INSERT INTO trip_tracker_${vacationId}.families (${columns.join(', ')}) VALUES (${placeholders.join(',')})`
 }
 
 const getFamilies = (vacationId, { search = '', limit = PAGE_SIZE, offset = 0 } = {}) => {
@@ -17,6 +33,8 @@ SELECT
     gu.hebrew_last_name,
     gu.english_last_name,
     fa.number_of_guests,
+    fa.number_of_babies,
+    fa.special_requests,
     fa.number_of_rooms,
     REPLACE(fa.total_amount, ',', '') AS total_amount,
     fa.payment_method,
@@ -37,8 +55,19 @@ SELECT
     END AS registration_status,
     reg_agg.signed_at AS registration_signed_at
 FROM trip_tracker_${vacationId}.families fa
-LEFT JOIN trip_tracker_${vacationId}.guest gu
-    ON fa.family_id = gu.family_id AND gu.is_main_user = 1
+-- Exactly one main-user row per family. A plain join on is_main_user = 1 would
+-- fan the family out into duplicate rows if it ever had two mains; pin to the
+-- highest-id main user (same MAX(id)-per-group pattern the flights query uses).
+LEFT JOIN (
+    SELECT g.family_id, g.hebrew_first_name, g.hebrew_last_name, g.english_last_name
+    FROM trip_tracker_${vacationId}.guest g
+    JOIN (
+        SELECT family_id, MAX(id) AS max_id
+        FROM trip_tracker_${vacationId}.guest
+        WHERE is_main_user = 1
+        GROUP BY family_id
+    ) mu ON mu.max_id = g.id
+) gu ON fa.family_id = gu.family_id
 LEFT JOIN (
     SELECT family_id, SUM(amount) AS total_paid_amount
     FROM trip_tracker_${vacationId}.payments
@@ -104,7 +133,7 @@ LEFT JOIN (
 ) gu_count ON fa.family_id = gu_count.family_id`;
 
 const updateFamily = (vacationId) => {
-  return `UPDATE trip_tracker_${vacationId}.families SET family_name = ?, number_of_guests = ?, number_of_rooms = ?, total_amount = ?, start_date = ?, end_date = ?, payment_method = ?, num_payments = ? WHERE family_id = ?`
+  return `UPDATE trip_tracker_${vacationId}.families SET family_name = ?, number_of_guests = ?, number_of_babies = ?, special_requests = ?, number_of_rooms = ?, total_amount = ?, start_date = ?, end_date = ?, payment_method = ?, num_payments = ? WHERE family_id = ?`
 }
 
 // Server-side family search by name (used by room board assignment dialog)

@@ -90,8 +90,48 @@ function withTransaction(fn) {
   });
 }
 
+// Run `fn` while holding a MySQL named advisory lock (GET_LOCK). The lock is
+// session-scoped, so it MUST be acquired and released on the SAME connection —
+// hence a dedicated pool connection is held for the whole call (the pool can't
+// RELEASE_LOCK on a different connection than the one that GET_LOCK'd). `fn`'s
+// own queries still go through the pool independently; this connection only
+// gates entry. Throws with code 'LOCK_TIMEOUT' if the lock isn't granted within
+// `timeoutSec`. Always releases the lock and the connection.
+function withAdvisoryLock(lockName, timeoutSec, fn) {
+  return new Promise((resolve, reject) => {
+    db.getConnection((err, conn) => {
+      if (err) { reject(err); return; }
+
+      const q = (sql, params) =>
+        new Promise((res, rej) => {
+          conn.execute(sql, params, (e, rows) => (e ? rej(e) : res(rows)));
+        });
+
+      (async () => {
+        let acquired = false;
+        try {
+          const r = await q("SELECT GET_LOCK(?, ?) AS got", [lockName, timeoutSec]);
+          acquired = !!(r && r[0] && Number(r[0].got) === 1);
+          if (!acquired) {
+            const lockErr = new Error(`Could not acquire advisory lock '${lockName}' within ${timeoutSec}s`);
+            lockErr.code = "LOCK_TIMEOUT";
+            throw lockErr;
+          }
+          return await fn();
+        } finally {
+          if (acquired) {
+            try { await q("SELECT RELEASE_LOCK(?)", [lockName]); } catch (_) { /* best-effort */ }
+          }
+          conn.release();
+        }
+      })().then(resolve, reject);
+    });
+  });
+}
+
 module.exports = {
   execute,
   executeWithParameters,
   withTransaction,
+  withAdvisoryLock,
 };

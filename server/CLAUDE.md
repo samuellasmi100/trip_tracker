@@ -207,7 +207,17 @@ Configured in `.env`: `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`, `REST_API_PORT
 
 ## Excel Data Import
 
-When importing Excel vacation data into the system, **always read `server/scripts/IMPORT_GUIDE.md` first** before writing any import code or running any script. The guide documents column mappings, family name matching rules, known edge cases, and pitfalls discovered during the Pesach 2024 import. Update the guide whenever new patterns or edge cases are discovered.
+The registration Excel import is a **UI flow** (Home page → "ייבוא נתונים מאקסל"
+→ `POST /family-import/:vacationId`), implemented in
+`server/services/familyImport/` and `client/src/components/pages/FamilyList/`. It
+is the **only** import mechanism — the old `scripts/import_*.py` scripts and
+`scripts/IMPORT_GUIDE.md` have been removed.
+
+Before touching import code, **read `server/FAMILY_IMPORT_GUIDE.md` first**. It
+documents the Excel column layout, the "אחר" week-column semantics, the **one-time
+`N → שבוע N+1` week offset and exactly where to remove it for future vacations**,
+the dedup behaviour, and the safe wipe procedure. Keep that guide updated when the
+import changes.
 
 ## STRICT RULES — DO NOT VIOLATE
 

@@ -4,18 +4,25 @@ const logger = require("../../utils/logger");
 
 const addFamily = async (data,vacationId) => {
   try {
-    const sql = familyQuery.addFamily(vacationId)
+    // created_at is supplied only by the import flow (backdated registration
+    // date); the manual flow leaves it unset so the DB default (now) applies.
+    const withCreatedAt = !!data.created_at;
+    const sql = familyQuery.addFamily(vacationId, { withCreatedAt })
     const parameters = [
       data.familyName,
       data.familyId,
       data.number_of_guests || null,
+      data.number_of_babies || null,
       data.number_of_rooms || null,
       data.total_amount || null,
+      data.total_amount_eur || null,
       data.start_date || null,
       data.end_date || null,
       data.payment_method || null,
       data.num_payments ? Number(data.num_payments) : null,
+      data.special_requests || null,
     ]
+    if (withCreatedAt) parameters.push(data.created_at)
     await connection.executeWithParameters(sql, parameters)
   } catch (error) {
     logger.error(`Error: Function:addFamily :, ${error.sqlMessage}`);
@@ -72,6 +79,8 @@ const updateFamily = async (data, vacationId) => {
     await connection.executeWithParameters(sql, [
       data.family_name,
       data.number_of_guests,
+      data.number_of_babies || null,
+      data.special_requests || null,
       data.number_of_rooms,
       data.total_amount,
       data.start_date || null,

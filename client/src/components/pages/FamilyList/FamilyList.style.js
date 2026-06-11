@@ -315,6 +315,24 @@ export const useStyles = makeStyles((theme) => ({
     fontFamily: "'Inter', sans-serif !important",
   },
 
+  /* ===== NOTES COLUMN ===== */
+  // Single-line, ellipsis-truncated note. direction:rtl keeps Hebrew reading
+  // right-to-left with the ellipsis on the (logical) end; the full text shows
+  // in the hover tooltip. Capped width so a long note can't widen the table.
+  notesText: {
+    display: "inline-block",
+    maxWidth: "180px",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    verticalAlign: "middle",
+    direction: "rtl",
+    textAlign: "right",
+    fontSize: "12px",
+    color: "#475569",
+    cursor: "default",
+  },
+
   /* ===== ROOMS COLUMN ===== */
   roomsBadge: {
     display: "inline-block",

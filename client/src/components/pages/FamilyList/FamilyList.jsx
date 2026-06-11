@@ -25,9 +25,62 @@ import * as staticSlice from "../../../store/slices/staticSlice";
 import * as vacationSlice from "../../../store/slices/vacationSlice";
 import * as snackBarSlice from "../../../store/slices/snackbarSlice";
 import { isoToDisplay } from "../../../utils/helpers/formatDate";
+import { resolveFamilyPartName } from "../../../utils/helpers/resolveFamilyPart";
 import { v4 as uuidv4 } from "uuid";
+import * as XLSX from "xlsx";
+import ApiFamilyImport from "../../../apis/familyImportRequest";
+import FamilyImportDialog from "./FamilyImportDialog/FamilyImportDialog";
 
 const PAGE_SIZE = 30;
+
+// Column layout of the registration Excel (כללי נרשמים). Fixed positions — the
+// uploaded file always has this exact layout. We only pull the cells the family
+// import needs; all mapping/validation happens server-side.
+const FAMILY_COLS = {
+  registration_date: 0,
+  week_raw: 2,
+  family_name: 3,
+  number_of_guests: 6,
+  number_of_babies: 9,
+  number_of_rooms: 10,
+  rooms_raw: 12,
+  notes: 13,
+  total_amount: 14,
+  total_amount_eur: 15,
+};
+
+// Parse the workbook in the browser (same approach as the leads import) into
+// raw cell rows. Reads the first sheet, skips the header row, and drops the
+// ~950 trailing blank rows by requiring a family name.
+async function parseFamilyWorkbook(file) {
+  const data = await file.arrayBuffer();
+  const wb = XLSX.read(data, { type: "array" });
+  const ws = wb.Sheets[wb.SheetNames[0]];
+  if (!ws) return [];
+  const matrix = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, defval: null });
+  const rows = [];
+  for (let i = 1; i < matrix.length; i++) {
+    const r = matrix[i];
+    if (!r) continue;
+    const cell = (idx) => (r[idx] == null ? "" : String(r[idx]).trim());
+    const familyName = cell(FAMILY_COLS.family_name);
+    if (!familyName) continue;
+    rows.push({
+      rowNumber: i + 1, // 1-based Excel row number (header is row 1)
+      registration_date: cell(FAMILY_COLS.registration_date),
+      week_raw: cell(FAMILY_COLS.week_raw),
+      family_name: familyName,
+      number_of_guests: cell(FAMILY_COLS.number_of_guests),
+      number_of_babies: cell(FAMILY_COLS.number_of_babies),
+      number_of_rooms: cell(FAMILY_COLS.number_of_rooms),
+      rooms_raw: cell(FAMILY_COLS.rooms_raw),
+      notes: cell(FAMILY_COLS.notes),
+      total_amount: cell(FAMILY_COLS.total_amount),
+      total_amount_eur: cell(FAMILY_COLS.total_amount_eur),
+    });
+  }
+  return rows;
+}
 
 // Resolve the family head's wa.me-ready phone digits for the document send link.
 // Prefer the unified E.164 `phone` (strip the "+"); fall back to the legacy
@@ -122,21 +175,42 @@ const FamilyList = () => {
   const loadPage = useCallback(async (pageNum, search) => {
     if (!vacationId) return;
     const isFirst = pageNum === 1;
-    isFirst ? setLoading(true) : setLoadingMore(true);
+    // Synchronous in-flight guard. The scroll handler checks loadingMoreRef, but
+    // the loadingMore→ref effect lags one render — leaving a window where a fast
+    // scroll burst calls this twice for the same page and appends it twice (the
+    // "page 2 shows up twice" display bug). Set AND check the ref synchronously,
+    // before the await, so the second call is rejected immediately.
+    if (!isFirst && loadingMoreRef.current) return;
+    if (isFirst) {
+      setLoading(true);
+    } else {
+      loadingMoreRef.current = true;
+      setLoadingMore(true);
+    }
     try {
       const response = await ApiUser.getFamilyList(token, vacationId, { page: pageNum, search });
       const { rows = [], total = 0 } = response.data;
-      const more = pageNum * PAGE_SIZE < total;
-      setHasMore(more);
+      setHasMore(pageNum * PAGE_SIZE < total);
       setPage(pageNum);
-      setUsersData(prev => isFirst ? rows : [...prev, ...rows]);
+      pageRef.current = pageNum; // keep next-page math correct before the effect catches up
+      setUsersData(prev => {
+        if (isFirst) return rows;
+        // Defensive de-dupe by family_id: a stray re-fetch can never double a row.
+        const seen = new Set(prev.map(r => r.family_id));
+        return [...prev, ...rows.filter(r => r && !seen.has(r.family_id))];
+      });
       if (isFirst) dispatch(userSlice.updateFamiliesList(rows));
     } catch (error) {
       console.log(error);
     } finally {
-      isFirst ? setLoading(false) : setLoadingMore(false);
+      if (isFirst) {
+        setLoading(false);
+      } else {
+        loadingMoreRef.current = false;
+        setLoadingMore(false);
+      }
     }
-  }, [vacationId, token]);
+  }, [vacationId, token, dispatch]);
 
   // Re-fetch the guests array for a given family and push it into Redux.
   // Single source of truth for "load this family's guests" — used by:
@@ -305,20 +379,21 @@ const FamilyList = () => {
 
   const openEditFamily = useCallback((e, user) => {
     e.stopPropagation();
-    const matchedWeek = vacationsDates?.find(
-      (d) => d.start_date === user.start_date && d.end_date === user.end_date
-    );
     setEditFamilyData({
       family_id: user.family_id,
       family_name: user.family_name || "",
       number_of_guests: user.number_of_guests || "",
+      number_of_babies: user.number_of_babies || "",
+      special_requests: user.special_requests || "",
       number_of_rooms: user.number_of_rooms || "",
       total_amount: user.total_amount || "",
       payment_method: user.payment_method || "",
       num_payments: user.num_payments != null ? String(user.num_payments) : "",
       start_date: isoToDisplay(user.start_date) || "",
       end_date: isoToDisplay(user.end_date) || "",
-      week_chosen: matchedWeek?.name || "",
+      // Resolve the route by date range — exception families (custom dates that
+      // fit no standard week) now correctly preselect חריגים instead of blank.
+      week_chosen: resolveFamilyPartName(user, vacationsDates),
     });
     setEditDialogOpen(true);
   }, [vacationsDates]);
@@ -430,6 +505,8 @@ const FamilyList = () => {
       const form = {
         family_name: addFamilyData.family_name,
         number_of_guests: addFamilyData.number_of_guests || "",
+        number_of_babies: addFamilyData.number_of_babies || "",
+        special_requests: addFamilyData.special_requests || "",
         number_of_rooms: addFamilyData.number_of_rooms || "",
         total_amount: addFamilyData.total_amount || "",
         payment_method: addFamilyData.payment_method || "",
@@ -669,6 +746,59 @@ const FamilyList = () => {
     prevDialogOpen.current = dialogOpen;
   }, [dialogOpen]);
 
+  // ── Excel family import ───────────────────────────────────────────────────
+  // Targets the header-selected vacation (vacationId). FamilyList is wrapped in
+  // RequireVacation so one is normally present, but keep the guard regardless.
+  const importFileInputRef = useRef(null);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState(null);
+  const [importError, setImportError] = useState(null);
+
+  const handleImportClick = useCallback(() => {
+    if (importing) return; // ignore re-entrant clicks while an import is in flight
+    if (!vacationId) {
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "בחר חופשה לפני ייבוא", timeout: 3000 }));
+      return;
+    }
+    importFileInputRef.current?.click();
+  }, [importing, vacationId, dispatch]);
+
+  const handleImportFileChange = useCallback(async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // reset so re-picking the same file fires onChange again
+    if (!file) return;
+    if (!/\.(xlsx|xls)$/i.test(file.name)) {
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "יש להעלות קובץ אקסל (xlsx)", timeout: 4000 }));
+      return;
+    }
+    setImportError(null);
+    setImportResult(null);
+    setImporting(true);
+    setImportDialogOpen(true);
+    try {
+      const rows = await parseFamilyWorkbook(file);
+      if (rows.length === 0) {
+        setImportError("לא נמצאו שורות עם שם משפחה בקובץ");
+        return;
+      }
+      const res = await ApiFamilyImport.importFamilies(token, vacationId, rows);
+      setImportResult(res.data);
+    } catch (err) {
+      console.error(err);
+      setImportError("הייבוא נכשל. ודא שהקובץ בפורמט הנכון ונסה שוב.");
+    } finally {
+      setImporting(false);
+    }
+  }, [token, vacationId, dispatch]);
+
+  const closeImportDialog = useCallback(() => {
+    setImportDialogOpen(false);
+    setImportResult(null);
+    setImportError(null);
+    silentRefresh(); // surface the newly-imported families in the table
+  }, [silentRefresh]);
+
   return (
     <>
       <FamilyListView
@@ -705,6 +835,10 @@ const FamilyList = () => {
         handleSendDocLink={handleSendDocLink}
         openBulkAdd={openBulkAdd}
         openGroupFlights={openGroupFlights}
+        importFileInputRef={importFileInputRef}
+        onImportClick={handleImportClick}
+        onImportFileChange={handleImportFileChange}
+        importing={importing}
       />
       <MainDialog
         dialogType={dialogType}
@@ -763,6 +897,13 @@ const FamilyList = () => {
           await reloadFamilyGuests(chosenFamily?.family_id);
           silentRefresh();
         }}
+      />
+      <FamilyImportDialog
+        open={importDialogOpen}
+        importing={importing}
+        result={importResult}
+        error={importError}
+        onClose={closeImportDialog}
       />
     </>
   )

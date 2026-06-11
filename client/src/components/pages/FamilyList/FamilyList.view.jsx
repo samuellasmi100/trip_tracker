@@ -41,9 +41,11 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import SendIcon from "@mui/icons-material/Send";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
 import { formatDateInput, isoToDisplay, toLocalYMD } from "../../../utils/helpers/formatDate";
 import { getGuestCompleteness } from "../../../utils/helpers/guestCompleteness";
 import { formatMoneyInput, stripMoney } from "../../../utils/helpers/formatMoney";
+import { resolveFamilyPartName } from "../../../utils/helpers/resolveFamilyPart";
 
 // Mirrors the canonical list in shared/Payments/Payments.view.jsx — kept local
 // here to avoid a cross-feature import for a four-item constant.
@@ -95,9 +97,13 @@ function FamilyListView(props) {
     handleSendDocLink,
     openBulkAdd,
     openGroupFlights,
+    importFileInputRef,
+    onImportClick,
+    onImportFileChange,
+    importing = false,
   } = props;
 
-  const headers = ["", "שם משפחה / קבוצה", "מסמכים", "טופס רישום", "תשלום", "חדרים", "נרשמים", "חסרים", "סטטוס", "תאריך רישום", ""];
+  const headers = ["", "שם משפחה / קבוצה", "מסמכים", "טופס רישום", "תשלום", "חדרים", "מסלול", "נרשמים", "חסרים", "סטטוס", "תאריך רישום", "הערות", ""];
   // UI-only state for the documents "what's missing" popup (anchor + the family
   // whose breakdown is shown). Presentational, so it stays in the view.
   const [missingAnchor, setMissingAnchor] = React.useState(null);
@@ -163,15 +169,46 @@ function FamilyListView(props) {
                 }}
               />
             </FormControl>
+            <input
+              ref={importFileInputRef}
+              type="file"
+              accept=".xlsx,.xls"
+              onChange={onImportFileChange}
+              style={{ display: "none" }}
+            />
+            <Button
+              variant="outlined"
+              size="small"
+              disabled={importing}
+              startIcon={importing ? <CircularProgress size={14} style={{ color: "#0d9488" }} /> : <UploadFileIcon />}
+              onClick={onImportClick}
+              sx={{
+                color: "#0d9488",
+                borderColor: "#0d9488",
+                borderRadius: "8px",
+                fontSize: "13px",
+                textTransform: "none",
+                whiteSpace: "nowrap",
+                "&:hover": { borderColor: "#0f766e", backgroundColor: "rgba(13,148,136,0.06)" },
+                "&.Mui-disabled": { borderColor: "#cbd5e1", color: "#94a3b8" },
+              }}
+            >
+              {importing ? "מייבא…" : "ייבוא נתונים מאקסל"}
+            </Button>
             <IconButton size="small" onClick={openAddFamily}>
               <AddBoxIcon style={{ color: "#0d9488", fontSize: "24px" }} />
             </IconButton>
           </div>
         </div>
 
-        {/* Scrollable table */}
+        {/* Scrollable table. tableWrap is the real vertical scroll container (it
+            owns the infinite-scroll listener). MUI's TableContainer defaults to
+            overflow-x:auto — which makes it an intermediate scroll context that
+            would trap the sticky header; force overflow:visible so the sticky
+            <thead> sticks to tableWrap instead. Horizontal scroll still works on
+            tableWrap (overflow:auto on both axes). */}
         <div className={classes.tableWrap} ref={tableWrapRef}>
-          <TableContainer>
+          <TableContainer sx={{ overflow: "visible" }}>
             <Table size="small" stickyHeader>
               <TableHead>
                 <TableRow>
@@ -185,7 +222,7 @@ function FamilyListView(props) {
               <TableBody className={classes.dataTableBody}>
                 {loading && (
                   <TableRow>
-                    <TableCell colSpan={11} style={{ textAlign: "center", padding: "32px 0", border: "none" }}>
+                    <TableCell colSpan={13} style={{ textAlign: "center", padding: "32px 0", border: "none" }}>
                       <CircularProgress size={28} style={{ color: "#0d9488" }} />
                     </TableCell>
                   </TableRow>
@@ -193,7 +230,7 @@ function FamilyListView(props) {
                 {!loading && families?.map((user, index) => {
                   const missing = Number(user?.number_of_guests) - Number(user?.user_in_system_count);
                   return (
-                    <TableRow key={index} onClick={() => handleNameClick(user)}>
+                    <TableRow key={user.family_id} onClick={() => handleNameClick(user)}>
                       <TableCell className={classes.dataTableCell}>{index + 1}</TableCell>
                       <TableCell className={classes.familyNameCell}>{user.family_name}</TableCell>
                       <TableCell className={classes.dataTableCell}>
@@ -310,7 +347,17 @@ function FamilyListView(props) {
                           );
                         })()}
                       </TableCell>
-                      <TableCell className={classes.dataTableCell}>{user.number_of_guests || "—"}</TableCell>
+                      <TableCell className={classes.dataTableCell}>
+                        {resolveFamilyPartName(user, vacationsDates) || "—"}
+                      </TableCell>
+                      <TableCell className={classes.dataTableCell}>
+                        {user.number_of_guests || "—"}
+                        {Number(user.number_of_babies) > 0 && (
+                          <span style={{ display: "block", fontSize: "11px", color: "#94a3b8" }}>
+                            כולל {user.number_of_babies} תינוקות
+                          </span>
+                        )}
+                      </TableCell>
                       <TableCell className={classes.dataTableCell}>
                         {missing > 0 && <span className={`${classes.statusBadge} ${classes.statusWarning}`}>{missing}</span>}
                       </TableCell>
@@ -328,6 +375,13 @@ function FamilyListView(props) {
                         {isoToDisplay(toLocalYMD(user.created_at)) || "—"}
                       </TableCell>
                       <TableCell className={classes.dataTableCell}>
+                        {user.special_requests ? (
+                          <Tooltip title={user.special_requests} arrow placement="top" enterDelay={300}>
+                            <span className={classes.notesText}>{user.special_requests}</span>
+                          </Tooltip>
+                        ) : null}
+                      </TableCell>
+                      <TableCell className={classes.dataTableCell}>
                         <IconButton size="small" onClick={(e) => openEditFamily(e, user)}>
                           <EditOutlinedIcon style={{ color: "#64748b", fontSize: "18px" }} />
                         </IconButton>
@@ -337,7 +391,7 @@ function FamilyListView(props) {
                 })}
                 {loadingMore && (
                   <TableRow>
-                    <TableCell colSpan={11} style={{ textAlign: "center", padding: "16px 0", border: "none" }}>
+                    <TableCell colSpan={13} style={{ textAlign: "center", padding: "16px 0", border: "none" }}>
                       <CircularProgress size={22} style={{ color: "#0d9488" }} />
                     </TableCell>
                   </TableRow>
@@ -395,6 +449,24 @@ function FamilyListView(props) {
         </div>
 
         <div className={classes.drawerBody}>
+          {family.family_id !== undefined && family.special_requests && (
+            <div
+              style={{
+                background: "#fffbeb",
+                border: "1px solid #fde68a",
+                borderRadius: "8px",
+                padding: "8px 10px",
+                marginBottom: "10px",
+                fontSize: "12px",
+                color: "#92400e",
+                whiteSpace: "pre-wrap",
+                flexShrink: 0,
+              }}
+            >
+              <span style={{ fontWeight: 700 }}>הערות: </span>
+              {family.special_requests}
+            </div>
+          )}
           {guestsLoading ? (
             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "40px 0" }}>
               <CircularProgress size={28} style={{ color: "#0d9488" }} />
@@ -402,7 +474,9 @@ function FamilyListView(props) {
           ) : family.family_id !== undefined && guests?.length > 0 ? (
             <div className={classes.drawerTableCard}>
             <div className={classes.drawerTableScroll}>
-            <TableContainer>
+            {/* overflow:visible so the sticky header sticks to drawerTableScroll
+                (the real scroller), not MUI's intermediate TableContainer. */}
+            <TableContainer sx={{ overflow: "visible" }}>
               <Table size="small" stickyHeader className={classes.drawerGuestTable}>
                 <TableHead>
                   <TableRow>
@@ -534,16 +608,30 @@ function FamilyListView(props) {
                 className={classes.editFamilyField}
               />
             </div>
-            <div className={classes.editFamilyFieldItem}>
-              <InputLabel className={classes.editFamilyLabel}>כמות נופשים</InputLabel>
-              <TextField
-                name="number_of_guests"
-                value={editFamilyData.number_of_guests || ""}
-                onChange={handleEditFamilyChange}
-                size="small"
-                fullWidth
-                className={classes.editFamilyField}
-              />
+            <div className={classes.editFamilyDateRow}>
+              <div className={classes.editFamilyFieldItem}>
+                <InputLabel className={classes.editFamilyLabel}>נפשות כולל תינוקות</InputLabel>
+                <TextField
+                  name="number_of_guests"
+                  value={editFamilyData.number_of_guests || ""}
+                  onChange={handleEditFamilyChange}
+                  size="small"
+                  fullWidth
+                  className={classes.editFamilyField}
+                />
+              </div>
+              <div className={classes.editFamilyFieldItem}>
+                <InputLabel className={classes.editFamilyLabel}>מס' תינוקות</InputLabel>
+                <TextField
+                  name="number_of_babies"
+                  value={editFamilyData.number_of_babies || ""}
+                  onChange={handleEditFamilyChange}
+                  size="small"
+                  fullWidth
+                  className={classes.editFamilyField}
+                  inputProps={{ inputMode: "numeric" }}
+                />
+              </div>
             </div>
             <div className={classes.editFamilyFieldItem}>
               <InputLabel className={classes.editFamilyLabel}>כמות חדרים</InputLabel>
@@ -665,6 +753,19 @@ function FamilyListView(props) {
                 />
               </div>
             </div>
+            <div className={classes.editFamilyFieldItem}>
+              <InputLabel className={classes.editFamilyLabel}>הערות</InputLabel>
+              <TextField
+                name="special_requests"
+                value={editFamilyData.special_requests || ""}
+                onChange={handleEditFamilyChange}
+                size="small"
+                fullWidth
+                multiline
+                minRows={2}
+                className={classes.editFamilyField}
+              />
+            </div>
           </div>
         </DialogContent>
         <DialogActions className={classes.editFamilyActions}>
@@ -698,16 +799,30 @@ function FamilyListView(props) {
                 className={classes.editFamilyField}
               />
             </div>
-            <div className={classes.editFamilyFieldItem}>
-              <InputLabel className={classes.editFamilyLabel}>כמות נופשים</InputLabel>
-              <TextField
-                name="number_of_guests"
-                value={addFamilyData.number_of_guests || ""}
-                onChange={handleAddFamilyChange}
-                size="small"
-                fullWidth
-                className={classes.editFamilyField}
-              />
+            <div className={classes.editFamilyDateRow}>
+              <div className={classes.editFamilyFieldItem}>
+                <InputLabel className={classes.editFamilyLabel}>נפשות כולל תינוקות</InputLabel>
+                <TextField
+                  name="number_of_guests"
+                  value={addFamilyData.number_of_guests || ""}
+                  onChange={handleAddFamilyChange}
+                  size="small"
+                  fullWidth
+                  className={classes.editFamilyField}
+                />
+              </div>
+              <div className={classes.editFamilyFieldItem}>
+                <InputLabel className={classes.editFamilyLabel}>מס' תינוקות</InputLabel>
+                <TextField
+                  name="number_of_babies"
+                  value={addFamilyData.number_of_babies || ""}
+                  onChange={handleAddFamilyChange}
+                  size="small"
+                  fullWidth
+                  className={classes.editFamilyField}
+                  inputProps={{ inputMode: "numeric" }}
+                />
+              </div>
             </div>
             <div className={classes.editFamilyFieldItem}>
               <InputLabel className={classes.editFamilyLabel}>כמות חדרים</InputLabel>
@@ -828,6 +943,19 @@ function FamilyListView(props) {
                   placeholder="DD/MM/YYYY"
                 />
               </div>
+            </div>
+            <div className={classes.editFamilyFieldItem}>
+              <InputLabel className={classes.editFamilyLabel}>הערות</InputLabel>
+              <TextField
+                name="special_requests"
+                value={addFamilyData.special_requests || ""}
+                onChange={handleAddFamilyChange}
+                size="small"
+                fullWidth
+                multiline
+                minRows={2}
+                className={classes.editFamilyField}
+              />
             </div>
           </div>
         </DialogContent>

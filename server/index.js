@@ -37,6 +37,7 @@ const paymentsController = require("./services/payments/paymentsController");
 const notesController = require("./services/notes/notesController");
 const authController = require("./services/auth/authController");
 const familyController = require("./services/families/familyController");
+const familyImportController = require("./services/familyImport/familyImportController");
 const userRoomsController = require("./services/userRooms/userRoomsController");
 const vacationsController = require("./services/vacations/vacationController");
 const staticController = require("./services/static/staticController");
@@ -69,6 +70,7 @@ app.use(checkAuthorizationMiddleware.checkAuthorization);
 
 app.use("/user", userController);
 app.use("/family", familyController);
+app.use("/family-import", familyImportController);
 app.use("/rooms", roomsController);
 app.use("/user_rooms", userRoomsController);
 app.use("/flights", flightsController);

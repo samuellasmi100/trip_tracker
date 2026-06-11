@@ -3,6 +3,7 @@ export const END_POINT = {
   AUTH: "auth",
   USER: "/user",
   FAMILY: "/family",
+  FAMILY_IMPORT: "/family-import",
   ROOMS:'rooms',
   FLIGHTS:'flights',
   NOTES:'notes',
