@@ -78,8 +78,61 @@ const SectionTitle = ({ label, count, color = "#334155" }) => (
   </Box>
 );
 
+// Parse a date string to a comparable, date-only value (UTC midnight). Mirrors
+// the dashboard backend's CAST(... AS DATE): time-of-day is dropped, and parsing
+// the YYYY-MM-DD parts directly means no timezone shift can move the day.
+// Bookings come back as clean ISO; route dates may be raw varchar, so be
+// tolerant and fall back to Date parsing for any other stored format.
+const toDayValue = (s) => {
+  if (!s) return null;
+  const str = String(s).trim();
+  const iso = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (iso) return Date.UTC(+iso[1], +iso[2] - 1, +iso[3]);
+  const d = new Date(str);
+  return isNaN(d.getTime()) ? null : Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+};
+
+// 'YYYY-MM-DD' (or other) → 'DD/MM', joined as a range. Parses parts directly so
+// the day can't shift across a timezone boundary.
+const fmtRange = (start, end) => {
+  const day = (s) => {
+    const m = String(s || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) return `${m[3]}/${m[2]}`;
+    const d = new Date(s);
+    return isNaN(d.getTime())
+      ? (s || "")
+      : `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`;
+  };
+  return `${day(start)} – ${day(end)}`;
+};
+
+// ── Per-week utilization row ──────────────────────────────────────────────────
+// A labelled mini progress bar, reusing the floor table's bar idiom (track + fill,
+// blue, green at 100%) so it reads as part of this page.
+const WeekUtilRow = ({ name, range, occupied, total, pct }) => (
+  <Box sx={{ py: 1, "&:not(:last-of-type)": { borderBottom: "1px solid #f1f5f9" } }}>
+    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", mb: 0.75 }}>
+      <Box sx={{ display: "flex", alignItems: "baseline", gap: 1 }}>
+        <Typography sx={{ fontSize: 13, fontWeight: 700, color: "#1e293b" }}>{name}</Typography>
+        {range && <Typography sx={{ fontSize: 11.5, color: "#94a3b8" }}>{range}</Typography>}
+      </Box>
+      <Box sx={{ display: "flex", alignItems: "baseline", gap: 1.25 }}>
+        <Typography sx={{ fontSize: 12.5, fontWeight: 700, color: "#1e293b" }}>
+          {occupied}/{total}
+        </Typography>
+        <Typography sx={{ fontSize: 12.5, fontWeight: 700, color: pct === 100 ? "#16a34a" : "#2563eb", minWidth: 36, textAlign: "left" }}>
+          {pct}%
+        </Typography>
+      </Box>
+    </Box>
+    <Box sx={{ height: 6, borderRadius: 3, backgroundColor: "#e2e8f0", overflow: "hidden" }}>
+      <Box sx={{ width: `${Math.min(pct, 100)}%`, height: "100%", backgroundColor: pct === 100 ? "#16a34a" : "#2563eb", borderRadius: 3 }} />
+    </Box>
+  </Box>
+);
+
 // ── Main component ────────────────────────────────────────────────────────────
-const RoomStatusOverview = ({ boardData }) => {
+const RoomStatusOverview = ({ boardData, vacationsDates }) => {
   const { rooms, bookings, guestAssignments, allGuests } = boardData;
 
   // Rooms that have at least one booking (family assigned)
@@ -105,6 +158,43 @@ const RoomStatusOverview = ({ boardData }) => {
 
   const occupiedRooms = rooms.filter((r) => bookedRoomIds.has(r.rooms_id));
   const freeRooms = rooms.filter((r) => !bookedRoomIds.has(r.rooms_id));
+
+  // Global room÷room utilization — the fallback when routes aren't loaded, and
+  // equal to the dashboard's overall figure (distinct booked rooms ÷ inventory).
+  const globalPct = rooms.length ? Math.round((occupiedRooms.length / rooms.length) * 100) : 0;
+
+  // Per-week (per-route) utilization, computed client-side to MATCH the dashboard
+  // backend exactly: half-open overlap (bookingStart < weekEnd AND bookingEnd >
+  // weekStart), routes with missing/blank dates skipped, occupied = distinct
+  // room_id overlapping the week, denominator = constant room count. rooms and
+  // bookings are already numeric-only (server-filtered), so the distinct-room
+  // count lines up with the backend's numeric REGEXP filter.
+  const weeklyUtilization = useMemo(() => {
+    const total = rooms.length;
+    const weeks = (vacationsDates || [])
+      .map((w) => ({ raw: w, start: toDayValue(w.start_date), end: toDayValue(w.end_date) }))
+      .filter((w) => w.start != null && w.end != null)
+      .sort((a, b) => a.start - b.start || (a.raw.id ?? 0) - (b.raw.id ?? 0));
+
+    const parsed = bookings
+      .map((b) => ({ room_id: b.room_id, start: toDayValue(b.start_date), end: toDayValue(b.end_date) }))
+      .filter((b) => b.start != null && b.end != null);
+
+    return weeks.map((w) => {
+      const occ = new Set();
+      for (const b of parsed) {
+        if (b.start < w.end && b.end > w.start) occ.add(b.room_id);
+      }
+      return {
+        weekId: w.raw.id,
+        name: w.raw.name || "—",
+        range: fmtRange(w.raw.start_date, w.raw.end_date),
+        occupied: occ.size,
+        total,
+        pct: total > 0 ? Math.round((occ.size / total) * 100) : 0,
+      };
+    });
+  }, [vacationsDates, bookings, rooms]);
 
   // Rooms with a family booking but 0 individual guest assignments
   const roomsMissingGuests = useMemo(
@@ -171,7 +261,6 @@ const RoomStatusOverview = ({ boardData }) => {
           label="מאוכלסים"
           value={occupiedRooms.length}
           color="#16a34a"
-          subLabel={rooms.length ? `${Math.round((occupiedRooms.length / rooms.length) * 100)}%` : ""}
         />
         <StatCard
           icon={<MeetingRoomIcon sx={{ fontSize: 17, color: "#0891b2" }} />}
@@ -195,6 +284,35 @@ const RoomStatusOverview = ({ boardData }) => {
           onClick={() => setOpenModal("problems")}
         />
       </Box>
+
+      {/* ── Per-week room utilization (replaces the old global % figure) ── */}
+      <SectionTitle label={weeklyUtilization.length > 0 ? "ניצולת חדרים לפי שבוע" : "ניצולת חדרים"} />
+      <Paper
+        elevation={0}
+        sx={{ border: "1px solid #e2e8f0", borderRadius: "8px", px: 1.75, py: 0.5, mb: 1 }}
+      >
+        {weeklyUtilization.length > 0 ? (
+          weeklyUtilization.map((w) => (
+            <WeekUtilRow
+              key={w.weekId ?? w.name}
+              name={w.name}
+              range={w.range}
+              occupied={w.occupied}
+              total={w.total}
+              pct={w.pct}
+            />
+          ))
+        ) : (
+          // Fallback: routes not loaded (e.g. hard-reload directly on this page) —
+          // show the global figure so the section is never blank.
+          <>
+            <WeekUtilRow name="כל השבועות" range="" occupied={occupiedRooms.length} total={rooms.length} pct={globalPct} />
+            <Typography sx={{ fontSize: 11, color: "#94a3b8", pb: 0.75, display: "block" }}>
+              פירוט שבועי לא זמין — נתוני המסלולים לא נטענו
+            </Typography>
+          </>
+        )}
+      </Paper>
 
       {/* ── Over-capacity rooms ── */}
       <SectionTitle
@@ -223,8 +341,19 @@ const RoomStatusOverview = ({ boardData }) => {
         </Box>
       )}
 
-      {/* ── Floor breakdown ── */}
-      <SectionTitle label="סיכום לפי קומות" color="#475569" />
+      {/* ── Floor breakdown (intentionally GLOBAL across all weeks, not per-week:
+            a room belongs to a floor regardless of week, and the guest column
+            can't be bucketed by week — assignments carry no dates) ── */}
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1, mt: 2.5 }}>
+        <Typography variant="body2" sx={{ fontWeight: 700, color: "#1e293b" }}>
+          סיכום לפי קומות
+        </Typography>
+        <Chip
+          label="כל השבועות"
+          size="small"
+          sx={{ height: 18, fontSize: 11, backgroundColor: "#f1f5f9", color: "#64748b" }}
+        />
+      </Box>
       <TableContainer
         component={Paper}
         elevation={0}

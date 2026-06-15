@@ -17,6 +17,57 @@ const getRoomOccupancy = (vacationId) => `
   WHERE rt.room_id REGEXP '^[0-9]+'
 `;
 
+// Per-week (per-route) room utilization. Rooms are physical and reused every
+// week, so the denominator (total numeric rooms) is constant across weeks — it
+// is NOT computed here; the service attaches it from getOverallRoomUtilization.
+//
+// Weeks/routes live in the SHARED `trip_tracker.vacation_date` table; bookings
+// live in the tenant `trip_tracker_<id>.room_taken` table. A single cross-DB
+// LEFT JOIN attributes each booking to every week it OVERLAPS.
+//
+// Overlap (half-open, matching the hotel-turnover convention used by
+// room_taken's own overlap probe in userRoomQuery): booking [bs,be) overlaps
+// week [ws,we) iff  bs < we AND be > ws. With contiguous routes (week N's end
+// == week N+1's start) a booking that sits cleanly inside one week is NOT
+// double-counted at the seam, while a booking that genuinely spans two routes
+// (חריגים) counts in BOTH. vacation_date dates are varchar — CAST to DATE so
+// the comparison is chronological, not lexical; a malformed/empty value casts
+// to NULL and simply fails the overlap (safe). Non-numeric room_ids (virtual
+// rooms like 'קסה') are excluded, same as the rest of the dashboard. LEFT JOIN
+// keeps weeks with zero bookings (0 occupied). Empty/null-dated routes (the
+// "חריגים" row) are filtered out entirely.
+const getRoomUtilizationByWeek = (vacationId) => `
+  SELECT
+    w.id                       AS week_id,
+    w.name                     AS week_name,
+    w.start_date               AS start_date,
+    w.end_date                 AS end_date,
+    COUNT(DISTINCT rt.room_id) AS occupied_rooms
+  FROM trip_tracker.vacation_date w
+  LEFT JOIN \`trip_tracker_${vacationId}\`.room_taken rt
+    ON rt.room_id REGEXP '^[0-9]+'
+   AND CAST(rt.start_date AS DATE) < CAST(w.end_date   AS DATE)
+   AND CAST(rt.end_date   AS DATE) > CAST(w.start_date AS DATE)
+  WHERE w.vacation_id = '${vacationId}'
+    AND w.start_date IS NOT NULL AND w.start_date <> ''
+    AND w.end_date   IS NOT NULL AND w.end_date   <> ''
+  GROUP BY w.id, w.name, w.start_date, w.end_date
+  ORDER BY CAST(w.start_date AS DATE), w.id
+`;
+
+// Corrected OVERALL room utilization (room ÷ room, NOT families ÷ rooms).
+// occupied_rooms = distinct numeric rooms booked at any point in the vacation;
+// total_rooms = the constant numeric room inventory (also the per-week
+// denominator, attached to each week row by the service).
+const getOverallRoomUtilization = (vacationId) => `
+  SELECT
+    (SELECT COUNT(*) FROM \`trip_tracker_${vacationId}\`.rooms
+     WHERE rooms_id REGEXP '^[0-9]+')        AS total_rooms,
+    COUNT(DISTINCT rt.room_id)               AS occupied_rooms
+  FROM \`trip_tracker_${vacationId}\`.room_taken rt
+  WHERE rt.room_id REGEXP '^[0-9]+'
+`;
+
 // Financial: expected income (families.total_amount) vs actually collected (payments)
 const getPaymentSummary = (vacationId) => `
   SELECT
@@ -87,6 +138,8 @@ const getCrossVacationFamilies = (vacationIds) => {
 module.exports = {
   getFamiliesAndGuests,
   getRoomOccupancy,
+  getRoomUtilizationByWeek,
+  getOverallRoomUtilization,
   getPaymentSummary,
   getFlightReadiness,
   getLeadsSummary,

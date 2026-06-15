@@ -8,10 +8,12 @@ import DashboardView from "./Dashboard.view";
 const ZERO = {
   families:        { total: 0, totalGuests: 0 },
   payments:        { totalExpected: 0, totalPaid: 0 },
-  rooms:           { total: 0, occupied: 0, withoutRoom: 0 },
+  rooms:           { total: 0, occupied: 0, withoutRoom: 0, overall: { totalRooms: 0, occupiedRooms: 0, percentage: 0 }, byWeek: [] },
   flightReadiness: { totalGuests: 0, withPassport: 0, withBirthdate: 0, withOutbound: 0, withReturn: 0, fullyReady: 0 },
   leads:           { total: 0, active: 0, registered: 0, newCold: 0, notRelevant: 0, followupOverdue: 0, followupToday: 0 },
 };
+
+const safePct = (part, total) => (total > 0 ? Math.round((part / total) * 100) : 0);
 
 function mergeResults(results) {
   return results.reduce((acc, r) => ({
@@ -23,11 +25,20 @@ function mergeResults(results) {
       totalExpected: acc.payments.totalExpected + r.payments.totalExpected,
       totalPaid:     acc.payments.totalPaid     + r.payments.totalPaid,
     },
-    rooms: {
-      total:       acc.rooms.total       + r.rooms.total,
-      occupied:    acc.rooms.occupied    + r.rooms.occupied,
-      withoutRoom: acc.rooms.withoutRoom + r.rooms.withoutRoom,
-    },
+    rooms: (() => {
+      // Corrected room÷room figures. Across multiple vacations the overall ratio
+      // is the summed occupied rooms over the summed inventory; per-week rows are
+      // concatenated (each route is distinct and carries its own name/dates).
+      const occupiedRooms = acc.rooms.overall.occupiedRooms + (r.rooms.overall?.occupiedRooms ?? 0);
+      const totalRooms    = acc.rooms.overall.totalRooms    + (r.rooms.overall?.totalRooms    ?? 0);
+      return {
+        total:       acc.rooms.total       + r.rooms.total,
+        occupied:    acc.rooms.occupied    + r.rooms.occupied,
+        withoutRoom: acc.rooms.withoutRoom + r.rooms.withoutRoom,
+        overall: { totalRooms, occupiedRooms, percentage: safePct(occupiedRooms, totalRooms) },
+        byWeek: [...acc.rooms.byWeek, ...(r.rooms.byWeek ?? [])],
+      };
+    })(),
     flightReadiness: {
       totalGuests:   acc.flightReadiness.totalGuests   + r.flightReadiness.totalGuests,
       withPassport:  acc.flightReadiness.withPassport  + r.flightReadiness.withPassport,

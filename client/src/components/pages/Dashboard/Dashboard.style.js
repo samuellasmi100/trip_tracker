@@ -143,6 +143,52 @@ export const useStyles = makeStyles({
     textAlign: "left",
   },
 
+  // ── Per-week room breakdown (room occupancy card) ───────────────────────
+  weekSection: {
+    borderTop: "1px solid #f1f5f9",
+    paddingTop: "16px",
+  },
+  weekSectionTitle: {
+    fontSize: "13px",
+    fontWeight: 600,
+    color: "#64748b",
+    margin: "0 0 12px 0",
+  },
+  weekGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+    gap: "16px 24px",
+  },
+  weekRow: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "5px",
+  },
+  weekRowHead: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "baseline",
+    fontSize: "13px",
+  },
+  weekName: {
+    fontWeight: 600,
+    color: "#0f172a",
+  },
+  weekCount: {
+    fontWeight: 700,
+    color: "#0f172a",
+  },
+  weekRowFoot: {
+    display: "flex",
+    justifyContent: "space-between",
+    fontSize: "12px",
+    color: "#94a3b8",
+  },
+  weekPct: {
+    fontWeight: 600,
+    color: "#3b82f6",
+  },
+
   // Legend rows (for charts)
   legendRow: {
     display: "flex",

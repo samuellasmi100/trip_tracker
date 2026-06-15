@@ -3,12 +3,32 @@
 const dashboardDb = require('./dashboardDb');
 
 const getSummary = async (vacationId) => {
-  const { familyRow, roomRow, paymentRow, flightRow, leadsRow } =
+  const { familyRow, roomRow, roomWeekRows, roomOverallRow, paymentRow, flightRow, leadsRow } =
     await dashboardDb.getSummary(vacationId);
 
   const totalFamilies    = Number(familyRow?.total_families    ?? 0);
   const occupiedFamilies = Number(roomRow?.occupied_families   ?? 0);
   const roomFamilyTotal  = Number(roomRow?.total_families      ?? totalFamilies);
+
+  // Corrected room-occupancy figures (room ÷ room). The total room count is the
+  // constant denominator shared by the overall figure and every week. Fall back
+  // to the legacy roomRow total if the overall query was rejected.
+  const roomTotal        = Number(roomOverallRow?.total_rooms    ?? roomRow?.total_rooms ?? 0);
+  const occupiedRooms    = Number(roomOverallRow?.occupied_rooms ?? 0);
+  const pct = (occupied, total) => (total > 0 ? Math.round((occupied / total) * 100) : 0);
+
+  const roomsByWeek = (roomWeekRows ?? []).map((w) => {
+    const occupied = Number(w.occupied_rooms ?? 0);
+    return {
+      weekId:        w.week_id,
+      name:          w.week_name,
+      startDate:     w.start_date,
+      endDate:       w.end_date,
+      totalRooms:    roomTotal,
+      occupiedRooms: occupied,
+      percentage:    pct(occupied, roomTotal),
+    };
+  });
 
   return {
     families: {
@@ -20,9 +40,20 @@ const getSummary = async (vacationId) => {
       totalPaid:     Number(paymentRow?.total_paid     ?? 0),
     },
     rooms: {
+      // Legacy global, families-based fields — kept for backward compatibility.
+      // The current dashboard client (Dashboard.jsx mergeResults) sums
+      // total/occupied/withoutRoom across vacations, so these must stay.
       total:       Number(roomRow?.total_rooms ?? 0),
       occupied:    occupiedFamilies,
       withoutRoom: Math.max(0, roomFamilyTotal - occupiedFamilies),
+      // Corrected occupancy (room ÷ room). `overall` is the whole vacation;
+      // `byWeek` is one entry per route, ordered chronologically.
+      overall: {
+        totalRooms:    roomTotal,
+        occupiedRooms: occupiedRooms,
+        percentage:    pct(occupiedRooms, roomTotal),
+      },
+      byWeek: roomsByWeek,
     },
     flightReadiness: {
       totalGuests:  Number(flightRow?.total_guests_in_system ?? 0),

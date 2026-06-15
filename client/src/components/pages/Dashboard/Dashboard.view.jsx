@@ -27,6 +27,41 @@ const fmt = (n) => Number(n).toLocaleString("he-IL");
 const fmtCurrency = (n) => `₪${fmt(n)}`;
 const pct = (part, total) => (total > 0 ? Math.round((part / total) * 100) : 0);
 
+// 'YYYY-MM-DD' → 'DD/MM'. Parse the parts directly rather than via new Date()
+// so the day can't shift across a timezone boundary.
+const fmtDay = (iso) => {
+  const p = String(iso || "").slice(0, 10).split("-");
+  return p.length === 3 ? `${p[2]}/${p[1]}` : (iso || "");
+};
+
+// ── Per-week room occupancy row (room card) ──────────────────────────────────
+// Visual idiom mirrors StatRow: a labelled mini progress bar. Blue accent ties
+// it to the room card; the overall bar above stays teal (classes.progressBar).
+function WeekRow({ week, classes }) {
+  const p = Math.min(week.percentage, 100);
+  return (
+    <div className={classes.weekRow}>
+      <div className={classes.weekRowHead}>
+        <span className={classes.weekName}>{week.name}</span>
+        <span className={classes.weekCount}>{week.occupiedRooms}/{week.totalRooms}</span>
+      </div>
+      <LinearProgress
+        variant="determinate"
+        value={p}
+        sx={{
+          height: 6, borderRadius: 4,
+          backgroundColor: "#e2e8f0",
+          "& .MuiLinearProgress-bar": { backgroundColor: "#3b82f6", borderRadius: 4 },
+        }}
+      />
+      <div className={classes.weekRowFoot}>
+        <span>{fmtDay(week.startDate)} – {fmtDay(week.endDate)}</span>
+        <span className={classes.weekPct}>{week.percentage}%</span>
+      </div>
+    </div>
+  );
+}
+
 // ── Reusable mini stat row ────────────────────────────────────────────────────
 function StatRow({ color, label, value, total, warn }) {
   const p = pct(value, total);
@@ -131,8 +166,11 @@ function DashboardView({ vacations, selectedIds, onVacationChange, data, loading
   const classes = useStyles();
   const vacationNameMap = Object.fromEntries(vacations.map((v) => [v.vacation_id, v.name]));
 
-  const roomPct     = data ? pct(data.rooms.occupied,          data.rooms.total)             : 0;
-  const collectedPct= data ? pct(data.payments.totalPaid,      data.payments.totalExpected)  : 0;
+  // Corrected occupancy is room÷room (rooms.overall), NOT families÷rooms.
+  const roomsOverall = data?.rooms?.overall ?? { totalRooms: 0, occupiedRooms: 0, percentage: 0 };
+  const roomsByWeek  = data?.rooms?.byWeek ?? [];
+  const roomPct      = roomsOverall.percentage || 0;
+  const collectedPct = data ? pct(data.payments.totalPaid,      data.payments.totalExpected)  : 0;
   const outstanding = data ? Math.max(0, data.payments.totalExpected - data.payments.totalPaid) : 0;
 
   return (
@@ -235,8 +273,10 @@ function DashboardView({ vacations, selectedIds, onVacationChange, data, loading
                 </div>
               </div>
 
-              {/* ── 3. Room Occupancy ── */}
-              <div className={classes.card}>
+              {/* ── 3. Room Occupancy (corrected overall + per-week breakdown) ── */}
+              {/* Spans two grid columns so the weekly list can breathe; this
+                  pushes the next card (flight readiness) to the following row. */}
+              <div className={classes.card} style={{ gridColumn: "span 2" }}>
                 <div className={classes.cardHeader}>
                   <p className={classes.cardTitle}>ניצולת חדרים</p>
                   <div className={`${classes.cardIconWrap} ${classes.cardIconBlue}`}>
@@ -245,12 +285,12 @@ function DashboardView({ vacations, selectedIds, onVacationChange, data, loading
                 </div>
                 <div>
                   <div className={classes.bigNumber}>{roomPct}%</div>
-                  <div className={classes.bigNumberSub}>תפוסה</div>
+                  <div className={classes.bigNumberSub}>תפוסה כוללת</div>
                 </div>
                 <div>
                   <div className={classes.progressLabel}>
-                    <span>{data.rooms.occupied} משפחות עם חדר</span>
-                    <span>מתוך {data.rooms.total} חדרים</span>
+                    <span>{roomsOverall.occupiedRooms} חדרים תפוסים</span>
+                    <span>מתוך {roomsOverall.totalRooms} חדרים</span>
                   </div>
                   <LinearProgress variant="determinate" value={Math.min(roomPct, 100)} className={classes.progressBar} />
                   {data.rooms.withoutRoom > 0 && (
@@ -260,6 +300,16 @@ function DashboardView({ vacations, selectedIds, onVacationChange, data, loading
                     </div>
                   )}
                 </div>
+                {roomsByWeek.length > 0 && (
+                  <div className={classes.weekSection}>
+                    <p className={classes.weekSectionTitle}>תפוסה לפי שבוע</p>
+                    <div className={classes.weekGrid}>
+                      {roomsByWeek.map((w, i) => (
+                        <WeekRow key={`${w.weekId ?? "w"}-${i}`} week={w} classes={classes} />
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* ── 4. Flight Readiness ── */}

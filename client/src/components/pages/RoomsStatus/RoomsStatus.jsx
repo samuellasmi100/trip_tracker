@@ -318,7 +318,7 @@ const RoomsStatus = () => {
             <RoomRoster boardData={boardData} />
           </Box>
           <Box sx={{ display: activeTab === 2 ? "block" : "none" }}>
-            <RoomStatusOverview boardData={boardData} />
+            <RoomStatusOverview boardData={boardData} vacationsDates={vacationsDates} />
           </Box>
         </>
       )}
