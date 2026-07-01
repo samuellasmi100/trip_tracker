@@ -4,6 +4,7 @@ export const END_POINT = {
   USER: "/user",
   FAMILY: "/family",
   FAMILY_IMPORT: "/family-import",
+  GUEST_IMPORT: "/guest-import",
   ROOMS:'rooms',
   FLIGHTS:'flights',
   NOTES:'notes',

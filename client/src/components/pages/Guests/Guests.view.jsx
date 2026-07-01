@@ -8,11 +8,13 @@ import { useStyles } from "./Guests.style";
 import React from "react";
 import SearchIcon from "@material-ui/icons/Search";
 import DeleteIcon from "@mui/icons-material/Delete";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
 import { ReactComponent as DownloadIcon } from "../../../assets/icons/download.svg";
 
 function GuestsView({
   rows, search, setSearch, headers,
   handleDeleteButtonClick, handleExportToExcel,
+  handleImportClick, importFileInputRef, handleImportFileChange, importing,
   selectedUser, handleClose, open, handleDeleteClick,
   loading, hasMore, sentinelRef,
 }) {
@@ -53,6 +55,24 @@ function GuestsView({
         <IconButton size="small" onClick={handleExportToExcel} style={{ border: "1px solid #e2e8f0", borderRadius: "6px", padding: "6px" }}>
           <DownloadIcon style={{ color: "#0d9488", width: "18px", height: "18px" }} />
         </IconButton>
+        {/* Import hotel-guest Excel — uploads the raw .xlsx (server reads the
+            cell borders that define the groups). */}
+        <IconButton
+          size="small"
+          onClick={handleImportClick}
+          disabled={importing}
+          title="ייבוא אורחי המלון מאקסל"
+          style={{ border: "1px solid #e2e8f0", borderRadius: "6px", padding: "6px" }}
+        >
+          <UploadFileIcon style={{ color: "#0d9488", fontSize: "18px" }} />
+        </IconButton>
+        <input
+          ref={importFileInputRef}
+          type="file"
+          accept=".xlsx,.xls"
+          style={{ display: "none" }}
+          onChange={handleImportFileChange}
+        />
       </Box>
 
       {/* ── Table ── */}

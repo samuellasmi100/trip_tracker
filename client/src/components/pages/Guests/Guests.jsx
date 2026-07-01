@@ -4,6 +4,8 @@ import * as staticSlice from "../../../store/slices/staticSlice";
 import { useSelector, useDispatch } from "react-redux";
 import ApiStatic from "../../../apis/staticRequest";
 import ApiUser from "../../../apis/userRequest";
+import ApiGuestImport from "../../../apis/guestImportRequest";
+import GuestImportDialog from "./GuestImportDialog/GuestImportDialog";
 import EditOrUpdateDialog from "../../shared/EditDialog/EditOrUpdateDialog";
 import * as snackBarSlice from "../../../store/slices/snackbarSlice";
 import * as XLSX from "xlsx";
@@ -24,6 +26,13 @@ const Guests = () => {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [hasMore, setHasMore] = useState(true);
+
+  // Guest Excel import (raw .xlsx → server parses borders) + its report dialog.
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState(null);
+  const [importError, setImportError] = useState(null);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
+  const importFileInputRef = useRef(null);
 
   const loadingRef = useRef(false);
   const hasMoreRef = useRef(true);
@@ -132,6 +141,53 @@ const Guests = () => {
     saveAs(new Blob([excelBuffer], { type: "application/octet-stream" }), "כלל האורחים.xlsx");
   };
 
+  // Open the OS file picker (guarding against a missing vacation / a run already
+  // in progress), then upload the chosen workbook to the server.
+  const handleImportClick = () => {
+    if (importing) return;
+    if (!vacationId) {
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "בחר חופשה לפני ייבוא", timeout: 3000 }));
+      return;
+    }
+    importFileInputRef.current?.click();
+  };
+
+  const handleImportFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // reset so re-picking the same file fires onChange again
+    if (!file) return;
+    if (!/\.(xlsx|xls)$/i.test(file.name)) {
+      dispatch(snackBarSlice.setSnackBar({ type: "error", message: "יש להעלות קובץ אקסל (xlsx)", timeout: 4000 }));
+      return;
+    }
+    setImportError(null);
+    setImportResult(null);
+    setImporting(true);
+    setImportDialogOpen(true);
+    try {
+      const res = await ApiGuestImport.importGuests(token, vacationId, file);
+      setImportResult(res.data);
+    } catch (err) {
+      console.error(err);
+      const msg = err?.response?.data?.message || "הייבוא נכשל. ודא שהקובץ בפורמט הנכון ונסה שוב.";
+      setImportError(msg);
+    } finally {
+      setImporting(false);
+    }
+  };
+
+  const closeImportDialog = () => {
+    setImportDialogOpen(false);
+    setImportResult(null);
+    setImportError(null);
+    // Surface the newly-imported guests by refetching the list from scratch.
+    offsetRef.current = 0;
+    hasMoreRef.current = true;
+    setRows([]);
+    setHasMore(true);
+    fetchData(searchRef.current, 0, false);
+  };
+
   return (
     <>
       <GuestsView
@@ -141,6 +197,10 @@ const Guests = () => {
         headers={headers}
         handleDeleteButtonClick={handleDeleteButtonClick}
         handleExportToExcel={handleExportToExcel}
+        handleImportClick={handleImportClick}
+        importFileInputRef={importFileInputRef}
+        handleImportFileChange={handleImportFileChange}
+        importing={importing}
         selectedUser={selectedUser}
         handleClose={handleClose}
         open={open}
@@ -148,6 +208,13 @@ const Guests = () => {
         loading={loading}
         hasMore={hasMore}
         sentinelRef={sentinelRef}
+      />
+      <GuestImportDialog
+        open={importDialogOpen}
+        onClose={closeImportDialog}
+        importing={importing}
+        error={importError}
+        result={importResult}
       />
       <EditOrUpdateDialog detailsDialogOpen={detailsDialogOpen} closeDetailsModal={closeDetailsModal} />
     </>
